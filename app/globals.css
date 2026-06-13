@@ -1,0 +1,137 @@
+@import "tailwindcss";
+
+/* ============ Design tokens — fintech oscuro ============ */
+@theme {
+  --color-bg: #08090d;
+  --color-surface: #101218;
+  --color-surface-2: #161922;
+  --color-surface-3: #1d212c;
+  --color-line: #242833;
+  --color-fg: #eef1f7;
+  --color-muted: #868d9e;
+  --color-faint: #5b6273;
+
+  --color-lime: #c8ff4d;
+  --color-emerald: #34e1a0;
+  --color-coral: #ff6b6b;
+  --color-sky: #5ec8ff;
+  --color-violet: #a78bfa;
+  --color-amber: #ff9f5e;
+
+  --font-display: var(--font-bricolage), system-ui, sans-serif;
+  --font-sans: var(--font-hanken), system-ui, sans-serif;
+  --font-mono: var(--font-jetbrains), ui-monospace, monospace;
+
+  --radius-xl: 1.25rem;
+}
+
+* {
+  border-color: var(--color-line);
+}
+
+html {
+  color-scheme: dark;
+  scrollbar-color: var(--color-surface-3) transparent;
+}
+
+body {
+  background-color: var(--color-bg);
+  color: var(--color-fg);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  /* atmósfera: malla de gradientes sutiles sobre el negro */
+  background-image:
+    radial-gradient(60rem 40rem at 78% -10%, rgba(167, 139, 250, 0.10), transparent 60%),
+    radial-gradient(50rem 30rem at -5% 8%, rgba(52, 225, 160, 0.08), transparent 55%),
+    radial-gradient(40rem 40rem at 50% 120%, rgba(200, 255, 77, 0.05), transparent 60%);
+  background-attachment: fixed;
+}
+
+/* números financieros tabulares */
+.tnum {
+  font-family: var(--font-mono);
+  font-feature-settings: "tnum" 1;
+  letter-spacing: -0.02em;
+}
+
+.font-display {
+  font-family: var(--font-display);
+  letter-spacing: -0.02em;
+}
+
+/* paneles de vidrio */
+.panel {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.035), rgba(255, 255, 255, 0.012));
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-xl);
+  backdrop-filter: blur(8px);
+}
+.panel-hover {
+  transition: border-color 0.25s ease, transform 0.25s ease, background 0.25s ease;
+}
+.panel-hover:hover {
+  border-color: color-mix(in srgb, var(--color-lime) 35%, var(--color-line));
+  transform: translateY(-2px);
+}
+
+/* halo del chatbot IA (violeta reservado) */
+.ai-glow {
+  position: relative;
+  background: linear-gradient(180deg, rgba(167, 139, 250, 0.10), rgba(94, 200, 255, 0.04));
+  border: 1px solid color-mix(in srgb, var(--color-violet) 38%, transparent);
+  box-shadow: 0 0 0 1px rgba(167, 139, 250, 0.06), 0 18px 50px -22px rgba(167, 139, 250, 0.5);
+}
+.ai-glow::before {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  pointer-events: none;
+  padding: 1px;
+  background: linear-gradient(120deg, rgba(167, 139, 250, 0.55), transparent 40%, rgba(94, 200, 255, 0.4));
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0.7;
+  animation: hue 8s linear infinite;
+}
+
+.chip {
+  border: 1px solid var(--color-line);
+  background: var(--color-surface-2);
+  border-radius: 999px;
+  transition: all 0.2s ease;
+}
+.chip:hover {
+  border-color: color-mix(in srgb, var(--color-violet) 50%, var(--color-line));
+  color: var(--color-fg);
+}
+
+/* utilidades de texto */
+.text-muted { color: var(--color-muted); }
+.text-faint { color: var(--color-faint); }
+
+/* animación de entrada escalonada */
+@keyframes rise {
+  from { opacity: 0; transform: translateY(14px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.rise { animation: rise 0.6s cubic-bezier(0.22, 1, 0.36, 1) both; }
+
+@keyframes hue {
+  to { transform: rotate(1turn); }
+}
+@keyframes pulseDot {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.4; transform: scale(0.7); }
+}
+.pulse-dot { animation: pulseDot 1.6s ease-in-out infinite; }
+
+@keyframes growBar {
+  from { transform: scaleY(0); }
+  to { transform: scaleY(1); }
+}
+.grow-bar { transform-origin: bottom; animation: growBar 0.8s cubic-bezier(0.22, 1, 0.36, 1) both; }
+
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-thumb { background: var(--color-surface-3); border-radius: 999px; border: 3px solid var(--color-bg); }
