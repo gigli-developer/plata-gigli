@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { db, fetchCardsFull, fetchStatements, fetchInstallments, fetchStatementConsumos, fetchStatementMovements, fetchPlansForProjection, type CardFull, type StatementRow, type InstallmentRow, type StatementMovement, type PlanProj } from "@/lib/db";
+import { db, fetchCardsFull, fetchStatements, fetchInstallments, fetchStatementConsumos, fetchStatementMovements, fetchPlansForProjection, payStatement, ensureNextStatements, formatShort, type CardFull, type StatementRow, type InstallmentRow, type StatementMovement, type PlanProj } from "@/lib/db";
+import { readCache, writeCache } from "@/lib/cache";
 import { ars, usd, compact } from "@/lib/format";
 import { PageHeader } from "../components/Shell";
 import { Donut, type Slice } from "../components/charts";
@@ -11,6 +12,11 @@ import { Plus, Card as CardIcon, ArrowUpRight, Pencil, Chevron } from "../icons"
 
 const USD_ARS = 1455; // cotización para valuar consumos en USD dentro del desglose
 const monthsBetweenYM = (a: string, b: string) => { const [ay, am] = a.slice(0, 7).split("-").map(Number); const [by, bm] = b.slice(0, 7).split("-").map(Number); return (by - ay) * 12 + (bm - am); };
+// Suma k meses a un período "YYYY-MM" y devuelve "YYYY-MM".
+const addMonthsYM = (ym: string, k: number) => { const [y, m] = ym.slice(0, 7).split("-").map(Number); const d = new Date(y, (m - 1) + k, 1); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`; };
+// Parsear 'YYYY-MM-DD' en LOCAL (new Date(iso) parsea UTC y corre el día en ART).
+const parseYMD = (iso: string) => { const [y, m, d] = iso.slice(0, 10).split("-").map(Number); return new Date(y, (m || 1) - 1, d || 1); };
+const daysInYM = (ym: string) => { const [y, m] = ym.slice(0, 7).split("-").map(Number); return new Date(y, m, 0).getDate(); };
 // Esta pantalla es de tarjetas de crédito (resúmenes). Ocultamos la débito (solo visual; no se borra nada).
 const esCredito = (c: { network?: string | null; name?: string | null }) =>
   !((c.network ?? "").toLowerCase().includes("déb") || (c.network ?? "").toLowerCase().includes("deb") || (c.name ?? "").toLowerCase().includes("débito") || (c.name ?? "").toLowerCase().includes("debito"));
@@ -36,13 +42,15 @@ export default function TarjetasPage() {
   const [expandedId, setExpandedId] = useState<number | null>(null);
   const [movements, setMovements] = useState<Record<number, StatementMovement[]>>({});
   const [loadingMov, setLoadingMov] = useState<number | null>(null);
+  const [payingId, setPayingId] = useState<number | null>(null);
 
   const reloadCuotas = async () => setInstallments(await fetchInstallments(db()));
-  const reloadStatements = async () => { const sb = db(); setStatements(await fetchStatements(sb)); setCards((await fetchCardsFull(sb)).filter(esCredito).map((card, idx) => ({ ...card, ...palette[idx % palette.length] }))); };
+  const reloadStatements = async () => { const sb = db(); await ensureNextStatements(sb).catch(() => {}); setStatements(await fetchStatements(sb)); setCards((await fetchCardsFull(sb)).filter(esCredito).map((card, idx) => ({ ...card, ...palette[idx % palette.length] }))); };
 
   const toggleMovements = async (id: number) => {
     if (expandedId === id) { setExpandedId(null); return; }
     setExpandedId(id);
+    if (id < 0) { setMovements((prev) => (prev[id] ? prev : { ...prev, [id]: [] })); return; } // proyectado: solo cuotas, sin consumos
     if (!movements[id]) {
       setLoadingMov(id);
       try { const m = await fetchStatementMovements(db(), id); setMovements((prev) => ({ ...prev, [id]: m })); }
@@ -56,12 +64,27 @@ export default function TarjetasPage() {
     .filter((p) => p.n >= 1 && p.n <= p.total);
 
   useEffect(() => {
+    type Snap = { cards: CardVis[]; statements: StatementRow[]; installments: InstallmentRow[]; consumos: Record<number, { ars: number; usd: number }>; plans: PlanProj[] };
+    // Pintar al instante el último snapshot conocido; lo fresco llega por atrás.
+    const cached = readCache<Snap>("tarjetas");
+    if (cached) {
+      setCards(cached.cards); setStatements(cached.statements); setInstallments(cached.installments); setConsumos(cached.consumos); setPlans(cached.plans);
+      setSelectedId((prev) => prev ?? cached.cards[0]?.id ?? null);
+      setLoading(false);
+    }
     (async () => {
       const sb = db();
-      const [c, s, i, co, pl] = await Promise.all([fetchCardsFull(sb), fetchStatements(sb), fetchInstallments(sb), fetchStatementConsumos(sb), fetchPlansForProjection(sb)]);
-      const vis = c.filter(esCredito).map((card, idx) => ({ ...card, ...palette[idx % palette.length] }));
-      setCards(vis); setStatements(s); setInstallments(i); setConsumos(co); setPlans(pl);
-      setSelectedId(vis[0]?.id ?? null);
+      const load = async () => {
+        const [c, s, i, co, pl] = await Promise.all([fetchCardsFull(sb), fetchStatements(sb), fetchInstallments(sb), fetchStatementConsumos(sb), fetchPlansForProjection(sb)]);
+        const vis = c.filter(esCredito).map((card, idx) => ({ ...card, ...palette[idx % palette.length] }));
+        setCards(vis); setStatements(s); setInstallments(i); setConsumos(co); setPlans(pl);
+        setSelectedId((prev) => prev ?? vis[0]?.id ?? null);
+        writeCache("tarjetas", { cards: vis, statements: s, installments: i, consumos: co, plans: pl } satisfies Snap);
+      };
+      await load();
+      // Fuera del camino crítico: asegurar el próximo resumen; si creó uno, refrescar.
+      const created = await ensureNextStatements(sb).catch(() => false);
+      if (created) await load();
     })().finally(() => setLoading(false));
   }, []);
 
@@ -72,18 +95,110 @@ export default function TarjetasPage() {
   const history = statements.filter((s) => s.cardId === card.id);
   // Resumen a pagar = el último cerrado que NO esté pagado. Si están todos pagos, mostramos el próximo (en curso).
   const today = new Date();
-  const toPay = history.find((s) => s.closingRaw && new Date(s.closingRaw) <= today && !s.paid);
-  const current = toPay ?? history.find((s) => s.closingRaw && new Date(s.closingRaw) > today) ?? history[0];
+  const toPay = history.find((s) => s.closingRaw && parseYMD(s.closingRaw) <= today && !s.paid);
+  const current = toPay ?? history.find((s) => s.closingRaw && parseYMD(s.closingRaw) > today) ?? history[0];
   const alDia = !toPay;
   const cuotas = installments.filter((i) => i.cardId === card.id);
-  // Resúmenes abiertos (cierre a futuro, ej. junio) se estiman con las cuotas pendientes.
-  const cuotasSum = cuotas.reduce((a, q) => a + q.monthly, 0);
-  const isOpen = (s: StatementRow) => !!s.closingRaw && new Date(s.closingRaw) > today;
-  const stTotal = (s: StatementRow) => (isOpen(s) ? cuotasSum + (consumos[s.id]?.ars ?? 0) : s.totalArs);
-  const stUsd = (s: StatementRow) => (isOpen(s) ? (consumos[s.id]?.usd ?? 0) : s.totalUsd);
+  const isOpen = (s: StatementRow) => !!s.closingRaw && parseYMD(s.closingRaw) > today;
+  // Cuotas que caen en el período de ese resumen.
+  const cuotasForStmt = (s: StatementRow) => cuotasForPeriod(s.period, s.cardId).reduce((a, p) => a + p.monthly, 0);
+  // Total del resumen: si está PAGADO → el reconciliado (guardado). Si NO (abierto o cerrado sin pagar) → en vivo (consumos + cuotas).
+  const stTotal = (s: StatementRow) => (s.paid ? s.totalArs : cuotasForStmt(s) + (consumos[s.id]?.ars ?? 0));
+  const stUsd = (s: StatementRow) => (s.paid ? s.totalUsd : (consumos[s.id]?.usd ?? 0));
+  // Pagar: fija el total que se ve en pantalla como reconciliado y marca is_paid (baja del saldo líquido).
+  const handlePay = async (s: StatementRow) => {
+    if (s.id < 0 || s.paid || payingId != null) return; // proyectados no se pagan
+    const total = stTotal(s);
+    const totalUsd = stUsd(s);
+    const detalle = `${ars(total)}${totalUsd > 0 ? ` + ${usd(totalUsd)}` : ""}`;
+    if (!window.confirm(`¿Marcar como pagado el resumen ${s.period} por ${detalle}?\n\nEl total queda fijo y el pago se descuenta del saldo líquido.`)) return;
+    setPayingId(s.id);
+    try { await payStatement(db(), s.id, total, totalUsd); await reloadStatements(); }
+    catch (e) { alert(`No se pudo pagar el resumen: ${e instanceof Error ? e.message : e}`); }
+    finally { setPayingId(null); }
+  };
   const spent = current ? stTotal(current) : 0;
   const spentUsd = current ? stUsd(current) : 0;
   const usage = card.limitArs ? Math.min(100, Math.round((spent / card.limitArs) * 100)) : 0;
+
+  // ── Resúmenes futuros ──────────────────────────────────────────────
+  // Filas reales aún por cerrar (closing > hoy) + proyección de los próximos
+  // períodos a partir de las cuotas activas (todavía no existen como resumen).
+  const realFuture = history.filter((s) => isOpen(s));
+  const anteriores = history.filter((s) => !isOpen(s));
+  const lastPeriod = history[0]?.period ?? `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}`;
+  const cardPlans = plans.filter((p) => p.cardId === card.id);
+  // Hasta dónde llegan las cuotas activas (mes del último vencimiento, relativo al último resumen).
+  const horizon = cardPlans.reduce((mx, p) => Math.max(mx, monthsBetweenYM(lastPeriod, addMonthsYM(p.firstMonth, p.total - 1))), 0);
+  const futureCount = Math.min(6, Math.max(1, horizon));
+  const closeDay = card.closeDay ?? (Number((current?.closingRaw ?? "").slice(8, 10)) || 25);
+  const dueDay = card.dueDay ?? (Number((current?.dueRaw ?? "").slice(8, 10)) || 6);
+  const existingPeriods = new Set(history.map((h) => h.period));
+  const projected: StatementRow[] = Array.from({ length: futureCount }, (_, idx) => {
+    const period = addMonthsYM(lastPeriod, idx + 1);
+    const closingRaw = `${period}-${String(Math.min(closeDay, daysInYM(period))).padStart(2, "0")}`;
+    const dueMonth = dueDay < closeDay ? addMonthsYM(period, 1) : period;
+    const dueRaw = `${dueMonth}-${String(Math.min(dueDay, daysInYM(dueMonth))).padStart(2, "0")}`;
+    return { id: -(card.id * 100 + idx + 1), cardId: card.id, period, closing: formatShort(closingRaw), due: formatShort(dueRaw), closingRaw, dueRaw, paid: false, totalArs: 0, totalUsd: 0 };
+  }).filter((p) => !existingPeriods.has(p.period)); // no duplicar períodos que ya existen como fila real
+  const futuros = [...realFuture, ...projected].sort((a, b) => a.period.localeCompare(b.period));
+
+  // Render de una fila de resumen (compartido entre futuros y anteriores).
+  const renderStmt = (s: StatementRow) => {
+    const projectedRow = s.id < 0;
+    const open = projectedRow || isOpen(s);
+    const exp = expandedId === s.id;
+    return (
+      <li key={s.id} className="border-b border-line last:border-0">
+        <div onClick={() => toggleMovements(s.id)} className={`flex cursor-pointer items-center gap-3 rounded-xl px-1.5 py-3 transition-colors hover:bg-surface-2/40 ${exp ? "bg-surface-2/30" : ""}`}>
+          <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl border border-line bg-surface-2"><CardIcon className="h-5 w-5 text-muted" /></span>
+          <div>
+            <p className="flex items-center gap-2 text-[0.95rem] text-fg">
+              {s.period}
+              {projectedRow ? <span className="rounded-full border border-violet/30 bg-violet/10 px-1.5 py-0.5 text-[0.6rem] text-violet">próximo</span>
+                : open && <span className="rounded-full border border-sky/30 bg-sky/10 px-1.5 py-0.5 text-[0.6rem] text-sky">en curso</span>}
+            </p>
+            <p className="text-xs text-faint">Cierre {s.closing} · Vence {s.due}</p>
+          </div>
+          <div className="ml-auto text-right">
+            <p className="tnum text-[0.95rem] text-fg">{ars(stTotal(s))}</p>
+            <p className="text-xs text-faint">+ {usd(stUsd(s))}{projectedRow ? " · proyectado" : open ? " · estimado" : ""}</p>
+          </div>
+          {projectedRow ? <span className="ml-2 hidden rounded-full border border-violet/30 bg-violet/10 px-2.5 py-1 text-[0.65rem] text-violet sm:inline">Proyectado</span>
+            : open ? <span className="ml-2 hidden rounded-full border border-sky/30 bg-sky/10 px-2.5 py-1 text-[0.65rem] text-sky sm:inline">Estimado</span>
+            : <StatusBadge paid={s.paid} paying={payingId === s.id} onPay={() => handlePay(s)} />}
+          <Chevron className={`h-4 w-4 shrink-0 text-faint transition-transform ${exp ? "rotate-180 text-lime" : ""}`} />
+        </div>
+        {exp && <MovementsPanel statement={s} consumos={movements[s.id]} cuotas={cuotasForPeriod(s.period, s.cardId)} loading={loadingMov === s.id} open={open} />}
+      </li>
+    );
+  };
+
+  // Datos del gráfico "Totales por mes": TODAS las tarjetas, ARS y USD por período,
+  // + proyección futura (cuotas ya confirmadas) hasta donde llegan los planes (máx. 6 meses).
+  const chartMonths = [...new Set(statements.map((s) => s.period))].sort();
+  const lastRealPeriod = chartMonths[chartMonths.length - 1];
+  const lastOfCard = (cid: number) => statements.filter((s) => s.cardId === cid).map((s) => s.period).sort().pop() ?? null;
+  const projValue = (period: string, cid: number) => cuotasForPeriod(period, cid).reduce((a, p) => a + p.monthly, 0);
+  const chartHorizon = lastRealPeriod
+    ? Math.min(6, Math.max(1, plans.reduce((mx, p) => Math.max(mx, monthsBetweenYM(lastRealPeriod, addMonthsYM(p.firstMonth, p.total - 1))), 0)))
+    : 0;
+  const chartData: CardBarsRow[] = [
+    ...chartMonths.map((period) => ({
+      period, future: false,
+      values: cards.map((c) => {
+        const st = statements.find((s) => s.cardId === c.id && s.period === period);
+        if (st) return { name: c.name, accent: c.accent, ars: stTotal(st), usd: stUsd(st), open: isOpen(st), proj: false };
+        const lp = lastOfCard(c.id);
+        if (lp && period > lp) return { name: c.name, accent: c.accent, ars: projValue(period, c.id), usd: 0, open: false, proj: true };
+        return { name: c.name, accent: c.accent, ars: null, usd: null, open: false, proj: false };
+      }),
+    })),
+    ...Array.from({ length: chartHorizon }, (_, i) => addMonthsYM(lastRealPeriod, i + 1)).map((period) => ({
+      period, future: true,
+      values: cards.map((c) => ({ name: c.name, accent: c.accent, ars: projValue(period, c.id), usd: 0, open: false, proj: true })),
+    })),
+  ];
 
   return (
     <>
@@ -133,7 +248,9 @@ export default function TarjetasPage() {
               {alDia ? (
                 <span className="rounded-xl border border-emerald/30 bg-emerald/10 px-4 py-2 text-sm text-emerald">Estás al día · nada que pagar 🎉</span>
               ) : (
-                <button className="rounded-xl bg-violet/90 px-4 py-2 text-sm font-medium text-bg transition-transform hover:scale-[1.03]">Pagar resumen</button>
+                <button onClick={() => current && handlePay(current)} disabled={payingId != null} className="rounded-xl bg-violet/90 px-4 py-2 text-sm font-medium text-bg transition-transform hover:scale-[1.03] disabled:opacity-60">
+                  {payingId != null ? "Pagando…" : "Pagar resumen"}
+                </button>
               )}
               {current && (
                 <button onClick={() => toggleMovements(current.id)} className={`rounded-xl border px-4 py-2 text-sm transition-colors ${expandedId === current.id ? "border-lime/40 bg-lime/10 text-lime" : "border-line bg-surface-2 text-muted hover:text-fg"}`}>
@@ -147,35 +264,24 @@ export default function TarjetasPage() {
           </section>
 
           <section className="panel p-6">
-            <h2 className="font-display text-lg text-fg">Resúmenes anteriores</h2>
-            <p className="text-xs text-faint">{card.name} · {history.length} resúmenes</p>
+            <div className="flex items-center justify-between gap-2">
+              <h2 className="font-display text-lg text-fg">Resúmenes futuros</h2>
+              <span className="rounded-full border border-violet/30 bg-violet/10 px-2.5 py-0.5 text-[0.65rem] text-violet">Proyección</span>
+            </div>
+            <p className="text-xs text-faint">{card.name} · próximos {futuros.length} · cuotas y consumos por venir</p>
             <ul className="mt-4">
-              {history.map((s) => {
-                const open = isOpen(s);
-                const exp = expandedId === s.id;
-                return (
-                  <li key={s.id} className="border-b border-line last:border-0">
-                    <div onClick={() => toggleMovements(s.id)} className={`flex cursor-pointer items-center gap-3 rounded-xl px-1.5 py-3 transition-colors hover:bg-surface-2/40 ${exp ? "bg-surface-2/30" : ""}`}>
-                      <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl border border-line bg-surface-2"><CardIcon className="h-5 w-5 text-muted" /></span>
-                      <div>
-                        <p className="flex items-center gap-2 text-[0.95rem] text-fg">
-                          {s.period}
-                          {open && <span className="rounded-full border border-sky/30 bg-sky/10 px-1.5 py-0.5 text-[0.6rem] text-sky">en curso</span>}
-                        </p>
-                        <p className="text-xs text-faint">Cierre {s.closing} · Vence {s.due}</p>
-                      </div>
-                      <div className="ml-auto text-right">
-                        <p className="tnum text-[0.95rem] text-fg">{ars(stTotal(s))}</p>
-                        <p className="text-xs text-faint">+ {usd(stUsd(s))}{open ? " · estimado" : ""}</p>
-                      </div>
-                      {open ? <span className="ml-2 hidden rounded-full border border-sky/30 bg-sky/10 px-2.5 py-1 text-[0.65rem] text-sky sm:inline">Estimado</span> : <StatusBadge paid={s.paid} />}
-                      <Chevron className={`h-4 w-4 shrink-0 text-faint transition-transform ${exp ? "rotate-180 text-lime" : ""}`} />
-                    </div>
-                    {exp && <MovementsPanel statement={s} consumos={movements[s.id]} cuotas={cuotasForPeriod(s.period, s.cardId)} loading={loadingMov === s.id} open={open} />}
-                  </li>
-                );
-              })}
-              {history.length === 0 && <li className="py-6 text-center text-sm text-muted">Sin resúmenes para esta tarjeta.</li>}
+              {futuros.map(renderStmt)}
+              {futuros.length === 0 && <li className="py-6 text-center text-sm text-muted">Sin resúmenes próximos proyectados.</li>}
+            </ul>
+            <p className="mt-2 text-[0.7rem] text-faint">Estimado a partir de las cuotas activas. Los consumos del mes se suman cuando se importan.</p>
+          </section>
+
+          <section className="panel p-6">
+            <h2 className="font-display text-lg text-fg">Resúmenes anteriores</h2>
+            <p className="text-xs text-faint">{card.name} · {anteriores.length} resúmenes</p>
+            <ul className="mt-4">
+              {anteriores.map(renderStmt)}
+              {anteriores.length === 0 && <li className="py-6 text-center text-sm text-muted">Sin resúmenes para esta tarjeta.</li>}
             </ul>
           </section>
         </div>
@@ -231,12 +337,6 @@ export default function TarjetasPage() {
             )}
           </section>
 
-          <section className="panel p-6">
-            <h2 className="font-display text-lg text-fg">Totales por mes</h2>
-            <p className="text-xs text-faint">{card.name}</p>
-            {history.length ? <MiniBars data={history.map((s) => ({ ...s, totalArs: stTotal(s) }))} accent={card.accent} /> : <p className="mt-4 text-sm text-muted">Sin datos.</p>}
-          </section>
-
           <section className="panel relative overflow-hidden p-6">
             <div className="pointer-events-none absolute -right-10 -top-12 h-40 w-40 rounded-full bg-violet/10 blur-3xl" />
             <div className="relative flex items-start gap-3">
@@ -249,6 +349,14 @@ export default function TarjetasPage() {
           </section>
         </div>
       </div>
+
+      <section className="panel mt-5 p-6">
+        <div className="mb-1">
+          <h2 className="font-display text-lg text-fg">Totales por mes</h2>
+          <p className="text-xs text-faint">Resúmenes de todas las tarjetas · elegí rango y moneda</p>
+        </div>
+        <CardBars data={chartData} />
+      </section>
 
       {editingPlan && <EditPlanModal plan={editingPlan} onClose={() => setEditingPlan(null)} onSaved={reloadCuotas} />}
       {editingDates && <EditDatesModal statement={editingDates} onClose={() => setEditingDates(null)} onSaved={reloadStatements} />}
@@ -289,11 +397,11 @@ function DateBox({ label, value, accent }: { label: string; value: string; accen
   );
 }
 
-function StatusBadge({ paid }: { paid: boolean }) {
+function StatusBadge({ paid, paying, onPay }: { paid: boolean; paying?: boolean; onPay?: () => void }) {
   return paid ? (
     <span className="ml-2 hidden rounded-full border border-emerald/30 bg-emerald/10 px-2.5 py-1 text-[0.65rem] text-emerald sm:inline">Pagado</span>
   ) : (
-    <button onClick={(e) => e.stopPropagation()} className="ml-2 rounded-full bg-coral/90 px-3 py-1 text-[0.65rem] font-medium text-bg">Pagar</button>
+    <button onClick={(e) => { e.stopPropagation(); onPay?.(); }} disabled={paying} className="ml-2 rounded-full bg-coral/90 px-3 py-1 text-[0.65rem] font-medium text-bg disabled:opacity-60">{paying ? "…" : "Pagar"}</button>
   );
 }
 
@@ -374,20 +482,78 @@ function MovementsPanel({ statement, consumos, cuotas, loading, open }: { statem
   );
 }
 
-function MiniBars({ data, accent }: { data: StatementRow[]; accent: string }) {
-  const ordered = [...data].reverse();
-  const max = Math.max(...ordered.map((s) => s.totalArs), 1);
+const MESES_CORTOS = ["ene", "feb", "mar", "abr", "may", "jun", "jul", "ago", "sep", "oct", "nov", "dic"];
+const mesLabel = (ym: string) => { const [y, m] = ym.split("-").map(Number); return `${MESES_CORTOS[(m || 1) - 1]} '${String(y).slice(2)}`; };
+
+// Totales por mes: barras agrupadas por tarjeta, con rango de meses y moneda elegibles.
+// Los meses futuros (proyección con cuotas confirmadas) se muestran siempre, punteados.
+type CardBarsRow = { period: string; future: boolean; values: { name: string; accent: string; ars: number | null; usd: number | null; open: boolean; proj: boolean }[] };
+function CardBars({ data }: { data: CardBarsRow[] }) {
+  const [range, setRange] = useState(6);
+  const [cur, setCur] = useState<"ARS" | "USD">("ARS");
+  // El rango recorta los meses reales; la proyección va siempre al final.
+  const visible = range > 0 ? [...data.filter((r) => !r.future).slice(-range), ...data.filter((r) => r.future)] : data;
+  const val = (v: CardBarsRow["values"][number]) => (cur === "ARS" ? v.ars ?? 0 : v.usd ?? 0);
+  const max = Math.max(...visible.flatMap((m) => m.values.map(val)), cur === "ARS" ? 1 : 0.01);
+  const fmt = (n: number) => (cur === "ARS" ? compact(n) : usd(n));
+  const legend = data[data.length - 1]?.values ?? [];
+  const hayEnCurso = visible.some((m) => m.values.some((v) => v.open));
+  const hayProyeccion = visible.some((m) => m.values.some((v) => v.proj));
   return (
-    <div className="mt-4 flex items-end justify-between gap-2">
-      {ordered.map((s) => (
-        <div key={s.id} className="flex flex-1 flex-col items-center gap-2">
-          <div className="flex h-28 w-full items-end justify-center">
-            <span className="grow-bar w-2/3 max-w-7 rounded-t-md" style={{ height: `${(s.totalArs / max) * 100}%`, background: `linear-gradient(to top, ${accent}55, ${accent})` }} />
-          </div>
-          <span className="tnum text-[0.6rem] text-faint">{compact(s.totalArs)}</span>
-          <span className="text-[0.6rem] text-faint">{s.period.slice(0, 3)}</span>
+    <div>
+      <div className="mt-2 flex flex-wrap items-center justify-between gap-3">
+        <div className="flex flex-wrap items-center gap-4 text-xs text-muted">
+          {legend.map((c) => (
+            <span key={c.name} className="flex items-center gap-1.5"><span className="h-2.5 w-2.5 rounded-full" style={{ background: c.accent }} /> {c.name}</span>
+          ))}
         </div>
-      ))}
+        <div className="flex flex-wrap gap-2">
+          <div className="flex rounded-full border border-line bg-surface-2 p-0.5 text-xs">
+            {[3, 6, 0].map((n) => (
+              <button key={n} onClick={() => setRange(n)} className={`rounded-full px-3 py-1 transition-colors ${range === n ? "bg-lime/15 text-lime" : "text-muted hover:text-fg"}`}>{n === 0 ? "Todos" : `${n}M`}</button>
+            ))}
+          </div>
+          <div className="flex rounded-full border border-line bg-surface-2 p-0.5 text-xs">
+            {(["ARS", "USD"] as const).map((c) => (
+              <button key={c} onClick={() => setCur(c)} className={`rounded-full px-3 py-1 transition-colors ${cur === c ? "bg-lime/15 text-lime" : "text-muted hover:text-fg"}`}>{c === "ARS" ? "$ Pesos" : "US$ Dólares"}</button>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      <div className="mt-5 overflow-x-auto pb-1">
+        <div className="flex min-w-[420px] items-end gap-3">
+          {visible.map((m) => (
+            <div key={m.period} className="flex flex-1 flex-col items-center gap-2">
+              <div className="flex h-44 w-full items-end justify-center gap-1.5">
+                {m.values.map((v) => {
+                  const value = val(v);
+                  return (
+                    <div key={v.name} className="flex w-full max-w-12 flex-col items-center justify-end gap-1 self-stretch">
+                      <span className="tnum text-[0.62rem] text-faint">{value > 0 ? fmt(value) : ""}</span>
+                      <span
+                        className="grow-bar w-full rounded-t-md"
+                        style={v.proj
+                          ? { height: `${Math.max((value / max) * 100, value > 0 ? 2 : 0)}%`, background: `linear-gradient(to top, ${v.accent}18, ${v.accent}55)`, border: `1px dashed ${v.accent}88`, borderBottom: "none" }
+                          : { height: `${Math.max((value / max) * 100, value > 0 ? 2 : 0)}%`, background: `linear-gradient(to top, ${v.accent}44, ${v.accent})` }}
+                      />
+                    </div>
+                  );
+                })}
+              </div>
+              <span className={`text-[0.68rem] ${m.future ? "text-violet/80" : "text-faint"}`}>{mesLabel(m.period)}{m.values.some((v) => v.open) ? " *" : ""}</span>
+            </div>
+          ))}
+          {visible.length === 0 && <p className="w-full py-8 text-center text-sm text-muted">Sin resúmenes.</p>}
+        </div>
+      </div>
+      {(hayEnCurso || hayProyeccion) && (
+        <p className="mt-2 text-[0.68rem] text-faint">
+          {hayEnCurso && "* mes en curso: total estimado hasta hoy."}
+          {hayEnCurso && hayProyeccion && " · "}
+          {hayProyeccion && "Barras punteadas: proyección con las cuotas ya confirmadas (los consumos nuevos se suman cuando ocurran; en dólares no hay proyección)."}
+        </p>
+      )}
     </div>
   );
 }

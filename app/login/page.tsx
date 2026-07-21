@@ -5,11 +5,13 @@ import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { Coins, Sparkle } from "../icons";
 
-type Mode = "signin" | "signup";
+// App mono-usuario: no hay registro (la base además lo bloquea con un trigger).
+// La recuperación de contraseña manda el mail SIEMPRE a esta casilla — sin campo
+// de destino, así nadie puede usar el botón para mandar mails a otro lado.
+const OWNER_EMAIL = "giglilangonelucas@gmail.com";
 
 export default function LoginPage() {
   const router = useRouter();
-  const [mode, setMode] = useState<Mode>("signin");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -22,26 +24,24 @@ export default function LoginPage() {
     setInfo(null);
     setLoading(true);
     const supabase = createClient();
-
-    if (mode === "signup") {
-      const { data, error } = await supabase.auth.signUp({ email, password });
-      setLoading(false);
-      if (error) return setError(error.message);
-      if (data.session) {
-        router.push("/");
-        router.refresh();
-      } else {
-        setInfo("Cuenta creada. Revisá tu email para confirmarla y después iniciá sesión.");
-        setMode("signin");
-      }
-      return;
-    }
-
     const { error } = await supabase.auth.signInWithPassword({ email, password });
     setLoading(false);
     if (error) return setError(error.message);
     router.push("/");
     router.refresh();
+  };
+
+  const forgot = async () => {
+    setError(null);
+    setInfo(null);
+    setLoading(true);
+    const supabase = createClient();
+    const { error } = await supabase.auth.resetPasswordForEmail(OWNER_EMAIL, {
+      redirectTo: `${window.location.origin}/auth/reset`,
+    });
+    setLoading(false);
+    if (error) return setError(error.message);
+    setInfo("Mail de recuperación enviado a tu casilla. Abrí el link del correo para elegir una contraseña nueva.");
   };
 
   return (
@@ -59,9 +59,7 @@ export default function LoginPage() {
         <form onSubmit={submit} className="ai-glow mt-8 rounded-2xl p-6">
           <div className="mb-4 flex items-center gap-2 text-violet">
             <Sparkle className="h-[18px] w-[18px]" />
-            <span className="text-xs font-medium uppercase tracking-[0.18em]">
-              {mode === "signin" ? "Iniciar sesión" : "Crear cuenta"}
-            </span>
+            <span className="text-xs font-medium uppercase tracking-[0.18em]">Iniciar sesión</span>
           </div>
 
           <label className="block text-xs text-muted">Email</label>
@@ -93,17 +91,12 @@ export default function LoginPage() {
             disabled={loading}
             className="mt-5 w-full rounded-xl bg-lime py-3 text-sm font-medium text-bg transition-transform hover:scale-[1.02] disabled:opacity-60"
           >
-            {loading ? "Procesando…" : mode === "signin" ? "Entrar" : "Crear cuenta"}
+            {loading ? "Procesando…" : "Entrar"}
           </button>
 
           <p className="mt-4 text-center text-xs text-muted">
-            {mode === "signin" ? "¿No tenés cuenta?" : "¿Ya tenés cuenta?"}{" "}
-            <button
-              type="button"
-              onClick={() => { setMode(mode === "signin" ? "signup" : "signin"); setError(null); setInfo(null); }}
-              className="text-lime hover:underline"
-            >
-              {mode === "signin" ? "Crear una" : "Iniciar sesión"}
+            <button type="button" onClick={forgot} disabled={loading} className="text-lime hover:underline disabled:opacity-60">
+              ¿Olvidaste tu contraseña?
             </button>
           </p>
         </form>

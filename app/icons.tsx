@@ -17,6 +17,12 @@ const base = (p: P) => ({
 export const Grid = (p: P) => (
   <svg {...base(p)}><rect x="3" y="3" width="7" height="7" rx="1.5" /><rect x="14" y="3" width="7" height="7" rx="1.5" /><rect x="3" y="14" width="7" height="7" rx="1.5" /><rect x="14" y="14" width="7" height="7" rx="1.5" /></svg>
 );
+export const Eye = (p: P) => (
+  <svg {...base(p)}><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z" /><circle cx="12" cy="12" r="3" /></svg>
+);
+export const EyeOff = (p: P) => (
+  <svg {...base(p)}><path d="m3 3 18 18" /><path d="M10.6 10.6a3 3 0 0 0 4.2 4.2" /><path d="M9.4 5.2A9.3 9.3 0 0 1 12 5c6.5 0 10 7 10 7a17 17 0 0 1-2.9 3.7" /><path d="M6.2 6.2A17 17 0 0 0 2 12s3.5 7 10 7a9.2 9.2 0 0 0 4-.9" /></svg>
+);
 export const Swap = (p: P) => (
   <svg {...base(p)}><path d="M7 7h11l-3-3" /><path d="M17 17H6l3 3" /></svg>
 );

@@ -7,7 +7,7 @@ App de finanzas personales **mono-usuario**, **multi-moneda (ARS / USD / USDT)**
 - **Live:** https://plata-production.up.railway.app
 - **Supabase project_ref:** `dsocdpxlvcufitvovydr`
 - **Railway:** proyecto y servicio `plata`. Deploy: `railway up --service plata --ci` (token en `$env:RAILWAY_API_TOKEN`).
-- **Usuario:** `giglilangonelucas@gmail.com` (único, Supabase Auth).
+- **Usuario:** `giglilangonelucas@gmail.com` (único, Supabase Auth). **Registro bloqueado**: trigger `solo_mi_usuario` en `auth.users` rechaza cualquier alta que no sea esa casilla; el login no ofrece signup. Recuperación de contraseña: botón en /login que manda mail SOLO a esa casilla (hardcodeada) → aterriza en `/auth/reset`.
 
 ## Qué hace
 Lleva el seguimiento completo de las finanzas de una persona:
@@ -83,11 +83,13 @@ finanzas-app/
 
 6. **`get_metrics`:** `ars_liquido = ingresos_ARS − egresos_ARS_no_credito − resúmenes_pagados`. `te_deben`/`debes` usan el saldo pendiente, valuados en ARS. `usd_ars` fijo 1455, `usdt_ars` = último cambio.
 
-7. **Resúmenes de tarjeta.** El total de cada resumen es **fijo** (reconciliado contra el PDF del banco), no se recalcula. El importador de mails es en tiempo real → la app puede ir **adelantada** al banco. Cierre/vencimiento editables; los nuevos heredan el día por defecto de la tarjeta. Galicia Visa 2811: cierre 25, vence 6.
+7. **Resúmenes de tarjeta.** Total **PAGADO = fijo** (se congela al pagar, reconciliable contra el PDF del banco); **NO pagado = en vivo** (consumos linkeados + cuotas del período) — nunca usar el guardado de un resumen sin pagar (queda stale, a veces $0). El importador de mails es en tiempo real → la app puede ir **adelantada** al banco. Cierre/vencimiento editables; los nuevos heredan el día por defecto de la tarjeta. Galicia Visa 2811: cierre 25, vence 6. **Auto-generación del próximo resumen**: `ensureNextStatements` (db.ts, corre al cargar/recargar Tarjetas) y el `email-poller` (si no hay resumen abierto al importar) crean la fila siguiente; índice único `(card_id, period_label)` evita duplicados.
 
 8. **Asistente IA.** Edge Function `assistant` (modelo `claude-sonnet-4-6`, key en `app_secrets`). Usa **tool use**: interpreta el mensaje y **propone** movimientos (no ejecuta solo). El cliente muestra la propuesta → el usuario **confirma** → se escribe con su sesión (RLS-safe). Pregunta con **opciones** cuando falta un dato. Asume **ARS** salvo que se aclare. Muestra el **costo** de cada consulta. En el Resumen el chat vive **dentro de la barra** (la home se desvanece); en otras páginas es un botón flotante.
 
 9. **Estética.** Fintech oscuro. Bricolage Grotesque (display), Hanken Grotesk (texto), JetBrains Mono (números, clase `.tnum`). Acento lima ácido; **violeta reservado para la IA**.
+
+10. **Reglas de consumos** (`/reglas`, tabla `rules`, las aplica solo el `email-poller` a consumos nuevos). Condiciones combinables: texto (contiene/empieza/igual), horario (soporta rango nocturno 22→2), días, rango de monto. Acciones combinables: recategorizar (`category_id`, nullable), renombrar (`rename_to`), forzar moneda (`set_currency`: **convierte el monto** con USD_ARS=1455 — la alerta de Galicia SIEMPRE reporta el equivalente en pesos, ej. TACTIQ $6.000 → USD 4,11; re-etiquetar sin convertir sería un desastre). **Semántica de merge por campo**: se evalúan todas (prioridad desc, id asc) contra la descripción ORIGINAL; cada acción la define la primera regla que la tenga (pueden ser reglas distintas). El dup-check del poller NO filtra por moneda (una moneda forzada colaría duplicados).
 
 ---
 
@@ -95,13 +97,12 @@ finanzas-app/
 ✅ **En producción y funcionando.** Todas las pantallas principales operativas con datos reales.
 
 ### Automatización de emails (importante)
-- Edge Function `email-poller` (verify_jwt=false) + **cron pg_cron cada 15 min** (`net.http_post` a la función).
+- Edge Function `email-poller` (verify_jwt=false) + **cron pg_cron cada 15 min** (`net.http_post` a la función). **Auth**: la función exige el header `x-poller-secret` == `app_secrets.POLLER_SECRET`; el cron (job 1) lo manda. Sin ese header devuelve 401. Si redeployás el poller, mantené el chequeo.
 - ⚠️ **El token de Gmail caduca cada 7 días** porque el proyecto de Google Cloud está en modo **"Testing"**. Si el importador deja de andar, revisar `net._http_response` (busca `invalid_grant`). **Re-autorizar:** `node scripts/gmail-auth.mjs` → autorizar en el navegador → copiar el nuevo `GOOGLE_REFRESH_TOKEN` del final de `.env.local` → `update public.app_secrets set value=... where key='GOOGLE_REFRESH_TOKEN'` → disparar el poller.
 - **Fix definitivo pendiente:** publicar la app en Google Cloud (OAuth consent → "Publicar app" → Producción) para que el token deje de caducar.
 
 ### Pendientes / no construido
-- **Generación automática del próximo resumen** (cuando uno cierra, abrir el siguiente). Hoy hay que crearlo a mano o los consumos nuevos quedan sin `statement_id`.
-- **Pago de resumen como transacción visible** (hoy solo baja el saldo vía flag `is_paid`; el movimiento no aparece en Transacciones). Diseñado, no construido.
+- **Pago de resumen como transacción visible**: el botón "Pagar resumen" ya funciona (fija el total reconciliado + `is_paid`, baja el saldo), pero el movimiento no aparece en Transacciones. Diseñado, no construido.
 - **El asistente no sabe de deudas**: si le decís "X me pagó", lo registra como ingreso suelto, no como pago de deuda.
 - **OCR de tickets** (botón cámara es placeholder), **cotización en vivo** en Divisas (mock), **Recurrentes** (semi-maquetada).
 - Mejora del parser: que reconozca comercios nuevos (ej. `ASOCCIVILCEMA`→Educación) automáticamente.

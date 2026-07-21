@@ -6,6 +6,7 @@ import { Grid, Swap, Card as CardIcon, Handshake, Repeat, Coins, Gear, Bell, Cha
 import { createClient } from "@/lib/supabase/client";
 import { user } from "@/lib/mock";
 import Assistant from "./Assistant";
+import PrivacyToggle, { usePrivacy } from "./PrivacyToggle";
 
 export const nav = [
   { label: "Resumen", Icon: Grid, href: "/" },
@@ -44,6 +45,7 @@ export function Brand({ compact = false }: { compact?: boolean }) {
 export default function Shell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
+  const privacy = usePrivacy();
 
   const logout = async () => {
     await createClient().auth.signOut();
@@ -57,7 +59,7 @@ export default function Shell({ children }: { children: React.ReactNode }) {
   }
 
   return (
-    <div className="min-h-screen flex">
+    <div className={`min-h-screen flex ${privacy ? "privacy" : ""}`}>
       {/* Sidebar desktop */}
       <aside className="hidden lg:flex w-64 shrink-0 flex-col gap-1 border-r border-line px-4 py-6 sticky top-0 h-screen">
         <Brand />
@@ -102,6 +104,7 @@ export default function Shell({ children }: { children: React.ReactNode }) {
         <div className="mb-6 flex items-center justify-between lg:hidden">
           <Brand compact />
           <div className="flex items-center gap-2">
+            <PrivacyToggle />
             <button className="relative grid h-10 w-10 place-items-center rounded-full border border-line bg-surface/70 text-muted">
               <Bell className="h-[18px] w-[18px]" />
               <span className="absolute right-2.5 top-2.5 h-1.5 w-1.5 rounded-full bg-coral pulse-dot" />
@@ -109,7 +112,7 @@ export default function Shell({ children }: { children: React.ReactNode }) {
             <span className="grid h-10 w-10 place-items-center rounded-full bg-gradient-to-br from-lime to-emerald text-bg font-display font-bold">N</span>
           </div>
         </div>
-        {children}
+        <div key={pathname} className="page-enter">{children}</div>
       </main>
 
       {/* Mobile bottom nav */}

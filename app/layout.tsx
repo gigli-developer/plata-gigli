@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Bricolage_Grotesque, Hanken_Grotesk, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import Shell from "./components/Shell";
+import Providers from "./components/Providers";
 
 const bricolage = Bricolage_Grotesque({
   variable: "--font-bricolage",
@@ -33,7 +34,9 @@ export default function RootLayout({
       className={`${bricolage.variable} ${hanken.variable} ${jetbrains.variable} h-full antialiased`}
     >
       <body className="min-h-full">
-        <Shell>{children}</Shell>
+        <Providers>
+          <Shell>{children}</Shell>
+        </Providers>
       </body>
     </html>
   );

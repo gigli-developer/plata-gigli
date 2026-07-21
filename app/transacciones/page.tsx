@@ -5,6 +5,7 @@ import {
   db, fetchTransactions, fetchCategories, fetchPaymentMethods, insertTransaction,
   type TxView, type Category, type PaymentMethod,
 } from "@/lib/db";
+import { readCache, writeCache } from "@/lib/cache";
 import { ars, compact } from "@/lib/format";
 import { PageHeader } from "../components/Shell";
 import EditTxModal from "../components/EditTxModal";
@@ -30,9 +31,13 @@ export default function TransaccionesPage() {
     const sb = db();
     const [tx, c, m] = await Promise.all([fetchTransactions(sb), fetchCategories(sb), fetchPaymentMethods(sb)]);
     setItems(tx); setCats(c); setMethods(m);
+    writeCache("transacciones", { tx, c, m });
   };
 
   useEffect(() => {
+    // Pintar al instante el último snapshot; lo fresco llega por atrás.
+    const s = readCache<{ tx: TxView[]; c: Category[]; m: PaymentMethod[] }>("transacciones");
+    if (s) { setItems(s.tx); setCats(s.c); setMethods(s.m); setLoading(false); }
     reload().catch((e) => setErr(e.message)).finally(() => setLoading(false));
   }, []);
 

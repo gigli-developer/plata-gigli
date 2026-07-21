@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { db, fetchMetrics, fetchMonthlyBreakdown, fetchPlansForProjection, type Metrics, type MonthAgg, type PlanProj } from "@/lib/db";
+import { readCache, writeCache } from "@/lib/cache";
 import { ars, compact } from "@/lib/format";
 import { PageHeader } from "../components/Shell";
 import { Coins } from "../icons";
@@ -27,9 +28,12 @@ export default function MetricasPage() {
   const cmpOptions = useMemo(() => Array.from({ length: 8 }, (_, i) => addMonthYM(NOW_MONTH, -i)), []);
 
   useEffect(() => {
+    // Pintar al instante el último snapshot; lo fresco llega por atrás.
+    const s = readCache<{ m: Metrics; b: MonthAgg[]; p: PlanProj[] }>("metricas");
+    if (s) { setM(s.m); setBreakdown(s.b); setPlans(s.p); setUsdRate(s.m.usd_ars); setUsdtRate(s.m.usdt_ars); setLoading(false); }
     const sb = db();
     Promise.all([fetchMetrics(sb), fetchMonthlyBreakdown(sb, 6), fetchPlansForProjection(sb)])
-      .then(([d, b, p]) => { setM(d); setBreakdown(b); setPlans(p); setUsdRate(d.usd_ars); setUsdtRate(d.usdt_ars); })
+      .then(([d, b, p]) => { setM(d); setBreakdown(b); setPlans(p); setUsdRate(d.usd_ars); setUsdtRate(d.usdt_ars); writeCache("metricas", { m: d, b, p }); })
       .finally(() => setLoading(false));
   }, []);
 
@@ -40,18 +44,38 @@ export default function MetricasPage() {
     const activos = m.ars_liquido + usdArs + usdtArs + m.te_deben;
     const pasivos = m.deuda_cuotas_ars + m.deuda_vencida_ars + m.debes;
     const patrimonio = activos - pasivos;
-    const ingMes = m.ing_mes_ars + m.ing_mes_usd * usdRate;
-    const egrMes = m.egr_mes_ars + m.egr_mes_usd * usdRate;
-    const ahorro = ingMes - egrMes;
     return {
-      usdArs, usdtArs, activos, pasivos, patrimonio, ingMes, egrMes,
+      usdArs, usdtArs, activos, pasivos, patrimonio,
       patrimonioUsd: usdRate ? patrimonio / usdRate : 0,
-      dti: ingMes ? pasivos / ingMes : 0,
-      tasaAhorro: ingMes ? ahorro / ingMes : 0,
-      flujo: egrMes ? ingMes / egrMes : 0,
-      ahorroMensual: ahorro,
     };
   }, [m, usdRate, usdtRate]);
+
+  // Ratios del mes elegido en Análisis (o "todos"): mismo criterio que los gráficos (transacciones + cuotas).
+  const flows = useMemo(() => {
+    const toArs = (v: number, cur: string) => (cur === "USD" ? v * usdRate : cur === "USDT" ? v * usdtRate : v);
+    const scopeMonths = monthFilter === "all" ? [...new Set(breakdown.map((b) => b.month))] : [monthFilter];
+    const scope = new Set(scopeMonths);
+    let ing = 0, egr = 0;
+    for (const b of breakdown) {
+      if (!scope.has(b.month)) continue;
+      const v = toArs(b.total, b.currency);
+      if (b.type === "ingreso") ing += v; else egr += v;
+    }
+    let cuotas = 0;
+    for (const p of plans) for (const mm of scopeMonths) {
+      const k = monthsBetweenYM(p.firstMonth, mm);
+      if (k >= 0 && k < p.total) cuotas += p.monthly;
+    }
+    egr += cuotas;
+    const ahorro = ing - egr;
+    const nMonths = Math.max(scopeMonths.length, 1);
+    return {
+      dti: ing ? cuotas / ing : 0,
+      tasaAhorro: ing ? ahorro / ing : 0,
+      flujo: egr ? ing / egr : 0,
+      ahorroMostrar: monthFilter === "all" ? ahorro / nMonths : ahorro,
+    };
+  }, [breakdown, plans, monthFilter, usdRate, usdtRate]);
 
   const months = useMemo(() => [...new Set(breakdown.map((b) => b.month))].sort().reverse(), [breakdown]);
 
@@ -133,7 +157,7 @@ export default function MetricasPage() {
         <div className="relative grid gap-px bg-line/60 lg:grid-cols-[1.4fr_2fr]">
           {/* Patrimonio */}
           <div className="bg-surface p-5">
-            <p className="flex items-center gap-2 text-sm text-muted"><Coins className="h-4 w-4 text-lime" /> Patrimonio neto</p>
+            <p className="flex items-center gap-2 text-sm text-muted"><Coins className="h-4 w-4 text-lime" /> Patrimonio neto <span className="text-faint">· hoy</span></p>
             <p className={`mt-1 font-display text-3xl sm:text-4xl ${calc.patrimonio >= 0 ? "text-fg" : "text-coral"}`}><span className="tnum">{ars(calc.patrimonio)}</span></p>
             <p className="mt-1 text-xs text-faint">≈ US$ {calc.patrimonioUsd.toLocaleString("es-AR", { maximumFractionDigits: 0 })}</p>
             <div className="mt-3 flex gap-2 text-xs">
@@ -148,12 +172,16 @@ export default function MetricasPage() {
             <Mini label="Cripto" tag="USDT" value={`${m.usdt_liquido.toLocaleString("es-AR")}`} sub={compact(calc.usdtArs)} />
           </div>
         </div>
-        {/* Ratios en línea */}
+        {/* Ratios en línea — del mes elegido en Análisis (o todos) */}
+        <div className="flex flex-wrap items-center gap-x-2 border-t border-line bg-surface/40 px-4 py-1.5 text-[0.7rem] text-faint">
+          <span>Ratios de <span className="text-muted">{monthFilter === "all" ? "todos los meses" : monthLabel(monthFilter)}</span></span>
+          <span className="ml-auto opacity-80">elegí el mes en Análisis ↓</span>
+        </div>
         <div className="grid grid-cols-2 gap-px border-t border-line bg-line/60 sm:grid-cols-4">
-          <RatioMini title="Deuda / Ingresos" value={pct(calc.dti)} hint="< 36%" tone={calc.dti < 0.36 ? "emerald" : calc.dti < 0.43 ? "amber" : "coral"} />
-          <RatioMini title="Tasa de ahorro" value={pct(calc.tasaAhorro)} hint="> 20%" tone={calc.tasaAhorro > 0.2 ? "emerald" : calc.tasaAhorro > 0.1 ? "amber" : "coral"} />
-          <RatioMini title="Flujo de caja" value={`${calc.flujo.toFixed(2)}×`} hint="> 1" tone={calc.flujo > 1.2 ? "emerald" : calc.flujo >= 1 ? "amber" : "coral"} />
-          <RatioMini title="Ahorro mensual" value={compact(calc.ahorroMensual)} hint={monthLabel(m.ref_month)} tone={calc.ahorroMensual > 0 ? "emerald" : "coral"} />
+          <RatioMini title="Deuda / Ingresos" value={pct(flows.dti)} hint="< 36%" tone={flows.dti < 0.36 ? "emerald" : flows.dti < 0.43 ? "amber" : "coral"} />
+          <RatioMini title="Tasa de ahorro" value={pct(flows.tasaAhorro)} hint="> 20%" tone={flows.tasaAhorro > 0.2 ? "emerald" : flows.tasaAhorro > 0.1 ? "amber" : "coral"} />
+          <RatioMini title="Flujo de caja" value={`${flows.flujo.toFixed(2)}×`} hint="> 1" tone={flows.flujo > 1.2 ? "emerald" : flows.flujo >= 1 ? "amber" : "coral"} />
+          <RatioMini title="Ahorro mensual" value={compact(flows.ahorroMostrar)} hint={monthFilter === "all" ? "prom. mensual" : monthLabel(monthFilter)} tone={flows.ahorroMostrar > 0 ? "emerald" : "coral"} />
         </div>
       </section>
 

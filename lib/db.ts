@@ -57,16 +57,18 @@ export async function fetchPaymentMethods(sb: SupabaseClient): Promise<PaymentMe
   return data ?? [];
 }
 
-// ---- Reglas de auto-categorización ----
-export type Rule = { id: number; textOp: string | null; textValue: string | null; hourFrom: number | null; hourTo: number | null; days: number[] | null; categoryId: number; category: string; emoji: string | null; priority: number; isActive: boolean };
-export type NewRule = { textOp: string | null; textValue: string | null; hourFrom: number | null; hourTo: number | null; days: number[] | null; categoryId: number };
+// ---- Reglas de consumos (condiciones → acciones) ----
+// Condiciones: texto (contiene/empieza/igual), horario, días, rango de monto.
+// Acciones: recategorizar, renombrar la descripción y/o forzar la moneda (p.ej. Spotify llega como ARS pero es USD).
+export type Rule = { id: number; textOp: string | null; textValue: string | null; hourFrom: number | null; hourTo: number | null; days: number[] | null; amountMin: number | null; amountMax: number | null; categoryId: number | null; category: string | null; emoji: string | null; renameTo: string | null; setCurrency: string | null; priority: number; isActive: boolean };
+export type NewRule = { textOp: string | null; textValue: string | null; hourFrom: number | null; hourTo: number | null; days: number[] | null; amountMin: number | null; amountMax: number | null; categoryId: number | null; renameTo: string | null; setCurrency: string | null };
 export async function fetchRules(sb: SupabaseClient): Promise<Rule[]> {
-  const { data, error } = await sb.from("rules").select("id,text_op,text_value,hour_from,hour_to,days,category_id,priority,is_active,categories(name,emoji)").order("priority", { ascending: false }).order("id", { ascending: true });
+  const { data, error } = await sb.from("rules").select("id,text_op,text_value,hour_from,hour_to,days,amount_min,amount_max,category_id,rename_to,set_currency,priority,is_active,categories(name,emoji)").order("priority", { ascending: false }).order("id", { ascending: true });
   if (error) throw error;
-  return (data ?? []).map((r: any) => ({ id: r.id, textOp: r.text_op, textValue: r.text_value, hourFrom: r.hour_from, hourTo: r.hour_to, days: r.days, categoryId: r.category_id, category: r.categories?.name ?? "—", emoji: r.categories?.emoji, priority: r.priority, isActive: r.is_active }));
+  return (data ?? []).map((r: any) => ({ id: r.id, textOp: r.text_op, textValue: r.text_value, hourFrom: r.hour_from, hourTo: r.hour_to, days: r.days, amountMin: r.amount_min != null ? Number(r.amount_min) : null, amountMax: r.amount_max != null ? Number(r.amount_max) : null, categoryId: r.category_id, category: r.categories?.name ?? null, emoji: r.categories?.emoji ?? null, renameTo: r.rename_to, setCurrency: r.set_currency, priority: r.priority, isActive: r.is_active }));
 }
 export async function insertRule(sb: SupabaseClient, r: NewRule) {
-  const { error } = await sb.from("rules").insert({ text_op: r.textOp, text_value: r.textValue, hour_from: r.hourFrom, hour_to: r.hourTo, days: r.days, category_id: r.categoryId });
+  const { error } = await sb.from("rules").insert({ text_op: r.textOp, text_value: r.textValue, hour_from: r.hourFrom, hour_to: r.hourTo, days: r.days, amount_min: r.amountMin, amount_max: r.amountMax, category_id: r.categoryId, rename_to: r.renameTo, set_currency: r.setCurrency });
   if (error) throw error;
 }
 export async function deleteRule(sb: SupabaseClient, id: number) {
@@ -150,6 +152,54 @@ export async function updateStatementDates(sb: SupabaseClient, id: number, closi
   }
 }
 
+// Auto-generación del próximo resumen: si una tarjeta de crédito no tiene ningún resumen con
+// cierre >= hoy, crea el del próximo período (cierre = closing_day de este mes o del siguiente;
+// vence al mes siguiente si due_day < closing_day). El poller de Gmail hace lo mismo del lado
+// del servidor; el índice único (card_id, period_label) evita duplicados. Devuelve true si creó.
+export async function ensureNextStatements(sb: SupabaseClient): Promise<boolean> {
+  const [{ data: cards }, { data: sts }] = await Promise.all([
+    sb.from("cards").select("id,name,network,closing_day,due_day").eq("is_archived", false).not("closing_day", "is", null),
+    sb.from("card_statements").select("card_id,closing_date,period_label"),
+  ]);
+  // Formatear en LOCAL (nunca toISOString: corre el día en ART).
+  const fmt = (d: Date) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+  // Día clampeado al largo del mes (cierre 31 en abril → 30, sin desbordar al mes siguiente).
+  const mkDate = (y: number, m: number, day: number) => new Date(y, m, Math.min(day, new Date(y, m + 1, 0).getDate()));
+  const esDebito = (c: any) => /d[eé]b/i.test(`${c.network ?? ""} ${c.name ?? ""}`);
+  const now = new Date();
+  const todayIso = fmt(now);
+  let created = false;
+  for (const c of (cards ?? []) as any[]) {
+    if (esDebito(c)) continue; // débito no lleva resúmenes
+    if ((sts ?? []).some((s: any) => s.card_id === c.id && s.closing_date && s.closing_date >= todayIso)) continue;
+    const periods = new Set((sts ?? []).filter((s: any) => s.card_id === c.id).map((s: any) => s.period_label));
+    const mOff = now.getDate() <= c.closing_day ? 0 : 1;
+    // Primer período LIBRE: si el de este mes ya existe (cerrado antes de tiempo), pasar al siguiente.
+    for (let k = 0; k < 3; k++) {
+      const closing = mkDate(now.getFullYear(), now.getMonth() + mOff + k, c.closing_day);
+      const period = fmt(closing).slice(0, 7);
+      if (periods.has(period)) continue;
+      const dueDay = c.due_day ?? c.closing_day;
+      const due = mkDate(closing.getFullYear(), closing.getMonth() + (dueDay < c.closing_day ? 1 : 0), dueDay);
+      const { data, error } = await sb.from("card_statements").upsert(
+        { card_id: c.id, period_label: period, closing_date: fmt(closing), due_date: fmt(due) },
+        { onConflict: "card_id,period_label", ignoreDuplicates: true },
+      ).select("id");
+      if (!error && (data?.length ?? 0) > 0) created = true;
+      break;
+    }
+  }
+  return created;
+}
+
+// Pagar un resumen: guarda el total reconciliado (lo que se ve en pantalla al momento de pagar)
+// y lo marca pagado en ambas monedas. A partir de acá el total queda FIJO (no se recalcula).
+export async function payStatement(sb: SupabaseClient, id: number, totalArs: number, totalUsd: number) {
+  // .eq(is_paid,false): si otra pestaña/dispositivo ya lo pagó, no pisar el total congelado.
+  const { error } = await sb.from("card_statements").update({ is_paid: true, paid_usd: true, total_ars: totalArs, total_usd: totalUsd }).eq("id", id).eq("is_paid", false);
+  if (error) throw error;
+}
+
 // Cuotas activas: se leen de la tabla installment_plans (fuente limpia).
 // La cuota actual se calcula según cuántos meses pasaron desde first_charge_date.
 export type InstallmentRow = { id: number; cardId: number | null; desc: string; emoji: string; monthly: number; current: number; total: number; firstChargeDate: string; category: string; catEmoji: string };
@@ -221,16 +271,16 @@ export async function fetchStatementMovements(sb: SupabaseClient, statementId: n
 }
 
 // ---- Deudas ----
-export type DebtPayment = { amount: number; date: string; at: string };
+export type DebtPayment = { id: number; amount: number; date: string; at: string; transactionId: number | null };
 export type DebtView = { id: number; person: string; emoji: string; kind: "cash" | "in_kind" | "split"; direction: "to_collect" | "to_pay"; status: "pending" | "settled"; amount: number; paid: number; outstanding: number; payments: DebtPayment[]; currency: string; description: string; date: string; occurredAt: string; settledAt: string | null; splitTotal?: number; yourShare?: number; participants?: number };
 export async function fetchDebts(sb: SupabaseClient): Promise<DebtView[]> {
   const [{ data, error }, { data: pays }] = await Promise.all([
     sb.from("debts").select("id,kind,direction,status,amount,currency,description,occurred_at,settled_at,split_total,your_share,participants,persons(name)").order("occurred_at", { ascending: false }),
-    sb.from("debt_payments").select("debt_id,amount,occurred_at").order("occurred_at", { ascending: true }),
+    sb.from("debt_payments").select("id,debt_id,amount,occurred_at,transaction_id").order("occurred_at", { ascending: true }),
   ]);
   if (error) throw error;
   const payMap = new Map<number, DebtPayment[]>();
-  for (const p of (pays ?? []) as any[]) { const arr = payMap.get(p.debt_id) ?? []; arr.push({ amount: Number(p.amount), date: formatShort(p.occurred_at), at: p.occurred_at }); payMap.set(p.debt_id, arr); }
+  for (const p of (pays ?? []) as any[]) { const arr = payMap.get(p.debt_id) ?? []; arr.push({ id: p.id, amount: Number(p.amount), date: formatShort(p.occurred_at), at: p.occurred_at, transactionId: p.transaction_id ?? null }); payMap.set(p.debt_id, arr); }
   return (data ?? []).map((d: any) => {
     const payments = payMap.get(d.id) ?? [];
     const paid = payments.reduce((a, p) => a + p.amount, 0);
@@ -327,13 +377,15 @@ export type NewDebt = {
   participants?: number;
 };
 // Movimiento "Préstamo" en Transacciones (no cuenta como gasto/ingreso en métricas).
-async function loanTransaction(sb: SupabaseClient, type: "ingreso" | "egreso", amount: number, currency: string, desc: string) {
+// Devuelve el id de la transacción creada (para vincularla al pago y poder borrarlos juntos).
+async function loanTransaction(sb: SupabaseClient, type: "ingreso" | "egreso", amount: number, currency: string, desc: string): Promise<number | null> {
   const { data: cat } = await sb.from("categories").select("id").eq("name", "Préstamos").maybeSingle();
   const { data: pm } = await sb.from("payment_methods").select("id").ilike("name", "%efectivo%").limit(1).maybeSingle();
-  await sb.from("transactions").insert({
+  const { data } = await sb.from("transactions").insert({
     type, amount, currency, category_id: cat?.id ?? null, payment_method_id: pm?.id ?? null,
     description: desc, is_paid: true, source: "manual",
-  });
+  }).select("id").maybeSingle();
+  return data?.id ?? null;
 }
 
 export async function insertDebt(sb: SupabaseClient, d: NewDebt) {
@@ -382,10 +434,10 @@ async function debtPaidSoFar(sb: SupabaseClient, debtId: number): Promise<number
   return (data ?? []).reduce((a: number, p: any) => a + Number(p.amount), 0);
 }
 // Al PAGAR/SALDAR una deuda, la plata entra o sale (sea préstamo, gasto compartido o en especie pagado en plata).
-async function debtCashMovement(sb: SupabaseClient, d: any, amount: number) {
+async function debtCashMovement(sb: SupabaseClient, d: any, amount: number): Promise<number | null> {
   const pname = d.persons?.name ?? "alguien";
-  if (d.direction === "to_collect") await loanTransaction(sb, "ingreso", amount, d.currency, `Cobro a ${pname}`);
-  else await loanTransaction(sb, "egreso", amount, d.currency, `Pago a ${pname}`);
+  if (d.direction === "to_collect") return loanTransaction(sb, "ingreso", amount, d.currency, `Cobro a ${pname}`);
+  return loanTransaction(sb, "egreso", amount, d.currency, `Pago a ${pname}`);
 }
 
 // Saldar el total restante de una deuda (registra un pago por el saldo pendiente).
@@ -396,8 +448,8 @@ export async function settleDebt(sb: SupabaseClient, id: number) {
   const paid = await debtPaidSoFar(sb, id);
   const outstanding = Math.max(Number(d.amount) - paid, 0);
   if (outstanding > 0.5) {
-    await sb.from("debt_payments").insert({ debt_id: id, amount: outstanding });
-    await debtCashMovement(sb, d, outstanding);
+    const txId = await debtCashMovement(sb, d, outstanding);
+    await sb.from("debt_payments").insert({ debt_id: id, amount: outstanding, transaction_id: txId });
   }
   await sb.from("debts").update({ status: "settled", settled_at: new Date().toISOString() }).eq("id", id);
 }
@@ -407,10 +459,31 @@ export async function payDebt(sb: SupabaseClient, debtId: number, amount: number
   const { data: debt } = await sb.from("debts").select("kind,direction,amount,currency,persons(name)").eq("id", debtId).maybeSingle();
   if (!debt) return;
   const d = debt as any;
-  await sb.from("debt_payments").insert({ debt_id: debtId, amount });
+  const txId = await debtCashMovement(sb, d, amount);
+  await sb.from("debt_payments").insert({ debt_id: debtId, amount, transaction_id: txId });
   const paid = await debtPaidSoFar(sb, debtId);
   if (paid >= Number(d.amount) - 0.5) await sb.from("debts").update({ status: "settled", settled_at: new Date().toISOString() }).eq("id", debtId);
-  await debtCashMovement(sb, d, amount);
+}
+
+// Borrar un pago de deuda (ej: click duplicado): elimina también su movimiento de plata
+// y, si la deuda estaba saldada, la reabre con el saldo pendiente que corresponda.
+export async function deleteDebtPayment(sb: SupabaseClient, debtId: number, p: DebtPayment) {
+  if (p.transactionId) {
+    await sb.from("transactions").delete().eq("id", p.transactionId);
+  } else {
+    // Pagos viejos sin vínculo: matchear el movimiento "Cobro a/Pago a" por monto y ±2 min.
+    const t = new Date(p.at).getTime();
+    const { data: cand } = await sb.from("transactions").select("id,description").eq("amount", p.amount)
+      .gte("occurred_at", new Date(t - 120000).toISOString()).lte("occurred_at", new Date(t + 120000).toISOString());
+    const hit = (cand ?? []).find((x: any) => /^(cobro a|pago a)/i.test(x.description ?? ""));
+    if (hit) await sb.from("transactions").delete().eq("id", hit.id);
+  }
+  await sb.from("debt_payments").delete().eq("id", p.id);
+  const { data: d } = await sb.from("debts").select("amount,status").eq("id", debtId).maybeSingle();
+  if (d && (d as any).status === "settled") {
+    const paid = await debtPaidSoFar(sb, debtId);
+    if (Number((d as any).amount) - paid > 0.5) await sb.from("debts").update({ status: "pending", settled_at: null }).eq("id", debtId);
+  }
 }
 
 export type Metrics = {
@@ -498,6 +571,22 @@ export async function upsertCashflowBudget(sb: SupabaseClient, category: string,
 }
 export async function deleteCashflowBudget(sb: SupabaseClient, category: string) {
   const { error } = await sb.from("cashflow_budgets").delete().eq("category", category);
+  if (error) throw error;
+}
+
+// ---- Planificación manual del Cash Flow (movimientos futuros a mano: puntuales o en cuotas) ----
+export type CashflowPlan = { id: number; type: "ingreso" | "egreso"; concept: string; amount: number; startMonth: string; monthsCount: number };
+export async function fetchCashflowPlans(sb: SupabaseClient): Promise<CashflowPlan[]> {
+  const { data, error } = await sb.from("cashflow_plans").select("id,type,concept,amount,start_month,months_count").order("start_month");
+  if (error) throw error;
+  return (data ?? []).map((p: any) => ({ id: p.id, type: p.type, concept: p.concept, amount: Number(p.amount), startMonth: p.start_month, monthsCount: p.months_count }));
+}
+export async function insertCashflowPlan(sb: SupabaseClient, p: { type: "ingreso" | "egreso"; concept: string; amount: number; startMonth: string; monthsCount: number }) {
+  const { error } = await sb.from("cashflow_plans").insert({ type: p.type, concept: p.concept, amount: p.amount, start_month: p.startMonth, months_count: p.monthsCount });
+  if (error) throw error;
+}
+export async function deleteCashflowPlan(sb: SupabaseClient, id: number) {
+  const { error } = await sb.from("cashflow_plans").delete().eq("id", id);
   if (error) throw error;
 }
 

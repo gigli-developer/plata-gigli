@@ -6,10 +6,12 @@ import {
   fetchStatements, fetchInstallments, fetchStatementConsumos,
   type TxView, type CardFull, type DebtView, type Category, type Metrics, type StatementRow, type InstallmentRow,
 } from "@/lib/db";
+import { readCache, writeCache } from "@/lib/cache";
 import { ars, compact } from "@/lib/format";
 import { Card as CardIcon, Sparkle, Bell, Search, Plus, ArrowUpRight, ArrowDownRight, Camera, Mail, Mic, Send, Coins, X } from "./icons";
 import { useAssistantChat, MessageList } from "./components/assistantChat";
 import { useDictation } from "./components/useDictation";
+import PrivacyToggle from "./components/PrivacyToggle";
 
 const chips = [
   "Gasté 18.500 en delivery con la Galicia",
@@ -39,8 +41,14 @@ export default function Dashboard() {
       fetchStatements(sb), fetchInstallments(sb), fetchStatementConsumos(sb),
     ]);
     setTxs(t); setCards(c); setDebts(d); setCats(ca); setMetrics(mt); setStatements(st); setInstallments(inst); setConsumos(co);
+    writeCache("resumen", { t, c, d, ca, mt, st, inst, co });
   };
-  useEffect(() => { reload().finally(() => setLoading(false)); }, []);
+  useEffect(() => {
+    // Pintar al instante el último snapshot; lo fresco llega por atrás.
+    const s = readCache<{ t: TxView[]; c: CardFull[]; d: DebtView[]; ca: Category[]; mt: Metrics; st: StatementRow[]; inst: InstallmentRow[]; co: Record<number, { ars: number; usd: number }> }>("resumen");
+    if (s) { setTxs(s.t); setCards(s.c); setDebts(s.d); setCats(s.ca); setMetrics(s.mt); setStatements(s.st); setInstallments(s.inst); setConsumos(s.co); setLoading(false); }
+    reload().finally(() => setLoading(false));
+  }, []);
 
   const data = useMemo(() => compute(txs, cards, debts, installments, statements, consumos), [txs, cards, debts, installments, statements, consumos]);
   const uncategorized = useMemo(() => txs.filter((t) => t.type === "egreso" && (t.category === "Otros" || !t.categoryId)).slice(0, 6), [txs]);
@@ -70,6 +78,7 @@ export default function Dashboard() {
           <h1 className="font-display text-2xl text-fg">Tu resumen</h1>
         </div>
         <div className="flex items-center gap-2">
+          <PrivacyToggle />
           <button className="flex items-center gap-2 rounded-full border border-line bg-surface/70 px-3.5 py-2 text-sm text-muted transition-colors hover:text-fg"><Search className="h-4 w-4" /> Buscar</button>
           <button className="relative grid h-10 w-10 place-items-center rounded-full border border-line bg-surface/70 text-muted transition-colors hover:text-fg">
             <Bell className="h-[18px] w-[18px]" />

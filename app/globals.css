@@ -54,6 +54,13 @@ body {
   letter-spacing: -0.02em;
 }
 
+/* modo privacidad: desenfoca todos los montos */
+.privacy .tnum {
+  filter: blur(8px);
+  user-select: none;
+  cursor: default;
+}
+
 .font-display {
   font-family: var(--font-display);
   letter-spacing: -0.02em;
@@ -93,7 +100,6 @@ body {
   -webkit-mask-composite: xor;
   mask-composite: exclude;
   opacity: 0.7;
-  animation: hue 8s linear infinite;
 }
 
 .chip {
@@ -118,9 +124,15 @@ body {
 }
 .rise { animation: rise 0.6s cubic-bezier(0.22, 1, 0.36, 1) both; }
 
-@keyframes hue {
-  to { transform: rotate(1turn); }
+/* entrada consistente al cambiar de pestaña (se aplica en el layout, key=pathname) */
+/* Solo opacidad: un transform acá rompería el position:fixed de los modales (se posicionarían
+   respecto a este wrapper en vez del viewport). Por eso NO usar translate/transform. */
+@keyframes pageEnter {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
+.page-enter { animation: pageEnter 0.35s ease both; }
+
 @keyframes pulseDot {
   0%, 100% { opacity: 1; transform: scale(1); }
   50% { opacity: 0.4; transform: scale(0.7); }

@@ -1,7 +1,8 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
-import { db, fetchDebts, fetchPersons, insertDebt, insertPerson, settleDebt, payDebt, type DebtView } from "@/lib/db";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { db, fetchDebts, fetchPersons, insertDebt, insertPerson, settleDebt, payDebt, deleteDebtPayment, type DebtView, type DebtPayment } from "@/lib/db";
+import { readCache, writeCache } from "@/lib/cache";
 import { ars } from "@/lib/format";
 import { PageHeader } from "../components/Shell";
 import { ArrowUpRight, ArrowDownRight, Swap, Chevron } from "../icons";
@@ -31,8 +32,14 @@ export default function DeudasPage() {
     const sb = db();
     const [d, p] = await Promise.all([fetchDebts(sb), fetchPersons(sb)]);
     setItems(d); setPersons(p);
+    writeCache("deudas", { d, p });
   };
-  useEffect(() => { reload().finally(() => setLoading(false)); }, []);
+  useEffect(() => {
+    // Pintar al instante el último snapshot; lo fresco llega por atrás.
+    const s = readCache<{ d: DebtView[]; p: { id: number; name: string }[] }>("deudas");
+    if (s) { setItems(s.d); setPersons(s.p); setLoading(false); }
+    reload().finally(() => setLoading(false));
+  }, []);
 
   const pending = items.filter((d) => d.status === "pending");
   const toCollect = pending.filter((d) => d.direction === "to_collect").reduce((a, d) => a + inArs(d.outstanding, d.currency), 0);
@@ -43,12 +50,22 @@ export default function DeudasPage() {
     [items, dir, kind]
   );
 
-  const settle = async (id: number) => {
+  // Guardia anti doble-click: una sola operación de pago/saldado/borrado en vuelo a la vez.
+  const busyRef = useRef(false);
+  const guarded = async (fn: () => Promise<void>) => { if (busyRef.current) return; busyRef.current = true; try { await fn(); } finally { busyRef.current = false; } };
+
+  const settle = (id: number) => guarded(async () => {
     setItems((p) => p.map((d) => (d.id === id ? { ...d, status: "settled" } : d)));
     await settleDebt(db(), id);
     await reload();
-  };
-  const pay = async (id: number, amount: number) => { await payDebt(db(), id, amount); await reload(); };
+  });
+  const pay = (id: number, amount: number) => guarded(async () => { await payDebt(db(), id, amount); await reload(); });
+  // Borrar un pago mal cargado (ej: click duplicado): elimina el pago y su movimiento en Transacciones.
+  const removePayment = (d: DebtView, p: DebtPayment) => guarded(async () => {
+    if (!window.confirm(`¿Borrar el pago de ${money(p.amount, d.currency)} del ${p.date}?\n\nTambién se borra su movimiento en Transacciones y el saldo pendiente vuelve a subir.`)) return;
+    await deleteDebtPayment(db(), d.id, p);
+    await reload();
+  });
 
   return (
     <>
@@ -76,7 +93,7 @@ export default function DeudasPage() {
 
           {view === "personas" ? (
             selected ? (
-              <PersonDetail person={selected} items={items.filter((d) => d.person === selected)} onBack={() => setSelected(null)} onSettle={settle} onPay={pay} />
+              <PersonDetail person={selected} items={items.filter((d) => d.person === selected)} onBack={() => setSelected(null)} onSettle={settle} onPay={pay} onDeletePayment={removePayment} />
             ) : (
               <PeopleSummary items={items} loading={loading} onOpen={setSelected} />
             )
@@ -219,7 +236,7 @@ function PeopleSummary({ items, loading, onOpen }: { items: DebtView[]; loading:
   );
 }
 
-function PersonDetail({ person, items, onBack, onSettle, onPay }: { person: string; items: DebtView[]; onBack: () => void; onSettle: (id: number) => void; onPay: (id: number, amount: number) => void }) {
+function PersonDetail({ person, items, onBack, onSettle, onPay, onDeletePayment }: { person: string; items: DebtView[]; onBack: () => void; onSettle: (id: number) => void; onPay: (id: number, amount: number) => void; onDeletePayment: (d: DebtView, p: DebtPayment) => void }) {
   const sorted = [...items].sort((a, b) => (a.occurredAt < b.occurredAt ? 1 : -1));
   const collect = items.filter((d) => d.status === "pending" && d.direction === "to_collect").reduce((a, d) => a + inArs(d.outstanding, d.currency), 0);
   const pay = items.filter((d) => d.status === "pending" && d.direction === "to_pay").reduce((a, d) => a + inArs(d.outstanding, d.currency), 0);
@@ -280,7 +297,12 @@ function PersonDetail({ person, items, onBack, onSettle, onPay }: { person: stri
               </div>
               {d.payments.length > 0 && (
                 <ul className="ml-12 mt-2 space-y-0.5 border-l border-line pl-3 text-[0.7rem] text-faint">
-                  {d.payments.map((p, k) => <li key={k}><span className="text-emerald">↩</span> {collectDir ? "pagó" : "pagaste"} {money(p.amount, d.currency)} · {p.date}</li>)}
+                  {d.payments.map((p) => (
+                    <li key={p.id} className="flex items-center gap-1.5">
+                      <span className="text-emerald">↩</span> {collectDir ? "pagó" : "pagaste"} {money(p.amount, d.currency)} · {p.date}
+                      <button onClick={() => onDeletePayment(d, p)} title="Borrar este pago" className="grid h-4 w-4 place-items-center rounded text-[0.7rem] leading-none text-faint transition-colors hover:bg-coral/15 hover:text-coral">✕</button>
+                    </li>
+                  ))}
                   {d.status === "pending" && <li className="text-muted">quedan {money(d.outstanding, d.currency)}</li>}
                 </ul>
               )}
