@@ -16,6 +16,8 @@ export type TxView = {
   paymentMethodId: number | null;
   amount: number;
   currency: "ARS" | "USD" | "USDT";
+  /** Cotización congelada del día del movimiento (null en ARS). Valuar con `arsDe()`, no con la de hoy. */
+  fxRate: number | null;
   type: "ingreso" | "egreso";
   date: string; // "día · hora"
   occurredAt: string;
@@ -89,7 +91,7 @@ export async function fetchCards(sb: SupabaseClient): Promise<CardRow[]> {
 export async function fetchTransactions(sb: SupabaseClient, limit = 500): Promise<TxView[]> {
   const { data, error } = await sb
     .from("transactions")
-    .select("id,type,amount,currency,description,occurred_at,source,category_id,payment_method_id,categories(name,emoji),payment_methods(name),cards(name)")
+    .select("id,type,amount,currency,fx_rate_ars,description,occurred_at,source,category_id,payment_method_id,categories(name,emoji),payment_methods(name),cards(name)")
     .order("occurred_at", { ascending: false })
     .limit(limit);
   if (error) throw error;
@@ -98,6 +100,7 @@ export async function fetchTransactions(sb: SupabaseClient, limit = 500): Promis
     type: r.type,
     amount: Number(r.amount),
     currency: r.currency,
+    fxRate: r.fx_rate_ars != null ? Number(r.fx_rate_ars) : null,
     desc: r.description || r.categories?.name || "Movimiento",
     category: r.categories?.name ?? "Otros",
     categoryId: r.category_id,
@@ -136,11 +139,111 @@ export async function fetchCardsFull(sb: SupabaseClient): Promise<CardFull[]> {
   return (data ?? []).map((c: any) => ({ id: c.id, name: c.name, bank: c.bank, network: c.network, last4: c.last4, limitArs: c.limit_ars != null ? Number(c.limit_ars) : null, closeDay: c.closing_day, dueDay: c.due_day }));
 }
 
-export type StatementRow = { id: number; cardId: number; period: string; closing: string; due: string; closingRaw: string | null; dueRaw: string | null; paid: boolean; totalArs: number; totalUsd: number };
-export async function fetchStatements(sb: SupabaseClient): Promise<StatementRow[]> {
-  const { data, error } = await sb.from("card_statements").select("id,card_id,period_label,closing_date,due_date,is_paid,total_ars,total_usd").order("closing_date", { ascending: false });
+// ---- Detalle de egresos (para Gastos hormiga) ----
+// A diferencia de fetchMonthlyBreakdown (que agrega y pierde la descripción), acá
+// hace falta el movimiento individual: sin descripción no se puede detectar ni el
+// comercio repetido ni la suscripción, que son el corazón de esa pantalla.
+export type ExpenseRow = {
+  id: number; amount: number; currency: "ARS" | "USD" | "USDT"; desc: string;
+  /** Cotización congelada del día del gasto (null en ARS). Valuar con `arsDe()`. */
+  fxRate: number | null;
+  occurredAt: string; month: string; category: string; emoji: string;
+  method: string; nature: "fijo" | "variable"; esCuota: boolean;
+};
+export async function fetchExpenseDetail(sb: SupabaseClient, monthsBack = 12): Promise<ExpenseRow[]> {
+  const since = new Date();
+  since.setMonth(since.getMonth() - monthsBack);
+  since.setDate(1);
+  const { data, error } = await sb.from("transactions")
+    .select("id,amount,currency,fx_rate_ars,description,occurred_at,installment_total,nature,categories(name,emoji),payment_methods(name)")
+    .eq("type", "egreso")
+    .gte("occurred_at", since.toISOString())
+    .order("occurred_at", { ascending: false });
   if (error) throw error;
-  return (data ?? []).map((s: any) => ({ id: s.id, cardId: s.card_id, period: s.period_label ?? "—", closing: formatShort(s.closing_date), due: formatShort(s.due_date), closingRaw: s.closing_date, dueRaw: s.due_date, paid: !!s.is_paid, totalArs: Number(s.total_ars), totalUsd: Number(s.total_usd) }));
+  return (data ?? []).map((r: any): ExpenseRow => ({
+    id: r.id,
+    amount: Number(r.amount),
+    currency: r.currency,
+    fxRate: r.fx_rate_ars != null ? Number(r.fx_rate_ars) : null,
+    desc: r.description || r.categories?.name || "Movimiento",
+    occurredAt: r.occurred_at,
+    month: String(r.occurred_at).slice(0, 7),
+    category: r.categories?.name ?? "Otros",
+    emoji: r.categories?.emoji ?? "✨",
+    method: r.payment_methods?.name ?? "—",
+    nature: r.nature === "fijo" ? "fijo" : "variable",
+    esCuota: !!r.installment_total && r.installment_total > 1,
+  }));
+}
+
+// Marcar un gasto como fijo (suscripción, abono) o variable. El enum tx_nature ya
+// existe en la base con esos dos valores; el Cash Flow lo usa para NO promediar
+// ni inflar los gastos fijos en la proyección.
+export async function setTxNature(sb: SupabaseClient, ids: number[], nature: "fijo" | "variable") {
+  if (!ids.length) return;
+  const { error } = await sb.from("transactions").update({ nature }).in("id", ids);
+  if (error) throw error;
+}
+
+// ---- Cotizaciones (tabla fx_rates, sincronizada por la Edge Function fx-sync) ----
+// USD se valúa a blue COMPRA (el precio al que realmente convertís billetes a pesos)
+// y USDT a cripto COMPRA, que tiene su propio spread (~4% sobre el blue).
+export type FxRates = { usd: number; usdt: number; day: string | null };
+export const FX_FALLBACK: FxRates = { usd: 1525, usdt: 1593, day: null };
+
+export async function fetchFxRates(sb: SupabaseClient): Promise<FxRates> {
+  const { data, error } = await sb.from("fx_rates").select("casa,compra,day")
+    .in("casa", ["blue", "cripto"]).order("day", { ascending: false }).limit(20);
+  if (error) throw error;
+  const ultima = (casa: string) => (data ?? []).find((r: any) => r.casa === casa);
+  const b = ultima("blue"), c = ultima("cripto");
+  return {
+    usd: Number(b?.compra) || FX_FALLBACK.usd,
+    usdt: Number(c?.compra) || FX_FALLBACK.usdt,
+    day: (b?.day as string) ?? null,
+  };
+}
+
+// ---- Alta / edición de tarjetas ----
+// No se expone borrar: card_statements.card_id es ON DELETE CASCADE, así que un
+// delete se llevaría puesto todo el historial de resúmenes. Se archiva (is_archived).
+export type NewCard = { name: string; bank: string | null; network: string | null; last4: string | null; limitArs: number | null; closeDay: number | null; dueDay: number | null };
+
+const cardPayload = (c: NewCard) => ({
+  name: c.name, bank: c.bank, network: c.network, last4: c.last4,
+  limit_ars: c.limitArs, closing_day: c.closeDay, due_day: c.dueDay,
+});
+
+export async function insertCard(sb: SupabaseClient, c: NewCard): Promise<number> {
+  // id es GENERATED ALWAYS y user_id tiene default auth.uid(): no se mandan.
+  const { data, error } = await sb.from("cards").insert(cardPayload(c)).select("id").single();
+  if (error) throw error;
+  return data.id as number;
+}
+export async function updateCard(sb: SupabaseClient, id: number, c: NewCard) {
+  const { error } = await sb.from("cards").update(cardPayload(c)).eq("id", id);
+  if (error) throw error;
+}
+export async function archiveCard(sb: SupabaseClient, id: number) {
+  const { error } = await sb.from("cards").update({ is_archived: true }).eq("id", id);
+  if (error) throw error;
+}
+// Los últimos 4 dígitos identifican la tarjeta en el importador de mails
+// (cardByLast4): si se repiten, los consumos se imputan a la tarjeta equivocada.
+export async function last4EnUso(sb: SupabaseClient, last4: string, exceptId?: number): Promise<string | null> {
+  let q = sb.from("cards").select("id,name").eq("last4", last4).eq("is_archived", false);
+  if (exceptId) q = q.neq("id", exceptId);
+  const { data } = await q.limit(1);
+  return data?.[0]?.name ?? null;
+}
+
+// `fxRate`: cotización congelada del día en que se pagó el resumen (null si no está
+// pagado). El total en USD de un resumen pagado se saldó a ESE dólar, no al de hoy.
+export type StatementRow = { id: number; cardId: number; period: string; closing: string; due: string; closingRaw: string | null; dueRaw: string | null; paid: boolean; totalArs: number; totalUsd: number; fxRate: number | null };
+export async function fetchStatements(sb: SupabaseClient): Promise<StatementRow[]> {
+  const { data, error } = await sb.from("card_statements").select("id,card_id,period_label,closing_date,due_date,is_paid,total_ars,total_usd,fx_rate_ars").order("closing_date", { ascending: false });
+  if (error) throw error;
+  return (data ?? []).map((s: any) => ({ id: s.id, cardId: s.card_id, period: s.period_label ?? "—", closing: formatShort(s.closing_date), due: formatShort(s.due_date), closingRaw: s.closing_date, dueRaw: s.due_date, paid: !!s.is_paid, totalArs: Number(s.total_ars), totalUsd: Number(s.total_usd), fxRate: s.fx_rate_ars != null ? Number(s.fx_rate_ars) : null }));
 }
 // Editar fechas de un resumen. Solo afecta ese resumen; opcionalmente actualiza el día
 // por defecto de la tarjeta (para que los resúmenes futuros hereden esa fecha).
@@ -529,16 +632,46 @@ export async function fetchInflationData(sb: SupabaseClient): Promise<{ byMonth:
   return { byMonth, projected, latest: (data ?? [])[0]?.month ?? null };
 }
 
+// ---- Patrimonio neto en el tiempo ----
+// Serie reconstruida por la RPC `get_networth_series`: para el cierre de cada mes
+// calcula los mismos componentes que get_metrics() devuelve para hoy. Las tenencias
+// se valúan con la cotización VIGENTE A ESA FECHA (no la congelada del movimiento):
+// son stocks, y lo que valían tus dólares el 30/04 es el blue del 30/04.
+// El último punto de la serie coincide con el patrimonio que muestra /metricas.
+export type NetWorthPoint = {
+  month: string; cutoff: string;
+  ars: number; usd: number; usdt: number; usdArs: number; usdtArs: number;
+  teDeben: number; debes: number; deudaCuotas: number; deudaVencida: number;
+  activos: number; pasivos: number; patrimonio: number;
+};
+export async function fetchNetWorthSeries(sb: SupabaseClient, months = 12): Promise<NetWorthPoint[]> {
+  const { data, error } = await sb.rpc("get_networth_series", { p_months: months });
+  if (error) throw error;
+  const n = (v: any) => Number(v) || 0;
+  return (data ?? []).map((r: any): NetWorthPoint => ({
+    month: r.month, cutoff: r.cutoff,
+    ars: n(r.ars), usd: n(r.usd), usdt: n(r.usdt),
+    usdArs: n(r.usd_ars), usdtArs: n(r.usdt_ars),
+    teDeben: n(r.te_deben), debes: n(r.debes),
+    deudaCuotas: n(r.deuda_cuotas), deudaVencida: n(r.deuda_vencida),
+    activos: n(r.activos), pasivos: n(r.pasivos), patrimonio: n(r.patrimonio),
+  }));
+}
+
 // ---- Desglose mensual (para gráficos de Métricas) ----
 // Una fila por (mes, tipo, categoría, método, moneda). Excluye "Cambio Divisas" (ruido de conversión).
-export type MonthAgg = { month: string; type: "ingreso" | "egreso"; category: string; emoji: string; method: string; currency: "ARS" | "USD" | "USDT"; total: number; count: number };
+// `total` es el monto en su moneda original. Para valuar en ARS NO hay que multiplicarlo
+// por la cotización de hoy: cada fila trae su cotización congelada, así que el grupo ya
+// viene sumado en `totalArs`. `totalPend` queda con lo que no tenía rate congelado (en su
+// moneda), para que el llamador lo valúe con la cotización viva vía `aggArs()`.
+export type MonthAgg = { month: string; type: "ingreso" | "egreso"; category: string; emoji: string; method: string; currency: "ARS" | "USD" | "USDT"; total: number; totalArs: number; totalPend: number; count: number };
 export async function fetchMonthlyBreakdown(sb: SupabaseClient, monthsBack = 6): Promise<MonthAgg[]> {
   const since = new Date();
   since.setMonth(since.getMonth() - monthsBack);
   since.setDate(1);
   const { data, error } = await sb
     .from("transactions")
-    .select("type,amount,currency,occurred_at,categories(name,emoji),payment_methods(name)")
+    .select("type,amount,currency,fx_rate_ars,occurred_at,categories(name,emoji),payment_methods(name)")
     .gte("occurred_at", since.toISOString())
     .order("occurred_at", { ascending: false });
   if (error) throw error;
@@ -549,8 +682,12 @@ export async function fetchMonthlyBreakdown(sb: SupabaseClient, monthsBack = 6):
     const month = String(r.occurred_at).slice(0, 7); // YYYY-MM
     const method = r.payment_methods?.name ?? "—";
     const key = `${month}|${r.type}|${cat}|${method}|${r.currency}`;
-    const cur = map.get(key) ?? { month, type: r.type, category: cat, emoji: r.categories?.emoji ?? "✨", method, currency: r.currency, total: 0, count: 0 };
-    cur.total += Number(r.amount);
+    const cur = map.get(key) ?? { month, type: r.type, category: cat, emoji: r.categories?.emoji ?? "✨", method, currency: r.currency, total: 0, totalArs: 0, totalPend: 0, count: 0 };
+    const amount = Number(r.amount);
+    const rate = r.fx_rate_ars != null ? Number(r.fx_rate_ars) : r.currency === "ARS" ? 1 : null;
+    cur.total += amount;
+    if (rate != null) cur.totalArs += amount * rate;
+    else cur.totalPend += amount;
     cur.count += 1;
     map.set(key, cur);
   }

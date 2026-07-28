@@ -4,8 +4,10 @@ import { useEffect, useMemo, useState } from "react";
 import {
   db, fetchTransactions, fetchCardsFull, fetchDebts, fetchCategories, fetchMetrics, updateTxCategory,
   fetchStatements, fetchInstallments, fetchStatementConsumos,
+  FX_FALLBACK,
   type TxView, type CardFull, type DebtView, type Category, type Metrics, type StatementRow, type InstallmentRow,
 } from "@/lib/db";
+import { arsDe } from "@/lib/fx";
 import { readCache, writeCache } from "@/lib/cache";
 import { ars, compact } from "@/lib/format";
 import { Card as CardIcon, Sparkle, Bell, Search, Plus, ArrowUpRight, ArrowDownRight, Camera, Mail, Mic, Send, Coins, X } from "./icons";
@@ -50,7 +52,9 @@ export default function Dashboard() {
     reload().finally(() => setLoading(false));
   }, []);
 
-  const data = useMemo(() => compute(txs, cards, debts, installments, statements, consumos), [txs, cards, debts, installments, statements, consumos]);
+  // Las cotizaciones salen de get_metrics (fuente única: tabla fx_rates).
+  const fx = { usd: metrics?.usd_ars ?? FX_FALLBACK.usd, usdt: metrics?.usdt_ars ?? FX_FALLBACK.usdt };
+  const data = useMemo(() => compute(txs, cards, debts, installments, statements, consumos, fx), [txs, cards, debts, installments, statements, consumos, fx.usd, fx.usdt]);
   const uncategorized = useMemo(() => txs.filter((t) => t.type === "egreso" && (t.category === "Otros" || !t.categoryId)).slice(0, 6), [txs]);
 
   const categorize = async (id: number, catId: number) => {
@@ -142,7 +146,7 @@ export default function Dashboard() {
 }
 
 type Computed = ReturnType<typeof compute>;
-function compute(txs: TxView[], cards: CardFull[], debts: DebtView[], installments: InstallmentRow[], statements: StatementRow[], consumos: Record<number, { ars: number; usd: number }>) {
+function compute(txs: TxView[], cards: CardFull[], debts: DebtView[], installments: InstallmentRow[], statements: StatementRow[], consumos: Record<number, { ars: number; usd: number }>, fx: { usd: number; usdt: number }) {
   const now = new Date();
   const inMonth = (iso: string, y: number, m: number) => { const d = new Date(iso); return d.getFullYear() === y && d.getMonth() === m; };
   const past = txs.filter((t) => new Date(t.occurredAt) <= now);
@@ -152,14 +156,16 @@ function compute(txs: TxView[], cards: CardFull[], debts: DebtView[], installmen
 
   // Préstamos y cambios de divisa no son gasto/ingreso real → fuera de flujo y dona.
   const flujo = (t: TxView) => t.category !== "Préstamos" && t.category !== "Cambio Divisas";
+  // Cada movimiento se valúa con la cotización congelada de su día (arsDe), no con la de
+  // hoy: así los meses cerrados del gráfico dejan de moverse cuando cambia el dólar.
+  const toArsTx = (t: TxView) => arsDe(t.amount, t.currency, t.fxRate, { usd: fx.usd, usdt: fx.usdt, day: null });
   const cashflow = [];
   for (let i = 5; i >= 0; i--) {
     const d = new Date(refY, refM - i, 1);
     const mt = txs.filter((t) => inMonth(t.occurredAt, d.getFullYear(), d.getMonth()) && flujo(t));
-    cashflow.push({ m: SHORT[d.getMonth()], in: mt.filter((t) => t.type === "ingreso").reduce((a, t) => a + t.amount, 0), out: mt.filter((t) => t.type === "egreso").reduce((a, t) => a + t.amount, 0) });
+    cashflow.push({ m: SHORT[d.getMonth()], in: mt.filter((t) => t.type === "ingreso").reduce((a, t) => a + toArsTx(t), 0), out: mt.filter((t) => t.type === "egreso").reduce((a, t) => a + toArsTx(t), 0) });
   }
 
-  const toArsTx = (t: TxView) => (t.currency === "ARS" ? t.amount : t.currency === "USD" ? t.amount * 1455 : t.amount * 1462);
   const catMap = new Map<string, { emoji: string; amount: number }>();
   for (const t of monthTxs.filter((t) => t.type === "egreso" && flujo(t))) {
     const e = catMap.get(t.category) ?? { emoji: t.emoji, amount: 0 };
@@ -196,7 +202,7 @@ function compute(txs: TxView[], cards: CardFull[], debts: DebtView[], installmen
   });
 
   const pending = debts.filter((d) => d.status === "pending");
-  const debtArs = (d: DebtView) => (d.currency === "USD" ? d.outstanding * 1455 : d.currency === "USDT" ? d.outstanding * 1462 : d.outstanding);
+  const debtArs = (d: DebtView) => (d.currency === "USD" ? d.outstanding * fx.usd : d.currency === "USDT" ? d.outstanding * fx.usdt : d.outstanding);
   const toCollect = pending.filter((d) => d.direction === "to_collect").reduce((a, d) => a + debtArs(d), 0);
   const toPay = pending.filter((d) => d.direction === "to_pay").reduce((a, d) => a + debtArs(d), 0);
   const people = pending.slice(0, 3).map((d) => ({ name: d.person, emoji: d.emoji, amount: debtArs(d), type: d.direction, note: d.description }));

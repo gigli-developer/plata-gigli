@@ -39,3 +39,6 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Notas personales: contiene el token de Railway, nunca al repo
+PROMPT_NUEVO_CHAT.md

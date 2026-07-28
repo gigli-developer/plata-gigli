@@ -1,12 +1,13 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { db, fetchMetrics, fetchMonthlyBreakdown, fetchPlansForProjection, type Metrics, type MonthAgg, type PlanProj } from "@/lib/db";
+import { db, fetchMetrics, fetchMonthlyBreakdown, fetchPlansForProjection, fetchNetWorthSeries, type Metrics, type MonthAgg, type PlanProj, type NetWorthPoint } from "@/lib/db";
+import { aggArs } from "@/lib/fx";
 import { readCache, writeCache } from "@/lib/cache";
-import { ars, compact } from "@/lib/format";
+import { ars, compact, compactUsd } from "@/lib/format";
 import { PageHeader } from "../components/Shell";
 import { Coins } from "../icons";
-import { Donut, BarList, GroupedColumns, VariationTable, type Slice, type MonthCol, type VarRow } from "../components/charts";
+import { Donut, BarList, GroupedColumns, VariationTable, NetWorthChart, type Slice, type MonthCol, type VarRow, type NetWorthCol } from "../components/charts";
 
 const MESES = ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"];
 const pct = (x: number) => `${(x * 100).toFixed(1)}%`;
@@ -22,6 +23,11 @@ export default function MetricasPage() {
   const [usdRate, setUsdRate] = useState(0);
   const [usdtRate, setUsdtRate] = useState(0);
   const [plans, setPlans] = useState<PlanProj[]>([]);
+  const [netWorth, setNetWorth] = useState<NetWorthPoint[]>([]);
+  const [nwLoading, setNwLoading] = useState(true);
+  // Unidad del gráfico de patrimonio. En pesos la serie exagera el crecimiento
+  // (parte es devaluación); en dólares se ve cuánto creciste de verdad.
+  const [nwCur, setNwCur] = useState<"ars" | "usd">("ars");
   const [monthFilter, setMonthFilter] = useState<string>(NOW_MONTH);
   const [cmpA, setCmpA] = useState<string>(addMonthYM(NOW_MONTH, -1));
   const [cmpB, setCmpB] = useState<string>(NOW_MONTH);
@@ -29,12 +35,12 @@ export default function MetricasPage() {
 
   useEffect(() => {
     // Pintar al instante el último snapshot; lo fresco llega por atrás.
-    const s = readCache<{ m: Metrics; b: MonthAgg[]; p: PlanProj[] }>("metricas");
-    if (s) { setM(s.m); setBreakdown(s.b); setPlans(s.p); setUsdRate(s.m.usd_ars); setUsdtRate(s.m.usdt_ars); setLoading(false); }
+    const s = readCache<{ m: Metrics; b: MonthAgg[]; p: PlanProj[]; nw?: NetWorthPoint[] }>("metricas");
+    if (s) { setM(s.m); setBreakdown(s.b); setPlans(s.p); setNetWorth(s.nw ?? []); setUsdRate(s.m.usd_ars); setUsdtRate(s.m.usdt_ars); setLoading(false); if (s.nw?.length) setNwLoading(false); }
     const sb = db();
-    Promise.all([fetchMetrics(sb), fetchMonthlyBreakdown(sb, 6), fetchPlansForProjection(sb)])
-      .then(([d, b, p]) => { setM(d); setBreakdown(b); setPlans(p); setUsdRate(d.usd_ars); setUsdtRate(d.usdt_ars); writeCache("metricas", { m: d, b, p }); })
-      .finally(() => setLoading(false));
+    Promise.all([fetchMetrics(sb), fetchMonthlyBreakdown(sb, 6), fetchPlansForProjection(sb), fetchNetWorthSeries(sb, 12)])
+      .then(([d, b, p, nwSerie]) => { setM(d); setBreakdown(b); setPlans(p); setNetWorth(nwSerie); setUsdRate(d.usd_ars); setUsdtRate(d.usdt_ars); writeCache("metricas", { m: d, b, p, nw: nwSerie }); })
+      .finally(() => { setLoading(false); setNwLoading(false); });
   }, []);
 
   const calc = useMemo(() => {
@@ -52,13 +58,16 @@ export default function MetricasPage() {
 
   // Ratios del mes elegido en Análisis (o "todos"): mismo criterio que los gráficos (transacciones + cuotas).
   const flows = useMemo(() => {
-    const toArs = (v: number, cur: string) => (cur === "USD" ? v * usdRate : cur === "USDT" ? v * usdtRate : v);
+    // Los movimientos en USD/USDT se valúan con la cotización CONGELADA de su día
+    // (viene ya sumada en el agregado); la cotización editable de arriba solo entra
+    // si alguna fila no tuviera rate congelado.
+    const valuar = (b: MonthAgg) => aggArs(b, { usd: usdRate, usdt: usdtRate, day: null });
     const scopeMonths = monthFilter === "all" ? [...new Set(breakdown.map((b) => b.month))] : [monthFilter];
     const scope = new Set(scopeMonths);
     let ing = 0, egr = 0;
     for (const b of breakdown) {
       if (!scope.has(b.month)) continue;
-      const v = toArs(b.total, b.currency);
+      const v = valuar(b);
       if (b.type === "ingreso") ing += v; else egr += v;
     }
     let cuotas = 0;
@@ -79,8 +88,42 @@ export default function MetricasPage() {
 
   const months = useMemo(() => [...new Set(breakdown.map((b) => b.month))].sort().reverse(), [breakdown]);
 
+  // Serie de patrimonio + descomposición del último mes: cuánto subió por ahorro y
+  // cuánto solo porque se movió el tipo de cambio.
+  //
+  // En PESOS el efecto cambiario es la revaluación de las tenencias en moneda dura.
+  // En DÓLARES es el espejo: lo que perdés (o ganás) por tener PESOS mientras el
+  // dólar se mueve. En ambos casos se mide sobre el stock con el que arrancó el mes
+  // (convención estándar) y el resto queda como flujo real.
+  const nw = useMemo(() => {
+    const enUsd = nwCur === "usd";
+    // Todo se divide por el dólar DE CADA CORTE: así cada mes queda medido con la
+    // vara de su momento, que es el sentido de mirar la serie en dólares.
+    const v = (monto: number, p: NetWorthPoint) => (enUsd ? (p.usdArs ? monto / p.usdArs : 0) : monto);
+    const cols: NetWorthCol[] = netWorth.map((p) => ({
+      label: monthLabel(p.month).slice(0, 3) + " " + p.month.slice(2, 4),
+      ars: Math.max(v(p.ars, p), 0),
+      usdArs: Math.max(v(p.usd * p.usdArs, p), 0),
+      usdtArs: Math.max(v(p.usdt * p.usdtArs, p), 0),
+      teDeben: v(p.teDeben, p),
+      pasivos: v(p.pasivos, p),
+      patrimonio: v(p.patrimonio, p),
+    }));
+    let delta: { label: string; total: number; fx: number; ahorro: number } | null = null;
+    if (netWorth.length >= 2) {
+      const cur = netWorth[netWorth.length - 1], pre = netWorth[netWorth.length - 2];
+      const total = v(cur.patrimonio, cur) - v(pre.patrimonio, pre);
+      const fx = enUsd
+        // efecto de haber estado en pesos: los pesos del mes anterior valen menos dólares
+        ? (cur.usdArs && pre.usdArs ? pre.ars * (1 / cur.usdArs - 1 / pre.usdArs) : 0)
+        : pre.usd * (cur.usdArs - pre.usdArs) + pre.usdt * (cur.usdtArs - pre.usdtArs);
+      delta = { label: monthLabel(cur.month), total, fx, ahorro: total - fx };
+    }
+    return { cols, delta };
+  }, [netWorth, nwCur]);
+
   const charts = useMemo(() => {
-    const toArs = (v: number, cur: string) => (cur === "USD" ? v * usdRate : cur === "USDT" ? v * usdtRate : v);
+    const valuar = (b: MonthAgg) => aggArs(b, { usd: usdRate, usdt: usdtRate, day: null });
     const filtered = monthFilter === "all" ? breakdown : breakdown.filter((b) => b.month === monthFilter);
 
     const cap8 = (arr: Slice[]): Slice[] => { if (arr.length <= 8) return arr; const top = arr.slice(0, 7); const rest = arr.slice(7).reduce((s, x) => s + x.value, 0); top.push({ label: "Resto", value: rest, emoji: undefined }); return top; };
@@ -89,7 +132,7 @@ export default function MetricasPage() {
     const tmap = new Map<string, MonthCol>();
     for (const b of breakdown) {
       const c = tmap.get(b.month) ?? { label: monthLabel(b.month).slice(0, 3) + " " + b.month.slice(2, 4), ingreso: 0, egreso: 0 };
-      if (b.type === "ingreso") c.ingreso += toArs(b.total, b.currency); else c.egreso += toArs(b.total, b.currency);
+      if (b.type === "ingreso") c.ingreso += valuar(b); else c.egreso += valuar(b);
       tmap.set(b.month, c);
     }
     const series = [...tmap.entries()].sort((a, b) => a[0].localeCompare(b[0])).map(([, v]) => v);
@@ -97,21 +140,21 @@ export default function MetricasPage() {
     // gastos por categoría = consumos (transacciones) + CUOTAS del/los mes(es) en alcance
     const scopeMonths = monthFilter === "all" ? [...new Set(breakdown.map((b) => b.month))] : [monthFilter];
     const catMap = new Map<string, { v: number; emoji?: string }>();
-    for (const b of filtered) { if (b.type !== "egreso") continue; const e = catMap.get(b.category) ?? { v: 0, emoji: b.emoji }; e.v += toArs(b.total, b.currency); catMap.set(b.category, e); }
+    for (const b of filtered) { if (b.type !== "egreso") continue; const e = catMap.get(b.category) ?? { v: 0, emoji: b.emoji }; e.v += valuar(b); catMap.set(b.category, e); }
     let cuotasTotal = 0;
     for (const p of plans) for (const mm of scopeMonths) { const k = monthsBetweenYM(p.firstMonth, mm); if (k >= 0 && k < p.total) { const e = catMap.get(p.category) ?? { v: 0, emoji: p.emoji }; e.v += p.monthly; catMap.set(p.category, e); cuotasTotal += p.monthly; } }
     const gastosCat = cap8([...catMap.entries()].map(([label, e]) => ({ label, value: e.v, emoji: e.emoji })).sort((a, b) => b.value - a.value));
 
     // gastos por método = consumos + cuotas (las cuotas se pagan con Tarjeta de Crédito)
     const methMap = new Map<string, number>();
-    for (const b of filtered) { if (b.type !== "egreso") continue; methMap.set(b.method, (methMap.get(b.method) ?? 0) + toArs(b.total, b.currency)); }
+    for (const b of filtered) { if (b.type !== "egreso") continue; methMap.set(b.method, (methMap.get(b.method) ?? 0) + valuar(b)); }
     if (cuotasTotal > 0) methMap.set("Tarjeta de Crédito", (methMap.get("Tarjeta de Crédito") ?? 0) + cuotasTotal);
     const gastosMetodo = cap8([...methMap.entries()].map(([label, value]) => ({ label, value, emoji: undefined })).sort((a, b) => b.value - a.value));
 
     // variación por categoría: mes seleccionado vs mes anterior (consumos + cuotas)
     const catTotals = (mm: string) => {
       const map = new Map<string, { v: number; emoji?: string }>();
-      for (const b of breakdown) { if (b.type !== "egreso" || b.month !== mm) continue; const e = map.get(b.category) ?? { v: 0, emoji: b.emoji }; e.v += toArs(b.total, b.currency); map.set(b.category, e); }
+      for (const b of breakdown) { if (b.type !== "egreso" || b.month !== mm) continue; const e = map.get(b.category) ?? { v: 0, emoji: b.emoji }; e.v += valuar(b); map.set(b.category, e); }
       for (const p of plans) { const k = monthsBetweenYM(p.firstMonth, mm); if (k >= 0 && k < p.total) { const e = map.get(p.category) ?? { v: 0, emoji: p.emoji }; e.v += p.monthly; map.set(p.category, e); } }
       return map;
     };
@@ -124,7 +167,7 @@ export default function MetricasPage() {
     const elapsed = isCurrentB ? Math.max(todayD.getDate(), 1) : daysInMonth;
     const factor = daysInMonth / elapsed;
     const consB = new Map<string, number>();
-    for (const b of breakdown) { if (b.type !== "egreso" || b.month !== cmpB) continue; consB.set(b.category, (consB.get(b.category) ?? 0) + toArs(b.total, b.currency)); }
+    for (const b of breakdown) { if (b.type !== "egreso" || b.month !== cmpB) continue; consB.set(b.category, (consB.get(b.category) ?? 0) + valuar(b)); }
     const cuoB = new Map<string, number>();
     for (const p of plans) { const k = monthsBetweenYM(p.firstMonth, cmpB); if (k >= 0 && k < p.total) cuoB.set(p.category, (cuoB.get(p.category) ?? 0) + p.monthly); }
 
@@ -136,6 +179,8 @@ export default function MetricasPage() {
 
     return { gastosCat, gastosMetodo, series, variacion, showEst: isCurrentB };
   }, [breakdown, monthFilter, plans, cmpA, cmpB, usdRate, usdtRate]);
+
+  const nwFmt = nwCur === "usd" ? compactUsd : compact;
 
   if (loading || !m || !calc) return (<><PageHeader title="Métricas" subtitle="Cargando…" /><div className="panel mt-6 p-10 text-center text-sm text-muted">Calculando…</div></>);
 
@@ -183,6 +228,46 @@ export default function MetricasPage() {
           <RatioMini title="Flujo de caja" value={`${flows.flujo.toFixed(2)}×`} hint="> 1" tone={flows.flujo > 1.2 ? "emerald" : flows.flujo >= 1 ? "amber" : "coral"} />
           <RatioMini title="Ahorro mensual" value={compact(flows.ahorroMostrar)} hint={monthFilter === "all" ? "prom. mensual" : monthLabel(monthFilter)} tone={flows.ahorroMostrar > 0 ? "emerald" : "coral"} />
         </div>
+      </section>
+
+      {/* Patrimonio neto en el tiempo */}
+      <section className="rise panel mt-5 p-5">
+        <div className="mb-4 flex flex-wrap items-end justify-between gap-3">
+          <div>
+            <h3 className="font-display text-base text-fg">Patrimonio neto en el tiempo</h3>
+            <p className="text-xs text-faint">
+              Cierre de cada mes · {nwCur === "ars" ? "tenencias valuadas al dólar de esa fecha" : "todo medido al dólar de cada mes"}
+            </p>
+          </div>
+          <div className="flex items-center gap-3">
+            {nw.delta && (
+              <div className="text-right text-xs">
+                <p className={`tnum text-sm ${nw.delta.total >= 0 ? "text-emerald" : "text-coral"}`}>
+                  {nw.delta.total >= 0 ? "+" : "−"}{nwFmt(Math.abs(nw.delta.total))} en {nw.delta.label}
+                </p>
+                <p className="text-faint">
+                  <span className={nw.delta.ahorro >= 0 ? "text-emerald/80" : "text-coral/80"}>{nw.delta.ahorro >= 0 ? "+" : "−"}{nwFmt(Math.abs(nw.delta.ahorro))} tuyo</span>
+                  {" · "}
+                  <span className={nw.delta.fx >= 0 ? "text-amber/80" : "text-coral/80"}>{nw.delta.fx >= 0 ? "+" : "−"}{nwFmt(Math.abs(nw.delta.fx))} {nwCur === "ars" ? "por el dólar" : "por estar en pesos"}</span>
+                </p>
+              </div>
+            )}
+            <div className="flex rounded-full border border-line bg-surface-2 p-0.5 text-xs">
+              <button onClick={() => setNwCur("ars")} className={`rounded-full px-2.5 py-1 transition-colors ${nwCur === "ars" ? "bg-lime/15 text-lime" : "text-muted hover:text-fg"}`}>$</button>
+              <button onClick={() => setNwCur("usd")} className={`rounded-full px-2.5 py-1 transition-colors ${nwCur === "usd" ? "bg-lime/15 text-lime" : "text-muted hover:text-fg"}`}>US$</button>
+            </div>
+          </div>
+        </div>
+        {nwLoading && !nw.cols.length ? (
+          <div className="grid h-48 place-items-center text-sm text-muted">Reconstruyendo la serie…</div>
+        ) : (
+          <NetWorthChart data={nw.cols} fmt={nwFmt} />
+        )}
+        <p className="mt-3 text-[0.7rem] text-faint">
+          {nwCur === "ars"
+            ? "En pesos, parte de la suba es devaluación: el efecto cambiario se calcula sobre las tenencias con las que arrancaste el mes y lo demás es flujo real (lo que ganaste, gastaste o pagaste de deuda). Pasá a US$ para ver cuánto creciste de verdad."
+            : "Medido en dólares el crecimiento es real, sin el ruido de la devaluación. Acá el efecto cambiario es el espejo: lo que te costó (o te dio) tener pesos mientras el dólar se movía."}
+        </p>
       </section>
 
       {/* Análisis con gráficos */}

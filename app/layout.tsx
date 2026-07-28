@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Bricolage_Grotesque, Hanken_Grotesk, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import Shell from "./components/Shell";
@@ -23,6 +23,16 @@ const jetbrains = JetBrains_Mono({
 export const metadata: Metadata = {
   title: "Finanzas · Panel",
   description: "App de finanzas personales — mockup de diseño",
+};
+
+// interactiveWidget: al abrir el teclado el viewport se achica, así el bottom nav
+// (fixed bottom-0) sube en vez de quedar tapado.
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  themeColor: "#08090d",
+  colorScheme: "dark",
+  interactiveWidget: "resizes-content",
 };
 
 export default function RootLayout({

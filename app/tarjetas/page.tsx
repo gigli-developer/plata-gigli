@@ -2,7 +2,10 @@
 
 import { useEffect, useState } from "react";
 import { db, fetchCardsFull, fetchStatements, fetchInstallments, fetchStatementConsumos, fetchStatementMovements, fetchPlansForProjection, payStatement, ensureNextStatements, formatShort, type CardFull, type StatementRow, type InstallmentRow, type StatementMovement, type PlanProj } from "@/lib/db";
+import { fetchCardCharges, detectarSubs, subsTotals, type CardSub } from "@/lib/subs";
 import { readCache, writeCache } from "@/lib/cache";
+import CardModal from "../components/CardModal";
+import { fxSync, loadFx } from "@/lib/fx";
 import { ars, usd, compact } from "@/lib/format";
 import { PageHeader } from "../components/Shell";
 import { Donut, type Slice } from "../components/charts";
@@ -10,7 +13,7 @@ import EditPlanModal from "../components/EditPlanModal";
 import EditDatesModal from "../components/EditDatesModal";
 import { Plus, Card as CardIcon, ArrowUpRight, Pencil, Chevron } from "../icons";
 
-const USD_ARS = 1455; // cotización para valuar consumos en USD dentro del desglose
+// Cotización para valuar consumos en USD dentro del desglose (fuente: fx_rates).
 const monthsBetweenYM = (a: string, b: string) => { const [ay, am] = a.slice(0, 7).split("-").map(Number); const [by, bm] = b.slice(0, 7).split("-").map(Number); return (by - ay) * 12 + (bm - am); };
 // Suma k meses a un período "YYYY-MM" y devuelve "YYYY-MM".
 const addMonthsYM = (ym: string, k: number) => { const [y, m] = ym.slice(0, 7).split("-").map(Number); const d = new Date(y, (m - 1) + k, 1); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`; };
@@ -35,6 +38,9 @@ export default function TarjetasPage() {
   const [installments, setInstallments] = useState<InstallmentRow[]>([]);
   const [consumos, setConsumos] = useState<Record<number, { ars: number; usd: number }>>({});
   const [plans, setPlans] = useState<PlanProj[]>([]);
+  // Suscripciones/abonos detectados: los resúmenes que todavía no existen se
+  // proyectan con cuotas + esto (si no, un mes futuro mostraría solo las cuotas).
+  const [subs, setSubs] = useState<CardSub[]>([]);
   const [selectedId, setSelectedId] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
   const [editingPlan, setEditingPlan] = useState<InstallmentRow | null>(null);
@@ -43,9 +49,20 @@ export default function TarjetasPage() {
   const [movements, setMovements] = useState<Record<number, StatementMovement[]>>({});
   const [loadingMov, setLoadingMov] = useState<number | null>(null);
   const [payingId, setPayingId] = useState<number | null>(null);
+  // { open, card }: card null = alta, card = edición.
+  const [cardModal, setCardModal] = useState<{ open: boolean; card: CardFull | null }>({ open: false, card: null });
 
   const reloadCuotas = async () => setInstallments(await fetchInstallments(db()));
-  const reloadStatements = async () => { const sb = db(); await ensureNextStatements(sb).catch(() => {}); setStatements(await fetchStatements(sb)); setCards((await fetchCardsFull(sb)).filter(esCredito).map((card, idx) => ({ ...card, ...palette[idx % palette.length] }))); };
+  const reloadStatements = async () => {
+    const sb = db();
+    await ensureNextStatements(sb).catch(() => {}); // una tarjeta nueva estrena su primer resumen acá
+    const [s, c] = await Promise.all([fetchStatements(sb), fetchCardsFull(sb)]);
+    const vis = c.filter(esCredito).map((card, idx) => ({ ...card, ...palette[idx % palette.length] }));
+    setStatements(s); setCards(vis);
+    setSelectedId((prev) => (prev && vis.some((v) => v.id === prev) ? prev : vis[0]?.id ?? null));
+    // Sin esto el snapshot queda viejo y al volver a entrar la tarjeta nueva no está.
+    writeCache("tarjetas", { cards: vis, statements: s, installments, consumos, plans, subs });
+  };
 
   const toggleMovements = async (id: number) => {
     if (expandedId === id) { setExpandedId(null); return; }
@@ -64,22 +81,25 @@ export default function TarjetasPage() {
     .filter((p) => p.n >= 1 && p.n <= p.total);
 
   useEffect(() => {
-    type Snap = { cards: CardVis[]; statements: StatementRow[]; installments: InstallmentRow[]; consumos: Record<number, { ars: number; usd: number }>; plans: PlanProj[] };
+    type Snap = { cards: CardVis[]; statements: StatementRow[]; installments: InstallmentRow[]; consumos: Record<number, { ars: number; usd: number }>; plans: PlanProj[]; subs: CardSub[] };
     // Pintar al instante el último snapshot conocido; lo fresco llega por atrás.
     const cached = readCache<Snap>("tarjetas");
     if (cached) {
-      setCards(cached.cards); setStatements(cached.statements); setInstallments(cached.installments); setConsumos(cached.consumos); setPlans(cached.plans);
+      setCards(cached.cards); setStatements(cached.statements); setInstallments(cached.installments); setConsumos(cached.consumos); setPlans(cached.plans); setSubs(cached.subs ?? []);
       setSelectedId((prev) => prev ?? cached.cards[0]?.id ?? null);
       setLoading(false);
     }
+    loadFx();
     (async () => {
       const sb = db();
       const load = async () => {
-        const [c, s, i, co, pl] = await Promise.all([fetchCardsFull(sb), fetchStatements(sb), fetchInstallments(sb), fetchStatementConsumos(sb), fetchPlansForProjection(sb)]);
+        const [c, s, i, co, pl, ch] = await Promise.all([fetchCardsFull(sb), fetchStatements(sb), fetchInstallments(sb), fetchStatementConsumos(sb), fetchPlansForProjection(sb), fetchCardCharges(sb)]);
         const vis = c.filter(esCredito).map((card, idx) => ({ ...card, ...palette[idx % palette.length] }));
-        setCards(vis); setStatements(s); setInstallments(i); setConsumos(co); setPlans(pl);
+        const now = new Date();
+        const su = detectarSubs(ch, `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`);
+        setCards(vis); setStatements(s); setInstallments(i); setConsumos(co); setPlans(pl); setSubs(su);
         setSelectedId((prev) => prev ?? vis[0]?.id ?? null);
-        writeCache("tarjetas", { cards: vis, statements: s, installments: i, consumos: co, plans: pl } satisfies Snap);
+        writeCache("tarjetas", { cards: vis, statements: s, installments: i, consumos: co, plans: pl, subs: su } satisfies Snap);
       };
       await load();
       // Fuera del camino crítico: asegurar el próximo resumen; si creó uno, refrescar.
@@ -88,8 +108,24 @@ export default function TarjetasPage() {
     })().finally(() => setLoading(false));
   }, []);
 
+  const nuevaTarjetaBtn = (
+    <button onClick={() => setCardModal({ open: true, card: null })} className="flex items-center gap-2 rounded-full bg-lime px-4 py-2 text-sm font-medium text-bg transition-transform hover:scale-[1.03]">
+      <Plus className="h-4 w-4" /> Agregar tarjeta
+    </button>
+  );
+
   if (loading) return (<><PageHeader title="Tarjetas" subtitle="Cargando…" /><div className="panel mt-6 p-10 text-center text-sm text-muted">Cargando tarjetas…</div></>);
-  if (!cards.length) return (<><PageHeader title="Tarjetas" subtitle="Sin tarjetas" /><div className="panel mt-6 p-10 text-center text-sm text-muted">Todavía no tenés tarjetas cargadas.</div></>);
+  // Sin tarjetas también hay que poder crear una (si no, la pantalla queda sin salida).
+  if (!cards.length) return (
+    <>
+      <PageHeader title="Tarjetas" subtitle="Sin tarjetas">{nuevaTarjetaBtn}</PageHeader>
+      <div className="panel mt-6 p-10 text-center">
+        <p className="text-sm text-muted">Todavía no tenés tarjetas cargadas.</p>
+        <button onClick={() => setCardModal({ open: true, card: null })} className="mt-4 rounded-xl bg-lime px-5 py-2.5 text-sm font-medium text-bg transition-transform hover:scale-[1.03]">Agregar la primera</button>
+      </div>
+      {cardModal.open && <CardModal card={cardModal.card} onClose={() => setCardModal({ open: false, card: null })} onSaved={reloadStatements} />}
+    </>
+  );
 
   const card = cards.find((c) => c.id === selectedId) ?? cards[0];
   const history = statements.filter((s) => s.cardId === card.id);
@@ -102,9 +138,14 @@ export default function TarjetasPage() {
   const isOpen = (s: StatementRow) => !!s.closingRaw && parseYMD(s.closingRaw) > today;
   // Cuotas que caen en el período de ese resumen.
   const cuotasForStmt = (s: StatementRow) => cuotasForPeriod(s.period, s.cardId).reduce((a, p) => a + p.monthly, 0);
+  // Suscripciones y abonos que se van a repetir. SOLO se suman a los resúmenes
+  // PROYECTADOS (id < 0): en uno real, esos consumos entran por el importador de
+  // mails, y sumarles la proyección encima los contaría dos veces.
+  const subsForCard = (cardId: number) => subsTotals(subs, cardId, fxSync().usd);
+  const subsDeStmt = (s: StatementRow) => (s.id < 0 ? subsForCard(s.cardId) : { ars: 0, usd: 0 });
   // Total del resumen: si está PAGADO → el reconciliado (guardado). Si NO (abierto o cerrado sin pagar) → en vivo (consumos + cuotas).
-  const stTotal = (s: StatementRow) => (s.paid ? s.totalArs : cuotasForStmt(s) + (consumos[s.id]?.ars ?? 0));
-  const stUsd = (s: StatementRow) => (s.paid ? s.totalUsd : (consumos[s.id]?.usd ?? 0));
+  const stTotal = (s: StatementRow) => (s.paid ? s.totalArs : cuotasForStmt(s) + (consumos[s.id]?.ars ?? 0) + subsDeStmt(s).ars);
+  const stUsd = (s: StatementRow) => (s.paid ? s.totalUsd : (consumos[s.id]?.usd ?? 0) + subsDeStmt(s).usd);
   // Pagar: fija el total que se ve en pantalla como reconciliado y marca is_paid (baja del saldo líquido).
   const handlePay = async (s: StatementRow) => {
     if (s.id < 0 || s.paid || payingId != null) return; // proyectados no se pagan
@@ -130,7 +171,10 @@ export default function TarjetasPage() {
   const cardPlans = plans.filter((p) => p.cardId === card.id);
   // Hasta dónde llegan las cuotas activas (mes del último vencimiento, relativo al último resumen).
   const horizon = cardPlans.reduce((mx, p) => Math.max(mx, monthsBetweenYM(lastPeriod, addMonthsYM(p.firstMonth, p.total - 1))), 0);
-  const futureCount = Math.min(6, Math.max(1, horizon));
+  const cardSubs = subs.filter((s) => s.cardId === card.id);
+  // Con suscripciones detectadas hay algo que proyectar aunque no queden cuotas:
+  // mostramos 3 meses en vez de 1 para que se vea el patrón mensual.
+  const futureCount = Math.min(6, Math.max(cardSubs.length ? 3 : 1, horizon));
   const closeDay = card.closeDay ?? (Number((current?.closingRaw ?? "").slice(8, 10)) || 25);
   const dueDay = card.dueDay ?? (Number((current?.dueRaw ?? "").slice(8, 10)) || 6);
   const existingPeriods = new Set(history.map((h) => h.period));
@@ -139,7 +183,7 @@ export default function TarjetasPage() {
     const closingRaw = `${period}-${String(Math.min(closeDay, daysInYM(period))).padStart(2, "0")}`;
     const dueMonth = dueDay < closeDay ? addMonthsYM(period, 1) : period;
     const dueRaw = `${dueMonth}-${String(Math.min(dueDay, daysInYM(dueMonth))).padStart(2, "0")}`;
-    return { id: -(card.id * 100 + idx + 1), cardId: card.id, period, closing: formatShort(closingRaw), due: formatShort(dueRaw), closingRaw, dueRaw, paid: false, totalArs: 0, totalUsd: 0 };
+    return { id: -(card.id * 100 + idx + 1), cardId: card.id, period, closing: formatShort(closingRaw), due: formatShort(dueRaw), closingRaw, dueRaw, paid: false, totalArs: 0, totalUsd: 0, fxRate: null };
   }).filter((p) => !existingPeriods.has(p.period)); // no duplicar períodos que ya existen como fila real
   const futuros = [...realFuture, ...projected].sort((a, b) => a.period.localeCompare(b.period));
 
@@ -169,7 +213,7 @@ export default function TarjetasPage() {
             : <StatusBadge paid={s.paid} paying={payingId === s.id} onPay={() => handlePay(s)} />}
           <Chevron className={`h-4 w-4 shrink-0 text-faint transition-transform ${exp ? "rotate-180 text-lime" : ""}`} />
         </div>
-        {exp && <MovementsPanel statement={s} consumos={movements[s.id]} cuotas={cuotasForPeriod(s.period, s.cardId)} loading={loadingMov === s.id} open={open} />}
+        {exp && <MovementsPanel statement={s} consumos={movements[s.id]} cuotas={cuotasForPeriod(s.period, s.cardId)} subs={s.id < 0 ? subs.filter((x) => x.cardId === s.cardId) : []} loading={loadingMov === s.id} open={open} />}
       </li>
     );
   };
@@ -179,9 +223,14 @@ export default function TarjetasPage() {
   const chartMonths = [...new Set(statements.map((s) => s.period))].sort();
   const lastRealPeriod = chartMonths[chartMonths.length - 1];
   const lastOfCard = (cid: number) => statements.filter((s) => s.cardId === cid).map((s) => s.period).sort().pop() ?? null;
-  const projValue = (period: string, cid: number) => cuotasForPeriod(period, cid).reduce((a, p) => a + p.monthly, 0);
+  // Un período proyectado = cuotas del período + suscripciones mensuales de esa tarjeta.
+  const projValue = (period: string, cid: number) => {
+    const cuotasArs = cuotasForPeriod(period, cid).reduce((a, p) => a + p.monthly, 0);
+    const s = subsForCard(cid);
+    return { ars: cuotasArs + s.ars, usd: s.usd };
+  };
   const chartHorizon = lastRealPeriod
-    ? Math.min(6, Math.max(1, plans.reduce((mx, p) => Math.max(mx, monthsBetweenYM(lastRealPeriod, addMonthsYM(p.firstMonth, p.total - 1))), 0)))
+    ? Math.min(6, Math.max(subs.length ? 3 : 1, plans.reduce((mx, p) => Math.max(mx, monthsBetweenYM(lastRealPeriod, addMonthsYM(p.firstMonth, p.total - 1))), 0)))
     : 0;
   const chartData: CardBarsRow[] = [
     ...chartMonths.map((period) => ({
@@ -190,23 +239,19 @@ export default function TarjetasPage() {
         const st = statements.find((s) => s.cardId === c.id && s.period === period);
         if (st) return { name: c.name, accent: c.accent, ars: stTotal(st), usd: stUsd(st), open: isOpen(st), proj: false };
         const lp = lastOfCard(c.id);
-        if (lp && period > lp) return { name: c.name, accent: c.accent, ars: projValue(period, c.id), usd: 0, open: false, proj: true };
+        if (lp && period > lp) { const p = projValue(period, c.id); return { name: c.name, accent: c.accent, ars: p.ars, usd: p.usd, open: false, proj: true }; }
         return { name: c.name, accent: c.accent, ars: null, usd: null, open: false, proj: false };
       }),
     })),
     ...Array.from({ length: chartHorizon }, (_, i) => addMonthsYM(lastRealPeriod, i + 1)).map((period) => ({
       period, future: true,
-      values: cards.map((c) => ({ name: c.name, accent: c.accent, ars: projValue(period, c.id), usd: 0, open: false, proj: true })),
+      values: cards.map((c) => { const p = projValue(period, c.id); return { name: c.name, accent: c.accent, ars: p.ars, usd: p.usd, open: false, proj: true }; }),
     })),
   ];
 
   return (
     <>
-      <PageHeader title="Tarjetas" subtitle="Resúmenes y consumos">
-        <button className="flex items-center gap-2 rounded-full bg-lime px-4 py-2 text-sm font-medium text-bg transition-transform hover:scale-[1.03]">
-          <Plus className="h-4 w-4" /> Agregar tarjeta
-        </button>
-      </PageHeader>
+      <PageHeader title="Tarjetas" subtitle="Resúmenes y consumos">{nuevaTarjetaBtn}</PageHeader>
 
       <div className="mt-6 grid grid-cols-1 gap-5 xl:grid-cols-3">
         <div className="flex flex-col gap-5 xl:col-span-2">
@@ -241,7 +286,11 @@ export default function TarjetasPage() {
               <div className="mt-2 h-2.5 w-full overflow-hidden rounded-full bg-surface-3">
                 <div className="h-full rounded-full transition-all" style={{ width: `${usage}%`, background: `linear-gradient(90deg, ${card.accent}, #c8ff4d)` }} />
               </div>
-              <p className="mt-2 text-xs text-faint">{card.limitArs ? `${usage}% del límite · disponible ${ars(card.limitArs - spent)}` : "Definí un límite para ver el uso disponible"}</p>
+              <p className="mt-2 text-xs text-faint">
+                {card.limitArs ? `${usage}% del límite · disponible ${ars(card.limitArs - spent)}` : (
+                  <>Sin límite definido. <button onClick={() => setCardModal({ open: true, card })} className="text-lime hover:underline">Definilo acá</button> para ver cuánto te queda.</>
+                )}
+              </p>
             </div>
 
             <div className="mt-5 flex flex-wrap gap-2">
@@ -257,9 +306,12 @@ export default function TarjetasPage() {
                   {expandedId === current.id ? "Ocultar movimientos" : "Ver movimientos"}
                 </button>
               )}
+              <button onClick={() => setCardModal({ open: true, card })} title="Editar tarjeta" className="flex items-center gap-1.5 rounded-xl border border-line bg-surface-2 px-4 py-2 text-sm text-muted transition-colors hover:text-fg">
+                <Pencil className="h-4 w-4" /> Editar tarjeta
+              </button>
             </div>
             {current && expandedId === current.id && (
-              <MovementsPanel statement={current} consumos={movements[current.id]} cuotas={cuotasForPeriod(current.period, current.cardId)} loading={loadingMov === current.id} open={isOpen(current)} />
+              <MovementsPanel statement={current} consumos={movements[current.id]} cuotas={cuotasForPeriod(current.period, current.cardId)} subs={[]} loading={loadingMov === current.id} open={isOpen(current)} />
             )}
           </section>
 
@@ -268,12 +320,16 @@ export default function TarjetasPage() {
               <h2 className="font-display text-lg text-fg">Resúmenes futuros</h2>
               <span className="rounded-full border border-violet/30 bg-violet/10 px-2.5 py-0.5 text-[0.65rem] text-violet">Proyección</span>
             </div>
-            <p className="text-xs text-faint">{card.name} · próximos {futuros.length} · cuotas y consumos por venir</p>
+            <p className="text-xs text-faint">
+              {card.name} · próximos {futuros.length} · cuotas{cardSubs.length > 0 ? ` y ${cardSubs.length} suscripcion${cardSubs.length === 1 ? "" : "es"}` : ""} por venir
+            </p>
             <ul className="mt-4">
               {futuros.map(renderStmt)}
               {futuros.length === 0 && <li className="py-6 text-center text-sm text-muted">Sin resúmenes próximos proyectados.</li>}
             </ul>
-            <p className="mt-2 text-[0.7rem] text-faint">Estimado a partir de las cuotas activas. Los consumos del mes se suman cuando se importan.</p>
+            <p className="mt-2 text-[0.7rem] text-faint">
+              Los meses marcados <span className="text-violet">próximo</span> estiman cuotas + suscripciones que se repiten todos los meses. El resumen <span className="text-sky">en curso</span> no las incluye: ahí los consumos entran solos cuando se importan del mail.
+            </p>
           </section>
 
           <section className="panel p-6">
@@ -337,6 +393,43 @@ export default function TarjetasPage() {
             )}
           </section>
 
+          <section className="panel p-6">
+            <div className="flex items-center justify-between gap-2">
+              <h2 className="font-display text-lg text-fg">Suscripciones</h2>
+              <span className="rounded-full border border-sky/30 bg-sky/10 px-2.5 py-0.5 text-[0.65rem] text-sky">🔁 mensual</span>
+            </div>
+            <p className="text-xs text-faint">{card.name} · se suman a cada resumen proyectado</p>
+            {cardSubs.length === 0 ? (
+              <p className="mt-4 text-sm text-muted">
+                No detecté abonos recurrentes en esta tarjeta. Se detectan solos con 3 meses de historia (2 si el nombre lo delata), o marcando el gasto como fijo en <a href="/hormiga" className="text-lime hover:underline">Gastos hormiga</a>.
+              </p>
+            ) : (
+              <>
+                <ul className="mt-4 space-y-2">
+                  {cardSubs.map((s) => (
+                    <li key={`${s.comercio}-${s.currency}`} className="flex items-center gap-3 rounded-xl px-1 py-1.5">
+                      <span className="grid h-9 w-9 shrink-0 place-items-center rounded-xl border border-line bg-surface-2 text-base">{s.emoji}</span>
+                      <div className="min-w-0">
+                        <p className="truncate text-sm text-fg">{s.comercio}</p>
+                        <p className="text-[0.7rem] text-faint">
+                          {s.motivo === "marcada" ? "marcada como fija" : `${s.meses.length} meses seguidos`}
+                          {s.lastMonth ? ` · última ${mesLabel(s.lastMonth)}` : ""}
+                        </p>
+                      </div>
+                      <span className="tnum ml-auto shrink-0 text-sm text-fg">{s.currency === "ARS" ? ars(s.amount) : usd(s.amount)}</span>
+                    </li>
+                  ))}
+                </ul>
+                <div className="mt-3 flex items-center justify-between border-t border-line pt-3 text-sm">
+                  <span className="text-muted">Por mes</span>
+                  <span className="tnum text-fg">
+                    {ars(subsForCard(card.id).ars)}{subsForCard(card.id).usd > 0 ? ` + ${usd(subsForCard(card.id).usd)}` : ""}
+                  </span>
+                </div>
+              </>
+            )}
+          </section>
+
           <section className="panel relative overflow-hidden p-6">
             <div className="pointer-events-none absolute -right-10 -top-12 h-40 w-40 rounded-full bg-violet/10 blur-3xl" />
             <div className="relative flex items-start gap-3">
@@ -360,6 +453,7 @@ export default function TarjetasPage() {
 
       {editingPlan && <EditPlanModal plan={editingPlan} onClose={() => setEditingPlan(null)} onSaved={reloadCuotas} />}
       {editingDates && <EditDatesModal statement={editingDates} onClose={() => setEditingDates(null)} onSaved={reloadStatements} />}
+      {cardModal.open && <CardModal card={cardModal.card} onClose={() => setCardModal({ open: false, card: null })} onSaved={reloadStatements} />}
     </>
   );
 }
@@ -406,13 +500,15 @@ function StatusBadge({ paid, paying, onPay }: { paid: boolean; paying?: boolean;
 }
 
 // Desplegable de movimientos del resumen, con dos páginas: lista y desglose por categoría.
-function MovementsPanel({ statement, consumos, cuotas, loading, open }: { statement: StatementRow; consumos: StatementMovement[] | undefined; cuotas: (PlanProj & { n: number })[]; loading: boolean; open: boolean }) {
+function MovementsPanel({ statement, consumos, cuotas, subs, loading, open }: { statement: StatementRow; consumos: StatementMovement[] | undefined; cuotas: (PlanProj & { n: number })[]; subs: CardSub[]; loading: boolean; open: boolean }) {
   const [page, setPage] = useState<"list" | "cat">("list");
-  const toArs = (amount: number, currency: string) => (currency === "ARS" ? amount : amount * USD_ARS);
+  const toArs = (amount: number, currency: string) => (currency === "ARS" ? amount : amount * fxSync().usd);
 
-  type Item = { key: string; emoji: string; desc: string; sub: string; category: string; amount: number; currency: string; isCuota: boolean };
+  type Item = { key: string; emoji: string; desc: string; sub: string; category: string; amount: number; currency: string; isCuota: boolean; isSub?: boolean };
   const base: Item[] = [
     ...cuotas.map((c) => ({ key: `q${c.id}`, emoji: c.emoji, desc: c.desc, sub: `Cuota ${c.n}/${c.total}`, category: c.category, amount: c.monthly, currency: "ARS", isCuota: true })),
+    // Suscripciones proyectadas (solo en resúmenes que todavía no existen).
+    ...subs.map((s) => ({ key: `s${s.cardId}-${s.comercio}-${s.currency}`, emoji: s.emoji, desc: s.comercio, sub: s.motivo === "marcada" ? "abono fijo" : `se repite hace ${s.meses.length} meses`, category: s.category, amount: s.amount, currency: s.currency, isCuota: false, isSub: true })),
     ...(consumos ?? []).map((c) => ({ key: `t${c.id}`, emoji: c.emoji, desc: c.desc, sub: c.date, category: c.category, amount: c.amount, currency: c.currency, isCuota: false })),
   ];
 
@@ -465,7 +561,8 @@ function MovementsPanel({ statement, consumos, cuotas, loading, open }: { statem
                 <p className="flex items-center gap-1.5 text-[0.7rem] text-faint">
                   {i.category}
                   {i.isCuota && <span className="rounded-full border border-violet/30 bg-violet/10 px-1.5 text-[0.6rem] text-violet">{i.sub}</span>}
-                  {!i.isCuota && <span>· {i.sub}</span>}
+                  {i.isSub && <span className="rounded-full border border-sky/30 bg-sky/10 px-1.5 text-[0.6rem] text-sky">🔁 {i.sub}</span>}
+                  {!i.isCuota && !i.isSub && <span>· {i.sub}</span>}
                 </p>
               </div>
               <span className="tnum ml-auto shrink-0 text-sm text-fg">{i.currency === "ARS" ? ars(i.amount) : usd(i.amount)}</span>

@@ -25,6 +25,15 @@
   --radius-xl: 1.25rem;
 }
 
+/* Alto del bottom nav de mobile. Una sola fuente de verdad: el nav, el padding del
+   main y el botón flotante del asistente se atan a esto para no descalzarse. */
+:root {
+  --nav-h: 4.25rem;
+  --nav-safe: calc(var(--nav-h) + env(safe-area-inset-bottom, 0px));
+}
+.pb-nav { padding-bottom: calc(var(--nav-safe) + 1.5rem); }
+.bottom-safe { padding-bottom: env(safe-area-inset-bottom, 0px); }
+
 * {
   border-color: var(--color-line);
 }

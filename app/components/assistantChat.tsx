@@ -6,6 +6,7 @@ import {
   type AssistantProposal, type Category, type PaymentMethod,
 } from "@/lib/db";
 import { ars, usd } from "@/lib/format";
+import { fxSync } from "@/lib/fx";
 
 export type Msg = { role: "user" | "assistant"; content: string; proposal?: AssistantProposal | null; options?: string[] | null; cost?: number; tokens?: number; done?: boolean };
 const money = (n: number, c: string) => (c === "ARS" ? ars(n) : c === "USD" ? usd(n) : `${n} ${c}`);
@@ -99,7 +100,7 @@ export function MessageList({ chat, onConfirm }: { chat: ReturnType<typeof useAs
           {m.proposal && (m.proposal.transacciones?.length || m.proposal.deudas?.length) && (
             <ProposalCard p={m.proposal} busy={chat.busy} onConfirm={() => onConfirm(i, m.proposal!)} onDiscard={() => chat.discard(i)} />
           )}
-          {m.role === "assistant" && m.cost != null && <p className="mt-1 text-[0.6rem] text-faint" title={`US$ ${m.cost.toFixed(4)} · ${m.tokens} tokens`}>costo ≈ ${Math.max(1, Math.round(m.cost * 1455)).toLocaleString("es-AR")} pesos</p>}
+          {m.role === "assistant" && m.cost != null && <p className="mt-1 text-[0.6rem] text-faint" title={`US$ ${m.cost.toFixed(4)} · ${m.tokens} tokens`}>costo ≈ ${Math.max(1, Math.round(m.cost * fxSync().usd)).toLocaleString("es-AR")} pesos</p>}
         </div>
       ))}
       {chat.loading && <div className="max-w-[88%] rounded-2xl bg-surface-2 px-3.5 py-2 text-sm text-muted">Pensando…</div>}

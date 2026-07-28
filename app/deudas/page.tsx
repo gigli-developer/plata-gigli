@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { db, fetchDebts, fetchPersons, insertDebt, insertPerson, settleDebt, payDebt, deleteDebtPayment, type DebtView, type DebtPayment } from "@/lib/db";
 import { readCache, writeCache } from "@/lib/cache";
+import { fxSync, loadFx, toArs } from "@/lib/fx";
 import { ars } from "@/lib/format";
 import { PageHeader } from "../components/Shell";
 import { ArrowUpRight, ArrowDownRight, Swap, Chevron } from "../icons";
@@ -16,8 +17,8 @@ const kindMeta: Record<DebtKind, { label: string; emoji: string; cls: string; bg
 
 type DirFilter = "todas" | "to_collect" | "to_pay";
 const money = (n: number, cur: string) => (cur === "USD" ? `US$ ${n.toLocaleString("es-AR")}` : cur === "USDT" ? `${n.toLocaleString("es-AR")} USDT` : ars(n));
-// para sumar deudas de distintas monedas, valuamos en ARS
-const inArs = (n: number, cur: string) => (cur === "USD" ? n * 1455 : cur === "USDT" ? n * 1462 : n);
+// para sumar deudas de distintas monedas, valuamos en ARS con la cotización vigente
+const inArs = (n: number, cur: string) => toArs(n, cur, fxSync());
 
 export default function DeudasPage() {
   const [items, setItems] = useState<DebtView[]>([]);
@@ -38,6 +39,7 @@ export default function DeudasPage() {
     // Pintar al instante el último snapshot; lo fresco llega por atrás.
     const s = readCache<{ d: DebtView[]; p: { id: number; name: string }[] }>("deudas");
     if (s) { setItems(s.d); setPersons(s.p); setLoading(false); }
+    loadFx().then(() => setItems((p) => [...p])); // refresca la valuación cuando llega la cotización
     reload().finally(() => setLoading(false));
   }, []);
 

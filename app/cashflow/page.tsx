@@ -8,6 +8,7 @@ import {
   fetchCashflowPlans, insertCashflowPlan, deleteCashflowPlan,
   type Metrics, type RecurringView, type PlanProj, type MonthAgg, type StatementRow, type CashflowPlan,
 } from "@/lib/db";
+import { aggArs, arsDe } from "@/lib/fx";
 import { readCache, writeCache } from "@/lib/cache";
 import { compact } from "@/lib/format";
 import { PageHeader } from "../components/Shell";
@@ -71,7 +72,10 @@ export default function CashflowPage() {
 
   const proj = useMemo(() => {
     if (!metrics) return null;
-    const toArs = (v: number, cur: string) => (cur === "USD" ? v * usdRate : cur === "USDT" ? v * usdtRate : v);
+    // Movimientos ya ocurridos: se valúan con la cotización congelada de su día, para que
+    // los meses cerrados no se muevan al cambiar el dólar. La cotización editable de arriba
+    // sigue mandando en los saldos, las proyecciones y los resúmenes de tarjeta sin pagar.
+    const valuar = (b: MonthAgg) => aggArs(b, { usd: usdRate, usdt: usdtRate, day: null });
     const months = Array.from({ length: HORIZON }, (_, i) => addMonths(mode === "proyeccion" ? CUR : histStart, i));
 
     // --- presupuestos: separo el gasto con tarjeta de crédito del resto (efectivo/débito) ---
@@ -84,7 +88,7 @@ export default function CashflowPage() {
     let creditSeed = 0;                                                 // consumos con crédito (para estimar resúmenes futuros)
     for (const b of breakdown) {
       if (b.type !== "egreso" || !completed.includes(b.month) || !NOFLOW(b.category)) continue;
-      const ars = toArs(b.total, b.currency);
+      const ars = valuar(b);
       const e = seed.get(b.category) ?? { v: 0, emoji: b.emoji }; e.v += ars; seed.set(b.category, e);
       if (isCredito(b.method)) creditSeed += ars;
       else { const c = seedCash.get(b.category) ?? { v: 0, emoji: b.emoji }; c.v += ars; seedCash.set(b.category, c); }
@@ -111,7 +115,8 @@ export default function CashflowPage() {
     const stmtCuotas = (cardId: number, period: string) => plans.reduce((s, p) => { if (p.cardId !== cardId) return s; const k = monthsBetween(p.firstMonth, period); return (k >= 0 && k < p.total) ? s + p.monthly : s; }, 0);
     // total de un resumen: si está pagado, el reconciliado (guardado); si no, en vivo (consumos linkeados + cuotas).
     const stmtTotal = (st: StatementRow) => {
-      if (st.paid) return st.totalArs + st.totalUsd * usdRate;
+      // Pagado: los USD se saldaron al dólar de ESE día (fxRate), no al de hoy.
+      if (st.paid) return st.totalArs + arsDe(st.totalUsd, "USD", st.fxRate, { usd: usdRate, usdt: usdtRate, day: null });
       const c = stmtConsumos[st.id] ?? { ars: 0, usd: 0 };
       return c.ars + c.usd * usdRate + stmtCuotas(st.cardId, st.period);
     };
@@ -142,7 +147,7 @@ export default function CashflowPage() {
       } else {
         for (const b of breakdown) {
           if (b.month !== mm || b.type !== "ingreso" || !NOFLOW(b.category)) continue;
-          inc.set(b.category, (inc.get(b.category) ?? 0) + toArs(b.total, b.currency));
+          inc.set(b.category, (inc.get(b.category) ?? 0) + valuar(b));
         }
       }
 
@@ -155,7 +160,7 @@ export default function CashflowPage() {
         } else {
           for (const b of breakdown) {
             if (b.month !== mm || b.type !== "egreso" || !NOFLOW(b.category)) continue;
-            egr.set(b.category, (egr.get(b.category) ?? 0) + toArs(b.total, b.currency));
+            egr.set(b.category, (egr.get(b.category) ?? 0) + valuar(b));
           }
           for (const p of plans) { const k = monthsBetween(p.firstMonth, mm); if (k >= 0 && k < p.total) egr.set(p.category, (egr.get(p.category) ?? 0) + p.monthly); }
         }
@@ -166,7 +171,7 @@ export default function CashflowPage() {
         } else {
           for (const b of breakdown) {
             if (b.month !== mm || b.type !== "egreso" || !NOFLOW(b.category) || isCredito(b.method)) continue;
-            egr.set(b.category, (egr.get(b.category) ?? 0) + toArs(b.total, b.currency));
+            egr.set(b.category, (egr.get(b.category) ?? 0) + valuar(b));
           }
         }
         const pago = cardPayment(mm);

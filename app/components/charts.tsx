@@ -102,6 +102,111 @@ export function GroupedColumns({ data, fmt, height = 200 }: { data: MonthCol[]; 
   );
 }
 
+// ---------- Patrimonio neto en el tiempo ----------
+// Columnas apiladas: activos hacia arriba (pesos / dólares / cripto / te deben) y
+// pasivos hacia abajo (cuotas + lo que debés), con la línea del NETO encima. El eje
+// cero queda donde corresponda según cuánto pasivo haya.
+export type NetWorthCol = {
+  label: string; ars: number; usdArs: number; usdtArs: number;
+  teDeben: number; pasivos: number; patrimonio: number;
+};
+const NW_COLORS = { ars: "#c8ff4d", usd: "#f5d76e", usdt: "#5ec8ff", deben: "#34e1a0", pasivo: "#ff6b6b" };
+export function NetWorthChart({ data, fmt, height = 220 }: { data: NetWorthCol[]; fmt: (n: number) => string; height?: number }) {
+  const [hover, setHover] = useState<number | null>(null);
+  if (!data.length) return <div className="grid h-48 place-items-center text-sm text-faint">Sin historia todavía</div>;
+
+  const maxAct = Math.max(...data.map((d) => d.ars + d.usdArs + d.usdtArs + d.teDeben), 1);
+  const maxPas = Math.max(...data.map((d) => d.pasivos), 0);
+  const total = maxAct + maxPas;
+  const hAct = (maxAct / total) * height;   // px por encima del cero
+  const hPas = (maxPas / total) * height;   // px por debajo
+  const px = (v: number) => (v > 0 ? Math.max((v / total) * height, v > 0 ? 1 : 0) : 0);
+  const sel = hover != null ? data[hover] : data[data.length - 1];
+  const selIdx = hover != null ? hover : data.length - 1;
+  const prev = selIdx > 0 ? data[selIdx - 1] : null;
+
+  // Puntos de la línea del neto, en el mismo sistema de coordenadas (0 = arriba del área de activos).
+  const yNeto = (v: number) => hAct - (v / total) * height;
+
+  return (
+    <div>
+      <div className="mb-3 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs">
+        <span className="flex items-center gap-1.5 text-muted"><span className="h-2.5 w-2.5 rounded-sm" style={{ background: NW_COLORS.ars }} /> Pesos</span>
+        <span className="flex items-center gap-1.5 text-muted"><span className="h-2.5 w-2.5 rounded-sm" style={{ background: NW_COLORS.usd }} /> Dólares</span>
+        <span className="flex items-center gap-1.5 text-muted"><span className="h-2.5 w-2.5 rounded-sm" style={{ background: NW_COLORS.usdt }} /> Cripto</span>
+        <span className="flex items-center gap-1.5 text-muted"><span className="h-2.5 w-2.5 rounded-sm" style={{ background: NW_COLORS.deben }} /> Te deben</span>
+        <span className="flex items-center gap-1.5 text-muted"><span className="h-2.5 w-2.5 rounded-sm" style={{ background: NW_COLORS.pasivo }} /> Pasivos</span>
+      </div>
+
+      {/* Sin gap entre columnas: así el centro de la columna i cae exacto en
+          (i+0.5)/n del ancho y la línea del neto queda alineada con las barras.
+          La separación visual la da el ancho de la barra (w-1/2). */}
+      <div className="relative flex" style={{ height: height + 20 }}>
+        {/* línea del neto, por encima de las columnas. El viewBox va 0..100 en X
+            (porcentaje) y se estira; el trazo se compensa con vector-effect y los
+            puntos son divs, que estirados se verían como elipses. */}
+        <svg className="pointer-events-none absolute inset-x-0 top-0" width="100%" height={height} preserveAspectRatio="none" viewBox={`0 0 100 ${height}`}>
+          <polyline
+            fill="none" stroke="var(--color-fg)" strokeWidth={1.5} strokeLinejoin="round"
+            vectorEffect="non-scaling-stroke"
+            points={data.map((d, i) => `${((i + 0.5) / data.length) * 100},${yNeto(d.patrimonio)}`).join(" ")}
+          />
+        </svg>
+        {data.map((d, i) => (
+          <span
+            key={`dot${i}`}
+            className="pointer-events-none absolute z-10 rounded-full border-[1.5px] border-fg bg-bg"
+            style={{
+              left: `${((i + 0.5) / data.length) * 100}%`,
+              top: yNeto(d.patrimonio),
+              width: i === selIdx ? 9 : 6, height: i === selIdx ? 9 : 6,
+              transform: "translate(-50%, -50%)",
+            }}
+          />
+        ))}
+
+        {data.map((d, i) => (
+          <div
+            key={i} className="flex flex-1 flex-col items-center"
+            onMouseEnter={() => setHover(i)} onMouseLeave={() => setHover(null)}
+            style={{ opacity: hover == null || hover === i ? 1 : 0.45, cursor: "default" }}
+          >
+            {/* activos */}
+            <div className="flex w-full flex-col justify-end" style={{ height: hAct }}>
+              <div className="mx-auto flex w-1/2 max-w-10 flex-col overflow-hidden rounded-t-md">
+                <div className="grow-bar" style={{ height: px(d.teDeben), background: NW_COLORS.deben }} />
+                <div className="grow-bar" style={{ height: px(d.usdtArs), background: NW_COLORS.usdt }} />
+                <div className="grow-bar" style={{ height: px(d.usdArs), background: NW_COLORS.usd }} />
+                <div className="grow-bar" style={{ height: px(d.ars), background: NW_COLORS.ars }} />
+              </div>
+            </div>
+            {/* pasivos, hacia abajo */}
+            <div className="flex w-full flex-col justify-start border-t border-line" style={{ height: hPas }}>
+              <div className="mx-auto w-1/2 max-w-10 overflow-hidden rounded-b-md">
+                <div className="grow-bar" style={{ height: px(d.pasivos), background: NW_COLORS.pasivo, opacity: 0.85 }} />
+              </div>
+            </div>
+            <span className="mt-1 text-[0.65rem] text-faint">{d.label}</span>
+          </div>
+        ))}
+      </div>
+
+      {sel && (
+        <div className="mt-3 flex flex-wrap items-baseline gap-x-3 gap-y-1 border-t border-line pt-3 text-xs">
+          <span className="text-muted">{sel.label}</span>
+          <span className="tnum text-fg">Neto {fmt(sel.patrimonio)}</span>
+          <span className="tnum text-faint">Activos {fmt(sel.ars + sel.usdArs + sel.usdtArs + sel.teDeben)} · Pasivos {fmt(sel.pasivos)}</span>
+          {prev && (
+            <span className={`tnum ml-auto ${sel.patrimonio - prev.patrimonio >= 0 ? "text-emerald" : "text-coral"}`}>
+              {sel.patrimonio - prev.patrimonio >= 0 ? "▲" : "▼"} {fmt(Math.abs(sel.patrimonio - prev.patrimonio))} vs mes anterior
+            </span>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
 // ---------- Variación por categoría (tabla comparativa entre dos meses) ----------
 export type VarRow = { label: string; emoji?: string; cur: number; prev: number; est: number; pct: number | null };
 type SortKey = "cat" | "prev" | "cur" | "est" | "var";

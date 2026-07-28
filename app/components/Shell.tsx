@@ -2,15 +2,17 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { Grid, Swap, Card as CardIcon, Handshake, Repeat, Coins, Gear, Bell, Chart, Flow, Tag } from "../icons";
+import { useState } from "react";
+import { Grid, Swap, Card as CardIcon, Handshake, Repeat, Coins, Gear, Bell, Chart, Flow, Tag, Dots, Bug } from "../icons";
+import MoreSheet from "./MoreSheet";
 import { createClient } from "@/lib/supabase/client";
 import { user } from "@/lib/mock";
-import Assistant from "./Assistant";
 import PrivacyToggle, { usePrivacy } from "./PrivacyToggle";
 
 export const nav = [
   { label: "Resumen", Icon: Grid, href: "/" },
   { label: "Métricas", Icon: Chart, href: "/metricas" },
+  { label: "Gastos hormiga", Icon: Bug, href: "/hormiga" },
   { label: "Cash Flow", Icon: Flow, href: "/cashflow" },
   { label: "Transacciones", Icon: Swap, href: "/transacciones" },
   { label: "Tarjetas", Icon: CardIcon, href: "/tarjetas" },
@@ -19,6 +21,12 @@ export const nav = [
   { label: "Divisas", Icon: Coins, href: "/divisas" },
   { label: "Reglas", Icon: Tag, href: "/reglas" },
 ];
+
+// Los 4 que quedan fijos en el bottom nav de mobile; el resto va al botón "Más".
+// Para cambiarlos, editá esta lista (tienen que existir en `nav`).
+const MOBILE_FIJOS = ["/", "/hormiga", "/transacciones", "/tarjetas"];
+// Etiqueta corta para que entren 5 slots en pantallas de 360px.
+const SHORT: Record<string, string> = { "/": "Resumen", "/metricas": "Métricas", "/hormiga": "Hormiga", "/transacciones": "Movs", "/tarjetas": "Tarjetas", "/cashflow": "Flujo" };
 
 function isActive(pathname: string, href: string) {
   return href === "/" ? pathname === "/" : pathname.startsWith(href);
@@ -46,6 +54,9 @@ export default function Shell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
   const privacy = usePrivacy();
+  const [moreOpen, setMoreOpen] = useState(false);
+  const navFijos = MOBILE_FIJOS.map((h) => nav.find((n) => n.href === h)).filter((n) => !!n);
+  const navResto = nav.filter((n) => !MOBILE_FIJOS.includes(n.href));
 
   const logout = async () => {
     await createClient().auth.signOut();
@@ -99,7 +110,7 @@ export default function Shell({ children }: { children: React.ReactNode }) {
       </aside>
 
       {/* Main */}
-      <main className="flex-1 min-w-0 overflow-x-clip px-5 pb-28 pt-6 lg:px-9 lg:pb-12">
+      <main className="pb-nav flex-1 min-w-0 overflow-x-clip px-5 pt-6 lg:px-9 lg:pb-12">
         {/* Mobile top bar */}
         <div className="mb-6 flex items-center justify-between lg:hidden">
           <Brand compact />
@@ -116,21 +127,31 @@ export default function Shell({ children }: { children: React.ReactNode }) {
       </main>
 
       {/* Mobile bottom nav */}
-      <nav className="lg:hidden fixed inset-x-0 bottom-0 z-20 border-t border-line bg-bg/85 backdrop-blur-xl">
-        <div className="mx-auto flex max-w-md items-center justify-around px-2 py-2">
-          {nav.slice(0, 5).map(({ label, Icon, href }) => {
+      <nav className="bottom-safe lg:hidden fixed inset-x-0 bottom-0 z-20 border-t border-line bg-bg/85 backdrop-blur-xl">
+        <div className="mx-auto flex max-w-md items-stretch justify-around px-1 py-2">
+          {navFijos.map(({ label, Icon, href }) => {
             const a = isActive(pathname, href);
             return (
-              <Link key={href} href={href} className={`flex flex-col items-center gap-1 rounded-lg px-3 py-1.5 text-[0.62rem] ${a ? "text-lime" : "text-faint"}`}>
+              <Link key={href} href={href} className={`flex flex-1 flex-col items-center gap-1 rounded-lg px-1 py-1.5 text-[0.62rem] ${a ? "text-lime" : "text-faint"}`}>
                 <Icon className="h-[22px] w-[22px]" />
-                {label}
+                {SHORT[href] ?? label}
               </Link>
             );
           })}
+          <button
+            onClick={() => setMoreOpen(true)}
+            aria-label="Más secciones"
+            className={`flex flex-1 flex-col items-center gap-1 rounded-lg px-1 py-1.5 text-[0.62rem] ${
+              navResto.some((n) => isActive(pathname, n.href)) ? "text-lime" : "text-faint"
+            }`}
+          >
+            <Dots className="h-[22px] w-[22px]" />
+            Más
+          </button>
         </div>
       </nav>
 
-      <Assistant />
+      {moreOpen && <MoreSheet items={navResto} pathname={pathname} onClose={() => setMoreOpen(false)} />}
     </div>
   );
 }
