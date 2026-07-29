@@ -79,15 +79,15 @@ export default function DeudasPage() {
         <SummaryCard label="Balance neto" value={toCollect - toPay} tone="accent" up={toCollect - toPay >= 0} />
       </div>
       <p className="mt-3 flex items-center gap-2 text-xs text-faint">
-        <span className="grid h-4 w-4 place-items-center rounded-full bg-surface-3 text-[0.6rem]">i</span>
+        <span className="grid h-4 w-4 place-items-center rounded-full bg-white/[0.09] text-[0.6rem]">i</span>
         Los préstamos (💸 Dinero) no se cuentan como gasto. En los compartidos (🧾) solo tu parte es gasto tuyo.
       </p>
 
       <div className="mt-6 grid grid-cols-1 gap-5 xl:grid-cols-3">
         <div className="xl:col-span-2">
-          <div className="flex rounded-xl border border-line bg-surface-2 p-1 text-sm">
+          <div className="flex rounded-xl border border-line bg-white/[0.06] p-1 text-sm">
             {(["personas", "historial"] as const).map((v) => (
-              <button key={v} onClick={() => { setView(v); setSelected(null); }} className={`rounded-lg px-3 py-1.5 transition-colors ${view === v ? "bg-surface-3 text-fg" : "text-muted hover:text-fg"}`}>
+              <button key={v} onClick={() => { setView(v); setSelected(null); }} className={`rounded-lg px-3 py-1.5 transition-colors ${view === v ? "bg-white/[0.09] text-fg" : "text-muted hover:text-fg"}`}>
                 {v === "personas" ? "Por persona" : "Historial"}
               </button>
             ))}
@@ -137,7 +137,7 @@ function SummaryCard({ label, value, tone, up }: { label: string; value: number;
         <span className={`grid h-5 w-5 place-items-center rounded-md bg-white/5 ${color}`}>{up ? <ArrowUpRight className="h-3 w-3" /> : <ArrowDownRight className="h-3 w-3" />}</span>
         {label}
       </div>
-      <p className="tnum mt-2 font-display text-2xl text-fg">{ars(value)}</p>
+      <p className="tnum mt-2 text-[21px] font-semibold text-fg">{ars(value)}</p>
     </div>
   );
 }
@@ -147,16 +147,16 @@ function Segmented({ value, onChange }: { value: DirFilter; onChange: (v: DirFil
     { v: "todas", label: "Todas" }, { v: "to_collect", label: "Te deben" }, { v: "to_pay", label: "Debés" },
   ];
   return (
-    <div className="flex rounded-xl border border-line bg-surface-2 p-1 text-sm">
+    <div className="flex rounded-xl border border-line bg-white/[0.06] p-1 text-sm">
       {opts.map((o) => (
-        <button key={o.v} onClick={() => onChange(o.v)} className={`rounded-lg px-3 py-1.5 transition-colors ${value === o.v ? "bg-surface-3 text-fg" : "text-muted hover:text-fg"}`}>{o.label}</button>
+        <button key={o.v} onClick={() => onChange(o.v)} className={`rounded-lg px-3 py-1.5 transition-colors ${value === o.v ? "bg-white/[0.09] text-fg" : "text-muted hover:text-fg"}`}>{o.label}</button>
       ))}
     </div>
   );
 }
 
 function KindChip({ active, onClick, children }: { active: boolean; onClick: () => void; children: React.ReactNode }) {
-  return <button onClick={onClick} className={`rounded-full border px-3 py-1.5 text-xs transition-colors ${active ? "border-accent/40 bg-accent/10 text-accent" : "border-line bg-surface-2 text-muted hover:text-fg"}`}>{children}</button>;
+  return <button onClick={onClick} className={`rounded-full border px-3 py-1.5 text-xs transition-colors ${active ? "border-accent/40 bg-accent/10 text-accent" : "border-line bg-white/[0.06] text-muted hover:text-fg"}`}>{children}</button>;
 }
 
 type Ev = { key: string; at: string; dateLabel: string; person: string; kind: DebtKind; amount: number; currency: string; verb: string; desc: string; incoming: boolean; isPay: boolean };
@@ -220,8 +220,8 @@ function PeopleSummary({ items, loading, onOpen }: { items: DebtView[]; loading:
       {people.map((p) => {
         const net = p.collect - p.pay;
         return (
-          <button key={p.name} onClick={() => onOpen(p.name)} className="flex w-full items-center gap-3 rounded-xl px-2 py-3 text-left transition-colors hover:bg-surface-2/50">
-            <span className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-gradient-to-br from-violet/30 to-sky/20 font-display text-fg">{p.name.slice(0, 1).toUpperCase()}</span>
+          <button key={p.name} onClick={() => onOpen(p.name)} className="flex w-full items-center gap-3 rounded-xl px-2 py-3 text-left transition-colors hover:bg-white/[0.05]">
+            <span className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-gradient-to-br from-accent/30 to-sky/20 font-display text-fg">{p.name.slice(0, 1).toUpperCase()}</span>
             <div className="min-w-0">
               <p className="truncate text-[0.95rem] text-fg">{p.name}</p>
               <p className="text-xs text-faint">{p.pending > 0 ? `${p.pending} pendiente${p.pending > 1 ? "s" : ""}` : "al día ✅"} · {p.total} en total</p>
@@ -246,8 +246,8 @@ function PersonDetail({ person, items, onBack, onSettle, onPay, onDeletePayment 
   return (
     <section className="panel mt-3 p-4 sm:p-5">
       <div className="flex items-center gap-3">
-        <button onClick={onBack} className="grid h-8 w-8 shrink-0 place-items-center rounded-lg border border-line bg-surface-2 text-muted hover:text-fg"><Chevron className="h-4 w-4 rotate-90" /></button>
-        <span className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-gradient-to-br from-violet/30 to-sky/20 font-display text-fg">{person.slice(0, 1).toUpperCase()}</span>
+        <button onClick={onBack} className="grid h-8 w-8 shrink-0 place-items-center rounded-lg border border-line bg-white/[0.06] text-muted hover:text-fg"><Chevron className="h-4 w-4 rotate-90" /></button>
+        <span className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-gradient-to-br from-accent/30 to-sky/20 font-display text-fg">{person.slice(0, 1).toUpperCase()}</span>
         <div className="min-w-0">
           <p className="font-display text-lg text-fg">{person}</p>
           <p className="text-xs text-faint">{items.length} movimiento{items.length > 1 ? "s" : ""}</p>
@@ -270,9 +270,9 @@ function PersonDetail({ person, items, onBack, onSettle, onPay, onDeletePayment 
         {sorted.map((d) => {
           const m = kindMeta[d.kind]; const collectDir = d.direction === "to_collect";
           return (
-            <li key={d.id} className="rounded-xl border border-line bg-surface-2/30 px-3 py-2.5">
+            <li key={d.id} className="rounded-xl border border-line bg-white/[0.03] px-3 py-2.5">
               <div className="flex items-center gap-3">
-                <span className="grid h-9 w-9 shrink-0 place-items-center rounded-lg border border-line bg-surface text-base">{m.emoji}</span>
+                <span className="grid h-9 w-9 shrink-0 place-items-center rounded-lg border border-line bg-white/[0.05] text-base">{m.emoji}</span>
                 <div className="min-w-0">
                   <p className="truncate text-sm text-fg">{d.description || m.label}</p>
                   <p className="text-[0.7rem] text-faint">
@@ -322,15 +322,15 @@ function DebtActions({ onSettle, onPay }: { onSettle: () => void; onPay: (amount
   if (!paying) {
     return (
       <div className="flex items-center gap-1.5">
-        <button onClick={() => setPaying(true)} className="rounded-lg border border-line bg-surface px-2.5 py-1 text-xs text-muted transition-colors hover:border-sky/40 hover:text-sky">Pago</button>
-        <button onClick={onSettle} className="rounded-lg border border-line bg-surface px-2.5 py-1 text-xs text-muted transition-colors hover:border-emerald/40 hover:text-emerald">Saldar</button>
+        <button onClick={() => setPaying(true)} className="rounded-lg border border-line bg-white/[0.05] px-2.5 py-1 text-xs text-muted transition-colors hover:border-sky/40 hover:text-sky">Pago</button>
+        <button onClick={onSettle} className="rounded-lg border border-line bg-white/[0.05] px-2.5 py-1 text-xs text-muted transition-colors hover:border-emerald/40 hover:text-emerald">Saldar</button>
       </div>
     );
   }
   const amount = Number(val.replace(/[^\d]/g, "")) || 0;
   return (
     <div className="flex items-center gap-1">
-      <div className="flex items-center rounded-lg border border-line bg-surface px-2 py-1">
+      <div className="flex items-center rounded-lg border border-line bg-white/[0.05] px-2 py-1">
         <span className="text-xs text-faint">$</span>
         <input autoFocus value={val} onChange={(e) => setVal(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter" && amount > 0) onPay(amount); }} inputMode="numeric" placeholder="monto" className="tnum w-20 bg-transparent text-xs text-fg outline-none placeholder:text-faint" />
       </div>
@@ -395,7 +395,7 @@ function NewDebtForm({ persons, onSaved }: { persons: { id: number; name: string
 
         <div className="mt-4 grid grid-cols-3 gap-2">
           {(Object.keys(kindMeta) as DebtKind[]).map((k) => (
-            <button key={k} onClick={() => setKind(k)} className={`rounded-xl border px-2 py-2.5 text-center text-xs transition-colors ${kind === k ? `${kindMeta[k].bg} ${kindMeta[k].cls}` : "border-line bg-surface-2 text-muted hover:text-fg"}`}>
+            <button key={k} onClick={() => setKind(k)} className={`rounded-xl border px-2 py-2.5 text-center text-xs transition-colors ${kind === k ? `${kindMeta[k].bg} ${kindMeta[k].cls}` : "border-line bg-white/[0.06] text-muted hover:text-fg"}`}>
               <span className="block text-base">{kindMeta[k].emoji}</span>
               {kindMeta[k].label}
             </button>
@@ -403,16 +403,16 @@ function NewDebtForm({ persons, onSaved }: { persons: { id: number; name: string
         </div>
 
         <div className="mt-4 grid grid-cols-2 gap-2">
-          <button onClick={() => setDirection("to_collect")} className={`rounded-xl border py-2.5 text-sm transition-colors ${direction === "to_collect" ? "border-emerald/40 bg-emerald/10 text-emerald" : "border-line bg-surface-2 text-muted hover:text-fg"}`}>Me deben</button>
-          <button onClick={() => setDirection("to_pay")} className={`rounded-xl border py-2.5 text-sm transition-colors ${direction === "to_pay" ? "border-coral/40 bg-coral/10 text-coral" : "border-line bg-surface-2 text-muted hover:text-fg"}`}>Yo debo</button>
+          <button onClick={() => setDirection("to_collect")} className={`rounded-xl border py-2.5 text-sm transition-colors ${direction === "to_collect" ? "border-emerald/40 bg-emerald/10 text-emerald" : "border-line bg-white/[0.06] text-muted hover:text-fg"}`}>Me deben</button>
+          <button onClick={() => setDirection("to_pay")} className={`rounded-xl border py-2.5 text-sm transition-colors ${direction === "to_pay" ? "border-coral/40 bg-coral/10 text-coral" : "border-line bg-white/[0.06] text-muted hover:text-fg"}`}>Yo debo</button>
         </div>
 
         <Field label="Persona">
           {addingPerson ? (
             <div className="flex items-center gap-2">
-              <input autoFocus value={newPerson} onChange={(e) => setNewPerson(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter") savePerson(); }} placeholder="Nombre…" className="w-full rounded-xl border border-accent/40 bg-surface-2 px-3 py-2.5 text-sm text-fg outline-none placeholder:text-faint" />
+              <input autoFocus value={newPerson} onChange={(e) => setNewPerson(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter") savePerson(); }} placeholder="Nombre…" className="w-full rounded-xl border border-accent/40 bg-white/[0.06] px-3 py-2.5 text-sm text-fg outline-none placeholder:text-faint" />
               <button onClick={savePerson} className="shrink-0 rounded-xl bg-accent px-3 py-2.5 text-sm font-medium text-bg">OK</button>
-              <button onClick={() => { setAddingPerson(false); setNewPerson(""); }} className="shrink-0 rounded-xl border border-line bg-surface-2 px-3 py-2.5 text-sm text-muted">✕</button>
+              <button onClick={() => { setAddingPerson(false); setNewPerson(""); }} className="shrink-0 rounded-xl border border-line bg-white/[0.06] px-3 py-2.5 text-sm text-muted">✕</button>
             </div>
           ) : (
             <div className="flex items-center gap-2">
@@ -421,19 +421,19 @@ function NewDebtForm({ persons, onSaved }: { persons: { id: number; name: string
                   {persons.map((p) => <option key={p.id} value={p.id}>{p.name}</option>)}
                 </FullSelect>
               </div>
-              <button onClick={() => setAddingPerson(true)} title="Agregar persona" className="shrink-0 rounded-xl border border-line bg-surface-2 px-3 py-2.5 text-sm text-muted transition-colors hover:border-accent/40 hover:text-accent">＋ Nueva</button>
+              <button onClick={() => setAddingPerson(true)} title="Agregar persona" className="shrink-0 rounded-xl border border-line bg-white/[0.06] px-3 py-2.5 text-sm text-muted transition-colors hover:border-accent/40 hover:text-accent">＋ Nueva</button>
             </div>
           )}
         </Field>
 
         <Field label={kind === "split" ? "Monto total del gasto" : kind === "in_kind" ? "Valor estimado" : "Monto"}>
-          <div className="flex items-center gap-2 rounded-xl border border-line bg-surface-2 px-3 py-2.5">
+          <div className="flex items-center gap-2 rounded-xl border border-line bg-white/[0.06] px-3 py-2.5">
             <span className="text-lg text-faint">{currency === "ARS" ? "$" : currency === "USD" ? "US$" : "₮"}</span>
             <input value={amount} onChange={(e) => setAmount(e.target.value)} inputMode="numeric" placeholder="0" className="tnum w-full bg-transparent text-xl text-fg outline-none placeholder:text-faint" />
           </div>
           <div className="mt-2 flex gap-1.5">
             {(["ARS", "USD", "USDT"] as const).map((c) => (
-              <button key={c} onClick={() => setCurrency(c)} className={`rounded-full border px-3 py-1 text-xs transition-colors ${currency === c ? "border-accent/40 bg-accent/10 text-accent" : "border-line bg-surface-2 text-muted hover:text-fg"}`}>{c}</button>
+              <button key={c} onClick={() => setCurrency(c)} className={`rounded-full border px-3 py-1 text-xs transition-colors ${currency === c ? "border-accent/40 bg-accent/10 text-accent" : "border-line bg-white/[0.06] text-muted hover:text-fg"}`}>{c}</button>
             ))}
           </div>
         </Field>
@@ -441,7 +441,7 @@ function NewDebtForm({ persons, onSaved }: { persons: { id: number; name: string
         {kind === "split" && (
           <>
             <Field label="¿Entre cuántos se divide?">
-              <div className="flex items-center gap-2 rounded-xl border border-line bg-surface-2 px-3 py-2.5">
+              <div className="flex items-center gap-2 rounded-xl border border-line bg-white/[0.06] px-3 py-2.5">
                 <input value={participants} onChange={(e) => setParticipants(e.target.value)} inputMode="numeric" className="tnum w-16 bg-transparent text-lg text-fg outline-none" />
                 <span className="text-sm text-faint">personas (vos incluido)</span>
               </div>
@@ -460,7 +460,7 @@ function NewDebtForm({ persons, onSaved }: { persons: { id: number; name: string
         )}
 
         <Field label="Descripción">
-          <input value={desc} onChange={(e) => setDesc(e.target.value)} placeholder="Ej: Cena, préstamo, objeto…" className="w-full rounded-xl border border-line bg-surface-2 px-3 py-2.5 text-sm text-fg outline-none placeholder:text-faint focus:border-accent/40" />
+          <input value={desc} onChange={(e) => setDesc(e.target.value)} placeholder="Ej: Cena, préstamo, objeto…" className="w-full rounded-xl border border-line bg-white/[0.06] px-3 py-2.5 text-sm text-fg outline-none placeholder:text-faint focus:border-accent/40" />
         </Field>
 
         <button onClick={save} disabled={saving} className="mt-5 w-full rounded-xl bg-accent py-3 text-sm font-medium text-bg transition-transform hover:scale-[1.02] disabled:opacity-60">
@@ -484,7 +484,7 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
 function FullSelect({ value, onChange, children }: { value: string; onChange: (v: string) => void; children: React.ReactNode }) {
   return (
     <div className="relative">
-      <select value={value} onChange={(e) => onChange(e.target.value)} className="w-full appearance-none rounded-xl border border-line bg-surface-2 py-2.5 pl-3 pr-9 text-sm text-fg outline-none focus:border-accent/40">{children}</select>
+      <select value={value} onChange={(e) => onChange(e.target.value)} className="w-full appearance-none rounded-xl border border-line bg-white/[0.06] py-2.5 pl-3 pr-9 text-sm text-fg outline-none focus:border-accent/40">{children}</select>
       <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-faint">▾</span>
     </div>
   );

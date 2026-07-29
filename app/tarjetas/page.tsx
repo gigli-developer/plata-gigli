@@ -194,12 +194,12 @@ export default function TarjetasPage() {
     const exp = expandedId === s.id;
     return (
       <li key={s.id} className="border-b border-line last:border-0">
-        <div onClick={() => toggleMovements(s.id)} className={`flex cursor-pointer items-center gap-3 rounded-xl px-1.5 py-3 transition-colors hover:bg-surface-2/40 ${exp ? "bg-surface-2/30" : ""}`}>
-          <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl border border-line bg-surface-2"><CardIcon className="h-5 w-5 text-muted" /></span>
+        <div onClick={() => toggleMovements(s.id)} className={`flex cursor-pointer items-center gap-3 rounded-xl px-1.5 py-3 transition-colors hover:bg-white/[0.04] ${exp ? "bg-white/[0.03]" : ""}`}>
+          <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl border border-line bg-white/[0.06]"><CardIcon className="h-5 w-5 text-muted" /></span>
           <div>
             <p className="flex items-center gap-2 text-[0.95rem] text-fg">
               {s.period}
-              {projectedRow ? <span className="rounded-full border border-violet/30 bg-violet/10 px-1.5 py-0.5 text-[0.6rem] text-violet">próximo</span>
+              {projectedRow ? <span className="rounded-full border border-accent/30 bg-accent/10 px-1.5 py-0.5 text-[0.6rem] text-accent">próximo</span>
                 : open && <span className="rounded-full border border-sky/30 bg-sky/10 px-1.5 py-0.5 text-[0.6rem] text-sky">en curso</span>}
             </p>
             <p className="text-xs text-faint">Cierre {s.closing} · Vence {s.due}</p>
@@ -208,7 +208,7 @@ export default function TarjetasPage() {
             <p className="tnum text-[0.95rem] text-fg">{ars(stTotal(s))}</p>
             <p className="text-xs text-faint">+ {usd(stUsd(s))}{projectedRow ? " · proyectado" : open ? " · estimado" : ""}</p>
           </div>
-          {projectedRow ? <span className="ml-2 hidden rounded-full border border-violet/30 bg-violet/10 px-2.5 py-1 text-[0.65rem] text-violet sm:inline">Proyectado</span>
+          {projectedRow ? <span className="ml-2 hidden rounded-full border border-accent/30 bg-accent/10 px-2.5 py-1 text-[0.65rem] text-accent sm:inline">Proyectado</span>
             : open ? <span className="ml-2 hidden rounded-full border border-sky/30 bg-sky/10 px-2.5 py-1 text-[0.65rem] text-sky sm:inline">Estimado</span>
             : <StatusBadge paid={s.paid} paying={payingId === s.id} onPay={() => handlePay(s)} />}
           <Chevron className={`h-4 w-4 shrink-0 text-faint transition-transform ${exp ? "rotate-180 text-accent" : ""}`} />
@@ -268,7 +268,7 @@ export default function TarjetasPage() {
                   {alDia ? "Próximo resumen · en curso" : "Resumen a pagar"} · {current?.period ?? "—"}
                   {alDia && <span className="rounded-full border border-emerald/30 bg-emerald/10 px-2 py-0.5 text-[0.6rem] text-emerald">Al día ✅</span>}
                 </p>
-                <p className="mt-1 font-display text-4xl text-fg"><span className="tnum">{ars(spent)}</span></p>
+                <p className="tnum mt-1.5 text-[38px] font-extrabold leading-none text-fg lg:text-[42px]"><span>{ars(spent)}</span></p>
                 <p className="mt-1 text-sm text-faint">+ {usd(spentUsd)} en dólares</p>
               </div>
               <button onClick={() => current && setEditingDates(current)} title="Editar fechas" className="group relative flex gap-3 rounded-2xl transition-opacity hover:opacity-90">
@@ -283,7 +283,7 @@ export default function TarjetasPage() {
                 <span>Uso del límite</span>
                 <span className="tnum">{ars(spent)} / {card.limitArs ? ars(card.limitArs) : "sin límite"}</span>
               </div>
-              <div className="mt-2 h-2.5 w-full overflow-hidden rounded-full bg-surface-3">
+              <div className="mt-2 h-2.5 w-full overflow-hidden rounded-full bg-white/[0.09]">
                 <div className="h-full rounded-full transition-all" style={{ width: `${usage}%`, background: `linear-gradient(90deg, ${card.accent}, #ffbf47)` }} />
               </div>
               <p className="mt-2 text-xs text-faint">
@@ -297,16 +297,16 @@ export default function TarjetasPage() {
               {alDia ? (
                 <span className="rounded-xl border border-emerald/30 bg-emerald/10 px-4 py-2 text-sm text-emerald">Estás al día · nada que pagar 🎉</span>
               ) : (
-                <button onClick={() => current && handlePay(current)} disabled={payingId != null} className="rounded-xl bg-violet/90 px-4 py-2 text-sm font-medium text-bg transition-transform hover:scale-[1.03] disabled:opacity-60">
+                <button onClick={() => current && handlePay(current)} disabled={payingId != null} className="rounded-xl bg-accent/90 px-4 py-2 text-sm font-medium text-bg transition-transform hover:scale-[1.03] disabled:opacity-60">
                   {payingId != null ? "Pagando…" : "Pagar resumen"}
                 </button>
               )}
               {current && (
-                <button onClick={() => toggleMovements(current.id)} className={`rounded-xl border px-4 py-2 text-sm transition-colors ${expandedId === current.id ? "border-accent/40 bg-accent/10 text-accent" : "border-line bg-surface-2 text-muted hover:text-fg"}`}>
+                <button onClick={() => toggleMovements(current.id)} className={`rounded-xl border px-4 py-2 text-sm transition-colors ${expandedId === current.id ? "border-accent/40 bg-accent/10 text-accent" : "border-line bg-white/[0.06] text-muted hover:text-fg"}`}>
                   {expandedId === current.id ? "Ocultar movimientos" : "Ver movimientos"}
                 </button>
               )}
-              <button onClick={() => setCardModal({ open: true, card })} title="Editar tarjeta" className="flex items-center gap-1.5 rounded-xl border border-line bg-surface-2 px-4 py-2 text-sm text-muted transition-colors hover:text-fg">
+              <button onClick={() => setCardModal({ open: true, card })} title="Editar tarjeta" className="flex items-center gap-1.5 rounded-xl border border-line bg-white/[0.06] px-4 py-2 text-sm text-muted transition-colors hover:text-fg">
                 <Pencil className="h-4 w-4" /> Editar tarjeta
               </button>
             </div>
@@ -318,7 +318,7 @@ export default function TarjetasPage() {
           <section className="panel p-6">
             <div className="flex items-center justify-between gap-2">
               <h2 className="font-display text-lg text-fg">Resúmenes futuros</h2>
-              <span className="rounded-full border border-violet/30 bg-violet/10 px-2.5 py-0.5 text-[0.65rem] text-violet">Proyección</span>
+              <span className="rounded-full border border-accent/30 bg-accent/10 px-2.5 py-0.5 text-[0.65rem] text-accent">Proyección</span>
             </div>
             <p className="text-xs text-faint">
               {card.name} · próximos {futuros.length} · cuotas{cardSubs.length > 0 ? ` y ${cardSubs.length} suscripcion${cardSubs.length === 1 ? "" : "es"}` : ""} por venir
@@ -328,7 +328,7 @@ export default function TarjetasPage() {
               {futuros.length === 0 && <li className="py-6 text-center text-sm text-muted">Sin resúmenes próximos proyectados.</li>}
             </ul>
             <p className="mt-2 text-[0.7rem] text-faint">
-              Los meses marcados <span className="text-violet">próximo</span> estiman cuotas + suscripciones que se repiten todos los meses. El resumen <span className="text-sky">en curso</span> no las incluye: ahí los consumos entran solos cuando se importan del mail.
+              Los meses marcados <span className="text-accent">próximo</span> estiman cuotas + suscripciones que se repiten todos los meses. El resumen <span className="text-sky">en curso</span> no las incluye: ahí los consumos entran solos cuando se importan del mail.
             </p>
           </section>
 
@@ -358,7 +358,7 @@ export default function TarjetasPage() {
                       {others.map((c) => {
                         const n = installments.filter((i) => i.cardId === c.id).length;
                         return (
-                          <button key={c.id} onClick={() => setSelectedId(c.id)} className="flex w-full items-center gap-2 rounded-xl border border-line bg-surface-2 px-3 py-2 text-sm text-fg transition-colors hover:border-accent/40">
+                          <button key={c.id} onClick={() => setSelectedId(c.id)} className="flex w-full items-center gap-2 rounded-xl border border-line bg-white/[0.06] px-3 py-2 text-sm text-fg transition-colors hover:border-accent/40">
                             <CardIcon className="h-4 w-4 text-muted" /> {c.name}
                             <span className="ml-auto rounded-full bg-accent/15 px-2 py-0.5 text-[0.65rem] text-accent">{n} {n === 1 ? "plan" : "planes"}</span>
                           </button>
@@ -373,9 +373,9 @@ export default function TarjetasPage() {
                 {cuotas.map((q) => {
                   const pct = Math.round((q.current / q.total) * 100);
                   return (
-                    <li key={q.id} onClick={() => setEditingPlan(q)} className="group cursor-pointer rounded-xl p-1 transition-colors hover:bg-surface-2/50">
+                    <li key={q.id} onClick={() => setEditingPlan(q)} className="group cursor-pointer rounded-xl p-1 transition-colors hover:bg-white/[0.05]">
                       <div className="flex items-center gap-3">
-                        <span className="grid h-10 w-10 place-items-center rounded-xl border border-line bg-surface-2 text-lg">{q.emoji}</span>
+                        <span className="grid h-10 w-10 place-items-center rounded-xl border border-line bg-white/[0.06] text-lg">{q.emoji}</span>
                         <div className="min-w-0">
                           <p className="truncate text-sm text-fg">{q.desc}</p>
                           <p className="text-xs text-faint">Cuota {q.current} de {q.total}</p>
@@ -383,8 +383,8 @@ export default function TarjetasPage() {
                         <Pencil className="h-4 w-4 text-faint opacity-0 transition-opacity group-hover:opacity-100" />
                         <span className="tnum text-sm text-fg">{ars(q.monthly)}</span>
                       </div>
-                      <div className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-surface-3">
-                        <div className="h-full rounded-full bg-gradient-to-r from-violet to-sky" style={{ width: `${pct}%` }} />
+                      <div className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-white/[0.09]">
+                        <div className="h-full rounded-full bg-gradient-to-r from-accent to-sky" style={{ width: `${pct}%` }} />
                       </div>
                     </li>
                   );
@@ -408,7 +408,7 @@ export default function TarjetasPage() {
                 <ul className="mt-4 space-y-2">
                   {cardSubs.map((s) => (
                     <li key={`${s.comercio}-${s.currency}`} className="flex items-center gap-3 rounded-xl px-1 py-1.5">
-                      <span className="grid h-9 w-9 shrink-0 place-items-center rounded-xl border border-line bg-surface-2 text-base">{s.emoji}</span>
+                      <span className="grid h-9 w-9 shrink-0 place-items-center rounded-xl border border-line bg-white/[0.06] text-base">{s.emoji}</span>
                       <div className="min-w-0">
                         <p className="truncate text-sm text-fg">{s.comercio}</p>
                         <p className="text-[0.7rem] text-faint">
@@ -431,9 +431,9 @@ export default function TarjetasPage() {
           </section>
 
           <section className="panel relative overflow-hidden p-6">
-            <div className="pointer-events-none absolute -right-10 -top-12 h-40 w-40 rounded-full bg-violet/10 blur-3xl" />
+            <div className="pointer-events-none absolute -right-10 -top-12 h-40 w-40 rounded-full bg-accent/10 blur-3xl" />
             <div className="relative flex items-start gap-3">
-              <span className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-violet/15 text-violet"><ArrowUpRight className="h-5 w-5" /></span>
+              <span className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-accent/15 text-accent"><ArrowUpRight className="h-5 w-5" /></span>
               <div>
                 <p className="text-sm text-fg">Tip de cierre</p>
                 <p className="mt-1 text-xs text-muted">Comprás después del día de cierre y la compra cae en el próximo resumen — más días para pagar sin interés.</p>
@@ -484,7 +484,7 @@ function CreditCardVisual({ card, active, onClick }: { card: CardVis; active: bo
 
 function DateBox({ label, value, accent }: { label: string; value: string; accent?: boolean }) {
   return (
-    <div className={`rounded-2xl border px-4 py-3 text-center ${accent ? "border-coral/30 bg-coral/8" : "border-line bg-surface-2/60"}`}>
+    <div className={`rounded-2xl border px-4 py-3 text-center ${accent ? "border-coral/30 bg-coral/8" : "border-line bg-white/[0.06]"}`}>
       <p className="text-[0.65rem] uppercase tracking-widest text-faint">{label}</p>
       <p className={`tnum mt-0.5 text-base ${accent ? "text-coral" : "text-fg"}`}>{value}</p>
     </div>
@@ -537,10 +537,10 @@ function MovementsPanel({ statement, consumos, cuotas, subs, loading, open }: { 
   const slices: Slice[] = [...catMap.entries()].map(([label, e]) => ({ label, value: e.v, emoji: e.emoji })).sort((a, b) => b.value - a.value);
 
   return (
-    <div className="mt-4 rounded-2xl border border-line bg-surface-2/30 p-4">
+    <div className="mt-4 rounded-2xl border border-line bg-white/[0.03] p-4">
       {/* pager */}
       <div className="mb-3 flex items-center justify-between gap-2">
-        <div className="flex rounded-full border border-line bg-surface p-0.5 text-xs">
+        <div className="flex rounded-full border border-line bg-white/[0.05] p-0.5 text-xs">
           <button onClick={() => setPage("list")} className={`rounded-full px-3 py-1 transition-colors ${page === "list" ? "bg-accent/15 text-accent" : "text-muted hover:text-fg"}`}>Gastos</button>
           <button onClick={() => setPage("cat")} className={`rounded-full px-3 py-1 transition-colors ${page === "cat" ? "bg-accent/15 text-accent" : "text-muted hover:text-fg"}`}>Por categoría</button>
         </div>
@@ -554,13 +554,13 @@ function MovementsPanel({ statement, consumos, cuotas, subs, loading, open }: { 
       ) : page === "list" ? (
         <ul className="max-h-80 space-y-1 overflow-y-auto pr-1">
           {items.map((i) => (
-            <li key={i.key} className="flex items-center gap-3 rounded-lg px-2 py-1.5 hover:bg-surface/60">
-              <span className="grid h-8 w-8 shrink-0 place-items-center rounded-lg border border-line bg-surface text-base">{i.emoji}</span>
+            <li key={i.key} className="flex items-center gap-3 rounded-lg px-2 py-1.5 hover:bg-white/[0.04]">
+              <span className="grid h-8 w-8 shrink-0 place-items-center rounded-lg border border-line bg-white/[0.05] text-base">{i.emoji}</span>
               <div className="min-w-0">
                 <p className="truncate text-sm text-fg">{i.desc}</p>
                 <p className="flex items-center gap-1.5 text-[0.7rem] text-faint">
                   {i.category}
-                  {i.isCuota && <span className="rounded-full border border-violet/30 bg-violet/10 px-1.5 text-[0.6rem] text-violet">{i.sub}</span>}
+                  {i.isCuota && <span className="rounded-full border border-accent/30 bg-accent/10 px-1.5 text-[0.6rem] text-accent">{i.sub}</span>}
                   {i.isSub && <span className="rounded-full border border-sky/30 bg-sky/10 px-1.5 text-[0.6rem] text-sky">🔁 {i.sub}</span>}
                   {!i.isCuota && !i.isSub && <span>· {i.sub}</span>}
                 </p>
@@ -605,12 +605,12 @@ function CardBars({ data }: { data: CardBarsRow[] }) {
           ))}
         </div>
         <div className="flex flex-wrap gap-2">
-          <div className="flex rounded-full border border-line bg-surface-2 p-0.5 text-xs">
+          <div className="flex rounded-full border border-line bg-white/[0.06] p-0.5 text-xs">
             {[3, 6, 0].map((n) => (
               <button key={n} onClick={() => setRange(n)} className={`rounded-full px-3 py-1 transition-colors ${range === n ? "bg-accent/15 text-accent" : "text-muted hover:text-fg"}`}>{n === 0 ? "Todos" : `${n}M`}</button>
             ))}
           </div>
-          <div className="flex rounded-full border border-line bg-surface-2 p-0.5 text-xs">
+          <div className="flex rounded-full border border-line bg-white/[0.06] p-0.5 text-xs">
             {(["ARS", "USD"] as const).map((c) => (
               <button key={c} onClick={() => setCur(c)} className={`rounded-full px-3 py-1 transition-colors ${cur === c ? "bg-accent/15 text-accent" : "text-muted hover:text-fg"}`}>{c === "ARS" ? "$ Pesos" : "US$ Dólares"}</button>
             ))}
@@ -638,7 +638,7 @@ function CardBars({ data }: { data: CardBarsRow[] }) {
                   );
                 })}
               </div>
-              <span className={`text-[0.68rem] ${m.future ? "text-violet/80" : "text-faint"}`}>{mesLabel(m.period)}{m.values.some((v) => v.open) ? " *" : ""}</span>
+              <span className={`text-[0.68rem] ${m.future ? "text-accent/80" : "text-faint"}`}>{mesLabel(m.period)}{m.values.some((v) => v.open) ? " *" : ""}</span>
             </div>
           ))}
           {visible.length === 0 && <p className="w-full py-8 text-center text-sm text-muted">Sin resúmenes.</p>}

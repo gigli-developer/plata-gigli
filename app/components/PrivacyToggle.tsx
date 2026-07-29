@@ -32,7 +32,7 @@ export default function PrivacyToggle({ className = "" }: { className?: string }
       onClick={togglePrivacy}
       aria-pressed={active}
       title={active ? "Mostrar montos" : "Ocultar montos"}
-      className={`relative grid h-10 w-10 place-items-center rounded-full border border-line bg-surface/70 transition-colors ${active ? "border-accent/40 text-accent" : "text-muted hover:text-fg"} ${className}`}
+      className={`relative grid h-10 w-10 place-items-center rounded-full border border-line bg-white/[0.05] transition-colors ${active ? "border-accent/40 text-accent" : "text-muted hover:text-fg"} ${className}`}
     >
       {active ? <EyeOff className="h-[18px] w-[18px]" /> : <Eye className="h-[18px] w-[18px]" />}
     </button>

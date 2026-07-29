@@ -48,7 +48,7 @@ export default function ReglasPage() {
     <>
       <PageHeader title="Reglas" subtitle="Categorizá, renombrá y corregí consumos nuevos" />
       <p className="mt-3 flex items-start gap-2 text-xs text-faint">
-        <span className="mt-0.5 grid h-4 w-4 shrink-0 place-items-center rounded-full bg-surface-3 text-[0.6rem]">i</span>
+        <span className="mt-0.5 grid h-4 w-4 shrink-0 place-items-center rounded-full bg-white/[0.09] text-[0.6rem]">i</span>
         Las reglas se aplican a los consumos <b className="text-muted">nuevos</b> que entran por mail. Una regla puede cambiar la categoría, renombrar la descripción y/o forzar la moneda (todo combinable). Las condiciones se evalúan sobre la descripción <b className="text-muted">original</b> del banco. Si varias reglas matchean, <b className="text-muted">cada acción</b> la define la primera regla (por prioridad y antigüedad) que la tenga: una puede poner la categoría y otra distinta el nombre. Lo ya cargado no se toca.
       </p>
 
@@ -64,7 +64,7 @@ export default function ReglasPage() {
                 const acts = ruleActions(r);
                 return (
                   <div key={r.id} className={`flex items-center gap-3 px-2 py-3.5 ${r.isActive ? "" : "opacity-50"}`}>
-                    <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl border border-line bg-surface-2 text-lg">{acts[0]?.icon ?? "🏷️"}</span>
+                    <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl border border-line bg-white/[0.06] text-lg">{acts[0]?.icon ?? "🏷️"}</span>
                     <div className="min-w-0">
                       <p className="truncate text-[0.95rem] text-fg">{ruleSentence(r)}</p>
                       <p className="truncate text-xs text-faint">
@@ -74,7 +74,7 @@ export default function ReglasPage() {
                       </p>
                     </div>
                     <div className="ml-auto flex items-center gap-2">
-                      <button onClick={() => toggle(r)} title={r.isActive ? "Desactivar" : "Activar"} className={`rounded-lg border px-2.5 py-1 text-xs transition-colors ${r.isActive ? "border-emerald/30 bg-emerald/10 text-emerald" : "border-line bg-surface-2 text-muted"}`}>{r.isActive ? "Activa" : "Off"}</button>
+                      <button onClick={() => toggle(r)} title={r.isActive ? "Desactivar" : "Activar"} className={`rounded-lg border px-2.5 py-1 text-xs transition-colors ${r.isActive ? "border-emerald/30 bg-emerald/10 text-emerald" : "border-line bg-white/[0.06] text-muted"}`}>{r.isActive ? "Activa" : "Off"}</button>
                       <button onClick={() => remove(r.id)} title="Borrar" className="grid h-8 w-8 place-items-center rounded-lg border border-line text-muted hover:border-coral/40 hover:text-coral"><Trash className="h-4 w-4" /></button>
                     </div>
                   </div>
@@ -161,10 +161,10 @@ function NewRuleForm({ cats, onSaved }: { cats: Category[]; onSaved: () => Promi
         <div className="mt-4">
           <label className="text-xs text-muted">Si la descripción…</label>
           <div className="mt-1 flex gap-2">
-            <select value={op} onChange={(e) => setOp(e.target.value)} className="appearance-none rounded-xl border border-line bg-surface-2 px-3 py-2.5 text-sm text-fg outline-none focus:border-accent/40">
+            <select value={op} onChange={(e) => setOp(e.target.value)} className="appearance-none rounded-xl border border-line bg-white/[0.06] px-3 py-2.5 text-sm text-fg outline-none focus:border-accent/40">
               {OPS.map((o) => <option key={o.v} value={o.v}>{o.label}</option>)}
             </select>
-            <input value={value} onChange={(e) => setValue(e.target.value)} placeholder="Ej: DLO*PedidosYa" className="w-full rounded-xl border border-line bg-surface-2 px-3 py-2.5 text-sm text-fg outline-none placeholder:text-faint focus:border-accent/40" />
+            <input value={value} onChange={(e) => setValue(e.target.value)} placeholder="Ej: DLO*PedidosYa" className="w-full rounded-xl border border-line bg-white/[0.06] px-3 py-2.5 text-sm text-fg outline-none placeholder:text-faint focus:border-accent/40" />
           </div>
         </div>
 
@@ -175,9 +175,9 @@ function NewRuleForm({ cats, onSaved }: { cats: Category[]; onSaved: () => Promi
           {useHour && (
             <div className="mt-2 flex items-center gap-2 text-sm">
               <span className="text-faint">de</span>
-              <input value={hourFrom} onChange={(e) => setHourFrom(e.target.value)} inputMode="numeric" className="tnum w-14 rounded-lg border border-line bg-surface-2 px-2 py-1.5 text-center text-fg outline-none" />
+              <input value={hourFrom} onChange={(e) => setHourFrom(e.target.value)} inputMode="numeric" className="tnum w-14 rounded-lg border border-line bg-white/[0.06] px-2 py-1.5 text-center text-fg outline-none" />
               <span className="text-faint">a</span>
-              <input value={hourTo} onChange={(e) => setHourTo(e.target.value)} inputMode="numeric" className="tnum w-14 rounded-lg border border-line bg-surface-2 px-2 py-1.5 text-center text-fg outline-none" />
+              <input value={hourTo} onChange={(e) => setHourTo(e.target.value)} inputMode="numeric" className="tnum w-14 rounded-lg border border-line bg-white/[0.06] px-2 py-1.5 text-center text-fg outline-none" />
               <span className="text-faint">hs</span>
             </div>
           )}
@@ -191,9 +191,9 @@ function NewRuleForm({ cats, onSaved }: { cats: Category[]; onSaved: () => Promi
           {useAmount && (
             <div className="mt-2 flex items-center gap-2 text-sm">
               <span className="text-faint">de $</span>
-              <input value={amountMin} onChange={(e) => setAmountMin(e.target.value)} inputMode="decimal" placeholder="mín" className="tnum w-24 rounded-lg border border-line bg-surface-2 px-2 py-1.5 text-center text-fg outline-none placeholder:text-faint" />
+              <input value={amountMin} onChange={(e) => setAmountMin(e.target.value)} inputMode="decimal" placeholder="mín" className="tnum w-24 rounded-lg border border-line bg-white/[0.06] px-2 py-1.5 text-center text-fg outline-none placeholder:text-faint" />
               <span className="text-faint">a $</span>
-              <input value={amountMax} onChange={(e) => setAmountMax(e.target.value)} inputMode="decimal" placeholder="máx" className="tnum w-24 rounded-lg border border-line bg-surface-2 px-2 py-1.5 text-center text-fg outline-none placeholder:text-faint" />
+              <input value={amountMax} onChange={(e) => setAmountMax(e.target.value)} inputMode="decimal" placeholder="máx" className="tnum w-24 rounded-lg border border-line bg-white/[0.06] px-2 py-1.5 text-center text-fg outline-none placeholder:text-faint" />
             </div>
           )}
           {useAmount && <p className="mt-1 text-[0.68rem] text-faint">Podés dejar uno vacío (solo mínimo o solo máximo). En la moneda original del consumo. Punto = miles, coma = decimales (10.000 son diez mil).</p>}
@@ -203,7 +203,7 @@ function NewRuleForm({ cats, onSaved }: { cats: Category[]; onSaved: () => Promi
           <label className="text-xs text-muted">Solo ciertos días <span className="text-faint">(opcional)</span></label>
           <div className="mt-2 flex flex-wrap gap-1.5">
             {DAYS.map((d) => (
-              <button key={d.n} onClick={() => toggleDay(d.n)} className={`rounded-full border px-2.5 py-1 text-xs transition-colors ${days.includes(d.n) ? "border-accent/40 bg-accent/10 text-accent" : "border-line bg-surface-2 text-muted hover:text-fg"}`}>{d.l}</button>
+              <button key={d.n} onClick={() => toggleDay(d.n)} className={`rounded-full border px-2.5 py-1 text-xs transition-colors ${days.includes(d.n) ? "border-accent/40 bg-accent/10 text-accent" : "border-line bg-white/[0.06] text-muted hover:text-fg"}`}>{d.l}</button>
             ))}
           </div>
         </div>
@@ -214,7 +214,7 @@ function NewRuleForm({ cats, onSaved }: { cats: Category[]; onSaved: () => Promi
           <div className="mt-3">
             <label className="text-xs text-muted">→ Categoría</label>
             <div className="relative mt-1">
-              <select value={categoryId} onChange={(e) => setCategoryId(e.target.value)} className="w-full appearance-none rounded-xl border border-line bg-surface-2 py-2.5 pl-3 pr-9 text-sm text-fg outline-none focus:border-accent/40">
+              <select value={categoryId} onChange={(e) => setCategoryId(e.target.value)} className="w-full appearance-none rounded-xl border border-line bg-white/[0.06] py-2.5 pl-3 pr-9 text-sm text-fg outline-none focus:border-accent/40">
                 <option value="">— no cambiar —</option>
                 {cats.map((c) => <option key={c.id} value={c.id}>{c.emoji} {c.name}</option>)}
               </select>
@@ -224,13 +224,13 @@ function NewRuleForm({ cats, onSaved }: { cats: Category[]; onSaved: () => Promi
 
           <div className="mt-3">
             <label className="text-xs text-muted">→ Renombrar a <span className="text-faint">(opcional)</span></label>
-            <input value={renameTo} onChange={(e) => setRenameTo(e.target.value)} placeholder="Ej: PedidosYa" className="mt-1 w-full rounded-xl border border-line bg-surface-2 px-3 py-2.5 text-sm text-fg outline-none placeholder:text-faint focus:border-sky/40" />
+            <input value={renameTo} onChange={(e) => setRenameTo(e.target.value)} placeholder="Ej: PedidosYa" className="mt-1 w-full rounded-xl border border-line bg-white/[0.06] px-3 py-2.5 text-sm text-fg outline-none placeholder:text-faint focus:border-sky/40" />
           </div>
 
           <div className="mt-3">
             <label className="text-xs text-muted">→ Forzar moneda <span className="text-faint">(para suscripciones en USD que la alerta reporta en pesos: convierte el monto a la cotización)</span></label>
             <div className="relative mt-1">
-              <select value={setCurrency} onChange={(e) => setSetCurrency(e.target.value)} className="w-full appearance-none rounded-xl border border-line bg-surface-2 py-2.5 pl-3 pr-9 text-sm text-fg outline-none focus:border-amber/40">
+              <select value={setCurrency} onChange={(e) => setSetCurrency(e.target.value)} className="w-full appearance-none rounded-xl border border-line bg-white/[0.06] py-2.5 pl-3 pr-9 text-sm text-fg outline-none focus:border-amber/40">
                 <option value="">— no cambiar —</option>
                 <option value="USD">USD</option>
                 <option value="ARS">ARS</option>

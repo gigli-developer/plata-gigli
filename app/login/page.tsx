@@ -57,7 +57,7 @@ export default function LoginPage() {
         </div>
 
         <form onSubmit={submit} className="ai-glow mt-8 rounded-2xl p-6">
-          <div className="mb-4 flex items-center gap-2 text-violet">
+          <div className="mb-4 flex items-center gap-2 text-accent">
             <Sparkle className="h-[18px] w-[18px]" />
             <span className="text-xs font-medium uppercase tracking-[0.18em]">Iniciar sesión</span>
           </div>
@@ -69,7 +69,7 @@ export default function LoginPage() {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             placeholder="vos@email.com"
-            className="mt-1 w-full rounded-xl border border-line bg-surface-2 px-3 py-2.5 text-sm text-fg outline-none placeholder:text-faint focus:border-violet/50"
+            className="mt-1 w-full rounded-xl border border-line bg-white/[0.06] px-3 py-2.5 text-sm text-fg outline-none placeholder:text-faint focus:border-accent/50"
           />
 
           <label className="mt-4 block text-xs text-muted">Contraseña</label>
@@ -80,7 +80,7 @@ export default function LoginPage() {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             placeholder="••••••••"
-            className="mt-1 w-full rounded-xl border border-line bg-surface-2 px-3 py-2.5 text-sm text-fg outline-none placeholder:text-faint focus:border-violet/50"
+            className="mt-1 w-full rounded-xl border border-line bg-white/[0.06] px-3 py-2.5 text-sm text-fg outline-none placeholder:text-faint focus:border-accent/50"
           />
 
           {error && <p className="mt-3 rounded-lg border border-coral/30 bg-coral/10 px-3 py-2 text-xs text-coral">{error}</p>}

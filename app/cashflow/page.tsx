@@ -288,7 +288,7 @@ export default function CashflowPage() {
   return (
     <>
       <PageHeader title="Cash Flow" subtitle={mode === "proyeccion" ? `Mes actual real + proyección · ${monthName(proj.months[0])} → ${monthName(proj.months[5])}` : `Histórico real · ${monthName(proj.months[0])} → ${monthName(proj.months[5])}`}>
-        <div className="flex items-center gap-2 rounded-full border border-line bg-surface-2 px-3 py-1.5 text-xs">
+        <div className="flex items-center gap-2 rounded-full border border-line bg-white/[0.06] px-3 py-1.5 text-xs">
           <span className="text-faint">Cotización</span>
           <span className="text-muted">USD</span>
           <input value={usdRate} onChange={(e) => setUsdRate(Number(e.target.value) || 0)} className="tnum w-16 bg-transparent text-fg outline-none" inputMode="decimal" />
@@ -300,20 +300,20 @@ export default function CashflowPage() {
       {/* Toggle modo + navegación histórico */}
       <div className="mt-5 flex flex-wrap items-center justify-between gap-3">
         <div className="flex flex-wrap items-center gap-2">
-          <div className="flex rounded-full border border-line bg-surface-2 p-0.5 text-sm">
+          <div className="flex rounded-full border border-line bg-white/[0.06] p-0.5 text-sm">
             <button onClick={() => setMode("proyeccion")} className={`rounded-full px-4 py-1.5 transition-colors ${mode === "proyeccion" ? "bg-accent/15 text-accent" : "text-muted hover:text-fg"}`}>Proyección</button>
             <button onClick={() => setMode("historico")} className={`rounded-full px-4 py-1.5 transition-colors ${mode === "historico" ? "bg-accent/15 text-accent" : "text-muted hover:text-fg"}`}>Histórico</button>
           </div>
-          <div className="flex rounded-full border border-line bg-surface-2 p-0.5 text-sm">
-            <button onClick={() => setBasis("caja")} title="Cuándo se mueve la plata (la tarjeta cuenta el mes que pagás el resumen)" className={`rounded-full px-4 py-1.5 transition-colors ${basis === "caja" ? "bg-surface-3 text-fg" : "text-muted hover:text-fg"}`}>Caja</button>
-            <button onClick={() => setBasis("devengado")} title="Cuánto consumiste (la tarjeta cuenta por fecha de compra)" className={`rounded-full px-4 py-1.5 transition-colors ${basis === "devengado" ? "bg-surface-3 text-fg" : "text-muted hover:text-fg"}`}>Devengado</button>
+          <div className="flex rounded-full border border-line bg-white/[0.06] p-0.5 text-sm">
+            <button onClick={() => setBasis("caja")} title="Cuándo se mueve la plata (la tarjeta cuenta el mes que pagás el resumen)" className={`rounded-full px-4 py-1.5 transition-colors ${basis === "caja" ? "bg-white/[0.09] text-fg" : "text-muted hover:text-fg"}`}>Caja</button>
+            <button onClick={() => setBasis("devengado")} title="Cuánto consumiste (la tarjeta cuenta por fecha de compra)" className={`rounded-full px-4 py-1.5 transition-colors ${basis === "devengado" ? "bg-white/[0.09] text-fg" : "text-muted hover:text-fg"}`}>Devengado</button>
           </div>
         </div>
         {mode === "historico" && (
           <div className="flex items-center gap-2 text-sm">
-            <button onClick={() => setHistStart(addMonths(histStart, -1))} className="grid h-8 w-8 place-items-center rounded-lg border border-line bg-surface-2 text-muted hover:text-fg">◀</button>
+            <button onClick={() => setHistStart(addMonths(histStart, -1))} className="grid h-8 w-8 place-items-center rounded-lg border border-line bg-white/[0.06] text-muted hover:text-fg">◀</button>
             <span className="tnum text-muted">{monthName(proj.months[0])} – {monthName(proj.months[5])}</span>
-            <button onClick={() => setHistStart((s) => (monthsBetween(s, CUR) > HORIZON - 1 ? addMonths(s, 1) : s))} className="grid h-8 w-8 place-items-center rounded-lg border border-line bg-surface-2 text-muted hover:text-fg">▶</button>
+            <button onClick={() => setHistStart((s) => (monthsBetween(s, CUR) > HORIZON - 1 ? addMonths(s, 1) : s))} className="grid h-8 w-8 place-items-center rounded-lg border border-line bg-white/[0.06] text-muted hover:text-fg">▶</button>
           </div>
         )}
       </div>
@@ -348,11 +348,11 @@ export default function CashflowPage() {
             <div className="border-t border-line p-5">
               <div className="mb-5 flex flex-wrap items-center gap-3">
                 <label className="text-sm text-muted">Inflación mensual proyectada</label>
-                <div className="flex items-center gap-1 rounded-lg border border-line bg-surface-2 px-3 py-1.5">
+                <div className="flex items-center gap-1 rounded-lg border border-line bg-white/[0.06] px-3 py-1.5">
                   <input type="number" value={inflation} onChange={(e) => setInflation(Number(e.target.value) || 0)} className="tnum w-14 bg-transparent text-right text-fg outline-none" step="0.1" />
                   <span className="text-muted">%</span>
                 </div>
-                <button onClick={() => setInflation(Number(infl.projected.toFixed(2)))} className="rounded-full border border-line bg-surface-2 px-2.5 py-1 text-[0.7rem] text-muted hover:text-fg">↺ oficial ({infl.projected.toFixed(1)}%)</button>
+                <button onClick={() => setInflation(Number(infl.projected.toFixed(2)))} className="rounded-full border border-line bg-white/[0.06] px-2.5 py-1 text-[0.7rem] text-muted hover:text-fg">↺ oficial ({infl.projected.toFixed(1)}%)</button>
                 <span className="text-xs text-faint">se aplica a los gastos variables y a los ingresos marcados con 📈 (las cuotas nunca)</span>
               </div>
 
@@ -364,10 +364,10 @@ export default function CashflowPage() {
                   {recurring.filter((r) => r.type === "ingreso").map((r) => {
                     const conInfl = inflIncome[r.category] ?? (r.category === "Sueldo");
                     return (
-                      <div key={r.id} className="flex items-center gap-2 rounded-lg border border-line bg-surface-2/40 px-3 py-2">
+                      <div key={r.id} className="flex items-center gap-2 rounded-lg border border-line bg-white/[0.04] px-3 py-2">
                         <span className="truncate text-sm text-muted">{r.emoji} {r.name}</span>
                         <NumInput value={Math.round(r.baseAmount)} onChange={(v) => onIncomeAmount(r.id, v)} onCommit={(v) => saveIncomeAmount(r.id, v)} className="ml-auto text-fg" />
-                        <button onClick={() => toggleInfl(r.category, r.category === "Sueldo")} title={conInfl ? "Se ajusta por inflación · tocá para dejarlo fijo" : "Monto fijo · tocá para ajustarlo por inflación"} className={`shrink-0 rounded-full border px-2 py-1 text-[0.65rem] transition-colors ${conInfl ? "border-amber/40 bg-amber/10 text-amber" : "border-line bg-surface-2 text-faint hover:text-fg"}`}>
+                        <button onClick={() => toggleInfl(r.category, r.category === "Sueldo")} title={conInfl ? "Se ajusta por inflación · tocá para dejarlo fijo" : "Monto fijo · tocá para ajustarlo por inflación"} className={`shrink-0 rounded-full border px-2 py-1 text-[0.65rem] transition-colors ${conInfl ? "border-amber/40 bg-amber/10 text-amber" : "border-line bg-white/[0.06] text-faint hover:text-fg"}`}>
                           {conInfl ? "📈 infl" : "fijo"}
                         </button>
                       </div>
@@ -381,7 +381,7 @@ export default function CashflowPage() {
                 {[...proj.budgetByCat.entries()].filter(([, v]) => v > 0).sort((a, b) => b[1] - a[1]).map(([cat, v]) => {
                   const overridden = budgets[cat] != null;
                   return (
-                    <div key={cat} className={`flex items-center gap-2 rounded-lg border px-3 py-2 ${overridden ? "border-accent/30 bg-accent/5" : "border-line bg-surface-2/40"}`}>
+                    <div key={cat} className={`flex items-center gap-2 rounded-lg border px-3 py-2 ${overridden ? "border-accent/30 bg-accent/5" : "border-line bg-white/[0.04]"}`}>
                       <span className="truncate text-sm text-muted">{proj.seed.get(cat)?.emoji ?? "💸"} {cat}</span>
                       <NumInput value={Math.round(v)} onChange={(val) => onBudget(cat, val)} onCommit={(val) => saveBudget(cat, val)} className="ml-auto text-fg" />
                       {overridden && <button onClick={() => resetBudget(cat)} title="Volver al promedio" className="text-faint hover:text-coral">↺</button>}
@@ -394,7 +394,7 @@ export default function CashflowPage() {
               {manualPlans.length > 0 && (
                 <div className="mb-3 flex flex-col gap-1.5">
                   {manualPlans.map((pl) => (
-                    <div key={pl.id} className="flex items-center gap-2 rounded-lg border border-line bg-surface-2/40 px-3 py-1.5 text-sm">
+                    <div key={pl.id} className="flex items-center gap-2 rounded-lg border border-line bg-white/[0.04] px-3 py-1.5 text-sm">
                       <span className={`shrink-0 rounded px-1.5 py-0.5 text-[0.6rem] ${pl.type === "ingreso" ? "bg-emerald/10 text-emerald" : "bg-coral/10 text-coral"}`}>{pl.type}</span>
                       <span className="truncate text-muted">📌 {pl.concept}</span>
                       <span className="tnum ml-auto text-fg">{compact(pl.amount)}</span>
@@ -405,17 +405,17 @@ export default function CashflowPage() {
                 </div>
               )}
               <div className="flex flex-wrap items-end gap-2">
-                <div className="flex rounded-lg border border-line bg-surface-2 p-0.5 text-xs">
+                <div className="flex rounded-lg border border-line bg-white/[0.06] p-0.5 text-xs">
                   <button onClick={() => setPf((p) => ({ ...p, type: "egreso" }))} className={`rounded px-2.5 py-1 ${pf.type === "egreso" ? "bg-coral/15 text-coral" : "text-muted"}`}>Egreso</button>
                   <button onClick={() => setPf((p) => ({ ...p, type: "ingreso" }))} className={`rounded px-2.5 py-1 ${pf.type === "ingreso" ? "bg-emerald/15 text-emerald" : "text-muted"}`}>Ingreso</button>
                 </div>
-                <input value={pf.concept} onChange={(e) => setPf((p) => ({ ...p, concept: e.target.value }))} placeholder="Concepto (ej. Cuota moto)" className="min-w-[8rem] flex-1 rounded-lg border border-line bg-surface-2 px-3 py-1.5 text-sm text-fg outline-none placeholder:text-faint focus:border-accent/40" />
-                <input value={pf.amount} onChange={(e) => setPf((p) => ({ ...p, amount: e.target.value }))} inputMode="numeric" placeholder="$ por mes" title="Monto de cada mes (si son cuotas, el valor de la cuota)" className="tnum w-24 rounded-lg border border-line bg-surface-2 px-3 py-1.5 text-sm text-fg outline-none placeholder:text-faint focus:border-accent/40" />
-                <select value={pf.start} onChange={(e) => setPf((p) => ({ ...p, start: e.target.value }))} className="rounded-lg border border-line bg-surface-2 px-2 py-1.5 text-sm text-fg outline-none">
+                <input value={pf.concept} onChange={(e) => setPf((p) => ({ ...p, concept: e.target.value }))} placeholder="Concepto (ej. Cuota moto)" className="min-w-[8rem] flex-1 rounded-lg border border-line bg-white/[0.06] px-3 py-1.5 text-sm text-fg outline-none placeholder:text-faint focus:border-accent/40" />
+                <input value={pf.amount} onChange={(e) => setPf((p) => ({ ...p, amount: e.target.value }))} inputMode="numeric" placeholder="$ por mes" title="Monto de cada mes (si son cuotas, el valor de la cuota)" className="tnum w-24 rounded-lg border border-line bg-white/[0.06] px-3 py-1.5 text-sm text-fg outline-none placeholder:text-faint focus:border-accent/40" />
+                <select value={pf.start} onChange={(e) => setPf((p) => ({ ...p, start: e.target.value }))} className="rounded-lg border border-line bg-white/[0.06] px-2 py-1.5 text-sm text-fg outline-none">
                   {proj.months.map((m) => <option key={m} value={m}>{monthName(m)}</option>)}
                 </select>
                 <div className="flex items-center gap-1">
-                  <input value={pf.months} onChange={(e) => setPf((p) => ({ ...p, months: e.target.value }))} inputMode="numeric" title="1 = puntual · N = cuotas" className="tnum w-12 rounded-lg border border-line bg-surface-2 px-2 py-1.5 text-center text-sm text-fg outline-none" />
+                  <input value={pf.months} onChange={(e) => setPf((p) => ({ ...p, months: e.target.value }))} inputMode="numeric" title="1 = puntual · N = cuotas" className="tnum w-12 rounded-lg border border-line bg-white/[0.06] px-2 py-1.5 text-center text-sm text-fg outline-none" />
                   <span className="text-xs text-faint">meses</span>
                 </div>
                 <button onClick={addPlan} className="rounded-lg bg-accent px-3 py-1.5 text-sm font-medium text-bg transition-transform hover:scale-[1.03]">Agregar</button>
@@ -432,7 +432,7 @@ export default function CashflowPage() {
           <table className="w-full min-w-[680px] border-collapse text-sm">
             <thead>
               <tr className="border-b border-line">
-                <th className="sticky left-0 z-10 bg-surface px-4 py-3 text-left font-medium text-muted">Flujo de Caja</th>
+                <th className="sticky left-0 z-10 bg-white/[0.05] px-4 py-3 text-left font-medium text-muted">Flujo de Caja</th>
                 {proj.months.map((m, i) => (
                   <th key={m} className={`px-3 py-3 text-right font-medium ${proj.isFuture[i] ? "text-muted" : "text-fg"}`}>
                     {monthName(m)}<span className="block text-[0.6rem] font-normal text-faint">{proj.isFuture[i] ? "proyectado" : m === CUR ? "en curso" : "real"}</span>
@@ -449,8 +449,8 @@ export default function CashflowPage() {
               {proj.egresoRows.map((r) => <DataRow key={r.label} row={r} />)}
               <TotalRow label="Total Egresos" values={proj.totalEgr} tone="exp" />
 
-              <tr className="border-t-2 border-line bg-surface-2/40">
-                <td className="sticky left-0 z-10 bg-surface-2/40 px-4 py-3 font-display text-fg">Neto del mes</td>
+              <tr className="border-t-2 border-line bg-white/[0.04]">
+                <td className="sticky left-0 z-10 bg-white/[0.04] px-4 py-3 font-display text-fg">Neto del mes</td>
                 {proj.neto.map((n, i) => <td key={i} className={`tnum px-3 py-3 text-right font-medium ${n >= 0 ? "text-emerald" : "text-coral"}`}>{compact(n)}</td>)}
               </tr>
               {mode === "proyeccion" && (
@@ -469,7 +469,7 @@ export default function CashflowPage() {
       </section>
 
       <p className="mt-4 text-xs text-faint">
-        <span className="mr-1 rounded bg-surface-3 px-1.5 py-0.5 text-fg">{basis === "caja" ? "Base caja" : "Base devengado"}</span>
+        <span className="mr-1 rounded bg-white/[0.09] px-1.5 py-0.5 text-fg">{basis === "caja" ? "Base caja" : "Base devengado"}</span>
         {basis === "caja"
           ? "muestra cuándo se mueve la plata: efectivo/débito por fecha, y la tarjeta como el pago del resumen el mes que vence (los consumos de junio impactan en julio). 'Pesos líquidos' = tu saldo en $ al cierre de cada mes. "
           : "muestra cuánto consumiste cada mes: la tarjeta cuenta por fecha de compra (los consumos de junio impactan en junio). Útil para ver comportamiento de gasto. "}
@@ -485,7 +485,7 @@ export default function CashflowPage() {
 
 function NumInput({ value, onChange, onCommit, className = "" }: { value: number; onChange: (v: number) => void; onCommit: (v: number) => void; className?: string }) {
   return (
-    <input type="number" value={value} onChange={(e) => onChange(Number(e.target.value) || 0)} onBlur={(e) => onCommit(Number(e.target.value) || 0)} className={`tnum w-24 rounded-md border border-line bg-surface px-2 py-1 text-right text-sm outline-none focus:border-accent/50 ${className}`} inputMode="decimal" />
+    <input type="number" value={value} onChange={(e) => onChange(Number(e.target.value) || 0)} onBlur={(e) => onCommit(Number(e.target.value) || 0)} className={`tnum w-24 rounded-md border border-line bg-white/[0.05] px-2 py-1 text-right text-sm outline-none focus:border-accent/50 ${className}`} inputMode="decimal" />
   );
 }
 
@@ -494,19 +494,19 @@ function KpiBox({ label, value, hint, tone, icon }: { label: string; value: stri
   return (
     <div className="panel p-4">
       <p className="flex items-center gap-1.5 text-xs text-muted">{icon}{label}</p>
-      <p className={`tnum mt-1 font-display text-2xl ${c}`}>{value}</p>
+      <p className={`tnum mt-1 text-[21px] font-semibold ${c}`}>{value}</p>
       {hint && <p className="mt-0.5 truncate text-[0.7rem] text-faint">{hint}</p>}
     </div>
   );
 }
 
 function SectionRow({ label }: { label: string }) {
-  return (<tr className="border-t border-line"><td colSpan={HORIZON + 1} className="sticky left-0 bg-surface px-4 pb-1 pt-3 text-[0.7rem] uppercase tracking-wider text-faint">{label}</td></tr>);
+  return (<tr className="border-t border-line"><td colSpan={HORIZON + 1} className="sticky left-0 bg-white/[0.05] px-4 pb-1 pt-3 text-[0.7rem] uppercase tracking-wider text-faint">{label}</td></tr>);
 }
 function DataRow({ row }: { row: Row }) {
   return (
-    <tr className="border-b border-line/40 hover:bg-surface-2/30">
-      <td className="sticky left-0 z-10 bg-surface px-4 py-2 text-muted">{row.emoji} {row.label}</td>
+    <tr className="border-b border-line/40 hover:bg-white/[0.03]">
+      <td className="sticky left-0 z-10 bg-white/[0.05] px-4 py-2 text-muted">{row.emoji} {row.label}</td>
       {row.values.map((v, i) => (<td key={i} className="tnum px-3 py-2 text-right text-fg/90">{v > 0 ? compact(v) : "—"}</td>))}
     </tr>
   );
@@ -514,7 +514,7 @@ function DataRow({ row }: { row: Row }) {
 function TotalRow({ label, values, tone }: { label: string; values: number[]; tone: "inc" | "exp" }) {
   const c = tone === "inc" ? "text-emerald" : "text-coral";
   return (
-    <tr className="border-b border-line bg-surface-2/30">
+    <tr className="border-b border-line bg-white/[0.03]">
       <td className="sticky left-0 z-10 bg-[#13161d] px-4 py-2.5 font-medium text-fg">{label}</td>
       {values.map((v, i) => <td key={i} className={`tnum px-3 py-2.5 text-right font-medium ${c}`}>{compact(v)}</td>)}
     </tr>

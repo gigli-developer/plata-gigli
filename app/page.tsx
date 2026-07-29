@@ -402,7 +402,7 @@ function RecentTransactions({ txs, loading, count }: { txs: TxView[]; loading: b
 function SourceTag({ source }: { source: string }) {
   const map: Record<string, { label: string; Icon: typeof Camera; cls: string }> = {
     ocr: { label: "OCR", Icon: Camera, cls: "text-sky" }, email: { label: "Email", Icon: Mail, cls: "text-amber" },
-    chat: { label: "Chat", Icon: Sparkle, cls: "text-violet" }, manual: { label: "Manual", Icon: Plus, cls: "text-faint" },
+    chat: { label: "Chat", Icon: Sparkle, cls: "text-accent" }, manual: { label: "Manual", Icon: Plus, cls: "text-faint" },
   };
   const it = map[source] ?? map.manual;
   return <span className={`hidden items-center gap-1 rounded-full border border-white/10 bg-white/[0.06] px-2 py-0.5 text-[0.65rem] sm:flex ${it.cls}`}><it.Icon className="h-3 w-3" /> {it.label}</span>;

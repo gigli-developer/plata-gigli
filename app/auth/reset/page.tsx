@@ -63,7 +63,7 @@ export default function ResetPage() {
         </div>
 
         <div className="ai-glow mt-8 rounded-2xl p-6">
-          <div className="mb-4 flex items-center gap-2 text-violet">
+          <div className="mb-4 flex items-center gap-2 text-accent">
             <Sparkle className="h-[18px] w-[18px]" />
             <span className="text-xs font-medium uppercase tracking-[0.18em]">Nueva contraseña</span>
           </div>
@@ -75,7 +75,7 @@ export default function ResetPage() {
               <p className="rounded-lg border border-coral/30 bg-coral/10 px-3 py-2 text-xs text-coral">
                 El link no es válido o ya venció. Los links son de un solo uso y hay que abrirlos en el <b>mismo navegador</b> desde el que pediste el mail. Pedí uno nuevo desde el login — o, si ya tenés sesión abierta, entrá directo a esta página y elegí la contraseña.
               </p>
-              <button onClick={() => router.push("/login")} className="mt-4 w-full rounded-xl border border-line bg-surface-2 py-2.5 text-sm text-fg transition-colors hover:border-accent/40">
+              <button onClick={() => router.push("/login")} className="mt-4 w-full rounded-xl border border-line bg-white/[0.06] py-2.5 text-sm text-fg transition-colors hover:border-accent/40">
                 Volver al login
               </button>
             </div>
@@ -89,7 +89,7 @@ export default function ResetPage() {
                 value={p1}
                 onChange={(e) => setP1(e.target.value)}
                 placeholder="••••••••"
-                className="mt-1 w-full rounded-xl border border-line bg-surface-2 px-3 py-2.5 text-sm text-fg outline-none placeholder:text-faint focus:border-violet/50"
+                className="mt-1 w-full rounded-xl border border-line bg-white/[0.06] px-3 py-2.5 text-sm text-fg outline-none placeholder:text-faint focus:border-accent/50"
               />
               <label className="mt-4 block text-xs text-muted">Repetila</label>
               <input
@@ -99,7 +99,7 @@ export default function ResetPage() {
                 value={p2}
                 onChange={(e) => setP2(e.target.value)}
                 placeholder="••••••••"
-                className="mt-1 w-full rounded-xl border border-line bg-surface-2 px-3 py-2.5 text-sm text-fg outline-none placeholder:text-faint focus:border-violet/50"
+                className="mt-1 w-full rounded-xl border border-line bg-white/[0.06] px-3 py-2.5 text-sm text-fg outline-none placeholder:text-faint focus:border-accent/50"
               />
 
               {err && <p className="mt-3 rounded-lg border border-coral/30 bg-coral/10 px-3 py-2 text-xs text-coral">{err}</p>}

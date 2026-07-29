@@ -91,10 +91,10 @@ export function MessageList({ chat, onConfirm }: { chat: ReturnType<typeof useAs
     <div ref={ref} className="flex flex-col gap-3 overflow-y-auto">
       {chat.msgs.map((m, i) => (
         <div key={i}>
-          <div className={`max-w-[88%] rounded-2xl px-3.5 py-2 text-sm ${m.role === "user" ? "ml-auto bg-violet/20 text-fg" : "bg-surface-2 text-fg/90"}`}>{m.content}</div>
+          <div className={`max-w-[88%] rounded-2xl px-3.5 py-2 text-sm ${m.role === "user" ? "ml-auto bg-accent/20 text-fg" : "bg-white/[0.06] text-fg/90"}`}>{m.content}</div>
           {m.options && m.options.length > 0 && (
             <div className="mt-2 flex flex-wrap gap-1.5">
-              {m.options.map((o) => <button key={o} onClick={() => chat.send(o)} disabled={chat.loading} className="rounded-full border border-violet/30 bg-violet/10 px-3 py-1 text-xs text-violet transition-colors hover:bg-violet/20 disabled:opacity-50">{o}</button>)}
+              {m.options.map((o) => <button key={o} onClick={() => chat.send(o)} disabled={chat.loading} className="rounded-full border border-accent/30 bg-accent/10 px-3 py-1 text-xs text-accent transition-colors hover:bg-accent/20 disabled:opacity-50">{o}</button>)}
             </div>
           )}
           {m.proposal && (m.proposal.transacciones?.length || m.proposal.deudas?.length) && (
@@ -103,15 +103,15 @@ export function MessageList({ chat, onConfirm }: { chat: ReturnType<typeof useAs
           {m.role === "assistant" && m.cost != null && <p className="mt-1 text-[0.6rem] text-faint" title={`US$ ${m.cost.toFixed(4)} · ${m.tokens} tokens`}>costo ≈ ${Math.max(1, Math.round(m.cost * fxSync().usd)).toLocaleString("es-AR")} pesos</p>}
         </div>
       ))}
-      {chat.loading && <div className="max-w-[88%] rounded-2xl bg-surface-2 px-3.5 py-2 text-sm text-muted">Pensando…</div>}
+      {chat.loading && <div className="max-w-[88%] rounded-2xl bg-white/[0.06] px-3.5 py-2 text-sm text-muted">Pensando…</div>}
     </div>
   );
 }
 
 export function ProposalCard({ p, busy, onConfirm, onDiscard }: { p: AssistantProposal; busy: boolean; onConfirm: () => void; onDiscard: () => void }) {
   return (
-    <div className="mt-2 max-w-[92%] rounded-2xl border border-violet/30 bg-violet/5 p-3">
-      <p className="mb-2 text-[0.7rem] uppercase tracking-wider text-violet">Voy a registrar</p>
+    <div className="mt-2 max-w-[92%] rounded-2xl border border-accent/30 bg-accent/5 p-3">
+      <p className="mb-2 text-[0.7rem] uppercase tracking-wider text-accent">Voy a registrar</p>
       <ul className="space-y-1.5">
         {(p.transacciones ?? []).map((t, i) => (
           <li key={`t${i}`} className="flex items-center gap-2 text-sm">
@@ -130,7 +130,7 @@ export function ProposalCard({ p, busy, onConfirm, onDiscard }: { p: AssistantPr
       </ul>
       <div className="mt-3 flex gap-2">
         <button onClick={onConfirm} disabled={busy} className="flex-1 rounded-xl bg-accent px-3 py-1.5 text-sm font-medium text-bg transition-opacity disabled:opacity-50">{busy ? "Guardando…" : "Confirmar"}</button>
-        <button onClick={onDiscard} disabled={busy} className="rounded-xl border border-line bg-surface-2 px-3 py-1.5 text-sm text-muted hover:text-fg">Descartar</button>
+        <button onClick={onDiscard} disabled={busy} className="rounded-xl border border-line bg-white/[0.06] px-3 py-1.5 text-sm text-muted hover:text-fg">Descartar</button>
       </div>
     </div>
   );

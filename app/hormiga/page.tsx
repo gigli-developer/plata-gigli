@@ -69,7 +69,7 @@ export default function HormigaPage() {
         <div className="relative flex flex-wrap items-end justify-between gap-4">
           <div>
             <p className="text-sm text-muted">Este mes en gasto evitable</p>
-            <p className="mt-1 font-display text-4xl text-fg sm:text-5xl"><span className="tnum">{ars(totalMes)}</span></p>
+            <p className="tnum mt-1.5 text-[38px] font-extrabold leading-none text-fg sm:text-[42px]"><span>{ars(totalMes)}</span></p>
             {mesPrev && (
               <p className={`mt-1 flex items-center gap-1 text-sm ${totalMes > totalPrev ? "text-coral" : "text-emerald"}`}>
                 {totalMes > totalPrev ? <ArrowUpRight className="h-4 w-4" /> : <ArrowDownRight className="h-4 w-4" />}
@@ -80,7 +80,7 @@ export default function HormigaPage() {
           </div>
           <div className="rounded-2xl border border-coral/25 bg-coral/8 px-4 py-3 text-right">
             <p className="text-[0.65rem] uppercase tracking-widest text-faint">A este ritmo, en un año</p>
-            <p className="tnum mt-0.5 font-display text-2xl text-coral">{compact(promMensual * 12)}</p>
+            <p className="tnum mt-0.5 text-[22px] font-bold text-coral">{compact(promMensual * 12)}</p>
           </div>
         </div>
         <div className="relative mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3">
@@ -110,10 +110,10 @@ export default function HormigaPage() {
                   <div className="flex items-center gap-2 text-sm">
                     <span className="text-base">{c.emoji}</span>
                     <span className="min-w-0 truncate text-fg">{c.comercio}</span>
-                    <span className="shrink-0 rounded-full border border-line bg-surface-2 px-1.5 text-[0.62rem] text-muted">{c.veces}×</span>
+                    <span className="shrink-0 rounded-full border border-line bg-white/[0.06] px-1.5 text-[0.62rem] text-muted">{c.veces}×</span>
                     <span className="tnum ml-auto shrink-0 text-fg">{compact(c.totalArs)}</span>
                   </div>
-                  <div className="mt-1 h-1.5 w-full overflow-hidden rounded-full bg-surface-3">
+                  <div className="mt-1 h-1.5 w-full overflow-hidden rounded-full bg-white/[0.09]">
                     <div className="h-full rounded-full bg-gradient-to-r from-coral/60 to-coral" style={{ width: `${(c.totalArs / max) * 100}%` }} />
                   </div>
                 </li>
@@ -154,13 +154,13 @@ export default function HormigaPage() {
       <section className="panel mt-5 p-6">
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div>
-            <h2 className="flex items-center gap-2 font-display text-lg text-fg"><Repeat className="h-5 w-5 text-violet" /> Suscripciones detectadas</h2>
+            <h2 className="flex items-center gap-2 font-display text-lg text-fg"><Repeat className="h-5 w-5 text-accent" /> Suscripciones detectadas</h2>
             <p className="text-xs text-faint">Cargos que se repiten con el mismo monto. No cuentan como hormiga: se analizan aparte.</p>
           </div>
           {a.suscripciones.length > 0 && (
-            <div className="rounded-2xl border border-violet/25 bg-violet/8 px-4 py-2 text-right">
+            <div className="rounded-2xl border border-accent/25 bg-accent/8 px-4 py-2 text-right">
               <p className="text-[0.65rem] uppercase tracking-widest text-faint">Total al año</p>
-              <p className="tnum font-display text-xl text-violet">{compact(a.suscripciones.reduce((s, x) => s + x.anual, 0))}</p>
+              <p className="tnum font-display text-xl text-accent">{compact(a.suscripciones.reduce((s, x) => s + x.anual, 0))}</p>
             </div>
           )}
         </div>
@@ -180,7 +180,7 @@ export default function HormigaPage() {
                 disabled={marcando}
                 title="Marcarlo como gasto fijo hace que el Cash Flow no lo promedie ni lo infle"
                 className={`shrink-0 rounded-lg border px-2.5 py-1 text-xs transition-colors disabled:opacity-60 ${
-                  s.yaFija ? "border-emerald/40 bg-emerald/10 text-emerald" : "border-line bg-surface-2 text-muted hover:text-fg"
+                  s.yaFija ? "border-emerald/40 bg-emerald/10 text-emerald" : "border-line bg-white/[0.06] text-muted hover:text-fg"
                 }`}
               >
                 {s.yaFija ? "✓ Fijo" : "Marcar fijo"}
@@ -228,7 +228,7 @@ export default function HormigaPage() {
 
 function Mini({ label, value, sub }: { label: string; value: string; sub: string }) {
   return (
-    <div className="rounded-2xl border border-line bg-surface-2/50 p-4">
+    <div className="rounded-2xl border border-line bg-white/[0.05] p-4">
       <p className="text-xs text-muted">{label}</p>
       <p className="tnum mt-1 text-lg text-fg">{value}</p>
       <p className="mt-0.5 text-[0.7rem] text-faint">{sub}</p>

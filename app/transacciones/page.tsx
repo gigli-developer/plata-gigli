@@ -75,7 +75,7 @@ export default function TransaccionesPage() {
         <Stat label="Ingresos" value={totals.ingresos} tone="emerald" up />
         <Stat label="Egresos" value={totals.egresos} tone="coral" />
         <Stat label="Balance" value={totals.balance} tone="accent" up={totals.balance >= 0} />
-        <div className="rounded-2xl border border-line bg-surface-2/50 p-4">
+        <div className="rounded-2xl border border-line bg-white/[0.05] p-4">
           <p className="text-xs text-muted">Movimientos</p>
           <p className="tnum mt-2 text-lg text-fg">{totals.count}</p>
         </div>
@@ -84,7 +84,7 @@ export default function TransaccionesPage() {
       <div className="mt-6 grid grid-cols-1 gap-5 xl:grid-cols-3">
         <div className="order-2 xl:order-1 xl:col-span-2">
           <div className="panel flex flex-col gap-3 p-4 sm:flex-row sm:items-center">
-            <label className="flex flex-1 items-center gap-2 rounded-xl border border-line bg-surface-2 px-3 py-2">
+            <label className="flex flex-1 items-center gap-2 rounded-xl border border-line bg-white/[0.06] px-3 py-2">
               <Search className="h-4 w-4 text-faint" />
               <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Buscar por nombre o categoría…" className="w-full bg-transparent text-sm text-fg outline-none placeholder:text-faint" />
             </label>
@@ -101,7 +101,7 @@ export default function TransaccionesPage() {
               {methods.map((m) => <option key={m.id} value={m.name}>{m.name}</option>)}
             </Select>
             {(cat !== "todas" || method !== "todos" || type !== "todos" || q) && (
-              <button onClick={() => { setCat("todas"); setMethod("todos"); setType("todos"); setQ(""); }} className="rounded-xl border border-line bg-surface-2 px-3 py-2 text-xs text-muted hover:text-fg">Limpiar filtros</button>
+              <button onClick={() => { setCat("todas"); setMethod("todos"); setType("todos"); setQ(""); }} className="rounded-xl border border-line bg-white/[0.06] px-3 py-2 text-xs text-muted hover:text-fg">Limpiar filtros</button>
             )}
           </div>
 
@@ -138,7 +138,7 @@ export default function TransaccionesPage() {
 function Stat({ label, value, tone, up }: { label: string; value: number; tone: "emerald" | "coral" | "accent"; up?: boolean }) {
   const color = tone === "emerald" ? "text-emerald" : tone === "coral" ? "text-coral" : "text-accent";
   return (
-    <div className="rounded-2xl border border-line bg-surface-2/50 p-4">
+    <div className="rounded-2xl border border-line bg-white/[0.05] p-4">
       <div className="flex items-center gap-1.5 text-xs text-muted">
         <span className={`grid h-5 w-5 place-items-center rounded-md bg-white/5 ${color}`}>{up ? <ArrowUpRight className="h-3 w-3" /> : <ArrowDownRight className="h-3 w-3" />}</span>
         {label}
@@ -153,9 +153,9 @@ function Segmented({ value, onChange }: { value: TypeFilter; onChange: (v: TypeF
     { v: "todos", label: "Todos" }, { v: "ingreso", label: "Ingresos" }, { v: "egreso", label: "Egresos" },
   ];
   return (
-    <div className="flex rounded-xl border border-line bg-surface-2 p-1 text-sm">
+    <div className="flex rounded-xl border border-line bg-white/[0.06] p-1 text-sm">
       {opts.map((o) => (
-        <button key={o.v} onClick={() => onChange(o.v)} className={`rounded-lg px-3 py-1.5 transition-colors ${value === o.v ? "bg-surface-3 text-fg" : "text-muted hover:text-fg"}`}>{o.label}</button>
+        <button key={o.v} onClick={() => onChange(o.v)} className={`rounded-lg px-3 py-1.5 transition-colors ${value === o.v ? "bg-white/[0.09] text-fg" : "text-muted hover:text-fg"}`}>{o.label}</button>
       ))}
     </div>
   );
@@ -164,7 +164,7 @@ function Segmented({ value, onChange }: { value: TypeFilter; onChange: (v: TypeF
 function Select({ value, onChange, children }: { value: string; onChange: (v: string) => void; children: React.ReactNode }) {
   return (
     <div className="relative">
-      <select value={value} onChange={(e) => onChange(e.target.value)} className="appearance-none rounded-xl border border-line bg-surface-2 py-2 pl-3 pr-9 text-sm text-fg outline-none focus:border-accent/40">{children}</select>
+      <select value={value} onChange={(e) => onChange(e.target.value)} className="appearance-none rounded-xl border border-line bg-white/[0.06] py-2 pl-3 pr-9 text-sm text-fg outline-none focus:border-accent/40">{children}</select>
       <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-faint">▾</span>
     </div>
   );
@@ -174,20 +174,20 @@ function Row({ t, onEdit }: { t: TxView; onEdit: () => void }) {
   const sources: Record<string, { label: string; Icon: typeof Camera; cls: string }> = {
     ocr: { label: "OCR", Icon: Camera, cls: "text-sky" },
     email: { label: "Email", Icon: Mail, cls: "text-amber" },
-    chat: { label: "Chat", Icon: Sparkle, cls: "text-violet" },
+    chat: { label: "Chat", Icon: Sparkle, cls: "text-accent" },
     manual: { label: "Manual", Icon: Plus, cls: "text-faint" },
   };
   const s = sources[t.source] ?? sources.manual;
   const time = t.date.split(" · ")[1] ?? "";
   return (
-    <li onClick={onEdit} className="group flex cursor-pointer items-center gap-3 rounded-lg px-2 py-3 transition-colors hover:bg-surface-2/50">
-      <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl border border-line bg-surface-2 text-lg">{t.emoji}</span>
+    <li onClick={onEdit} className="group flex cursor-pointer items-center gap-3 rounded-lg px-2 py-3 transition-colors hover:bg-white/[0.05]">
+      <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl border border-line bg-white/[0.06] text-lg">{t.emoji}</span>
       <div className="min-w-0">
         <p className="truncate text-[0.95rem] text-fg">{t.desc}</p>
         <p className="truncate text-xs text-faint">{t.category} · {t.method}{t.card ? ` · ${t.card}` : ""}{time ? ` · ${time}` : ""}</p>
       </div>
       <div className="ml-auto flex items-center gap-3">
-        <span className={`hidden items-center gap-1 rounded-full border border-line bg-surface-2 px-2 py-0.5 text-[0.65rem] sm:flex ${s.cls}`}>
+        <span className={`hidden items-center gap-1 rounded-full border border-line bg-white/[0.06] px-2 py-0.5 text-[0.65rem] sm:flex ${s.cls}`}>
           <s.Icon className="h-3 w-3" /> {s.label}
         </span>
         <span className={`tnum text-[0.95rem] ${t.type === "ingreso" ? "text-emerald" : "text-fg"}`}>
@@ -241,16 +241,16 @@ function NewMovementForm({ cats, methods, onSaved }: { cats: Category[]; methods
         <p className="text-xs text-faint">Carga manual · también podés usar el asistente 🤖</p>
 
         <div className="mt-4 grid grid-cols-2 gap-2">
-          <button onClick={() => setType("egreso")} className={`rounded-xl border py-2.5 text-sm transition-colors ${type === "egreso" ? "border-coral/40 bg-coral/10 text-coral" : "border-line bg-surface-2 text-muted hover:text-fg"}`}>Egreso</button>
-          <button onClick={() => setType("ingreso")} className={`rounded-xl border py-2.5 text-sm transition-colors ${type === "ingreso" ? "border-emerald/40 bg-emerald/10 text-emerald" : "border-line bg-surface-2 text-muted hover:text-fg"}`}>Ingreso</button>
+          <button onClick={() => setType("egreso")} className={`rounded-xl border py-2.5 text-sm transition-colors ${type === "egreso" ? "border-coral/40 bg-coral/10 text-coral" : "border-line bg-white/[0.06] text-muted hover:text-fg"}`}>Egreso</button>
+          <button onClick={() => setType("ingreso")} className={`rounded-xl border py-2.5 text-sm transition-colors ${type === "ingreso" ? "border-emerald/40 bg-emerald/10 text-emerald" : "border-line bg-white/[0.06] text-muted hover:text-fg"}`}>Ingreso</button>
         </div>
 
         <div className="mt-4">
           <label className="text-xs text-muted">Monto</label>
-          <div className="mt-1 flex items-center gap-2 rounded-xl border border-line bg-surface-2 px-3 py-2.5">
+          <div className="mt-1 flex items-center gap-2 rounded-xl border border-line bg-white/[0.06] px-3 py-2.5">
             <span className="text-lg text-faint">$</span>
             <input value={amount} onChange={(e) => setAmount(e.target.value)} inputMode="numeric" placeholder="0" className="tnum w-full bg-transparent text-xl text-fg outline-none placeholder:text-faint" />
-            <select value={currency} onChange={(e) => setCurrency(e.target.value)} className="appearance-none rounded-lg border border-line bg-surface-3 px-2 py-1 text-xs text-muted outline-none">
+            <select value={currency} onChange={(e) => setCurrency(e.target.value)} className="appearance-none rounded-lg border border-line bg-white/[0.09] px-2 py-1 text-xs text-muted outline-none">
               {CURRENCIES.map((c) => <option key={c}>{c}</option>)}
             </select>
           </div>
@@ -267,7 +267,7 @@ function NewMovementForm({ cats, methods, onSaved }: { cats: Category[]; methods
           </FullSelect>
         </Field>
         <Field label="Descripción">
-          <input value={desc} onChange={(e) => setDesc(e.target.value)} placeholder="Ej: Cena con amigos" className="w-full rounded-xl border border-line bg-surface-2 px-3 py-2.5 text-sm text-fg outline-none placeholder:text-faint focus:border-accent/40" />
+          <input value={desc} onChange={(e) => setDesc(e.target.value)} placeholder="Ej: Cena con amigos" className="w-full rounded-xl border border-line bg-white/[0.06] px-3 py-2.5 text-sm text-fg outline-none placeholder:text-faint focus:border-accent/40" />
         </Field>
 
         <button onClick={save} disabled={saving} className="mt-5 w-full rounded-xl bg-accent py-3 text-sm font-medium text-bg transition-transform hover:scale-[1.02] disabled:opacity-60">
@@ -291,7 +291,7 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
 function FullSelect({ value, onChange, children }: { value: string; onChange: (v: string) => void; children: React.ReactNode }) {
   return (
     <div className="relative">
-      <select value={value} onChange={(e) => onChange(e.target.value)} className="w-full appearance-none rounded-xl border border-line bg-surface-2 py-2.5 pl-3 pr-9 text-sm text-fg outline-none focus:border-accent/40">{children}</select>
+      <select value={value} onChange={(e) => onChange(e.target.value)} className="w-full appearance-none rounded-xl border border-line bg-white/[0.06] py-2.5 pl-3 pr-9 text-sm text-fg outline-none focus:border-accent/40">{children}</select>
       <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-faint">▾</span>
     </div>
   );

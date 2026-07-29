@@ -39,28 +39,28 @@ export default function EditPlanModal({ plan, onClose, onSaved }: {
           <button onClick={onClose} className="grid h-8 w-8 place-items-center rounded-lg text-muted hover:text-fg"><X className="h-4 w-4" /></button>
         </div>
 
-        <p className="mt-3 flex items-center gap-2 rounded-xl border border-violet/25 bg-violet/8 px-3 py-2 text-xs text-violet">
+        <p className="mt-3 flex items-center gap-2 rounded-xl border border-accent/25 bg-accent/8 px-3 py-2 text-xs text-accent">
           <Repeat className="h-4 w-4 shrink-0" /> Editar el monto o el total afecta <b>todas</b> las cuotas del plan (anteriores y posteriores).
         </p>
 
         <Field label="Descripción">
           <div className="flex gap-2">
-            <input value={emoji} onChange={(e) => setEmoji(e.target.value)} className="w-14 rounded-xl border border-line bg-surface-2 px-3 py-2.5 text-center text-lg outline-none" />
-            <input value={desc} onChange={(e) => setDesc(e.target.value)} className="flex-1 rounded-xl border border-line bg-surface-2 px-3 py-2.5 text-sm text-fg outline-none focus:border-accent/40" />
+            <input value={emoji} onChange={(e) => setEmoji(e.target.value)} className="w-14 rounded-xl border border-line bg-white/[0.06] px-3 py-2.5 text-center text-lg outline-none" />
+            <input value={desc} onChange={(e) => setDesc(e.target.value)} className="flex-1 rounded-xl border border-line bg-white/[0.06] px-3 py-2.5 text-sm text-fg outline-none focus:border-accent/40" />
           </div>
         </Field>
         <Field label="Monto de la cuota (mensual)">
-          <div className="flex items-center gap-2 rounded-xl border border-line bg-surface-2 px-3 py-2.5">
+          <div className="flex items-center gap-2 rounded-xl border border-line bg-white/[0.06] px-3 py-2.5">
             <span className="text-lg text-faint">$</span>
             <input value={monthly} onChange={(e) => setMonthly(e.target.value)} inputMode="decimal" className="tnum w-full bg-transparent text-xl text-fg outline-none" />
           </div>
         </Field>
         <div className="grid grid-cols-2 gap-3">
           <Field label="Total de cuotas">
-            <input value={total} onChange={(e) => setTotal(e.target.value)} inputMode="numeric" className="tnum w-full rounded-xl border border-line bg-surface-2 px-3 py-2.5 text-fg outline-none focus:border-accent/40" />
+            <input value={total} onChange={(e) => setTotal(e.target.value)} inputMode="numeric" className="tnum w-full rounded-xl border border-line bg-white/[0.06] px-3 py-2.5 text-fg outline-none focus:border-accent/40" />
           </Field>
           <Field label="Fecha 1ª cuota">
-            <input type="date" value={firstDate} onChange={(e) => setFirstDate(e.target.value)} className="w-full rounded-xl border border-line bg-surface-2 px-3 py-2.5 text-sm text-fg outline-none [color-scheme:dark] focus:border-accent/40" />
+            <input type="date" value={firstDate} onChange={(e) => setFirstDate(e.target.value)} className="w-full rounded-xl border border-line bg-white/[0.06] px-3 py-2.5 text-sm text-fg outline-none [color-scheme:dark] focus:border-accent/40" />
           </Field>
         </div>
 

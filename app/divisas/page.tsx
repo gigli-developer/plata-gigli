@@ -15,7 +15,7 @@ export default function DivisasPage() {
   return (
     <>
       <PageHeader title="Divisas" subtitle="Cotización en vivo">
-        <span className="flex items-center gap-2 rounded-full border border-line bg-surface-2 px-3 py-1.5 text-xs text-muted">
+        <span className="flex items-center gap-2 rounded-full border border-line bg-white/[0.06] px-3 py-1.5 text-xs text-muted">
           <span className="h-1.5 w-1.5 rounded-full bg-emerald pulse-dot" /> Actualizado recién
         </span>
       </PageHeader>
@@ -48,7 +48,7 @@ export default function DivisasPage() {
             <ul className="mt-4 divide-y divide-line">
               {history.map((h) => (
                 <li key={h.id} className="flex items-center gap-3 py-3.5">
-                  <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl border border-line bg-surface-2"><Swap className="h-5 w-5 text-violet" /></span>
+                  <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl border border-line bg-white/[0.06]"><Swap className="h-5 w-5 text-accent" /></span>
                   <div>
                     <p className="text-[0.95rem] text-fg">{h.from} → {h.to}</p>
                     <p className="text-xs text-faint">{h.date} · TC ${h.rate.toLocaleString("es-AR")}</p>
@@ -106,7 +106,7 @@ function Converter({ onRegister }: { onRegister: () => Promise<void> }) {
         <MoneyField label="Entregás" amount={amount} onAmount={setAmount} currency={from} onCurrency={setFrom} editable />
         <button
           onClick={swap}
-          className="mx-auto grid h-11 w-11 shrink-0 place-items-center self-center rounded-xl border border-line bg-surface-2 text-violet transition-transform hover:rotate-180 hover:text-fg"
+          className="mx-auto grid h-11 w-11 shrink-0 place-items-center self-center rounded-xl border border-line bg-white/[0.06] text-accent transition-transform hover:rotate-180 hover:text-fg"
           title="Invertir"
         >
           <Swap className="h-5 w-5" />
@@ -114,12 +114,12 @@ function Converter({ onRegister }: { onRegister: () => Promise<void> }) {
         <MoneyField label="Recibís" amount={result.toLocaleString("es-AR", { maximumFractionDigits: 2 })} currency={to} onCurrency={setTo} />
       </div>
 
-      <div className="mt-4 rounded-xl border border-line bg-surface-2/60 px-4 py-2.5">
+      <div className="mt-4 rounded-xl border border-line bg-white/[0.06] px-4 py-2.5">
         <div className="flex flex-wrap items-center justify-between gap-2 text-sm">
           <span className="text-muted">Tipo de cambio</span>
-          <div className="flex rounded-lg border border-line bg-surface-3 p-0.5 text-xs">
-            <button onClick={() => setManual(false)} className={`rounded-md px-2.5 py-1 transition-colors ${!manual ? "bg-surface-2 text-accent" : "text-muted hover:text-fg"}`}>Auto</button>
-            <button onClick={() => { setManual(true); if (!manualRate) setManualRate(autoRate.toFixed(2)); }} className={`rounded-md px-2.5 py-1 transition-colors ${manual ? "bg-surface-2 text-violet" : "text-muted hover:text-fg"}`}>Manual</button>
+          <div className="flex rounded-lg border border-line bg-white/[0.09] p-0.5 text-xs">
+            <button onClick={() => setManual(false)} className={`rounded-md px-2.5 py-1 transition-colors ${!manual ? "bg-white/[0.06] text-accent" : "text-muted hover:text-fg"}`}>Auto</button>
+            <button onClick={() => { setManual(true); if (!manualRate) setManualRate(autoRate.toFixed(2)); }} className={`rounded-md px-2.5 py-1 transition-colors ${manual ? "bg-white/[0.06] text-accent" : "text-muted hover:text-fg"}`}>Manual</button>
           </div>
         </div>
         <div className="mt-2 flex items-center gap-2 text-sm">
@@ -131,13 +131,13 @@ function Converter({ onRegister }: { onRegister: () => Promise<void> }) {
               inputMode="decimal"
               placeholder="cotización…"
               autoFocus
-              className="tnum w-32 rounded-lg border border-violet/40 bg-surface-3 px-2 py-1 text-fg outline-none"
+              className="tnum w-32 rounded-lg border border-accent/40 bg-white/[0.09] px-2 py-1 text-fg outline-none"
             />
           ) : (
             <span className="tnum text-fg">{autoRate.toLocaleString("es-AR", { maximumFractionDigits: 4 })}</span>
           )}
           <span className="tnum text-faint">{to}</span>
-          {manual && <span className="ml-auto text-[0.7rem] text-violet">cotización propia</span>}
+          {manual && <span className="ml-auto text-[0.7rem] text-accent">cotización propia</span>}
         </div>
       </div>
 
@@ -152,7 +152,7 @@ function MoneyField({ label, amount, onAmount, currency, onCurrency, editable }:
   label: string; amount: string; onAmount?: (v: string) => void; currency: string; onCurrency: (v: string) => void; editable?: boolean;
 }) {
   return (
-    <div className="flex-1 rounded-2xl border border-line bg-surface-2 p-4">
+    <div className="flex-1 rounded-2xl border border-line bg-white/[0.06] p-4">
       <p className="text-xs text-muted">{label}</p>
       <div className="mt-2 flex items-center gap-2">
         <input
@@ -166,7 +166,7 @@ function MoneyField({ label, amount, onAmount, currency, onCurrency, editable }:
           <select
             value={currency}
             onChange={(e) => onCurrency(e.target.value)}
-            className="appearance-none rounded-lg border border-line bg-surface-3 py-1.5 pl-3 pr-7 text-sm text-fg outline-none"
+            className="appearance-none rounded-lg border border-line bg-white/[0.09] py-1.5 pl-3 pr-7 text-sm text-fg outline-none"
           >
             {currencies.map((c) => <option key={c}>{c}</option>)}
           </select>
@@ -188,11 +188,11 @@ function Holdings() {
         </div>
         <span className="grid h-9 w-9 place-items-center rounded-xl bg-accent/12 text-accent"><Coins className="h-5 w-5" /></span>
       </div>
-      <p className="tnum mt-4 font-display text-3xl text-fg">{ars(total)}</p>
+      <p className="tnum mt-4 text-[26px] font-bold text-fg">{ars(total)}</p>
       <ul className="mt-4 space-y-3">
         {fxHoldings.map((h) => (
           <li key={h.currency} className="flex items-center gap-3">
-            <span className="grid h-9 w-9 place-items-center rounded-xl border border-line bg-surface-2 text-base">{h.emoji}</span>
+            <span className="grid h-9 w-9 place-items-center rounded-xl border border-line bg-white/[0.06] text-base">{h.emoji}</span>
             <div>
               <p className="text-sm text-fg">{h.amount.toLocaleString("es-AR")} {h.currency}</p>
               <p className="text-xs text-faint">≈ {ars(h.amount * fxRatesToArs[h.currency])}</p>
