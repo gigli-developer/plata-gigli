@@ -7,8 +7,23 @@ export const PALETTE = ["#ff9e1b", "#35e08a", "#5ec8ff", "#ffbf47", "#ff433d", "
 
 export type Slice = { label: string; value: number; emoji?: string };
 
+/** Tooltip oscuro flotante, el mismo en todos los charts. */
+function Tip({ children, x, y }: { children: React.ReactNode; x: number | string; y: number | string }) {
+  return (
+    <div
+      className="pointer-events-none absolute z-20 -translate-x-1/2 -translate-y-full whitespace-nowrap rounded-[11px] border border-white/[0.18] bg-[#0d0e0e]/95 px-2.5 py-1.5 text-xs shadow-[0_10px_30px_rgba(0,0,0,0.5)]"
+      style={{ left: typeof x === "number" ? `${x}px` : x, top: typeof y === "number" ? `${y}px` : y }}
+    >
+      {children}
+    </div>
+  );
+}
+
 // ---------- Donut ----------
+// Al pasar el mouse por un gajo, el gajo engrosa y el centro pasa de mostrar el
+// total a mostrar esa categoría con su monto y porcentaje.
 export function Donut({ data, fmt, size = 220, thickness = 28 }: { data: Slice[]; fmt: (n: number) => string; size?: number; thickness?: number }) {
+  const [hover, setHover] = useState<number | null>(null);
   const total = data.reduce((s, d) => s + d.value, 0);
   const r = (size - thickness) / 2;
   const c = 2 * Math.PI * r;
@@ -17,32 +32,60 @@ export function Donut({ data, fmt, size = 220, thickness = 28 }: { data: Slice[]
 
   if (total <= 0) return <div className="grid h-44 place-items-center text-sm text-faint">Sin datos en el período</div>;
 
+  const sel = hover != null ? data[hover] : null;
+
   return (
     <div className="flex flex-col items-center gap-5 sm:flex-row sm:justify-center sm:gap-8">
-      <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} className="shrink-0 -rotate-90">
-        <circle cx={cx} cy={cx} r={r} fill="none" stroke="var(--color-surface-2)" strokeWidth={thickness} />
-        {data.map((d, i) => {
-          const dash = (d.value / total) * c;
-          const seg = (
-            <circle
-              key={i}
-              cx={cx} cy={cx} r={r} fill="none"
-              stroke={PALETTE[i % PALETTE.length]}
-              strokeWidth={thickness}
-              strokeDasharray={`${dash} ${c - dash}`}
-              strokeDashoffset={-acc}
-              strokeLinecap="butt"
-            />
-          );
-          acc += dash;
-          return seg;
-        })}
-        {/* total en el centro (estático) */}
-        <text x={cx} y={cx} transform={`rotate(90 ${cx} ${cx})`} textAnchor="middle" dominantBaseline="central" className="tnum" fill="var(--color-fg)" fontSize={size * 0.13} fontWeight={600}>{fmt(total)}</text>
-      </svg>
+      <div className="pop-in relative shrink-0" style={{ width: size, height: size }}>
+        <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} className="-rotate-90">
+          <circle cx={cx} cy={cx} r={r} fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth={thickness} />
+          {data.map((d, i) => {
+            const dash = (d.value / total) * c;
+            const on = hover === i;
+            const seg = (
+              <circle
+                key={i}
+                cx={cx} cy={cx} r={r} fill="none"
+                stroke={PALETTE[i % PALETTE.length]}
+                strokeWidth={on ? thickness + 7 : thickness}
+                strokeDasharray={`${dash} ${c - dash}`}
+                strokeDashoffset={-acc}
+                strokeLinecap="butt"
+                opacity={hover == null || on ? 1 : 0.4}
+                style={{ transition: "stroke-width .15s ease, opacity .15s ease", cursor: "default" }}
+                onMouseEnter={() => setHover(i)}
+                onMouseLeave={() => setHover(null)}
+              />
+            );
+            acc += dash;
+            return seg;
+          })}
+        </svg>
+        {/* centro: total, o la categoría apuntada */}
+        <div className="pointer-events-none absolute inset-0 grid place-items-center text-center">
+          {sel ? (
+            <div>
+              <p className="max-w-[7.5rem] truncate px-2 text-[0.7rem] text-subtle">{sel.emoji ? `${sel.emoji} ` : ""}{sel.label}</p>
+              <p className="tnum text-lg font-semibold text-fg">{fmt(sel.value)}</p>
+              <p className="tnum text-[0.7rem] text-faint">{((sel.value / total) * 100).toFixed(1)}%</p>
+            </div>
+          ) : (
+            <div>
+              <p className="label-micro">total</p>
+              <p className="tnum text-xl font-semibold text-fg">{fmt(total)}</p>
+            </div>
+          )}
+        </div>
+      </div>
       <ul className="w-full sm:w-auto sm:min-w-[15rem]">
         {data.map((d, i) => (
-          <li key={i} className="grid grid-cols-[11px_1fr_auto] items-center gap-2.5 px-1 py-1 text-sm">
+          <li
+            key={i}
+            onMouseEnter={() => setHover(i)}
+            onMouseLeave={() => setHover(null)}
+            className="grid grid-cols-[11px_1fr_auto] items-center gap-2.5 rounded-lg px-1 py-1 text-sm transition-colors"
+            style={{ background: hover === i ? "rgba(255,255,255,0.05)" : undefined, opacity: hover == null || hover === i ? 1 : 0.55 }}
+          >
             <span className="h-2.5 w-2.5 rounded-full" style={{ background: PALETTE[i % PALETTE.length] }} />
             <span className="truncate text-muted">{d.emoji ? `${d.emoji} ` : ""}{d.label}</span>
             <span className="tnum text-fg">{((d.value / total) * 100).toFixed(0)}%</span>
@@ -55,16 +98,27 @@ export function Donut({ data, fmt, size = 220, thickness = 28 }: { data: Slice[]
 
 // ---------- Barras horizontales ----------
 export function BarList({ data, fmt }: { data: Slice[]; fmt: (n: number) => string }) {
+  const [hover, setHover] = useState<number | null>(null);
   const max = Math.max(...data.map((d) => d.value), 1);
+  const total = data.reduce((s, d) => s + d.value, 0);
   if (!data.length) return <div className="grid h-32 place-items-center text-sm text-faint">Sin datos</div>;
   return (
     <ul className="flex flex-col gap-2.5">
       {data.map((d, i) => (
-        <li key={i} className="grid grid-cols-[1fr_auto] items-center gap-x-3 gap-y-1">
+        <li
+          key={i}
+          onMouseEnter={() => setHover(i)}
+          onMouseLeave={() => setHover(null)}
+          className="grid grid-cols-[1fr_auto] items-center gap-x-3 gap-y-1"
+          style={{ opacity: hover == null || hover === i ? 1 : 0.5, transition: "opacity .15s ease" }}
+        >
           <span className="truncate text-sm text-muted">{d.emoji ? `${d.emoji} ` : ""}{d.label}</span>
-          <span className="tnum text-sm text-fg">{fmt(d.value)}</span>
-          <div className="col-span-2 h-2 overflow-hidden rounded-full bg-surface-2">
-            <div className="h-full rounded-full" style={{ width: `${(d.value / max) * 100}%`, background: PALETTE[i % PALETTE.length] }} />
+          <span className="tnum text-sm text-fg">
+            {fmt(d.value)}
+            {hover === i && total > 0 && <span className="ml-1.5 text-[0.7rem] text-faint">{((d.value / total) * 100).toFixed(0)}%</span>}
+          </span>
+          <div className="col-span-2 h-2 overflow-hidden rounded-full bg-white/[0.06]">
+            <div className="h-full rounded-full transition-all" style={{ width: `${(d.value / max) * 100}%`, background: PALETTE[i % PALETTE.length] }} />
           </div>
         </li>
       ))}
@@ -85,9 +139,18 @@ export function GroupedColumns({ data, fmt, height = 200 }: { data: MonthCol[]; 
       <div className="mb-3 flex flex-wrap items-center gap-4 text-xs">
         <span className="flex items-center gap-1.5 text-muted"><span className="h-2.5 w-2.5 rounded-sm" style={{ background: "#35e08a" }} /> Ingresos</span>
         <span className="flex items-center gap-1.5 text-muted"><span className="h-2.5 w-2.5 rounded-sm" style={{ background: "#ff433d" }} /> Egresos</span>
-        {sel && <span className="tnum ml-auto text-fg">{sel.label}: <span className="text-emerald">{fmt(sel.ingreso)}</span> · <span className="text-coral">{fmt(sel.egreso)}</span> · neto <span className={sel.ingreso - sel.egreso >= 0 ? "text-emerald" : "text-coral"}>{fmt(sel.ingreso - sel.egreso)}</span></span>}
       </div>
-      <div className="flex gap-2" style={{ height: height + 18 }}>
+      <div className="relative flex" style={{ height: height + 18 }}>
+        {sel && hover != null && (
+          <Tip x={`${((hover + 0.5) / data.length) * 100}%`} y={height - barH(Math.max(sel.ingreso, sel.egreso)) - 10}>
+            <p className="mb-0.5 text-subtle">{sel.label}</p>
+            <p className="tnum text-emerald">{fmt(sel.ingreso)}</p>
+            <p className="tnum text-coral">{fmt(sel.egreso)}</p>
+            <p className={`tnum mt-0.5 border-t border-white/10 pt-0.5 ${sel.ingreso - sel.egreso >= 0 ? "text-emerald" : "text-coral"}`}>
+              neto {fmt(sel.ingreso - sel.egreso)}
+            </p>
+          </Tip>
+        )}
         {data.map((d, i) => (
           <div key={i} className="flex flex-1 flex-col items-center justify-end gap-1.5" onMouseEnter={() => setHover(i)} onMouseLeave={() => setHover(null)} style={{ opacity: hover == null || hover === i ? 1 : 0.4, cursor: "default" }}>
             <div className="flex w-full items-end justify-center gap-1" style={{ height }}>
@@ -147,11 +210,25 @@ export function NetWorthChart({ data, fmt, height = 220 }: { data: NetWorthCol[]
             puntos son divs, que estirados se verían como elipses. */}
         <svg className="pointer-events-none absolute inset-x-0 top-0" width="100%" height={height} preserveAspectRatio="none" viewBox={`0 0 100 ${height}`}>
           <polyline
+            className="draw-line"
+            pathLength={1}
             fill="none" stroke="var(--color-fg)" strokeWidth={1.5} strokeLinejoin="round"
             vectorEffect="non-scaling-stroke"
             points={data.map((d, i) => `${((i + 0.5) / data.length) * 100},${yNeto(d.patrimonio)}`).join(" ")}
           />
         </svg>
+
+        {/* tooltip del mes apuntado */}
+        {hover != null && (
+          <Tip x={`${((hover + 0.5) / data.length) * 100}%`} y={Math.max(yNeto(data[hover].patrimonio) - 8, 4)}>
+            <p className="mb-0.5 text-subtle">{data[hover].label}</p>
+            <p className="tnum text-fg">Neto {fmt(data[hover].patrimonio)}</p>
+            <p className="tnum text-[0.7rem] text-faint">
+              Activos {fmt(data[hover].ars + data[hover].usdArs + data[hover].usdtArs + data[hover].teDeben)}
+            </p>
+            <p className="tnum text-[0.7rem] text-coral">Pasivos {fmt(data[hover].pasivos)}</p>
+          </Tip>
+        )}
         {data.map((d, i) => (
           <span
             key={`dot${i}`}

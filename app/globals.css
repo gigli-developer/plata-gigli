@@ -97,8 +97,14 @@ body {
    no el resto del efecto. */
 .panel {
   background: rgba(255, 255, 255, 0.08);
-  backdrop-filter: blur(26px) saturate(170%);
-  -webkit-backdrop-filter: blur(26px) saturate(170%);
+  /* El valor va por variable a propósito: Lightning CSS (el procesador de
+     Tailwind v4) colapsa `backdrop-filter` + `-webkit-backdrop-filter` cuando el
+     valor es literal y se queda SOLO con la prefijada — el vidrio desaparecía en
+     Firefox. Con var() no puede evaluarlo y deja las dos. Verificado leyendo el
+     CSS compilado; si tocás esto, volvé a chequearlo ahí. */
+  --glass: blur(26px) saturate(170%);
+  -webkit-backdrop-filter: var(--glass);
+  backdrop-filter: var(--glass);
   border: 1px solid rgba(255, 255, 255, 0.32);
   border-radius: var(--radius-xl);
   box-shadow:
@@ -124,10 +130,7 @@ body {
 
 /* En pantallas chicas el blur se recorta: es donde más cuesta y menos se ve. */
 @media (max-width: 1023px) {
-  .panel {
-    backdrop-filter: blur(16px) saturate(150%);
-    -webkit-backdrop-filter: blur(16px) saturate(150%);
-  }
+  .panel { --glass: blur(16px) saturate(150%); }
 }
 /* Sin soporte de backdrop-filter, el vidrio se cae a un sólido legible. */
 @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {

@@ -187,45 +187,46 @@ export default function MetricasPage() {
   return (
     <>
       <PageHeader title="Métricas" subtitle={`Patrimonio, ratios y análisis · ref: ${monthLabel(m.ref_month)}`}>
-        <div className="flex items-center gap-2 rounded-full border border-line bg-surface-2 px-3 py-1.5 text-xs">
-          <span className="text-faint">Cotización</span>
-          <span className="text-muted">USD</span>
+        <div className="flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.06] px-3 py-1.5 text-xs">
+          <span className="label-micro">Cotización</span>
+          <span className="text-subtle">USD</span>
           <input value={usdRate} onChange={(e) => setUsdRate(Number(e.target.value) || 0)} className="tnum w-16 bg-transparent text-fg outline-none" inputMode="decimal" />
-          <span className="text-muted">USDT</span>
+          <span className="text-subtle">USDT</span>
           <input value={usdtRate} onChange={(e) => setUsdtRate(Number(e.target.value) || 0)} className="tnum w-16 bg-transparent text-fg outline-none" inputMode="decimal" />
         </div>
       </PageHeader>
 
-      {/* Banda compacta: patrimonio + saldos + ratios todo junto */}
-      <section className="rise panel relative mt-6 overflow-hidden">
-        <div className="pointer-events-none absolute -right-16 -top-20 h-56 w-56 rounded-full bg-accent/10 blur-3xl" />
-        <div className="relative grid gap-px bg-line/60 lg:grid-cols-[1.4fr_2fr]">
+      {/* Banda: patrimonio + saldos + ratios. Los divisores son bordes translúcidos,
+          no el truco de gap-px con hijos opacos: sobre vidrio eso se ve como parches. */}
+      <section className="rise panel relative mt-5 overflow-hidden">
+        <div className="pointer-events-none absolute -right-16 -top-20 h-56 w-56 rounded-full bg-accent/15 blur-3xl" />
+        <div className="relative grid lg:grid-cols-[1.4fr_2fr]">
           {/* Patrimonio */}
-          <div className="bg-surface p-5">
-            <p className="flex items-center gap-2 text-sm text-muted"><Coins className="h-4 w-4 text-accent" /> Patrimonio neto <span className="text-faint">· hoy</span></p>
-            <p className={`mt-1 font-display text-3xl sm:text-4xl ${calc.patrimonio >= 0 ? "text-fg" : "text-coral"}`}><span className="tnum">{ars(calc.patrimonio)}</span></p>
-            <p className="mt-1 text-xs text-faint">≈ US$ {calc.patrimonioUsd.toLocaleString("es-AR", { maximumFractionDigits: 0 })}</p>
-            <div className="mt-3 flex gap-2 text-xs">
-              <span className="rounded-lg border border-emerald/20 bg-emerald/8 px-2 py-1 text-emerald">Activos {compact(calc.activos)}</span>
-              <span className="rounded-lg border border-coral/20 bg-coral/8 px-2 py-1 text-coral">Pasivos {compact(calc.pasivos)}</span>
+          <div className="border-b border-white/10 p-6 lg:border-b-0 lg:border-r">
+            <p className="flex items-center gap-2 text-sm text-subtle"><Coins className="h-4 w-4 text-accent" /> Patrimonio neto <span className="text-faint">· hoy</span></p>
+            <p className={`tnum mt-1.5 text-[38px] font-extrabold leading-none lg:text-[42px] ${calc.patrimonio >= 0 ? "text-fg" : "text-coral"}`}>{ars(calc.patrimonio)}</p>
+            <p className="mt-2 text-xs text-faint">≈ US$ {calc.patrimonioUsd.toLocaleString("es-AR", { maximumFractionDigits: 0 })}</p>
+            <div className="mt-3.5 flex gap-2 text-xs">
+              <span className="rounded-full border border-emerald/25 bg-emerald/10 px-2.5 py-[3px] font-bold text-emerald">Activos {compact(calc.activos)}</span>
+              <span className="rounded-full border border-coral/25 bg-coral/10 px-2.5 py-[3px] font-bold text-coral">Pasivos {compact(calc.pasivos)}</span>
             </div>
           </div>
           {/* Saldos por moneda */}
-          <div className="grid grid-cols-3 gap-px bg-line/60">
-            <Mini label="Pesos" tag="ARS" value={compact(m.ars_liquido)} />
-            <Mini label="Dólares" tag="USD" value={`US$ ${m.usd_liquido.toLocaleString("es-AR", { maximumFractionDigits: 0 })}`} sub={compact(calc.usdArs)} />
-            <Mini label="Cripto" tag="USDT" value={`${m.usdt_liquido.toLocaleString("es-AR")}`} sub={compact(calc.usdtArs)} />
+          <div className="grid grid-cols-3 divide-x divide-white/10">
+            <Mini label="Pesos" tag="ARS" value={compact(m.ars_liquido)} tone="text-accent" />
+            <Mini label="Dólares" tag="USD" value={`US$ ${m.usd_liquido.toLocaleString("es-AR", { maximumFractionDigits: 0 })}`} sub={compact(calc.usdArs)} tone="text-gold" />
+            <Mini label="Cripto" tag="USDT" value={`${m.usdt_liquido.toLocaleString("es-AR")}`} sub={compact(calc.usdtArs)} tone="text-sky" />
           </div>
         </div>
-        {/* Ratios en línea — del mes elegido en Análisis (o todos) */}
-        <div className="flex flex-wrap items-center gap-x-2 border-t border-line bg-surface/40 px-4 py-1.5 text-[0.7rem] text-faint">
-          <span>Ratios de <span className="text-muted">{monthFilter === "all" ? "todos los meses" : monthLabel(monthFilter)}</span></span>
+        {/* Ratios — del mes elegido en Análisis (o todos) */}
+        <div className="flex flex-wrap items-center gap-x-2 border-t border-white/10 bg-white/[0.03] px-4 py-2 text-[0.7rem] text-faint">
+          <span>Ratios de <span className="text-subtle">{monthFilter === "all" ? "todos los meses" : monthLabel(monthFilter)}</span></span>
           <span className="ml-auto opacity-80">elegí el mes en Análisis ↓</span>
         </div>
-        <div className="grid grid-cols-2 gap-px border-t border-line bg-line/60 sm:grid-cols-4">
-          <RatioMini title="Deuda / Ingresos" value={pct(flows.dti)} hint="< 36%" tone={flows.dti < 0.36 ? "emerald" : flows.dti < 0.43 ? "amber" : "coral"} />
-          <RatioMini title="Tasa de ahorro" value={pct(flows.tasaAhorro)} hint="> 20%" tone={flows.tasaAhorro > 0.2 ? "emerald" : flows.tasaAhorro > 0.1 ? "amber" : "coral"} />
-          <RatioMini title="Flujo de caja" value={`${flows.flujo.toFixed(2)}×`} hint="> 1" tone={flows.flujo > 1.2 ? "emerald" : flows.flujo >= 1 ? "amber" : "coral"} />
+        <div className="grid grid-cols-2 divide-white/10 border-t border-white/10 sm:grid-cols-4 sm:divide-x">
+          <RatioMini title="Deuda / Ingresos" value={pct(flows.dti)} hint="ideal < 36%" fill={flows.dti / 0.36} tone={flows.dti < 0.36 ? "emerald" : flows.dti < 0.43 ? "amber" : "coral"} />
+          <RatioMini title="Tasa de ahorro" value={pct(flows.tasaAhorro)} hint="ideal > 20%" fill={flows.tasaAhorro / 0.2} tone={flows.tasaAhorro > 0.2 ? "emerald" : flows.tasaAhorro > 0.1 ? "amber" : "coral"} />
+          <RatioMini title="Flujo de caja" value={`${flows.flujo.toFixed(2)}×`} hint="ideal > 1" fill={flows.flujo / 1.5} tone={flows.flujo > 1.2 ? "emerald" : flows.flujo >= 1 ? "amber" : "coral"} />
           <RatioMini title="Ahorro mensual" value={compact(flows.ahorroMostrar)} hint={monthFilter === "all" ? "prom. mensual" : monthLabel(monthFilter)} tone={flows.ahorroMostrar > 0 ? "emerald" : "coral"} />
         </div>
       </section>
@@ -252,7 +253,7 @@ export default function MetricasPage() {
                 </p>
               </div>
             )}
-            <div className="flex rounded-full border border-line bg-surface-2 p-0.5 text-xs">
+            <div className="flex rounded-full border border-white/10 bg-white/[0.06] p-0.5 text-xs">
               <button onClick={() => setNwCur("ars")} className={`rounded-full px-2.5 py-1 transition-colors ${nwCur === "ars" ? "bg-accent/15 text-accent" : "text-muted hover:text-fg"}`}>$</button>
               <button onClick={() => setNwCur("usd")} className={`rounded-full px-2.5 py-1 transition-colors ${nwCur === "usd" ? "bg-accent/15 text-accent" : "text-muted hover:text-fg"}`}>US$</button>
             </div>
@@ -311,38 +312,50 @@ export default function MetricasPage() {
   );
 }
 
-function Mini({ label, tag, value, sub }: { label: string; tag: string; value: string; sub?: string }) {
+function Mini({ label, tag, value, sub, tone }: { label: string; tag: string; value: string; sub?: string; tone: string }) {
   return (
-    <div className="bg-surface p-4">
-      <div className="flex items-center justify-between"><p className="text-xs text-muted">{label}</p><span className="rounded-full border border-line bg-surface-2 px-1.5 py-0.5 text-[0.55rem] uppercase tracking-wider text-faint">{tag}</span></div>
-      <p className="tnum mt-1.5 font-display text-lg text-fg">{value}</p>
-      {sub && <p className="text-[0.7rem] text-faint">≈ {sub}</p>}
+    <div className="p-4">
+      <div className="flex items-center justify-between">
+        <p className="label-micro">{label}</p>
+        <span className="rounded-full border border-white/10 bg-white/[0.06] px-1.5 py-0.5 text-[0.55rem] font-bold uppercase tracking-wider text-faint">{tag}</span>
+      </div>
+      <p className={`tnum mt-2 text-[19px] font-semibold ${tone}`}>{value}</p>
+      {sub && <p className="tnum text-[0.7rem] text-faint">≈ {sub}</p>}
     </div>
   );
 }
 
-function RatioMini({ title, value, hint, tone }: { title: string; value: string; hint: string; tone: "emerald" | "amber" | "coral" }) {
+/** Ratio con barra de progreso contra su objetivo. `fill` es 0..1 (se recorta a 1). */
+function RatioMini({ title, value, hint, tone, fill }: { title: string; value: string; hint: string; tone: "emerald" | "amber" | "coral"; fill?: number }) {
   const txt = tone === "emerald" ? "text-emerald" : tone === "amber" ? "text-amber" : "text-coral";
-  const dot = tone === "emerald" ? "bg-emerald" : tone === "amber" ? "bg-amber" : "bg-coral";
+  const bar = tone === "emerald" ? "bg-emerald" : tone === "amber" ? "bg-amber" : "bg-coral";
+  const pctFill = fill != null && Number.isFinite(fill) ? Math.max(0, Math.min(fill, 1)) * 100 : null;
   return (
-    <div className="bg-surface p-4">
-      <p className="flex items-center gap-1.5 text-xs text-muted"><span className={`h-1.5 w-1.5 rounded-full ${dot}`} />{title}</p>
-      <p className={`tnum mt-1 font-display text-xl ${txt}`}>{value}</p>
-      <p className="text-[0.65rem] text-faint">ideal {hint}</p>
+    <div className="border-b border-white/10 p-4 sm:border-b-0">
+      <p className="label-micro">{title}</p>
+      <p className={`tnum mt-1 text-[21px] font-semibold ${txt}`}>{value}</p>
+      {pctFill != null ? (
+        <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-white/[0.08]">
+          <div className={`h-full rounded-full transition-all ${bar}`} style={{ width: `${pctFill}%` }} />
+        </div>
+      ) : (
+        <div className="mt-2 h-1.5" />
+      )}
+      <p className="mt-1.5 text-[0.65rem] text-faint">{hint}</p>
     </div>
   );
 }
 
 function FilterChip({ active, onClick, children }: { active: boolean; onClick: () => void; children: React.ReactNode }) {
   return (
-    <button onClick={onClick} className={`rounded-full border px-3 py-1 text-xs transition-colors ${active ? "border-accent/40 bg-accent/10 text-accent" : "border-line bg-surface-2 text-muted hover:text-fg"}`}>{children}</button>
+    <button onClick={onClick} className={`rounded-full border px-3 py-1 text-xs transition-colors ${active ? "border-accent/50 bg-accent/15 text-accent" : "border-white/10 bg-white/[0.06] text-subtle hover:text-fg"}`}>{children}</button>
   );
 }
 
 function CmpSelect({ value, onChange, options }: { value: string; onChange: (v: string) => void; options: string[] }) {
   return (
     <div className="relative">
-      <select value={value} onChange={(e) => onChange(e.target.value)} className="appearance-none rounded-lg border border-line bg-surface-2 py-1.5 pl-3 pr-7 text-xs text-fg outline-none focus:border-accent/40">
+      <select value={value} onChange={(e) => onChange(e.target.value)} className="appearance-none rounded-[11px] border border-white/10 bg-white/[0.06] py-1.5 pl-3 pr-7 text-xs text-fg outline-none focus:border-accent/50">
         {options.map((o) => <option key={o} value={o}>{monthLabel(o)}</option>)}
       </select>
       <span className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-faint">▾</span>
@@ -352,9 +365,9 @@ function CmpSelect({ value, onChange, options }: { value: string; onChange: (v: 
 
 function ChartCard({ title, sub, children }: { title: string; sub?: string; children: React.ReactNode }) {
   return (
-    <div className="panel p-5">
-      <div className="mb-4 flex items-center justify-between">
-        <h3 className="font-display text-base text-fg">{title}</h3>
+    <div className="panel p-[22px_24px]">
+      <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
+        <h3 className="font-display text-[17px] font-semibold text-fg">{title}</h3>
         {sub && <span className="text-xs text-faint">{sub}</span>}
       </div>
       {children}
