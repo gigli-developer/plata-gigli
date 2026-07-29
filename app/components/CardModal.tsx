@@ -78,16 +78,16 @@ export default function CardModal({ card, onClose, onSaved }: {
         )}
 
         <Field label="Nombre">
-          <input value={name} onChange={(e) => setName(e.target.value)} placeholder="Ej: Platinum Gal" className="w-full rounded-xl border border-line bg-surface-2 px-3 py-2.5 text-sm text-fg outline-none placeholder:text-faint focus:border-lime/40" />
+          <input value={name} onChange={(e) => setName(e.target.value)} placeholder="Ej: Platinum Gal" className="w-full rounded-xl border border-line bg-surface-2 px-3 py-2.5 text-sm text-fg outline-none placeholder:text-faint focus:border-accent/40" />
         </Field>
 
         <div className="grid grid-cols-2 gap-3">
           <Field label="Banco">
-            <input value={bank} onChange={(e) => setBank(e.target.value)} placeholder="Galicia" className="w-full rounded-xl border border-line bg-surface-2 px-3 py-2.5 text-sm text-fg outline-none placeholder:text-faint focus:border-lime/40" />
+            <input value={bank} onChange={(e) => setBank(e.target.value)} placeholder="Galicia" className="w-full rounded-xl border border-line bg-surface-2 px-3 py-2.5 text-sm text-fg outline-none placeholder:text-faint focus:border-accent/40" />
           </Field>
           <Field label="Red">
             <div className="relative">
-              <select value={network} onChange={(e) => setNetwork(e.target.value)} className="w-full appearance-none rounded-xl border border-line bg-surface-2 py-2.5 pl-3 pr-9 text-sm text-fg outline-none focus:border-lime/40">
+              <select value={network} onChange={(e) => setNetwork(e.target.value)} className="w-full appearance-none rounded-xl border border-line bg-surface-2 py-2.5 pl-3 pr-9 text-sm text-fg outline-none focus:border-accent/40">
                 {REDES.map((r) => <option key={r} value={r}>{r}</option>)}
               </select>
               <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-faint">▾</span>
@@ -96,16 +96,16 @@ export default function CardModal({ card, onClose, onSaved }: {
         </div>
 
         <Field label="Últimos 4 dígitos">
-          <input value={last4} onChange={(e) => setLast4(e.target.value.replace(/\D/g, "").slice(0, 4))} inputMode="numeric" placeholder="2811" className="tnum w-full rounded-xl border border-line bg-surface-2 px-3 py-2.5 text-sm text-fg outline-none placeholder:text-faint focus:border-lime/40" />
+          <input value={last4} onChange={(e) => setLast4(e.target.value.replace(/\D/g, "").slice(0, 4))} inputMode="numeric" placeholder="2811" className="tnum w-full rounded-xl border border-line bg-surface-2 px-3 py-2.5 text-sm text-fg outline-none placeholder:text-faint focus:border-accent/40" />
           <p className="mt-1 text-[0.68rem] text-faint">Con esto el importador reconoce de qué tarjeta es cada consumo que llega por mail.</p>
         </Field>
 
         <div className="grid grid-cols-2 gap-3">
           <Field label="Día de cierre">
-            <input value={closeDay} onChange={(e) => setCloseDay(e.target.value.replace(/\D/g, "").slice(0, 2))} inputMode="numeric" placeholder="25" className="tnum w-full rounded-xl border border-line bg-surface-2 px-3 py-2.5 text-center text-fg outline-none placeholder:text-faint focus:border-lime/40" />
+            <input value={closeDay} onChange={(e) => setCloseDay(e.target.value.replace(/\D/g, "").slice(0, 2))} inputMode="numeric" placeholder="25" className="tnum w-full rounded-xl border border-line bg-surface-2 px-3 py-2.5 text-center text-fg outline-none placeholder:text-faint focus:border-accent/40" />
           </Field>
           <Field label="Día de vencimiento">
-            <input value={dueDay} onChange={(e) => setDueDay(e.target.value.replace(/\D/g, "").slice(0, 2))} inputMode="numeric" placeholder="6" className="tnum w-full rounded-xl border border-line bg-surface-2 px-3 py-2.5 text-center text-fg outline-none placeholder:text-faint focus:border-lime/40" />
+            <input value={dueDay} onChange={(e) => setDueDay(e.target.value.replace(/\D/g, "").slice(0, 2))} inputMode="numeric" placeholder="6" className="tnum w-full rounded-xl border border-line bg-surface-2 px-3 py-2.5 text-center text-fg outline-none placeholder:text-faint focus:border-accent/40" />
           </Field>
         </div>
 
@@ -125,7 +125,7 @@ export default function CardModal({ card, onClose, onSaved }: {
               <Trash className="h-4 w-4" /> Archivar
             </button>
           )}
-          <button onClick={save} disabled={busy} className="flex-1 rounded-xl bg-lime py-3 text-sm font-medium text-bg transition-transform hover:scale-[1.02] disabled:opacity-60">
+          <button onClick={save} disabled={busy} className="flex-1 rounded-xl bg-accent py-3 text-sm font-medium text-bg transition-transform hover:scale-[1.02] disabled:opacity-60">
             {busy ? "Guardando…" : card ? "Guardar cambios" : "Crear tarjeta"}
           </button>
         </div>

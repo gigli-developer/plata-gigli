@@ -33,7 +33,7 @@ export default function MoreSheet({ items, pathname, onClose }: {
                 href={href}
                 onClick={onClose}
                 className={`flex items-center gap-3 rounded-2xl border px-4 py-3.5 text-sm transition-colors ${
-                  active ? "border-lime/40 bg-lime/10 text-lime" : "border-line bg-surface-2 text-muted hover:text-fg"
+                  active ? "border-accent/40 bg-accent/10 text-accent" : "border-line bg-surface-2 text-muted hover:text-fg"
                 }`}
               >
                 <Icon className={`h-5 w-5 ${active ? "" : "opacity-80"}`} />

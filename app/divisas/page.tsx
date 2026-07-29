@@ -118,7 +118,7 @@ function Converter({ onRegister }: { onRegister: () => Promise<void> }) {
         <div className="flex flex-wrap items-center justify-between gap-2 text-sm">
           <span className="text-muted">Tipo de cambio</span>
           <div className="flex rounded-lg border border-line bg-surface-3 p-0.5 text-xs">
-            <button onClick={() => setManual(false)} className={`rounded-md px-2.5 py-1 transition-colors ${!manual ? "bg-surface-2 text-lime" : "text-muted hover:text-fg"}`}>Auto</button>
+            <button onClick={() => setManual(false)} className={`rounded-md px-2.5 py-1 transition-colors ${!manual ? "bg-surface-2 text-accent" : "text-muted hover:text-fg"}`}>Auto</button>
             <button onClick={() => { setManual(true); if (!manualRate) setManualRate(autoRate.toFixed(2)); }} className={`rounded-md px-2.5 py-1 transition-colors ${manual ? "bg-surface-2 text-violet" : "text-muted hover:text-fg"}`}>Manual</button>
           </div>
         </div>
@@ -141,7 +141,7 @@ function Converter({ onRegister }: { onRegister: () => Promise<void> }) {
         </div>
       </div>
 
-      <button onClick={register} disabled={saving} className="mt-4 w-full rounded-xl bg-lime py-3 text-sm font-medium text-bg transition-transform hover:scale-[1.02] disabled:opacity-60">
+      <button onClick={register} disabled={saving} className="mt-4 w-full rounded-xl bg-accent py-3 text-sm font-medium text-bg transition-transform hover:scale-[1.02] disabled:opacity-60">
         {saving ? "Guardando…" : "Registrar cambio"}
       </button>
     </section>
@@ -186,7 +186,7 @@ function Holdings() {
           <h2 className="font-display text-lg text-fg">Tenencias</h2>
           <p className="text-xs text-faint">Valuadas en pesos</p>
         </div>
-        <span className="grid h-9 w-9 place-items-center rounded-xl bg-lime/12 text-lime"><Coins className="h-5 w-5" /></span>
+        <span className="grid h-9 w-9 place-items-center rounded-xl bg-accent/12 text-accent"><Coins className="h-5 w-5" /></span>
       </div>
       <p className="tnum mt-4 font-display text-3xl text-fg">{ars(total)}</p>
       <ul className="mt-4 space-y-3">

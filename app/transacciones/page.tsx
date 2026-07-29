@@ -74,7 +74,7 @@ export default function TransaccionesPage() {
       <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-4">
         <Stat label="Ingresos" value={totals.ingresos} tone="emerald" up />
         <Stat label="Egresos" value={totals.egresos} tone="coral" />
-        <Stat label="Balance" value={totals.balance} tone="lime" up={totals.balance >= 0} />
+        <Stat label="Balance" value={totals.balance} tone="accent" up={totals.balance >= 0} />
         <div className="rounded-2xl border border-line bg-surface-2/50 p-4">
           <p className="text-xs text-muted">Movimientos</p>
           <p className="tnum mt-2 text-lg text-fg">{totals.count}</p>
@@ -135,8 +135,8 @@ export default function TransaccionesPage() {
   );
 }
 
-function Stat({ label, value, tone, up }: { label: string; value: number; tone: "emerald" | "coral" | "lime"; up?: boolean }) {
-  const color = tone === "emerald" ? "text-emerald" : tone === "coral" ? "text-coral" : "text-lime";
+function Stat({ label, value, tone, up }: { label: string; value: number; tone: "emerald" | "coral" | "accent"; up?: boolean }) {
+  const color = tone === "emerald" ? "text-emerald" : tone === "coral" ? "text-coral" : "text-accent";
   return (
     <div className="rounded-2xl border border-line bg-surface-2/50 p-4">
       <div className="flex items-center gap-1.5 text-xs text-muted">
@@ -164,7 +164,7 @@ function Segmented({ value, onChange }: { value: TypeFilter; onChange: (v: TypeF
 function Select({ value, onChange, children }: { value: string; onChange: (v: string) => void; children: React.ReactNode }) {
   return (
     <div className="relative">
-      <select value={value} onChange={(e) => onChange(e.target.value)} className="appearance-none rounded-xl border border-line bg-surface-2 py-2 pl-3 pr-9 text-sm text-fg outline-none focus:border-lime/40">{children}</select>
+      <select value={value} onChange={(e) => onChange(e.target.value)} className="appearance-none rounded-xl border border-line bg-surface-2 py-2 pl-3 pr-9 text-sm text-fg outline-none focus:border-accent/40">{children}</select>
       <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-faint">▾</span>
     </div>
   );
@@ -267,10 +267,10 @@ function NewMovementForm({ cats, methods, onSaved }: { cats: Category[]; methods
           </FullSelect>
         </Field>
         <Field label="Descripción">
-          <input value={desc} onChange={(e) => setDesc(e.target.value)} placeholder="Ej: Cena con amigos" className="w-full rounded-xl border border-line bg-surface-2 px-3 py-2.5 text-sm text-fg outline-none placeholder:text-faint focus:border-lime/40" />
+          <input value={desc} onChange={(e) => setDesc(e.target.value)} placeholder="Ej: Cena con amigos" className="w-full rounded-xl border border-line bg-surface-2 px-3 py-2.5 text-sm text-fg outline-none placeholder:text-faint focus:border-accent/40" />
         </Field>
 
-        <button onClick={save} disabled={saving} className="mt-5 w-full rounded-xl bg-lime py-3 text-sm font-medium text-bg transition-transform hover:scale-[1.02] disabled:opacity-60">
+        <button onClick={save} disabled={saving} className="mt-5 w-full rounded-xl bg-accent py-3 text-sm font-medium text-bg transition-transform hover:scale-[1.02] disabled:opacity-60">
           {saving ? "Guardando…" : "Guardar movimiento"}
         </button>
         {ok && <p className="mt-3 rounded-lg border border-emerald/30 bg-emerald/10 px-3 py-2 text-center text-xs text-emerald">✓ Guardado en Supabase</p>}
@@ -291,7 +291,7 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
 function FullSelect({ value, onChange, children }: { value: string; onChange: (v: string) => void; children: React.ReactNode }) {
   return (
     <div className="relative">
-      <select value={value} onChange={(e) => onChange(e.target.value)} className="w-full appearance-none rounded-xl border border-line bg-surface-2 py-2.5 pl-3 pr-9 text-sm text-fg outline-none focus:border-lime/40">{children}</select>
+      <select value={value} onChange={(e) => onChange(e.target.value)} className="w-full appearance-none rounded-xl border border-line bg-surface-2 py-2.5 pl-3 pr-9 text-sm text-fg outline-none focus:border-accent/40">{children}</select>
       <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-faint">▾</span>
     </div>
   );

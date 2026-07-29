@@ -129,7 +129,7 @@ export function ProposalCard({ p, busy, onConfirm, onDiscard }: { p: AssistantPr
         ))}
       </ul>
       <div className="mt-3 flex gap-2">
-        <button onClick={onConfirm} disabled={busy} className="flex-1 rounded-xl bg-lime px-3 py-1.5 text-sm font-medium text-bg transition-opacity disabled:opacity-50">{busy ? "Guardando…" : "Confirmar"}</button>
+        <button onClick={onConfirm} disabled={busy} className="flex-1 rounded-xl bg-accent px-3 py-1.5 text-sm font-medium text-bg transition-opacity disabled:opacity-50">{busy ? "Guardando…" : "Confirmar"}</button>
         <button onClick={onDiscard} disabled={busy} className="rounded-xl border border-line bg-surface-2 px-3 py-1.5 text-sm text-muted hover:text-fg">Descartar</button>
       </div>
     </div>

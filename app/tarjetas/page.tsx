@@ -109,7 +109,7 @@ export default function TarjetasPage() {
   }, []);
 
   const nuevaTarjetaBtn = (
-    <button onClick={() => setCardModal({ open: true, card: null })} className="flex items-center gap-2 rounded-full bg-lime px-4 py-2 text-sm font-medium text-bg transition-transform hover:scale-[1.03]">
+    <button onClick={() => setCardModal({ open: true, card: null })} className="flex items-center gap-2 rounded-full bg-accent px-4 py-2 text-sm font-medium text-bg transition-transform hover:scale-[1.03]">
       <Plus className="h-4 w-4" /> Agregar tarjeta
     </button>
   );
@@ -121,7 +121,7 @@ export default function TarjetasPage() {
       <PageHeader title="Tarjetas" subtitle="Sin tarjetas">{nuevaTarjetaBtn}</PageHeader>
       <div className="panel mt-6 p-10 text-center">
         <p className="text-sm text-muted">Todavía no tenés tarjetas cargadas.</p>
-        <button onClick={() => setCardModal({ open: true, card: null })} className="mt-4 rounded-xl bg-lime px-5 py-2.5 text-sm font-medium text-bg transition-transform hover:scale-[1.03]">Agregar la primera</button>
+        <button onClick={() => setCardModal({ open: true, card: null })} className="mt-4 rounded-xl bg-accent px-5 py-2.5 text-sm font-medium text-bg transition-transform hover:scale-[1.03]">Agregar la primera</button>
       </div>
       {cardModal.open && <CardModal card={cardModal.card} onClose={() => setCardModal({ open: false, card: null })} onSaved={reloadStatements} />}
     </>
@@ -211,7 +211,7 @@ export default function TarjetasPage() {
           {projectedRow ? <span className="ml-2 hidden rounded-full border border-violet/30 bg-violet/10 px-2.5 py-1 text-[0.65rem] text-violet sm:inline">Proyectado</span>
             : open ? <span className="ml-2 hidden rounded-full border border-sky/30 bg-sky/10 px-2.5 py-1 text-[0.65rem] text-sky sm:inline">Estimado</span>
             : <StatusBadge paid={s.paid} paying={payingId === s.id} onPay={() => handlePay(s)} />}
-          <Chevron className={`h-4 w-4 shrink-0 text-faint transition-transform ${exp ? "rotate-180 text-lime" : ""}`} />
+          <Chevron className={`h-4 w-4 shrink-0 text-faint transition-transform ${exp ? "rotate-180 text-accent" : ""}`} />
         </div>
         {exp && <MovementsPanel statement={s} consumos={movements[s.id]} cuotas={cuotasForPeriod(s.period, s.cardId)} subs={s.id < 0 ? subs.filter((x) => x.cardId === s.cardId) : []} loading={loadingMov === s.id} open={open} />}
       </li>
@@ -284,11 +284,11 @@ export default function TarjetasPage() {
                 <span className="tnum">{ars(spent)} / {card.limitArs ? ars(card.limitArs) : "sin límite"}</span>
               </div>
               <div className="mt-2 h-2.5 w-full overflow-hidden rounded-full bg-surface-3">
-                <div className="h-full rounded-full transition-all" style={{ width: `${usage}%`, background: `linear-gradient(90deg, ${card.accent}, #c8ff4d)` }} />
+                <div className="h-full rounded-full transition-all" style={{ width: `${usage}%`, background: `linear-gradient(90deg, ${card.accent}, #ffbf47)` }} />
               </div>
               <p className="mt-2 text-xs text-faint">
                 {card.limitArs ? `${usage}% del límite · disponible ${ars(card.limitArs - spent)}` : (
-                  <>Sin límite definido. <button onClick={() => setCardModal({ open: true, card })} className="text-lime hover:underline">Definilo acá</button> para ver cuánto te queda.</>
+                  <>Sin límite definido. <button onClick={() => setCardModal({ open: true, card })} className="text-accent hover:underline">Definilo acá</button> para ver cuánto te queda.</>
                 )}
               </p>
             </div>
@@ -302,7 +302,7 @@ export default function TarjetasPage() {
                 </button>
               )}
               {current && (
-                <button onClick={() => toggleMovements(current.id)} className={`rounded-xl border px-4 py-2 text-sm transition-colors ${expandedId === current.id ? "border-lime/40 bg-lime/10 text-lime" : "border-line bg-surface-2 text-muted hover:text-fg"}`}>
+                <button onClick={() => toggleMovements(current.id)} className={`rounded-xl border px-4 py-2 text-sm transition-colors ${expandedId === current.id ? "border-accent/40 bg-accent/10 text-accent" : "border-line bg-surface-2 text-muted hover:text-fg"}`}>
                   {expandedId === current.id ? "Ocultar movimientos" : "Ver movimientos"}
                 </button>
               )}
@@ -358,9 +358,9 @@ export default function TarjetasPage() {
                       {others.map((c) => {
                         const n = installments.filter((i) => i.cardId === c.id).length;
                         return (
-                          <button key={c.id} onClick={() => setSelectedId(c.id)} className="flex w-full items-center gap-2 rounded-xl border border-line bg-surface-2 px-3 py-2 text-sm text-fg transition-colors hover:border-lime/40">
+                          <button key={c.id} onClick={() => setSelectedId(c.id)} className="flex w-full items-center gap-2 rounded-xl border border-line bg-surface-2 px-3 py-2 text-sm text-fg transition-colors hover:border-accent/40">
                             <CardIcon className="h-4 w-4 text-muted" /> {c.name}
-                            <span className="ml-auto rounded-full bg-lime/15 px-2 py-0.5 text-[0.65rem] text-lime">{n} {n === 1 ? "plan" : "planes"}</span>
+                            <span className="ml-auto rounded-full bg-accent/15 px-2 py-0.5 text-[0.65rem] text-accent">{n} {n === 1 ? "plan" : "planes"}</span>
                           </button>
                         );
                       })}
@@ -401,7 +401,7 @@ export default function TarjetasPage() {
             <p className="text-xs text-faint">{card.name} · se suman a cada resumen proyectado</p>
             {cardSubs.length === 0 ? (
               <p className="mt-4 text-sm text-muted">
-                No detecté abonos recurrentes en esta tarjeta. Se detectan solos con 3 meses de historia (2 si el nombre lo delata), o marcando el gasto como fijo en <a href="/hormiga" className="text-lime hover:underline">Gastos hormiga</a>.
+                No detecté abonos recurrentes en esta tarjeta. Se detectan solos con 3 meses de historia (2 si el nombre lo delata), o marcando el gasto como fijo en <a href="/hormiga" className="text-accent hover:underline">Gastos hormiga</a>.
               </p>
             ) : (
               <>
@@ -460,7 +460,7 @@ export default function TarjetasPage() {
 
 function CreditCardVisual({ card, active, onClick }: { card: CardVis; active: boolean; onClick: () => void }) {
   return (
-    <button onClick={onClick} className={`group relative aspect-[1.6/1] w-full overflow-hidden rounded-2xl border bg-gradient-to-br ${card.hue} p-5 text-left transition-all ${active ? "border-transparent ring-2 ring-lime" : "border-line hover:-translate-y-0.5"}`}>
+    <button onClick={onClick} className={`group relative aspect-[1.6/1] w-full overflow-hidden rounded-2xl border bg-gradient-to-br ${card.hue} p-5 text-left transition-all ${active ? "border-transparent ring-2 ring-accent" : "border-line hover:-translate-y-0.5"}`}>
       <div className="pointer-events-none absolute -right-8 -top-10 h-32 w-32 rounded-full opacity-30 blur-2xl" style={{ background: card.accent }} />
       <div className="relative flex h-full flex-col justify-between">
         <div className="flex items-start justify-between">
@@ -541,8 +541,8 @@ function MovementsPanel({ statement, consumos, cuotas, subs, loading, open }: { 
       {/* pager */}
       <div className="mb-3 flex items-center justify-between gap-2">
         <div className="flex rounded-full border border-line bg-surface p-0.5 text-xs">
-          <button onClick={() => setPage("list")} className={`rounded-full px-3 py-1 transition-colors ${page === "list" ? "bg-lime/15 text-lime" : "text-muted hover:text-fg"}`}>Gastos</button>
-          <button onClick={() => setPage("cat")} className={`rounded-full px-3 py-1 transition-colors ${page === "cat" ? "bg-lime/15 text-lime" : "text-muted hover:text-fg"}`}>Por categoría</button>
+          <button onClick={() => setPage("list")} className={`rounded-full px-3 py-1 transition-colors ${page === "list" ? "bg-accent/15 text-accent" : "text-muted hover:text-fg"}`}>Gastos</button>
+          <button onClick={() => setPage("cat")} className={`rounded-full px-3 py-1 transition-colors ${page === "cat" ? "bg-accent/15 text-accent" : "text-muted hover:text-fg"}`}>Por categoría</button>
         </div>
         <span className="tnum text-xs text-faint">{items.length} mov · {compact(totalArs)}{totalUsd > 0 ? ` · +${usd(totalUsd)}` : ""}</span>
       </div>
@@ -607,12 +607,12 @@ function CardBars({ data }: { data: CardBarsRow[] }) {
         <div className="flex flex-wrap gap-2">
           <div className="flex rounded-full border border-line bg-surface-2 p-0.5 text-xs">
             {[3, 6, 0].map((n) => (
-              <button key={n} onClick={() => setRange(n)} className={`rounded-full px-3 py-1 transition-colors ${range === n ? "bg-lime/15 text-lime" : "text-muted hover:text-fg"}`}>{n === 0 ? "Todos" : `${n}M`}</button>
+              <button key={n} onClick={() => setRange(n)} className={`rounded-full px-3 py-1 transition-colors ${range === n ? "bg-accent/15 text-accent" : "text-muted hover:text-fg"}`}>{n === 0 ? "Todos" : `${n}M`}</button>
             ))}
           </div>
           <div className="flex rounded-full border border-line bg-surface-2 p-0.5 text-xs">
             {(["ARS", "USD"] as const).map((c) => (
-              <button key={c} onClick={() => setCur(c)} className={`rounded-full px-3 py-1 transition-colors ${cur === c ? "bg-lime/15 text-lime" : "text-muted hover:text-fg"}`}>{c === "ARS" ? "$ Pesos" : "US$ Dólares"}</button>
+              <button key={c} onClick={() => setCur(c)} className={`rounded-full px-3 py-1 transition-colors ${cur === c ? "bg-accent/15 text-accent" : "text-muted hover:text-fg"}`}>{c === "ARS" ? "$ Pesos" : "US$ Dólares"}</button>
             ))}
           </div>
         </div>

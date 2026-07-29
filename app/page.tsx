@@ -21,7 +21,7 @@ const chips = [
   "Cobré el alquiler de Chañar II",
 ];
 const SHORT = ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"];
-const CAT_COLORS = ["#c8ff4d", "#34e1a0", "#5ec8ff", "#a78bfa", "#ff9f5e", "#6b7080"];
+const CAT_COLORS = ["#ff9e1b", "#35e08a", "#5ec8ff", "#ffbf47", "#ff433d", "#a78bfa"];
 
 export default function Dashboard() {
   const chat = useAssistantChat();
@@ -221,13 +221,13 @@ function SaldosHero({ metrics, loading }: { metrics: Metrics | null; loading: bo
   const patrimonio = metrics.ars_liquido + usdArs + usdtArs + metrics.te_deben - metrics.deuda_cuotas_ars - metrics.deuda_vencida_ars - metrics.debes;
   return (
     <section className="rise panel relative overflow-hidden p-6">
-      <div className="pointer-events-none absolute -right-16 -top-20 h-56 w-56 rounded-full bg-lime/10 blur-3xl" />
-      <div className="relative flex items-center gap-2 text-sm text-muted"><Coins className="h-4 w-4 text-lime" /> Saldos actuales</div>
+      <div className="pointer-events-none absolute -right-16 -top-20 h-56 w-56 rounded-full bg-accent/10 blur-3xl" />
+      <div className="relative flex items-center gap-2 text-sm text-muted"><Coins className="h-4 w-4 text-accent" /> Saldos actuales</div>
       <p className="relative mt-1 font-display text-4xl text-fg sm:text-5xl"><span className="tnum">{ars(metrics.ars_liquido)}</span> <span className="text-base text-faint">en pesos</span></p>
       <div className="relative mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3">
         <SaldoStat label="Dólares" main={`US$ ${metrics.usd_liquido.toLocaleString("es-AR", { maximumFractionDigits: 0 })}`} sub={`≈ ${compact(usdArs)}`} accent="text-emerald" />
         <SaldoStat label="USDT" main={`${metrics.usdt_liquido.toLocaleString("es-AR")} USDT`} sub={`≈ ${compact(usdtArs)}`} accent="text-sky" />
-        <SaldoStat label="Patrimonio neto" main={compact(patrimonio)} sub="todo valuado en ARS" accent="text-lime" />
+        <SaldoStat label="Patrimonio neto" main={compact(patrimonio)} sub="todo valuado en ARS" accent="text-accent" />
       </div>
     </section>
   );
@@ -305,7 +305,7 @@ function RecentTransactions({ txs, loading, count }: { txs: TxView[]; loading: b
   return (
     <section className="rise panel p-6">
       <CardHeader title="Movimientos recientes" subtitle={loading ? "Cargando…" : `${count} en total`}>
-        <a href="/transacciones" className="flex items-center gap-1 text-sm text-lime hover:underline">Ver todo</a>
+        <a href="/transacciones" className="flex items-center gap-1 text-sm text-accent hover:underline">Ver todo</a>
       </CardHeader>
       <ul className="mt-4 divide-y divide-line">
         {txs.map((t) => (
@@ -351,7 +351,7 @@ function CardsStrip({ cards }: { cards: Computed["cardSummaries"] }) {
                 <div><p className="text-[0.65rem] uppercase tracking-widest text-faint">{c.label}</p><p className="tnum text-fg">{ars(c.spentArs)}</p></div>
                 <p className="text-xs text-faint">{c.closeDay ? `Cierra ${c.closeDay}` : ""}{c.dueDay ? ` · Vence ${c.dueDay}` : ""}</p>
               </div>
-              <div className="mt-3 h-1.5 w-full overflow-hidden rounded-full bg-black/40"><div className="h-full rounded-full bg-gradient-to-r from-lime to-emerald" style={{ width: `${pct}%` }} /></div>
+              <div className="mt-3 h-1.5 w-full overflow-hidden rounded-full bg-black/40"><div className="h-full rounded-full bg-gradient-to-r from-accent to-emerald" style={{ width: `${pct}%` }} /></div>
             </div>
           );
         })}
@@ -380,7 +380,7 @@ function UncategorizedCard({ items, cats, onCategorize }: { items: TxView[]; cat
                   <p className="text-xs text-faint">{t.date.split(" · ")[0]} · {ars(t.amount)}</p>
                 </div>
                 <div className="relative shrink-0">
-                  <select defaultValue="" onChange={(e) => e.target.value && onCategorize(t.id, Number(e.target.value))} className="appearance-none rounded-lg border border-line bg-surface-2 py-1.5 pl-2.5 pr-7 text-xs text-fg outline-none focus:border-lime/40">
+                  <select defaultValue="" onChange={(e) => e.target.value && onCategorize(t.id, Number(e.target.value))} className="appearance-none rounded-lg border border-line bg-surface-2 py-1.5 pl-2.5 pr-7 text-xs text-fg outline-none focus:border-accent/40">
                     <option value="">Categoría…</option>
                     {options.map((c) => <option key={c.id} value={c.id}>{c.emoji} {c.name}</option>)}
                   </select>

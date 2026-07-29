@@ -49,7 +49,7 @@ export default function LoginPage() {
       <div className="w-full max-w-sm">
         {/* brand */}
         <div className="flex flex-col items-center text-center">
-          <div className="grid h-14 w-14 place-items-center rounded-2xl bg-gradient-to-br from-lime via-emerald to-sky text-bg shadow-[0_12px_40px_-12px_rgba(200,255,77,0.6)]">
+          <div className="grid h-14 w-14 place-items-center rounded-2xl bg-gradient-to-br from-accent via-emerald to-sky text-bg shadow-[0_12px_40px_-12px_rgba(200,255,77,0.6)]">
             <Coins className="h-7 w-7" />
           </div>
           <h1 className="mt-4 font-display text-3xl text-fg">Plata</h1>
@@ -89,13 +89,13 @@ export default function LoginPage() {
           <button
             type="submit"
             disabled={loading}
-            className="mt-5 w-full rounded-xl bg-lime py-3 text-sm font-medium text-bg transition-transform hover:scale-[1.02] disabled:opacity-60"
+            className="mt-5 w-full rounded-xl bg-accent py-3 text-sm font-medium text-bg transition-transform hover:scale-[1.02] disabled:opacity-60"
           >
             {loading ? "Procesando…" : "Entrar"}
           </button>
 
           <p className="mt-4 text-center text-xs text-muted">
-            <button type="button" onClick={forgot} disabled={loading} className="text-lime hover:underline disabled:opacity-60">
+            <button type="button" onClick={forgot} disabled={loading} className="text-accent hover:underline disabled:opacity-60">
               ¿Olvidaste tu contraseña?
             </button>
           </p>

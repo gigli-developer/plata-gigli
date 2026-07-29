@@ -27,7 +27,7 @@ function ruleSentence(r: Rule): string {
 // Las acciones de la regla, para mostrarlas en la lista.
 function ruleActions(r: Rule): { icon: string; text: string; cls: string }[] {
   const out: { icon: string; text: string; cls: string }[] = [];
-  if (r.categoryId != null) out.push({ icon: r.emoji ?? "🏷️", text: `categoría ${r.category ?? "—"}`, cls: "text-lime" });
+  if (r.categoryId != null) out.push({ icon: r.emoji ?? "🏷️", text: `categoría ${r.category ?? "—"}`, cls: "text-accent" });
   if (r.renameTo) out.push({ icon: "✏️", text: `renombrar a «${r.renameTo}»`, cls: "text-sky" });
   if (r.setCurrency) out.push({ icon: "💱", text: `moneda ${r.setCurrency}`, cls: "text-amber" });
   return out;
@@ -161,16 +161,16 @@ function NewRuleForm({ cats, onSaved }: { cats: Category[]; onSaved: () => Promi
         <div className="mt-4">
           <label className="text-xs text-muted">Si la descripción…</label>
           <div className="mt-1 flex gap-2">
-            <select value={op} onChange={(e) => setOp(e.target.value)} className="appearance-none rounded-xl border border-line bg-surface-2 px-3 py-2.5 text-sm text-fg outline-none focus:border-lime/40">
+            <select value={op} onChange={(e) => setOp(e.target.value)} className="appearance-none rounded-xl border border-line bg-surface-2 px-3 py-2.5 text-sm text-fg outline-none focus:border-accent/40">
               {OPS.map((o) => <option key={o.v} value={o.v}>{o.label}</option>)}
             </select>
-            <input value={value} onChange={(e) => setValue(e.target.value)} placeholder="Ej: DLO*PedidosYa" className="w-full rounded-xl border border-line bg-surface-2 px-3 py-2.5 text-sm text-fg outline-none placeholder:text-faint focus:border-lime/40" />
+            <input value={value} onChange={(e) => setValue(e.target.value)} placeholder="Ej: DLO*PedidosYa" className="w-full rounded-xl border border-line bg-surface-2 px-3 py-2.5 text-sm text-fg outline-none placeholder:text-faint focus:border-accent/40" />
           </div>
         </div>
 
         <div className="mt-4">
           <label className="flex items-center gap-2 text-xs text-muted">
-            <input type="checkbox" checked={useHour} onChange={(e) => setUseHour(e.target.checked)} className="accent-lime" /> Solo en cierto horario
+            <input type="checkbox" checked={useHour} onChange={(e) => setUseHour(e.target.checked)} className="accent-accent" /> Solo en cierto horario
           </label>
           {useHour && (
             <div className="mt-2 flex items-center gap-2 text-sm">
@@ -186,7 +186,7 @@ function NewRuleForm({ cats, onSaved }: { cats: Category[]; onSaved: () => Promi
 
         <div className="mt-4">
           <label className="flex items-center gap-2 text-xs text-muted">
-            <input type="checkbox" checked={useAmount} onChange={(e) => setUseAmount(e.target.checked)} className="accent-lime" /> Solo por monto
+            <input type="checkbox" checked={useAmount} onChange={(e) => setUseAmount(e.target.checked)} className="accent-accent" /> Solo por monto
           </label>
           {useAmount && (
             <div className="mt-2 flex items-center gap-2 text-sm">
@@ -203,7 +203,7 @@ function NewRuleForm({ cats, onSaved }: { cats: Category[]; onSaved: () => Promi
           <label className="text-xs text-muted">Solo ciertos días <span className="text-faint">(opcional)</span></label>
           <div className="mt-2 flex flex-wrap gap-1.5">
             {DAYS.map((d) => (
-              <button key={d.n} onClick={() => toggleDay(d.n)} className={`rounded-full border px-2.5 py-1 text-xs transition-colors ${days.includes(d.n) ? "border-lime/40 bg-lime/10 text-lime" : "border-line bg-surface-2 text-muted hover:text-fg"}`}>{d.l}</button>
+              <button key={d.n} onClick={() => toggleDay(d.n)} className={`rounded-full border px-2.5 py-1 text-xs transition-colors ${days.includes(d.n) ? "border-accent/40 bg-accent/10 text-accent" : "border-line bg-surface-2 text-muted hover:text-fg"}`}>{d.l}</button>
             ))}
           </div>
         </div>
@@ -214,7 +214,7 @@ function NewRuleForm({ cats, onSaved }: { cats: Category[]; onSaved: () => Promi
           <div className="mt-3">
             <label className="text-xs text-muted">→ Categoría</label>
             <div className="relative mt-1">
-              <select value={categoryId} onChange={(e) => setCategoryId(e.target.value)} className="w-full appearance-none rounded-xl border border-line bg-surface-2 py-2.5 pl-3 pr-9 text-sm text-fg outline-none focus:border-lime/40">
+              <select value={categoryId} onChange={(e) => setCategoryId(e.target.value)} className="w-full appearance-none rounded-xl border border-line bg-surface-2 py-2.5 pl-3 pr-9 text-sm text-fg outline-none focus:border-accent/40">
                 <option value="">— no cambiar —</option>
                 {cats.map((c) => <option key={c.id} value={c.id}>{c.emoji} {c.name}</option>)}
               </select>
@@ -240,7 +240,7 @@ function NewRuleForm({ cats, onSaved }: { cats: Category[]; onSaved: () => Promi
           </div>
         </div>
 
-        <button onClick={save} disabled={saving} className="mt-5 flex w-full items-center justify-center gap-2 rounded-xl bg-lime py-3 text-sm font-medium text-bg transition-transform hover:scale-[1.02] disabled:opacity-60">
+        <button onClick={save} disabled={saving} className="mt-5 flex w-full items-center justify-center gap-2 rounded-xl bg-accent py-3 text-sm font-medium text-bg transition-transform hover:scale-[1.02] disabled:opacity-60">
           <Plus className="h-4 w-4" /> {saving ? "Guardando…" : "Crear regla"}
         </button>
         {ok && <p className="mt-3 rounded-lg border border-emerald/30 bg-emerald/10 px-3 py-2 text-center text-xs text-emerald">✓ Regla creada</p>}

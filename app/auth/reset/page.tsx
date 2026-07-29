@@ -55,7 +55,7 @@ export default function ResetPage() {
     <div className="grid min-h-screen place-items-center px-5">
       <div className="w-full max-w-sm">
         <div className="flex flex-col items-center text-center">
-          <div className="grid h-14 w-14 place-items-center rounded-2xl bg-gradient-to-br from-lime via-emerald to-sky text-bg shadow-[0_12px_40px_-12px_rgba(200,255,77,0.6)]">
+          <div className="grid h-14 w-14 place-items-center rounded-2xl bg-gradient-to-br from-accent via-emerald to-sky text-bg shadow-[0_12px_40px_-12px_rgba(200,255,77,0.6)]">
             <Coins className="h-7 w-7" />
           </div>
           <h1 className="mt-4 font-display text-3xl text-fg">Plata</h1>
@@ -75,7 +75,7 @@ export default function ResetPage() {
               <p className="rounded-lg border border-coral/30 bg-coral/10 px-3 py-2 text-xs text-coral">
                 El link no es válido o ya venció. Los links son de un solo uso y hay que abrirlos en el <b>mismo navegador</b> desde el que pediste el mail. Pedí uno nuevo desde el login — o, si ya tenés sesión abierta, entrá directo a esta página y elegí la contraseña.
               </p>
-              <button onClick={() => router.push("/login")} className="mt-4 w-full rounded-xl border border-line bg-surface-2 py-2.5 text-sm text-fg transition-colors hover:border-lime/40">
+              <button onClick={() => router.push("/login")} className="mt-4 w-full rounded-xl border border-line bg-surface-2 py-2.5 text-sm text-fg transition-colors hover:border-accent/40">
                 Volver al login
               </button>
             </div>
@@ -108,7 +108,7 @@ export default function ResetPage() {
               <button
                 type="submit"
                 disabled={saving || ok}
-                className="mt-5 w-full rounded-xl bg-lime py-3 text-sm font-medium text-bg transition-transform hover:scale-[1.02] disabled:opacity-60"
+                className="mt-5 w-full rounded-xl bg-accent py-3 text-sm font-medium text-bg transition-transform hover:scale-[1.02] disabled:opacity-60"
               >
                 {saving ? "Guardando…" : "Guardar y entrar"}
               </button>

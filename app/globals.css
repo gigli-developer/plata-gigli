@@ -1,34 +1,44 @@
 @import "tailwindcss";
 
-/* ============ Design tokens — fintech oscuro ============ */
+/* ============ Design tokens — "liquid glass" (rediseño 2026-07) ============
+   El acento se llama `accent` y no `orange` a propósito: ya cambió una vez
+   (era lima ácido #c8ff4d) y así el próximo cambio de color no obliga a tocar
+   129 clases repartidas en 22 archivos. */
 @theme {
-  --color-bg: #08090d;
-  --color-surface: #101218;
-  --color-surface-2: #161922;
-  --color-surface-3: #1d212c;
-  --color-line: #242833;
-  --color-fg: #eef1f7;
-  --color-muted: #868d9e;
-  --color-faint: #5b6273;
+  /* base sólida detrás del gradiente de atmósfera */
+  --color-bg: #0a0a0a;
+  --color-surface: #101111;
+  --color-surface-2: #141515;
+  --color-surface-3: #1c1d1d;
+  /* borde por defecto (el de las cards de vidrio es más fuerte, ver .panel) */
+  --color-line: rgba(255, 255, 255, 0.10);
 
-  --color-lime: #c8ff4d;
-  --color-emerald: #34e1a0;
-  --color-coral: #ff6b6b;
-  --color-sky: #5ec8ff;
-  --color-violet: #a78bfa;
-  --color-amber: #ff9f5e;
+  --color-fg: #f4f4f3;
+  --color-muted: #c2c2c6;
+  --color-subtle: #9a9a9f;
+  --color-faint: #6b6b70;
+
+  --color-accent: #ff9e1b;       /* acento principal · ARS */
+  --color-accent-hover: #ffb84d;
+  --color-gold: #ffbf47;         /* dólares */
+  --color-sky: #5ec8ff;          /* USDT / cripto / serie secundaria */
+  --color-emerald: #35e08a;      /* positivo / ingresos / te deben */
+  --color-coral: #ff433d;        /* negativo / egresos / pasivos */
+  --color-violet: #a78bfa;       /* legacy: badges de proyección, se va migrando */
+  --color-amber: #ffbf47;        /* alias de gold, para no romper usos viejos */
 
   --font-display: var(--font-bricolage), system-ui, sans-serif;
   --font-sans: var(--font-hanken), system-ui, sans-serif;
   --font-mono: var(--font-jetbrains), ui-monospace, monospace;
 
-  --radius-xl: 1.25rem;
+  --radius-xl: 20px;
 }
 
-/* Alto del bottom nav de mobile. Una sola fuente de verdad: el nav, el padding del
-   main y el botón flotante del asistente se atan a esto para no descalzarse. */
+/* Alto del bottom nav de mobile. Una sola fuente de verdad: el nav y el padding
+   del main se atan a esto para no descalzarse. El nav ahora es una píldora
+   flotante, así que suma el margen de abajo. */
 :root {
-  --nav-h: 4.25rem;
+  --nav-h: 4.5rem;
   --nav-safe: calc(var(--nav-h) + env(safe-area-inset-bottom, 0px));
 }
 .pb-nav { padding-bottom: calc(var(--nav-safe) + 1.5rem); }
@@ -40,7 +50,7 @@
 
 html {
   color-scheme: dark;
-  scrollbar-color: var(--color-surface-3) transparent;
+  scrollbar-color: rgba(255, 255, 255, 0.12) transparent;
 }
 
 body {
@@ -48,11 +58,17 @@ body {
   color: var(--color-fg);
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
-  /* atmósfera: malla de gradientes sutiles sobre el negro */
+  /* Atmósfera: glow naranja abajo-izquierda, verde al medio-izquierda, azul a la
+     derecha. Es el fondo sobre el que "flota" el vidrio: si se saca, las cards
+     quedan grises y planas. */
   background-image:
-    radial-gradient(60rem 40rem at 78% -10%, rgba(167, 139, 250, 0.10), transparent 60%),
-    radial-gradient(50rem 30rem at -5% 8%, rgba(52, 225, 160, 0.08), transparent 55%),
-    radial-gradient(40rem 40rem at 50% 120%, rgba(200, 255, 77, 0.05), transparent 60%);
+    radial-gradient(520px 460px at 7% 90%, rgba(255, 176, 84, 0.50), rgba(255, 150, 54, 0) 62%),
+    radial-gradient(300px 300px at 3% 95%, rgba(255, 205, 120, 0.42), transparent 58%),
+    radial-gradient(820px 1000px at -4% 40%, rgba(74, 120, 72, 0.30), transparent 58%),
+    radial-gradient(980px 1080px at 102% 30%, rgba(96, 152, 206, 0.34), transparent 56%),
+    radial-gradient(720px 820px at 110% 6%, rgba(150, 182, 224, 0.22), transparent 56%),
+    radial-gradient(1300px 1200px at 50% 122%, rgba(6, 6, 9, 0), rgba(5, 5, 8, 0.62) 72%),
+    linear-gradient(158deg, #14110e 0%, #0d0b0d 46%, #0a0d12 100%);
   background-attachment: fixed;
 }
 
@@ -75,27 +91,55 @@ body {
   letter-spacing: -0.02em;
 }
 
-/* paneles de vidrio */
+/* ============ Vidrio ============
+   La superficie firmada del rediseño. El blur es caro: si el scroll en mobile
+   se siente pesado, lo primero a bajar es el radio del blur (ver @media abajo),
+   no el resto del efecto. */
 .panel {
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.035), rgba(255, 255, 255, 0.012));
-  border: 1px solid var(--color-line);
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(26px) saturate(170%);
+  -webkit-backdrop-filter: blur(26px) saturate(170%);
+  border: 1px solid rgba(255, 255, 255, 0.32);
   border-radius: var(--radius-xl);
-  backdrop-filter: blur(8px);
+  box-shadow:
+    0 12px 44px rgba(0, 0, 0, 0.32),
+    inset 0 1px 0 rgba(255, 255, 255, 0.42),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.06);
+}
+/* sub-panel dentro de una card de vidrio: no lleva blur propio (apilar
+   backdrop-filters multiplica el costo y casi no se nota) */
+.panel-inner {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  border-radius: 14px;
 }
 .panel-hover {
-  transition: border-color 0.25s ease, transform 0.25s ease, background 0.25s ease;
+  transition: border-color 0.15s ease, transform 0.15s ease, background 0.15s ease;
 }
 .panel-hover:hover {
-  border-color: color-mix(in srgb, var(--color-lime) 35%, var(--color-line));
+  border-color: rgba(255, 255, 255, 0.45);
+  background: rgba(255, 255, 255, 0.11);
   transform: translateY(-2px);
 }
 
-/* halo del chatbot IA (violeta reservado) */
+/* En pantallas chicas el blur se recorta: es donde más cuesta y menos se ve. */
+@media (max-width: 1023px) {
+  .panel {
+    backdrop-filter: blur(16px) saturate(150%);
+    -webkit-backdrop-filter: blur(16px) saturate(150%);
+  }
+}
+/* Sin soporte de backdrop-filter, el vidrio se cae a un sólido legible. */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .panel { background: rgba(22, 24, 26, 0.92); }
+}
+
+/* halo del asistente IA — ahora naranja→sky (antes violeta) */
 .ai-glow {
   position: relative;
-  background: linear-gradient(180deg, rgba(167, 139, 250, 0.10), rgba(94, 200, 255, 0.04));
-  border: 1px solid color-mix(in srgb, var(--color-violet) 38%, transparent);
-  box-shadow: 0 0 0 1px rgba(167, 139, 250, 0.06), 0 18px 50px -22px rgba(167, 139, 250, 0.5);
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 158, 27, 0.38);
+  box-shadow: 0 0 0 1px rgba(255, 158, 27, 0.06), 0 18px 50px -22px rgba(255, 158, 27, 0.45);
 }
 .ai-glow::before {
   content: "";
@@ -104,34 +148,42 @@ body {
   border-radius: inherit;
   pointer-events: none;
   padding: 1px;
-  background: linear-gradient(120deg, rgba(167, 139, 250, 0.55), transparent 40%, rgba(94, 200, 255, 0.4));
+  background: linear-gradient(120deg, rgba(255, 158, 27, 0.65), transparent 42%, rgba(94, 200, 255, 0.5));
   -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
   -webkit-mask-composite: xor;
   mask-composite: exclude;
-  opacity: 0.7;
+  opacity: 0.8;
 }
 
 .chip {
-  border: 1px solid var(--color-line);
-  background: var(--color-surface-2);
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  background: rgba(255, 255, 255, 0.06);
   border-radius: 999px;
-  transition: all 0.2s ease;
+  transition: all 0.15s ease;
 }
 .chip:hover {
-  border-color: color-mix(in srgb, var(--color-violet) 50%, var(--color-line));
+  border-color: rgba(255, 158, 27, 0.45);
   color: var(--color-fg);
 }
 
 /* utilidades de texto */
 .text-muted { color: var(--color-muted); }
+.text-subtle { color: var(--color-subtle); }
 .text-faint { color: var(--color-faint); }
+/* micro-label en mayúsculas, el patrón de labels del diseño */
+.label-micro {
+  font-size: 10.5px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--color-subtle);
+}
 
-/* animación de entrada escalonada */
+/* ============ Movimiento ============ */
 @keyframes rise {
   from { opacity: 0; transform: translateY(14px); }
   to { opacity: 1; transform: translateY(0); }
 }
-.rise { animation: rise 0.6s cubic-bezier(0.22, 1, 0.36, 1) both; }
+.rise { animation: rise 0.5s ease both; }
 
 /* entrada consistente al cambiar de pestaña (se aplica en el layout, key=pathname) */
 /* Solo opacidad: un transform acá rompería el position:fixed de los modales (se posicionarían
@@ -144,9 +196,9 @@ body {
 
 @keyframes pulseDot {
   0%, 100% { opacity: 1; transform: scale(1); }
-  50% { opacity: 0.4; transform: scale(0.7); }
+  50% { opacity: 0.35; transform: scale(0.7); }
 }
-.pulse-dot { animation: pulseDot 1.6s ease-in-out infinite; }
+.pulse-dot { animation: pulseDot 2s ease-in-out infinite; }
 
 @keyframes growBar {
   from { transform: scaleY(0); }
@@ -154,5 +206,38 @@ body {
 }
 .grow-bar { transform-origin: bottom; animation: growBar 0.8s cubic-bezier(0.22, 1, 0.36, 1) both; }
 
+/* trazado de líneas en los charts SVG: requiere pathLength="1" en el path */
+@keyframes drawLine {
+  from { stroke-dashoffset: 1; }
+  to { stroke-dashoffset: 0; }
+}
+.draw-line {
+  stroke-dasharray: 1;
+  animation: drawLine 1s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* aparición del donut */
+@keyframes popIn {
+  from { opacity: 0; transform: scale(0.82); }
+  to { opacity: 1; transform: scale(1); }
+}
+.pop-in { animation: popIn 0.45s cubic-bezier(0.22, 1, 0.36, 1) both; }
+
+@media (prefers-reduced-motion: reduce) {
+  .rise, .page-enter, .grow-bar, .draw-line, .pop-in, .pulse-dot {
+    animation: none;
+  }
+}
+
 ::-webkit-scrollbar { width: 10px; height: 10px; }
-::-webkit-scrollbar-thumb { background: var(--color-surface-3); border-radius: 999px; border: 3px solid var(--color-bg); }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 6px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.16);
+  background-clip: padding-box;
+}

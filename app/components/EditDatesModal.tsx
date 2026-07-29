@@ -35,14 +35,14 @@ export default function EditDatesModal({ statement, onClose, onSaved }: {
 
         <div className="mt-4">
           <label className="text-xs text-muted">Cierre</label>
-          <input type="date" value={closing} onChange={(e) => setClosing(e.target.value)} className="mt-1 w-full rounded-xl border border-line bg-surface-2 px-3 py-2.5 text-sm text-fg outline-none [color-scheme:dark] focus:border-lime/40" />
+          <input type="date" value={closing} onChange={(e) => setClosing(e.target.value)} className="mt-1 w-full rounded-xl border border-line bg-surface-2 px-3 py-2.5 text-sm text-fg outline-none [color-scheme:dark] focus:border-accent/40" />
         </div>
         <div className="mt-4">
           <label className="text-xs text-muted">Vencimiento</label>
           <input type="date" value={due} onChange={(e) => setDue(e.target.value)} className="mt-1 w-full rounded-xl border border-line bg-surface-2 px-3 py-2.5 text-sm text-fg outline-none [color-scheme:dark] focus:border-coral/40" />
         </div>
 
-        <button onClick={save} disabled={busy} className="mt-5 w-full rounded-xl bg-lime py-3 text-sm font-medium text-bg transition-transform hover:scale-[1.02] disabled:opacity-60">{busy ? "Guardando…" : "Guardar fechas"}</button>
+        <button onClick={save} disabled={busy} className="mt-5 w-full rounded-xl bg-accent py-3 text-sm font-medium text-bg transition-transform hover:scale-[1.02] disabled:opacity-60">{busy ? "Guardando…" : "Guardar fechas"}</button>
       </div>
     </div>
   );

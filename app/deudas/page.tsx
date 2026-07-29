@@ -76,7 +76,7 @@ export default function DeudasPage() {
       <div className="mt-6 grid grid-cols-1 gap-3 sm:grid-cols-3">
         <SummaryCard label="Te deben" value={toCollect} tone="emerald" up />
         <SummaryCard label="Debés" value={toPay} tone="coral" />
-        <SummaryCard label="Balance neto" value={toCollect - toPay} tone="lime" up={toCollect - toPay >= 0} />
+        <SummaryCard label="Balance neto" value={toCollect - toPay} tone="accent" up={toCollect - toPay >= 0} />
       </div>
       <p className="mt-3 flex items-center gap-2 text-xs text-faint">
         <span className="grid h-4 w-4 place-items-center rounded-full bg-surface-3 text-[0.6rem]">i</span>
@@ -129,8 +129,8 @@ export default function DeudasPage() {
   );
 }
 
-function SummaryCard({ label, value, tone, up }: { label: string; value: number; tone: "emerald" | "coral" | "lime"; up?: boolean }) {
-  const color = tone === "emerald" ? "text-emerald" : tone === "coral" ? "text-coral" : "text-lime";
+function SummaryCard({ label, value, tone, up }: { label: string; value: number; tone: "emerald" | "coral" | "accent"; up?: boolean }) {
+  const color = tone === "emerald" ? "text-emerald" : tone === "coral" ? "text-coral" : "text-accent";
   return (
     <div className="panel p-5">
       <div className="flex items-center gap-1.5 text-xs text-muted">
@@ -156,7 +156,7 @@ function Segmented({ value, onChange }: { value: DirFilter; onChange: (v: DirFil
 }
 
 function KindChip({ active, onClick, children }: { active: boolean; onClick: () => void; children: React.ReactNode }) {
-  return <button onClick={onClick} className={`rounded-full border px-3 py-1.5 text-xs transition-colors ${active ? "border-lime/40 bg-lime/10 text-lime" : "border-line bg-surface-2 text-muted hover:text-fg"}`}>{children}</button>;
+  return <button onClick={onClick} className={`rounded-full border px-3 py-1.5 text-xs transition-colors ${active ? "border-accent/40 bg-accent/10 text-accent" : "border-line bg-surface-2 text-muted hover:text-fg"}`}>{children}</button>;
 }
 
 type Ev = { key: string; at: string; dateLabel: string; person: string; kind: DebtKind; amount: number; currency: string; verb: string; desc: string; incoming: boolean; isPay: boolean };
@@ -410,8 +410,8 @@ function NewDebtForm({ persons, onSaved }: { persons: { id: number; name: string
         <Field label="Persona">
           {addingPerson ? (
             <div className="flex items-center gap-2">
-              <input autoFocus value={newPerson} onChange={(e) => setNewPerson(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter") savePerson(); }} placeholder="Nombre…" className="w-full rounded-xl border border-lime/40 bg-surface-2 px-3 py-2.5 text-sm text-fg outline-none placeholder:text-faint" />
-              <button onClick={savePerson} className="shrink-0 rounded-xl bg-lime px-3 py-2.5 text-sm font-medium text-bg">OK</button>
+              <input autoFocus value={newPerson} onChange={(e) => setNewPerson(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter") savePerson(); }} placeholder="Nombre…" className="w-full rounded-xl border border-accent/40 bg-surface-2 px-3 py-2.5 text-sm text-fg outline-none placeholder:text-faint" />
+              <button onClick={savePerson} className="shrink-0 rounded-xl bg-accent px-3 py-2.5 text-sm font-medium text-bg">OK</button>
               <button onClick={() => { setAddingPerson(false); setNewPerson(""); }} className="shrink-0 rounded-xl border border-line bg-surface-2 px-3 py-2.5 text-sm text-muted">✕</button>
             </div>
           ) : (
@@ -421,7 +421,7 @@ function NewDebtForm({ persons, onSaved }: { persons: { id: number; name: string
                   {persons.map((p) => <option key={p.id} value={p.id}>{p.name}</option>)}
                 </FullSelect>
               </div>
-              <button onClick={() => setAddingPerson(true)} title="Agregar persona" className="shrink-0 rounded-xl border border-line bg-surface-2 px-3 py-2.5 text-sm text-muted transition-colors hover:border-lime/40 hover:text-lime">＋ Nueva</button>
+              <button onClick={() => setAddingPerson(true)} title="Agregar persona" className="shrink-0 rounded-xl border border-line bg-surface-2 px-3 py-2.5 text-sm text-muted transition-colors hover:border-accent/40 hover:text-accent">＋ Nueva</button>
             </div>
           )}
         </Field>
@@ -433,7 +433,7 @@ function NewDebtForm({ persons, onSaved }: { persons: { id: number; name: string
           </div>
           <div className="mt-2 flex gap-1.5">
             {(["ARS", "USD", "USDT"] as const).map((c) => (
-              <button key={c} onClick={() => setCurrency(c)} className={`rounded-full border px-3 py-1 text-xs transition-colors ${currency === c ? "border-lime/40 bg-lime/10 text-lime" : "border-line bg-surface-2 text-muted hover:text-fg"}`}>{c}</button>
+              <button key={c} onClick={() => setCurrency(c)} className={`rounded-full border px-3 py-1 text-xs transition-colors ${currency === c ? "border-accent/40 bg-accent/10 text-accent" : "border-line bg-surface-2 text-muted hover:text-fg"}`}>{c}</button>
             ))}
           </div>
         </Field>
@@ -460,10 +460,10 @@ function NewDebtForm({ persons, onSaved }: { persons: { id: number; name: string
         )}
 
         <Field label="Descripción">
-          <input value={desc} onChange={(e) => setDesc(e.target.value)} placeholder="Ej: Cena, préstamo, objeto…" className="w-full rounded-xl border border-line bg-surface-2 px-3 py-2.5 text-sm text-fg outline-none placeholder:text-faint focus:border-lime/40" />
+          <input value={desc} onChange={(e) => setDesc(e.target.value)} placeholder="Ej: Cena, préstamo, objeto…" className="w-full rounded-xl border border-line bg-surface-2 px-3 py-2.5 text-sm text-fg outline-none placeholder:text-faint focus:border-accent/40" />
         </Field>
 
-        <button onClick={save} disabled={saving} className="mt-5 w-full rounded-xl bg-lime py-3 text-sm font-medium text-bg transition-transform hover:scale-[1.02] disabled:opacity-60">
+        <button onClick={save} disabled={saving} className="mt-5 w-full rounded-xl bg-accent py-3 text-sm font-medium text-bg transition-transform hover:scale-[1.02] disabled:opacity-60">
           {saving ? "Guardando…" : "Registrar deuda"}
         </button>
         {ok && <p className="mt-3 rounded-lg border border-emerald/30 bg-emerald/10 px-3 py-2 text-center text-xs text-emerald">✓ Guardado en Supabase</p>}
@@ -484,7 +484,7 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
 function FullSelect({ value, onChange, children }: { value: string; onChange: (v: string) => void; children: React.ReactNode }) {
   return (
     <div className="relative">
-      <select value={value} onChange={(e) => onChange(e.target.value)} className="w-full appearance-none rounded-xl border border-line bg-surface-2 py-2.5 pl-3 pr-9 text-sm text-fg outline-none focus:border-lime/40">{children}</select>
+      <select value={value} onChange={(e) => onChange(e.target.value)} className="w-full appearance-none rounded-xl border border-line bg-surface-2 py-2.5 pl-3 pr-9 text-sm text-fg outline-none focus:border-accent/40">{children}</select>
       <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-faint">▾</span>
     </div>
   );

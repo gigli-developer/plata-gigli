@@ -198,11 +198,11 @@ export default function MetricasPage() {
 
       {/* Banda compacta: patrimonio + saldos + ratios todo junto */}
       <section className="rise panel relative mt-6 overflow-hidden">
-        <div className="pointer-events-none absolute -right-16 -top-20 h-56 w-56 rounded-full bg-lime/10 blur-3xl" />
+        <div className="pointer-events-none absolute -right-16 -top-20 h-56 w-56 rounded-full bg-accent/10 blur-3xl" />
         <div className="relative grid gap-px bg-line/60 lg:grid-cols-[1.4fr_2fr]">
           {/* Patrimonio */}
           <div className="bg-surface p-5">
-            <p className="flex items-center gap-2 text-sm text-muted"><Coins className="h-4 w-4 text-lime" /> Patrimonio neto <span className="text-faint">· hoy</span></p>
+            <p className="flex items-center gap-2 text-sm text-muted"><Coins className="h-4 w-4 text-accent" /> Patrimonio neto <span className="text-faint">· hoy</span></p>
             <p className={`mt-1 font-display text-3xl sm:text-4xl ${calc.patrimonio >= 0 ? "text-fg" : "text-coral"}`}><span className="tnum">{ars(calc.patrimonio)}</span></p>
             <p className="mt-1 text-xs text-faint">≈ US$ {calc.patrimonioUsd.toLocaleString("es-AR", { maximumFractionDigits: 0 })}</p>
             <div className="mt-3 flex gap-2 text-xs">
@@ -253,8 +253,8 @@ export default function MetricasPage() {
               </div>
             )}
             <div className="flex rounded-full border border-line bg-surface-2 p-0.5 text-xs">
-              <button onClick={() => setNwCur("ars")} className={`rounded-full px-2.5 py-1 transition-colors ${nwCur === "ars" ? "bg-lime/15 text-lime" : "text-muted hover:text-fg"}`}>$</button>
-              <button onClick={() => setNwCur("usd")} className={`rounded-full px-2.5 py-1 transition-colors ${nwCur === "usd" ? "bg-lime/15 text-lime" : "text-muted hover:text-fg"}`}>US$</button>
+              <button onClick={() => setNwCur("ars")} className={`rounded-full px-2.5 py-1 transition-colors ${nwCur === "ars" ? "bg-accent/15 text-accent" : "text-muted hover:text-fg"}`}>$</button>
+              <button onClick={() => setNwCur("usd")} className={`rounded-full px-2.5 py-1 transition-colors ${nwCur === "usd" ? "bg-accent/15 text-accent" : "text-muted hover:text-fg"}`}>US$</button>
             </div>
           </div>
         </div>
@@ -335,14 +335,14 @@ function RatioMini({ title, value, hint, tone }: { title: string; value: string;
 
 function FilterChip({ active, onClick, children }: { active: boolean; onClick: () => void; children: React.ReactNode }) {
   return (
-    <button onClick={onClick} className={`rounded-full border px-3 py-1 text-xs transition-colors ${active ? "border-lime/40 bg-lime/10 text-lime" : "border-line bg-surface-2 text-muted hover:text-fg"}`}>{children}</button>
+    <button onClick={onClick} className={`rounded-full border px-3 py-1 text-xs transition-colors ${active ? "border-accent/40 bg-accent/10 text-accent" : "border-line bg-surface-2 text-muted hover:text-fg"}`}>{children}</button>
   );
 }
 
 function CmpSelect({ value, onChange, options }: { value: string; onChange: (v: string) => void; options: string[] }) {
   return (
     <div className="relative">
-      <select value={value} onChange={(e) => onChange(e.target.value)} className="appearance-none rounded-lg border border-line bg-surface-2 py-1.5 pl-3 pr-7 text-xs text-fg outline-none focus:border-lime/40">
+      <select value={value} onChange={(e) => onChange(e.target.value)} className="appearance-none rounded-lg border border-line bg-surface-2 py-1.5 pl-3 pr-7 text-xs text-fg outline-none focus:border-accent/40">
         {options.map((o) => <option key={o} value={o}>{monthLabel(o)}</option>)}
       </select>
       <span className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-faint">▾</span>

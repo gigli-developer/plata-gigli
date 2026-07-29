@@ -46,7 +46,7 @@ export default function EditPlanModal({ plan, onClose, onSaved }: {
         <Field label="Descripción">
           <div className="flex gap-2">
             <input value={emoji} onChange={(e) => setEmoji(e.target.value)} className="w-14 rounded-xl border border-line bg-surface-2 px-3 py-2.5 text-center text-lg outline-none" />
-            <input value={desc} onChange={(e) => setDesc(e.target.value)} className="flex-1 rounded-xl border border-line bg-surface-2 px-3 py-2.5 text-sm text-fg outline-none focus:border-lime/40" />
+            <input value={desc} onChange={(e) => setDesc(e.target.value)} className="flex-1 rounded-xl border border-line bg-surface-2 px-3 py-2.5 text-sm text-fg outline-none focus:border-accent/40" />
           </div>
         </Field>
         <Field label="Monto de la cuota (mensual)">
@@ -57,16 +57,16 @@ export default function EditPlanModal({ plan, onClose, onSaved }: {
         </Field>
         <div className="grid grid-cols-2 gap-3">
           <Field label="Total de cuotas">
-            <input value={total} onChange={(e) => setTotal(e.target.value)} inputMode="numeric" className="tnum w-full rounded-xl border border-line bg-surface-2 px-3 py-2.5 text-fg outline-none focus:border-lime/40" />
+            <input value={total} onChange={(e) => setTotal(e.target.value)} inputMode="numeric" className="tnum w-full rounded-xl border border-line bg-surface-2 px-3 py-2.5 text-fg outline-none focus:border-accent/40" />
           </Field>
           <Field label="Fecha 1ª cuota">
-            <input type="date" value={firstDate} onChange={(e) => setFirstDate(e.target.value)} className="w-full rounded-xl border border-line bg-surface-2 px-3 py-2.5 text-sm text-fg outline-none [color-scheme:dark] focus:border-lime/40" />
+            <input type="date" value={firstDate} onChange={(e) => setFirstDate(e.target.value)} className="w-full rounded-xl border border-line bg-surface-2 px-3 py-2.5 text-sm text-fg outline-none [color-scheme:dark] focus:border-accent/40" />
           </Field>
         </div>
 
         <div className="mt-5 flex gap-2">
           <button onClick={remove} disabled={busy} className="flex items-center gap-1.5 rounded-xl border border-coral/30 bg-coral/10 px-3 py-3 text-sm text-coral transition-colors hover:bg-coral/20 disabled:opacity-60"><Trash className="h-4 w-4" /> Borrar</button>
-          <button onClick={save} disabled={busy} className="flex-1 rounded-xl bg-lime py-3 text-sm font-medium text-bg transition-transform hover:scale-[1.02] disabled:opacity-60">{busy ? "Guardando…" : "Guardar cambios"}</button>
+          <button onClick={save} disabled={busy} className="flex-1 rounded-xl bg-accent py-3 text-sm font-medium text-bg transition-transform hover:scale-[1.02] disabled:opacity-60">{busy ? "Guardando…" : "Guardar cambios"}</button>
         </div>
       </div>
     </div>

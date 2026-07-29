@@ -200,7 +200,7 @@ export default function HormigaPage() {
               {grandesMes.length} consumos de más de {ars(a.umbral)} este mes · las salidas y deliverys grandes son los que más mueven la aguja
             </p>
           </div>
-          <Chevron className={`ml-auto h-4 w-4 shrink-0 text-faint transition-transform ${verExcluidos ? "rotate-180 text-lime" : ""}`} />
+          <Chevron className={`ml-auto h-4 w-4 shrink-0 text-faint transition-transform ${verExcluidos ? "rotate-180 text-accent" : ""}`} />
         </button>
         {verExcluidos && (
           <ul className="mt-4 max-h-80 divide-y divide-line overflow-y-auto pr-1">

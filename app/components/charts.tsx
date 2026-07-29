@@ -3,7 +3,7 @@
 // Gráficos SVG hechos a mano (sin librerías) — estética fintech oscuro.
 import { useState } from "react";
 
-export const PALETTE = ["#c8ff4d", "#34e1a0", "#5ec8ff", "#a78bfa", "#ff9f5e", "#ff6b6b", "#f5d76e", "#7dd3fc", "#c084fc", "#4ade80"];
+export const PALETTE = ["#ff9e1b", "#35e08a", "#5ec8ff", "#ffbf47", "#ff433d", "#a78bfa", "#f472b6", "#2dd4bf", "#7dd3fc", "#4ade80"];
 
 export type Slice = { label: string; value: number; emoji?: string };
 
@@ -83,16 +83,16 @@ export function GroupedColumns({ data, fmt, height = 200 }: { data: MonthCol[]; 
   return (
     <div>
       <div className="mb-3 flex flex-wrap items-center gap-4 text-xs">
-        <span className="flex items-center gap-1.5 text-muted"><span className="h-2.5 w-2.5 rounded-sm" style={{ background: "#34e1a0" }} /> Ingresos</span>
-        <span className="flex items-center gap-1.5 text-muted"><span className="h-2.5 w-2.5 rounded-sm" style={{ background: "#ff6b6b" }} /> Egresos</span>
+        <span className="flex items-center gap-1.5 text-muted"><span className="h-2.5 w-2.5 rounded-sm" style={{ background: "#35e08a" }} /> Ingresos</span>
+        <span className="flex items-center gap-1.5 text-muted"><span className="h-2.5 w-2.5 rounded-sm" style={{ background: "#ff433d" }} /> Egresos</span>
         {sel && <span className="tnum ml-auto text-fg">{sel.label}: <span className="text-emerald">{fmt(sel.ingreso)}</span> · <span className="text-coral">{fmt(sel.egreso)}</span> · neto <span className={sel.ingreso - sel.egreso >= 0 ? "text-emerald" : "text-coral"}>{fmt(sel.ingreso - sel.egreso)}</span></span>}
       </div>
       <div className="flex gap-2" style={{ height: height + 18 }}>
         {data.map((d, i) => (
           <div key={i} className="flex flex-1 flex-col items-center justify-end gap-1.5" onMouseEnter={() => setHover(i)} onMouseLeave={() => setHover(null)} style={{ opacity: hover == null || hover === i ? 1 : 0.4, cursor: "default" }}>
             <div className="flex w-full items-end justify-center gap-1" style={{ height }}>
-              <div className="grow-bar w-1/2 max-w-8 rounded-t-md" style={{ height: barH(d.ingreso), background: "#34e1a0" }} />
-              <div className="grow-bar w-1/2 max-w-8 rounded-t-md" style={{ height: barH(d.egreso), background: "#ff6b6b" }} />
+              <div className="grow-bar w-1/2 max-w-8 rounded-t-md" style={{ height: barH(d.ingreso), background: "#35e08a" }} />
+              <div className="grow-bar w-1/2 max-w-8 rounded-t-md" style={{ height: barH(d.egreso), background: "#ff433d" }} />
             </div>
             <span className="text-[0.65rem] text-faint">{d.label}</span>
           </div>
@@ -110,7 +110,7 @@ export type NetWorthCol = {
   label: string; ars: number; usdArs: number; usdtArs: number;
   teDeben: number; pasivos: number; patrimonio: number;
 };
-const NW_COLORS = { ars: "#c8ff4d", usd: "#f5d76e", usdt: "#5ec8ff", deben: "#34e1a0", pasivo: "#ff6b6b" };
+const NW_COLORS = { ars: "#ff9e1b", usd: "#ffbf47", usdt: "#5ec8ff", deben: "#35e08a", pasivo: "#ff433d" };
 export function NetWorthChart({ data, fmt, height = 220 }: { data: NetWorthCol[]; fmt: (n: number) => string; height?: number }) {
   const [hover, setHover] = useState<number | null>(null);
   if (!data.length) return <div className="grid h-48 place-items-center text-sm text-faint">Sin historia todavía</div>;
@@ -250,7 +250,7 @@ export function VariationTable({ data, fmt, labelA, labelB, showEst }: { data: V
                 <td className="py-2.5 text-muted">{d.emoji ? `${d.emoji} ` : ""}{d.label}</td>
                 <td className="tnum py-2.5 text-right text-fg/70">{d.prev > 0 ? fmt(d.prev) : "—"}</td>
                 <td className="tnum py-2.5 text-right text-fg">{d.cur > 0 ? fmt(d.cur) : "—"}</td>
-                {showEst && <td className="tnum py-2.5 text-right text-lime/90">{d.est > 0 ? fmt(d.est) : "—"}</td>}
+                {showEst && <td className="tnum py-2.5 text-right text-accent/90">{d.est > 0 ? fmt(d.est) : "—"}</td>}
                 <td className={`tnum py-2.5 text-right ${tone}`}>{tag}{pctTxt}<span className="block text-[0.6rem] text-faint">{delta >= 0 ? "+" : "−"}{fmt(Math.abs(delta))}</span></td>
               </tr>
             );
