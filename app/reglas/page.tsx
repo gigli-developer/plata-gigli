@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { db, fetchRules, fetchCategories, insertRule, deleteRule, toggleRule, type Rule, type Category } from "@/lib/db";
 import { ars } from "@/lib/format";
 import { PageHeader } from "../components/Shell";
-import { Trash, Plus } from "../icons";
+import { Trash, Plus, X } from "../icons";
 
 const OPS: { v: string; label: string }[] = [
   { v: "contains", label: "contiene" },
@@ -37,6 +37,10 @@ export default function ReglasPage() {
   const [rules, setRules] = useState<Rule[]>([]);
   const [cats, setCats] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
+  // El alta es un desplegable: antes era un formulario fijo en la columna
+  // derecha, que en mobile quedaba enterrado abajo de toda la lista y no tenía
+  // ningún botón que lo anunciara (parecía que "crear regla" no existía).
+  const [formOpen, setFormOpen] = useState(false);
 
   const reload = async () => { const sb = db(); const [r, c] = await Promise.all([fetchRules(sb), fetchCategories(sb)]); setRules(r); setCats(c.filter((x) => x.kind === "egreso" || x.kind === "ambos")); };
   useEffect(() => { reload().finally(() => setLoading(false)); }, []);
@@ -46,19 +50,37 @@ export default function ReglasPage() {
 
   return (
     <>
-      <PageHeader title="Reglas" subtitle="Categorizá, renombrá y corregí consumos nuevos" />
+      <PageHeader title="Reglas" subtitle="Categorizá, renombrá y corregí consumos nuevos">
+        <button
+          onClick={() => setFormOpen((v) => !v)}
+          aria-expanded={formOpen}
+          className={`flex items-center gap-2 rounded-full px-4 py-2 text-sm font-medium transition-transform hover:scale-[1.03] ${formOpen ? "border border-white/10 bg-white/[0.06] text-fg" : "bg-accent text-bg"}`}
+        >
+          {formOpen ? <><X className="h-4 w-4" /> Cerrar</> : <><Plus className="h-4 w-4" /> Nueva regla</>}
+        </button>
+      </PageHeader>
       <p className="mt-3 flex items-start gap-2 text-xs text-faint">
         <span className="mt-0.5 grid h-4 w-4 shrink-0 place-items-center rounded-full bg-white/[0.09] text-[0.6rem]">i</span>
         Las reglas se aplican a los consumos <b className="text-muted">nuevos</b> que entran por mail. Una regla puede cambiar la categoría, renombrar la descripción y/o forzar la moneda (todo combinable). Las condiciones se evalúan sobre la descripción <b className="text-muted">original</b> del banco. Si varias reglas matchean, <b className="text-muted">cada acción</b> la define la primera regla (por prioridad y antigüedad) que la tenga: una puede poner la categoría y otra distinta el nombre. Lo ya cargado no se toca.
       </p>
 
-      <div className="mt-6 grid grid-cols-1 gap-5 xl:grid-cols-3">
-        <div className="xl:col-span-2">
+      {/* Desplegable de alta, arriba del listado y a todo el ancho */}
+      <div className={`grid transition-all duration-300 ease-out ${formOpen ? "mt-5 grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"}`}>
+        <div className="overflow-hidden">
+          <NewRuleForm cats={cats} onSaved={reload} onDone={() => setFormOpen(false)} />
+        </div>
+      </div>
+
+      <div className="mt-5">
+        <div>
           <section className="panel divide-y divide-line p-2 sm:p-4">
             {loading ? (
               <p className="px-2 py-10 text-center text-sm text-muted">Cargando…</p>
             ) : rules.length === 0 ? (
-              <p className="px-2 py-10 text-center text-sm text-muted">Todavía no creaste reglas. Armá la primera a la derecha →</p>
+              <div className="px-2 py-10 text-center">
+                <p className="text-sm text-muted">Todavía no creaste ninguna regla.</p>
+                <button onClick={() => setFormOpen(true)} className="mt-3 rounded-xl bg-accent px-4 py-2 text-sm font-medium text-bg transition-transform hover:scale-[1.03]">Crear la primera</button>
+              </div>
             ) : (
               rules.map((r) => {
                 const acts = ruleActions(r);
@@ -83,14 +105,12 @@ export default function ReglasPage() {
             )}
           </section>
         </div>
-
-        <NewRuleForm cats={cats} onSaved={reload} />
       </div>
     </>
   );
 }
 
-function NewRuleForm({ cats, onSaved }: { cats: Category[]; onSaved: () => Promise<void> }) {
+function NewRuleForm({ cats, onSaved, onDone }: { cats: Category[]; onSaved: () => Promise<void>; onDone: () => void }) {
   const [op, setOp] = useState("contains");
   const [value, setValue] = useState("");
   const [useHour, setUseHour] = useState(false);
@@ -146,20 +166,25 @@ function NewRuleForm({ cats, onSaved }: { cats: Category[]; onSaved: () => Promi
       setValue(""); setDays([]); setUseHour(false); setUseAmount(false); setAmountMin(""); setAmountMax("");
       setCategoryId(""); setRenameTo(""); setSetCurrency("");
       setOk(true);
-      setTimeout(() => setOk(false), 2500);
+      // Se cierra solo: la regla nueva ya quedó visible en la lista de abajo.
+      setTimeout(() => { setOk(false); onDone(); }, 1400);
     } catch (e) {
       setErr(e instanceof Error ? e.message : String(e));
     } finally { setSaving(false); }
   };
 
   return (
-    <aside className="xl:sticky xl:top-6 xl:self-start">
-      <section className="panel p-6">
-        <h2 className="font-display text-lg text-fg">Nueva regla</h2>
-        <p className="text-xs text-faint">Condición(es) → acción(es)</p>
+    <section className="panel p-6">
+      <h2 className="font-display text-[17px] font-semibold text-fg">Nueva regla</h2>
+      <p className="text-xs text-faint">Condición(es) → acción(es)</p>
 
-        <div className="mt-4">
-          <label className="text-xs text-muted">Si la descripción…</label>
+      {/* Dos columnas en desktop: condiciones a la izquierda, acciones a la derecha */}
+      <div className="mt-4 grid grid-cols-1 gap-x-8 gap-y-1 lg:grid-cols-2">
+        <div>
+          <p className="text-xs font-medium text-subtle">Condiciones <span className="font-normal text-faint">(al menos una)</span></p>
+
+        <div className="mt-3">
+          <label className="text-xs text-subtle">Si la descripción…</label>
           <div className="mt-1 flex gap-2">
             <select value={op} onChange={(e) => setOp(e.target.value)} className="appearance-none rounded-xl border border-line bg-white/[0.06] px-3 py-2.5 text-sm text-fg outline-none focus:border-accent/40">
               {OPS.map((o) => <option key={o.v} value={o.v}>{o.label}</option>)}
@@ -208,11 +233,14 @@ function NewRuleForm({ cats, onSaved }: { cats: Category[]; onSaved: () => Promi
           </div>
         </div>
 
-        <div className="mt-5 border-t border-line pt-4">
-          <p className="text-xs font-medium text-muted">Acciones <span className="font-normal text-faint">(al menos una)</span></p>
+        </div>
+
+        {/* columna derecha: acciones */}
+        <div className="mt-5 border-t border-line pt-4 lg:mt-0 lg:border-l lg:border-t-0 lg:pl-8 lg:pt-0">
+          <p className="text-xs font-medium text-subtle">Acciones <span className="font-normal text-faint">(al menos una)</span></p>
 
           <div className="mt-3">
-            <label className="text-xs text-muted">→ Categoría</label>
+            <label className="text-xs text-subtle">→ Categoría</label>
             <div className="relative mt-1">
               <select value={categoryId} onChange={(e) => setCategoryId(e.target.value)} className="w-full appearance-none rounded-xl border border-line bg-white/[0.06] py-2.5 pl-3 pr-9 text-sm text-fg outline-none focus:border-accent/40">
                 <option value="">— no cambiar —</option>
@@ -239,13 +267,13 @@ function NewRuleForm({ cats, onSaved }: { cats: Category[]; onSaved: () => Promi
             </div>
           </div>
         </div>
+      </div>
 
-        <button onClick={save} disabled={saving} className="mt-5 flex w-full items-center justify-center gap-2 rounded-xl bg-accent py-3 text-sm font-medium text-bg transition-transform hover:scale-[1.02] disabled:opacity-60">
-          <Plus className="h-4 w-4" /> {saving ? "Guardando…" : "Crear regla"}
-        </button>
-        {ok && <p className="mt-3 rounded-lg border border-emerald/30 bg-emerald/10 px-3 py-2 text-center text-xs text-emerald">✓ Regla creada</p>}
-        {err && <p className="mt-3 rounded-lg border border-coral/30 bg-coral/10 px-3 py-2 text-center text-xs text-coral">{err}</p>}
-      </section>
-    </aside>
+      <button onClick={save} disabled={saving} className="mt-5 flex w-full items-center justify-center gap-2 rounded-[13px] bg-accent py-3 text-sm font-semibold text-bg transition-transform hover:scale-[1.02] disabled:opacity-60 sm:mx-auto sm:w-auto sm:px-10">
+        <Plus className="h-4 w-4" /> {saving ? "Guardando…" : "Crear regla"}
+      </button>
+      {ok && <p className="mt-3 rounded-lg border border-emerald/30 bg-emerald/10 px-3 py-2 text-center text-xs text-emerald">✓ Regla creada</p>}
+      {err && <p className="mt-3 rounded-lg border border-coral/30 bg-coral/10 px-3 py-2 text-center text-xs text-coral">{err}</p>}
+    </section>
   );
 }

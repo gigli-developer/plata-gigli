@@ -23,7 +23,14 @@ export default function DivisasPage() {
   const [metrics, setMetrics] = useState<Metrics | null>(null);
   const [loading, setLoading] = useState(true);
 
-  const reload = async () => setHistory(await fetchExchanges(db()));
+  // Tras registrar un cambio hay que refrescar también las tenencias: la
+  // operación ahora genera las dos transacciones y mueve los saldos.
+  const reload = async () => {
+    const sb = db();
+    const [h, m] = await Promise.all([fetchExchanges(sb), fetchMetrics(sb)]);
+    setHistory(h);
+    setMetrics(m);
+  };
 
   useEffect(() => {
     type Snap = { b: FxBoard; m: Metrics };
@@ -211,7 +218,7 @@ function Converter({ quotes, onRegister }: { quotes: FxQuote[]; onRegister: () =
         {saving ? "Guardando…" : ok ? "Registrado ✓" : "Registrar cambio"}
       </button>
       <p className="mt-2 text-center text-[0.7rem] text-faint">
-        Queda en el historial de acá. Todavía <b>no mueve los saldos</b>: para eso cargá los dos movimientos en Transacciones.
+        Se registra acá y <b className="text-subtle">mueve los saldos</b>: genera el egreso y el ingreso en Transacciones, categoría «Cambio Divisas» (no cuenta como gasto del mes).
       </p>
     </section>
   );

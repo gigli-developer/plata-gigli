@@ -806,14 +806,24 @@ export async function fetchPlansForProjection(sb: SupabaseClient): Promise<PlanP
 }
 
 export type NewExchange = { from: string; to: string; fromAmount: number; toAmount: number; rate: number; rateSource: "auto" | "manual" };
+/**
+ * Registra un cambio de divisas Y mueve los saldos.
+ *
+ * Va por la RPC `register_exchange` en vez de tres inserts desde acá porque tiene
+ * que ser atómico: escribe la operación en `currency_exchanges` más las dos
+ * transacciones del contrasiento (egreso de lo que entregaste, ingreso de lo que
+ * recibiste), ambas en la categoría "Cambio Divisas" — que mueve el saldo pero
+ * está excluida de las métricas de gasto/ingreso. Si se hiciera por partes y
+ * fallara la segunda, quedaría un saldo mal sin su contrapartida.
+ */
 export async function insertExchange(sb: SupabaseClient, e: NewExchange) {
-  const { error } = await sb.from("currency_exchanges").insert({
-    from_currency: e.from,
-    to_currency: e.to,
-    from_amount: e.fromAmount,
-    to_amount: e.toAmount,
-    rate: e.rate,
-    rate_source: e.rateSource,
+  const { error } = await sb.rpc("register_exchange", {
+    p_from: e.from,
+    p_to: e.to,
+    p_from_amount: e.fromAmount,
+    p_to_amount: e.toAmount,
+    p_rate: e.rate,
+    p_rate_source: e.rateSource,
   });
   if (error) throw error;
 }
