@@ -7,6 +7,7 @@ import { fxSync, loadFx, arsDe } from "@/lib/fx";
 import { analizarHormiga, CATEGORIAS_HORMIGA, type Suscripcion } from "@/lib/hormiga";
 import { ars, compact } from "@/lib/format";
 import { PageHeader } from "../components/Shell";
+import CountUp from "../components/CountUp";
 import { ArrowUpRight, ArrowDownRight, Repeat, Chevron } from "../icons";
 
 const MESES = ["ene", "feb", "mar", "abr", "may", "jun", "jul", "ago", "sep", "oct", "nov", "dic"];
@@ -69,7 +70,7 @@ export default function HormigaPage() {
         <div className="relative flex flex-wrap items-end justify-between gap-4">
           <div>
             <p className="text-sm text-muted">Este mes en gasto evitable</p>
-            <p className="tnum mt-1.5 text-[38px] font-extrabold leading-none text-fg sm:text-[42px]"><span>{ars(totalMes)}</span></p>
+            <CountUp value={totalMes} format={ars} className="tnum mt-1.5 block text-[38px] font-extrabold leading-none text-fg sm:text-[42px]" />
             {mesPrev && (
               <p className={`mt-1 flex items-center gap-1 text-sm ${totalMes > totalPrev ? "text-coral" : "text-emerald"}`}>
                 {totalMes > totalPrev ? <ArrowUpRight className="h-4 w-4" /> : <ArrowDownRight className="h-4 w-4" />}

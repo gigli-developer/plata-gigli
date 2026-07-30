@@ -8,6 +8,7 @@ import {
 import { readCache, writeCache } from "@/lib/cache";
 import { ars, compact } from "@/lib/format";
 import { PageHeader } from "../components/Shell";
+import CountUp from "../components/CountUp";
 import { Swap, ArrowUpRight, ArrowDownRight, Coins } from "../icons";
 
 const MONEDAS = ["ARS", "USD", "USDT"] as const;
@@ -273,7 +274,7 @@ function Holdings({ metrics, quotes }: { metrics: Metrics | null; quotes: FxQuot
         </div>
         <span className="grid h-9 w-9 place-items-center rounded-xl bg-accent/15 text-accent"><Coins className="h-5 w-5" /></span>
       </div>
-      <p className="tnum mt-3 text-[30px] font-extrabold leading-none text-fg">{ars(total)}</p>
+      <CountUp value={total} format={ars} className="tnum mt-3 block text-[30px] font-extrabold leading-none text-fg" />
       <ul className="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-3">
         {items.map((h) => (
           <li key={h.moneda} className="panel-inner p-3.5">

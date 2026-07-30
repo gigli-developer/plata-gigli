@@ -14,6 +14,12 @@ import { Card as CardIcon, Sparkle, Bell, Search, Plus, ArrowUpRight, ArrowDownR
 import { useAssistantChat, MessageList } from "./components/assistantChat";
 import { useDictation } from "./components/useDictation";
 import PrivacyToggle from "./components/PrivacyToggle";
+import CountUp from "./components/CountUp";
+
+// Formatters de moneda extranjera. Se acotan los decimales porque durante la
+// animación el valor es fraccionario y "300,4567 USDT" queda sucio.
+const fmtUsd = (n: number) => `US$ ${n.toLocaleString("es-AR", { maximumFractionDigits: 0 })}`;
+const fmtUsdt = (n: number) => `${n.toLocaleString("es-AR", { maximumFractionDigits: 2 })} USDT`;
 
 const chips = [
   "Gasté 18.500 en delivery con la Galicia",
@@ -230,9 +236,9 @@ function SaldosHero({ metrics, loading }: { metrics: Metrics | null; loading: bo
   const patrimonio = metrics.ars_liquido + usdArs + usdtArs + metrics.te_deben - metrics.deuda_cuotas_ars - metrics.deuda_vencida_ars - metrics.debes;
 
   const hero =
-    tab === "ars" ? { big: ars(metrics.ars_liquido), sub: "en pesos, disponible hoy" }
-    : tab === "usd" ? { big: `US$ ${metrics.usd_liquido.toLocaleString("es-AR", { maximumFractionDigits: 0 })}`, sub: `≈ ${ars(usdArs)} al blue de hoy` }
-    : { big: `${metrics.usdt_liquido.toLocaleString("es-AR")} USDT`, sub: `≈ ${ars(usdtArs)} al cripto de hoy` };
+    tab === "ars" ? { value: metrics.ars_liquido, format: ars, sub: "en pesos, disponible hoy" }
+    : tab === "usd" ? { value: metrics.usd_liquido, format: fmtUsd, sub: `≈ ${ars(usdArs)} al blue de hoy` }
+    : { value: metrics.usdt_liquido, format: fmtUsdt, sub: `≈ ${ars(usdtArs)} al cripto de hoy` };
 
   return (
     <section className="rise panel relative overflow-hidden p-6">
@@ -254,21 +260,26 @@ function SaldosHero({ metrics, loading }: { metrics: Metrics | null; loading: bo
           ))}
         </div>
       </div>
-      <p className="tnum relative mt-2 text-[36px] font-extrabold leading-none text-fg sm:text-[44px]">{hero.big}</p>
+      <CountUp
+        key={tab}
+        value={hero.value}
+        format={hero.format}
+        className="tnum relative mt-2 block text-[36px] font-extrabold leading-none text-fg sm:text-[44px]"
+      />
       <p className="relative mt-2 text-sm text-faint">{hero.sub}</p>
       <div className="relative mt-6 grid grid-cols-2 gap-3.5 sm:grid-cols-3">
-        <SaldoStat label="Dólares" main={`US$ ${metrics.usd_liquido.toLocaleString("es-AR", { maximumFractionDigits: 0 })}`} sub={`≈ ${compact(usdArs)}`} accent="text-gold" />
-        <SaldoStat label="USDT" main={`${metrics.usdt_liquido.toLocaleString("es-AR")} USDT`} sub={`≈ ${compact(usdtArs)}`} accent="text-sky" />
-        <SaldoStat label="Patrimonio neto" main={compact(patrimonio)} sub="todo valuado en ARS" accent="text-fg" />
+        <SaldoStat label="Dólares" value={metrics.usd_liquido} format={fmtUsd} sub={`≈ ${compact(usdArs)}`} accent="text-gold" />
+        <SaldoStat label="USDT" value={metrics.usdt_liquido} format={fmtUsdt} sub={`≈ ${compact(usdtArs)}`} accent="text-sky" />
+        <SaldoStat label="Patrimonio neto" value={patrimonio} format={compact} sub="todo valuado en ARS" accent="text-fg" />
       </div>
     </section>
   );
 }
-function SaldoStat({ label, main, sub, accent }: { label: string; main: string; sub: string; accent: string }) {
+function SaldoStat({ label, value, format, sub, accent }: { label: string; value: number; format: (n: number) => string; sub: string; accent: string }) {
   return (
     <div className="panel-inner p-4">
       <p className="label-micro">{label}</p>
-      <p className={`tnum mt-1.5 text-[19px] font-semibold ${accent}`}>{main}</p>
+      <CountUp value={value} format={format} className={`tnum mt-1.5 block text-[19px] font-semibold ${accent}`} />
       <p className="tnum mt-0.5 text-[0.7rem] text-faint">{sub}</p>
     </div>
   );

@@ -6,6 +6,7 @@ import { aggArs } from "@/lib/fx";
 import { readCache, writeCache } from "@/lib/cache";
 import { ars, compact, compactUsd } from "@/lib/format";
 import { PageHeader } from "../components/Shell";
+import CountUp from "../components/CountUp";
 import { Coins } from "../icons";
 import { Donut, BarList, GroupedColumns, VariationTable, NetWorthChart, type Slice, type MonthCol, type VarRow, type NetWorthCol } from "../components/charts";
 
@@ -204,7 +205,7 @@ export default function MetricasPage() {
           {/* Patrimonio */}
           <div className="border-b border-white/10 p-6 lg:border-b-0 lg:border-r">
             <p className="flex items-center gap-2 text-sm text-subtle"><Coins className="h-4 w-4 text-accent" /> Patrimonio neto <span className="text-faint">· hoy</span></p>
-            <p className={`tnum mt-1.5 text-[38px] font-extrabold leading-none lg:text-[42px] ${calc.patrimonio >= 0 ? "text-fg" : "text-coral"}`}>{ars(calc.patrimonio)}</p>
+            <CountUp value={calc.patrimonio} format={ars} className={`tnum mt-1.5 block text-[38px] font-extrabold leading-none lg:text-[42px] ${calc.patrimonio >= 0 ? "text-fg" : "text-coral"}`} />
             <p className="mt-2 text-xs text-faint">≈ US$ {calc.patrimonioUsd.toLocaleString("es-AR", { maximumFractionDigits: 0 })}</p>
             <div className="mt-3.5 flex gap-2 text-xs">
               <span className="rounded-full border border-emerald/25 bg-emerald/10 px-2.5 py-[3px] font-bold text-emerald">Activos {compact(calc.activos)}</span>

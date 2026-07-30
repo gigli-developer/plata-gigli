@@ -8,6 +8,7 @@ import CardModal from "../components/CardModal";
 import { fxSync, loadFx } from "@/lib/fx";
 import { ars, usd, compact } from "@/lib/format";
 import { PageHeader } from "../components/Shell";
+import CountUp from "../components/CountUp";
 import { Donut, type Slice } from "../components/charts";
 import EditPlanModal from "../components/EditPlanModal";
 import EditDatesModal from "../components/EditDatesModal";
@@ -268,7 +269,7 @@ export default function TarjetasPage() {
                   {alDia ? "Próximo resumen · en curso" : "Resumen a pagar"} · {current?.period ?? "—"}
                   {alDia && <span className="rounded-full border border-emerald/30 bg-emerald/10 px-2 py-0.5 text-[0.6rem] text-emerald">Al día ✅</span>}
                 </p>
-                <p className="tnum mt-1.5 text-[38px] font-extrabold leading-none text-fg lg:text-[42px]"><span>{ars(spent)}</span></p>
+                <CountUp value={spent} format={ars} className="tnum mt-1.5 block text-[38px] font-extrabold leading-none text-fg lg:text-[42px]" />
                 <p className="mt-1 text-sm text-faint">+ {usd(spentUsd)} en dólares</p>
               </div>
               <button onClick={() => current && setEditingDates(current)} title="Editar fechas" className="group relative flex gap-3 rounded-2xl transition-opacity hover:opacity-90">
