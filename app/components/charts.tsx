@@ -20,59 +20,67 @@ function Tip({ children, x, y }: { children: React.ReactNode; x: number | string
 }
 
 // ---------- Donut ----------
-// Al pasar el mouse por un gajo, el gajo engrosa y el centro pasa de mostrar el
-// total a mostrar esa categoría con su monto y porcentaje.
-export function Donut({ data, fmt, size = 220, thickness = 28 }: { data: Slice[]; fmt: (n: number) => string; size?: number; thickness?: number }) {
+// Los gajos son ARCOS (path), no circles con stroke-dasharray: así al pasar el
+// mouse el gajo puede SEPARARSE del centro, que es el gesto del diseño. Con
+// stroke solo se podía engrosar. El centro pasa del total a la categoría apuntada.
+const arco = (cx: number, cy: number, rO: number, rI: number, a0: number, a1: number) => {
+  const P = (r: number, a: number) => [cx + r * Math.cos(a), cy + r * Math.sin(a)];
+  const [x0, y0] = P(rO, a0), [x1, y1] = P(rO, a1);
+  const [x2, y2] = P(rI, a1), [x3, y3] = P(rI, a0);
+  const large = a1 - a0 > Math.PI ? 1 : 0;
+  return `M ${x0} ${y0} A ${rO} ${rO} 0 ${large} 1 ${x1} ${y1} L ${x2} ${y2} A ${rI} ${rI} 0 ${large} 0 ${x3} ${y3} Z`;
+};
+
+export function Donut({ data, fmt, size = 200 }: { data: Slice[]; fmt: (n: number) => string; size?: number }) {
   const [hover, setHover] = useState<number | null>(null);
   const total = data.reduce((s, d) => s + d.value, 0);
-  const r = (size - thickness) / 2;
-  const c = 2 * Math.PI * r;
-  let acc = 0;
-  const cx = size / 2;
+  const cx = 100, rO = 94, rI = 58; // sobre un viewBox 200×200
 
   if (total <= 0) return <div className="grid h-44 place-items-center text-sm text-faint">Sin datos en el período</div>;
 
   const sel = hover != null ? data[hover] : null;
+  let a = -Math.PI / 2;
+  const segs = data.map((d, i) => {
+    const a1 = a + (d.value / total) * Math.PI * 2;
+    const mid = (a + a1) / 2;
+    const on = hover === i;
+    const off = on ? 7 : 0; // separación del gajo apuntado
+    const el = (
+      <path
+        key={i}
+        d={arco(cx, cx, rO, rI, a, a1)}
+        fill={PALETTE[i % PALETTE.length]}
+        transform={`translate(${Math.cos(mid) * off} ${Math.sin(mid) * off})`}
+        opacity={hover == null || on ? 1 : 0.38}
+        style={{ transition: "transform .18s, opacity .15s", cursor: "pointer" }}
+        onMouseEnter={() => setHover(i)}
+        onMouseLeave={() => setHover(null)}
+      />
+    );
+    a = a1;
+    return el;
+  });
 
   return (
     <div className="flex flex-col items-center gap-5 sm:flex-row sm:justify-center sm:gap-8">
-      <div className="pop-in relative shrink-0" style={{ width: size, height: size }}>
-        <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} className="-rotate-90">
-          <circle cx={cx} cy={cx} r={r} fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth={thickness} />
-          {data.map((d, i) => {
-            const dash = (d.value / total) * c;
-            const on = hover === i;
-            const seg = (
-              <circle
-                key={i}
-                cx={cx} cy={cx} r={r} fill="none"
-                stroke={PALETTE[i % PALETTE.length]}
-                strokeWidth={on ? thickness + 7 : thickness}
-                strokeDasharray={`${dash} ${c - dash}`}
-                strokeDashoffset={-acc}
-                strokeLinecap="butt"
-                opacity={hover == null || on ? 1 : 0.4}
-                style={{ transition: "stroke-width .15s ease, opacity .15s ease", cursor: "default" }}
-                onMouseEnter={() => setHover(i)}
-                onMouseLeave={() => setHover(null)}
-              />
-            );
-            acc += dash;
-            return seg;
-          })}
+      <div className="relative shrink-0" style={{ width: size, height: size }}>
+        <svg viewBox="0 0 200 200" width="100%" height="100%" preserveAspectRatio="xMidYMid meet" className="overflow-visible">
+          <g className="pop-in" style={{ filter: "drop-shadow(0 6px 16px rgba(0,0,0,0.45))", transformBox: "fill-box", transformOrigin: "center" }}>
+            {segs}
+          </g>
         </svg>
         {/* centro: total, o la categoría apuntada */}
         <div className="pointer-events-none absolute inset-0 grid place-items-center text-center">
           {sel ? (
             <div>
               <p className="max-w-[7.5rem] truncate px-2 text-[0.7rem] text-subtle">{sel.emoji ? `${sel.emoji} ` : ""}{sel.label}</p>
-              <p className="tnum text-lg font-semibold text-fg">{fmt(sel.value)}</p>
-              <p className="tnum text-[0.7rem] text-faint">{((sel.value / total) * 100).toFixed(1)}%</p>
+              <p className="tnum text-lg font-bold text-fg">{fmt(sel.value)}</p>
+              <p className="tnum text-[0.7rem] text-faint">{((sel.value / total) * 100).toFixed(0)}%</p>
             </div>
           ) : (
             <div>
-              <p className="label-micro">total</p>
-              <p className="tnum text-xl font-semibold text-fg">{fmt(total)}</p>
+              <p className="text-[0.7rem] font-semibold text-subtle">Total</p>
+              <p className="tnum text-lg font-bold text-fg">{fmt(total)}</p>
             </div>
           )}
         </div>

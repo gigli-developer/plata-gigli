@@ -197,39 +197,38 @@ export default function MetricasPage() {
         </div>
       </PageHeader>
 
-      {/* Banda: patrimonio + saldos + ratios. Los divisores son bordes translúcidos,
-          no el truco de gap-px con hijos opacos: sobre vidrio eso se ve como parches. */}
-      <section className="rise panel relative mt-5 overflow-hidden">
+      {/* Patrimonio + saldos + ratios: cards sueltas dentro de un panel, como el
+          diseño. Cada ratio lleva su semáforo como barra vertical a la izquierda. */}
+      <section className="rise panel relative mt-5 overflow-hidden p-5">
         <div className="pointer-events-none absolute -right-16 -top-20 h-56 w-56 rounded-full bg-accent/15 blur-3xl" />
-        <div className="relative grid lg:grid-cols-[1.4fr_2fr]">
-          {/* Patrimonio */}
-          <div className="border-b border-white/10 p-6 lg:border-b-0 lg:border-r">
-            <p className="flex items-center gap-2 text-sm text-subtle"><Coins className="h-4 w-4 text-accent" /> Patrimonio neto <span className="text-faint">· hoy</span></p>
-            <CountUp value={calc.patrimonio} format={ars} className={`tnum mt-1.5 block text-[38px] font-extrabold leading-none lg:text-[42px] ${calc.patrimonio >= 0 ? "text-fg" : "text-coral"}`} />
-            <p className="mt-2 text-xs text-faint">≈ US$ {calc.patrimonioUsd.toLocaleString("es-AR", { maximumFractionDigits: 0 })}</p>
-            <div className="mt-3.5 flex gap-2 text-xs">
-              <span className="rounded-full border border-emerald/25 bg-emerald/10 px-2.5 py-[3px] font-bold text-emerald">Activos {compact(calc.activos)}</span>
-              <span className="rounded-full border border-coral/25 bg-coral/10 px-2.5 py-[3px] font-bold text-coral">Pasivos {compact(calc.pasivos)}</span>
-            </div>
+
+        <div className="relative flex flex-wrap items-start justify-between gap-4">
+          <div>
+            <p className="label-micro">Patrimonio neto</p>
+            <CountUp value={calc.patrimonio} format={ars} className={`tnum mt-1 block text-[38px] font-extrabold leading-none lg:text-[44px] ${calc.patrimonio >= 0 ? "text-fg" : "text-coral"}`} />
+            <p className="tnum mt-1.5 text-xs text-faint">≈ US$ {calc.patrimonioUsd.toLocaleString("es-AR", { maximumFractionDigits: 0 })}</p>
           </div>
-          {/* Saldos por moneda */}
-          <div className="grid grid-cols-3 divide-x divide-white/10">
-            <Mini label="Pesos" tag="ARS" value={compact(m.ars_liquido)} tone="text-accent" />
-            <Mini label="Dólares" tag="USD" value={`US$ ${m.usd_liquido.toLocaleString("es-AR", { maximumFractionDigits: 0 })}`} sub={compact(calc.usdArs)} tone="text-gold" />
-            <Mini label="Cripto" tag="USDT" value={`${m.usdt_liquido.toLocaleString("es-AR")}`} sub={compact(calc.usdtArs)} tone="text-sky" />
+          <div className="flex flex-wrap gap-2 text-xs">
+            <span className="tnum rounded-lg border border-emerald/25 bg-emerald/10 px-3 py-1.5 font-bold text-emerald">Activos {ars(calc.activos)}</span>
+            <span className="tnum rounded-lg border border-coral/25 bg-coral/10 px-3 py-1.5 font-bold text-coral">Pasivos {ars(calc.pasivos)}</span>
           </div>
         </div>
-        {/* Ratios — del mes elegido en Análisis (o todos) */}
-        <div className="flex flex-wrap items-center gap-x-2 border-t border-white/10 bg-white/[0.03] px-4 py-2 text-[0.7rem] text-faint">
-          <span>Ratios de <span className="text-subtle">{monthFilter === "all" ? "todos los meses" : monthLabel(monthFilter)}</span></span>
-          <span className="ml-auto opacity-80">elegí el mes en Análisis ↓</span>
+
+        <div className="relative mt-5 grid grid-cols-1 gap-3.5 sm:grid-cols-3">
+          <Mini label="Pesos" value={ars(m.ars_liquido)} tone="text-fg" />
+          <Mini label="Dólares" value={`US$ ${m.usd_liquido.toLocaleString("es-AR", { maximumFractionDigits: 0 })}`} sub={ars(calc.usdArs)} tone="text-gold" />
+          <Mini label="Cripto" value={`USDT ${m.usdt_liquido.toLocaleString("es-AR", { maximumFractionDigits: 0 })}`} sub={ars(calc.usdtArs)} tone="text-sky" />
         </div>
-        <div className="grid grid-cols-2 divide-white/10 border-t border-white/10 sm:grid-cols-4 sm:divide-x">
-          <RatioMini title="Deuda / Ingresos" value={pct(flows.dti)} hint="ideal < 36%" fill={flows.dti / 0.36} tone={flows.dti < 0.36 ? "emerald" : flows.dti < 0.43 ? "amber" : "coral"} />
-          <RatioMini title="Tasa de ahorro" value={pct(flows.tasaAhorro)} hint="ideal > 20%" fill={flows.tasaAhorro / 0.2} tone={flows.tasaAhorro > 0.2 ? "emerald" : flows.tasaAhorro > 0.1 ? "amber" : "coral"} />
-          <RatioMini title="Flujo de caja" value={`${flows.flujo.toFixed(2)}×`} hint="ideal > 1" fill={flows.flujo / 1.5} tone={flows.flujo > 1.2 ? "emerald" : flows.flujo >= 1 ? "amber" : "coral"} />
-          <RatioMini title="Ahorro mensual" value={compact(flows.ahorroMostrar)} hint={monthFilter === "all" ? "prom. mensual" : monthLabel(monthFilter)} tone={flows.ahorroMostrar > 0 ? "emerald" : "coral"} />
+
+        <div className="relative mt-3.5 grid grid-cols-1 gap-3.5 sm:grid-cols-2 xl:grid-cols-4">
+          <RatioMini title="Deuda / Ingresos" value={pct(flows.dti)} hint="Ideal < 36%" tone={flows.dti < 0.36 ? "emerald" : flows.dti < 0.43 ? "amber" : "coral"} />
+          <RatioMini title="Tasa de ahorro" value={pct(flows.tasaAhorro)} hint="Ideal > 20%" tone={flows.tasaAhorro > 0.2 ? "emerald" : flows.tasaAhorro > 0.1 ? "amber" : "coral"} />
+          <RatioMini title="Flujo de caja" value={`${flows.flujo.toFixed(2).replace(".", ",")}×`} hint="Ideal > 1" tone={flows.flujo > 1.2 ? "emerald" : flows.flujo >= 1 ? "amber" : "coral"} />
+          <RatioMini title="Ahorro mensual" value={ars(flows.ahorroMostrar)} hint={monthFilter === "all" ? "Promedio mensual" : monthLabel(monthFilter)} tone={flows.ahorroMostrar > 0 ? "amber" : "coral"} />
         </div>
+        <p className="relative mt-3 text-[0.7rem] text-faint">
+          Ratios de <span className="text-subtle">{monthFilter === "all" ? "todos los meses" : monthLabel(monthFilter)}</span> · elegí el mes en Análisis ↓
+        </p>
       </section>
 
       {/* Patrimonio neto en el tiempo */}
@@ -313,35 +312,25 @@ export default function MetricasPage() {
   );
 }
 
-function Mini({ label, tag, value, sub, tone }: { label: string; tag: string; value: string; sub?: string; tone: string }) {
+function Mini({ label, value, sub, tone }: { label: string; value: string; sub?: string; tone: string }) {
   return (
-    <div className="p-4">
-      <div className="flex items-center justify-between">
-        <p className="label-micro">{label}</p>
-        <span className="rounded-full border border-white/10 bg-white/[0.06] px-1.5 py-0.5 text-[0.55rem] font-bold uppercase tracking-wider text-faint">{tag}</span>
-      </div>
-      <p className={`tnum mt-2 text-[19px] font-semibold ${tone}`}>{value}</p>
-      {sub && <p className="tnum text-[0.7rem] text-faint">≈ {sub}</p>}
+    <div className="panel-inner p-4">
+      <p className="label-micro">{label}</p>
+      <p className={`tnum mt-2 text-[21px] font-semibold ${tone}`}>{value}</p>
+      {sub && <p className="tnum mt-0.5 text-[0.7rem] text-faint">≈ {sub}</p>}
     </div>
   );
 }
 
-/** Ratio con barra de progreso contra su objetivo. `fill` es 0..1 (se recorta a 1). */
-function RatioMini({ title, value, hint, tone, fill }: { title: string; value: string; hint: string; tone: "emerald" | "amber" | "coral"; fill?: number }) {
+/** Ratio con el semáforo como barra vertical a la izquierda (verde/ámbar/coral). */
+function RatioMini({ title, value, hint, tone }: { title: string; value: string; hint: string; tone: "emerald" | "amber" | "coral" }) {
   const txt = tone === "emerald" ? "text-emerald" : tone === "amber" ? "text-amber" : "text-coral";
   const bar = tone === "emerald" ? "bg-emerald" : tone === "amber" ? "bg-amber" : "bg-coral";
-  const pctFill = fill != null && Number.isFinite(fill) ? Math.max(0, Math.min(fill, 1)) * 100 : null;
   return (
-    <div className="border-b border-white/10 p-4 sm:border-b-0">
-      <p className="label-micro">{title}</p>
-      <p className={`tnum mt-1 text-[21px] font-semibold ${txt}`}>{value}</p>
-      {pctFill != null ? (
-        <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-white/[0.08]">
-          <div className={`h-full rounded-full transition-all ${bar}`} style={{ width: `${pctFill}%` }} />
-        </div>
-      ) : (
-        <div className="mt-2 h-1.5" />
-      )}
+    <div className="panel-inner relative overflow-hidden py-3.5 pl-4 pr-4">
+      <span className={`absolute inset-y-2 left-0 w-[3px] rounded-full ${bar}`} />
+      <p className="text-xs text-subtle">{title}</p>
+      <p className={`tnum mt-1 text-[24px] font-bold leading-none ${txt}`}>{value}</p>
       <p className="mt-1.5 text-[0.65rem] text-faint">{hint}</p>
     </div>
   );

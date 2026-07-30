@@ -207,7 +207,7 @@ export default function TarjetasPage() {
           </div>
           <div className="ml-auto text-right">
             <p className="tnum text-[0.95rem] text-fg">{ars(stTotal(s))}</p>
-            <p className="text-xs text-faint">+ {usd(stUsd(s))}{projectedRow ? " · proyectado" : open ? " · estimado" : ""}</p>
+            <p className="tnum text-xs text-faint">+ {usd(stUsd(s))}{projectedRow ? " · proyectado" : open ? " · estimado" : ""}</p>
           </div>
           {projectedRow ? <span className="ml-2 hidden rounded-full border border-accent/30 bg-accent/10 px-2.5 py-1 text-[0.65rem] text-accent sm:inline">Proyectado</span>
             : open ? <span className="ml-2 hidden rounded-full border border-sky/30 bg-sky/10 px-2.5 py-1 text-[0.65rem] text-sky sm:inline">Estimado</span>
@@ -270,7 +270,7 @@ export default function TarjetasPage() {
                   {alDia && <span className="rounded-full border border-emerald/30 bg-emerald/10 px-2 py-0.5 text-[0.6rem] text-emerald">Al día ✅</span>}
                 </p>
                 <CountUp value={spent} format={ars} className="tnum mt-1.5 block text-[38px] font-extrabold leading-none text-fg lg:text-[42px]" />
-                <p className="mt-1 text-sm text-faint">+ {usd(spentUsd)} en dólares</p>
+                <p className="tnum mt-1 text-sm text-faint">+ {usd(spentUsd)} en dólares</p>
               </div>
               <button onClick={() => current && setEditingDates(current)} title="Editar fechas" className="group relative flex gap-3 rounded-2xl transition-opacity hover:opacity-90">
                 <Pencil className="absolute -top-1 right-0 h-3.5 w-3.5 text-faint opacity-0 transition-opacity group-hover:opacity-100" />
@@ -572,8 +572,8 @@ function MovementsPanel({ statement, consumos, cuotas, subs, loading, open }: { 
         </ul>
       ) : (
         <div className="py-2">
-          <Donut data={slices} fmt={compact} size={170} thickness={24} />
-          {totalUsd > 0 && <p className="mt-2 text-center text-[0.7rem] text-faint">+ {usd(totalUsd)} en dólares (resumen aparte, no incluido en el desglose en pesos)</p>}
+          <Donut data={slices} fmt={compact} size={170} />
+          {totalUsd > 0 && <p className="tnum mt-2 text-center text-[0.7rem] text-faint">+ {usd(totalUsd)} en dólares (resumen aparte, no incluido en el desglose en pesos)</p>}
         </div>
       )}
     </div>

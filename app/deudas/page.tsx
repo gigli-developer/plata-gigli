@@ -6,7 +6,8 @@ import { readCache, writeCache } from "@/lib/cache";
 import { fxSync, loadFx, toArs } from "@/lib/fx";
 import { ars } from "@/lib/format";
 import { PageHeader } from "../components/Shell";
-import { ArrowUpRight, ArrowDownRight, Swap, Chevron } from "../icons";
+import Modal from "../components/Modal";
+import { ArrowUpRight, ArrowDownRight, Swap, Chevron, Plus } from "../icons";
 
 type DebtKind = "cash" | "in_kind" | "split";
 const kindMeta: Record<DebtKind, { label: string; emoji: string; cls: string; bg: string; hint: string }> = {
@@ -26,6 +27,7 @@ export default function DeudasPage() {
   const [loading, setLoading] = useState(true);
   const [dir, setDir] = useState<DirFilter>("todas");
   const [kind, setKind] = useState<"todos" | DebtKind>("todos");
+  const [nuevaOpen, setNuevaOpen] = useState(false);
   const [view, setView] = useState<"personas" | "historial">("personas");
   const [selected, setSelected] = useState<string | null>(null);
 
@@ -71,7 +73,11 @@ export default function DeudasPage() {
 
   return (
     <>
-      <PageHeader title="Deudas" subtitle={loading ? "Cargando…" : "A cobrar y a pagar"} />
+      <PageHeader title="Deudas" subtitle={loading ? "Cargando…" : "A cobrar y a pagar"}>
+        <button onClick={() => setNuevaOpen(true)} className="flex items-center gap-2 rounded-full bg-accent px-4 py-2 text-sm font-semibold text-bg transition-transform hover:scale-[1.03]">
+          <Plus className="h-4 w-4" /> Nueva deuda
+        </button>
+      </PageHeader>
 
       <div className="mt-6 grid grid-cols-1 gap-3 sm:grid-cols-3">
         <SummaryCard label="Te deben" value={toCollect} tone="emerald" up />
@@ -83,8 +89,8 @@ export default function DeudasPage() {
         Los préstamos (💸 Dinero) no se cuentan como gasto. En los compartidos (🧾) solo tu parte es gasto tuyo.
       </p>
 
-      <div className="mt-6 grid grid-cols-1 gap-5 xl:grid-cols-3">
-        <div className="xl:col-span-2">
+      <div className="mt-6">
+        <div>
           <div className="flex rounded-xl border border-line bg-white/[0.06] p-1 text-sm">
             {(["personas", "historial"] as const).map((v) => (
               <button key={v} onClick={() => { setView(v); setSelected(null); }} className={`rounded-lg px-3 py-1.5 transition-colors ${view === v ? "bg-white/[0.09] text-fg" : "text-muted hover:text-fg"}`}>
@@ -123,8 +129,9 @@ export default function DeudasPage() {
           )}
         </div>
 
-        <NewDebtForm persons={persons} onSaved={reload} />
       </div>
+
+      {nuevaOpen && <NewDebtForm persons={persons} onSaved={reload} onClose={() => setNuevaOpen(false)} />}
     </>
   );
 }
@@ -340,7 +347,7 @@ function DebtActions({ onSettle, onPay }: { onSettle: () => void; onPay: (amount
   );
 }
 
-function NewDebtForm({ persons, onSaved }: { persons: { id: number; name: string }[]; onSaved: () => Promise<void> }) {
+function NewDebtForm({ persons, onSaved, onClose }: { persons: { id: number; name: string }[]; onSaved: () => Promise<void>; onClose: () => void }) {
   const [kind, setKind] = useState<DebtKind>("cash");
   const [direction, setDirection] = useState<"to_collect" | "to_pay">("to_collect");
   const [personId, setPersonId] = useState<string>("");
@@ -383,15 +390,15 @@ function NewDebtForm({ persons, onSaved }: { persons: { id: number; name: string
       });
       await onSaved();
       setAmount(""); setDesc(""); setOk(true);
-      setTimeout(() => setOk(false), 2500);
+      // Se cierra solo: la deuda ya aparece en la lista de la izquierda.
+      setTimeout(() => { setOk(false); onClose(); }, 1200);
     } finally { setSaving(false); }
   };
 
   return (
-    <aside className="xl:sticky xl:top-6 xl:self-start">
-      <section className="panel p-6">
-        <h2 className="font-display text-lg text-fg">Nueva deuda</h2>
-        <p className="text-xs text-faint">{m.hint}</p>
+    <Modal title="Nueva deuda" onClose={onClose}>
+      <div>
+        <p className="-mt-2 mb-4 text-xs text-faint">{m.hint}</p>
 
         <div className="mt-4 grid grid-cols-3 gap-2">
           {(Object.keys(kindMeta) as DebtKind[]).map((k) => (
@@ -463,12 +470,12 @@ function NewDebtForm({ persons, onSaved }: { persons: { id: number; name: string
           <input value={desc} onChange={(e) => setDesc(e.target.value)} placeholder="Ej: Cena, préstamo, objeto…" className="w-full rounded-xl border border-line bg-white/[0.06] px-3 py-2.5 text-sm text-fg outline-none placeholder:text-faint focus:border-accent/40" />
         </Field>
 
-        <button onClick={save} disabled={saving} className="mt-5 w-full rounded-xl bg-accent py-3 text-sm font-medium text-bg transition-transform hover:scale-[1.02] disabled:opacity-60">
+        <button onClick={save} disabled={saving} className="mt-5 w-full rounded-[13px] bg-accent py-3 text-sm font-semibold text-bg transition-transform hover:scale-[1.02] disabled:opacity-60">
           {saving ? "Guardando…" : "Registrar deuda"}
         </button>
-        {ok && <p className="mt-3 rounded-lg border border-emerald/30 bg-emerald/10 px-3 py-2 text-center text-xs text-emerald">✓ Guardado en Supabase</p>}
-      </section>
-    </aside>
+        {ok && <p className="mt-3 rounded-lg border border-emerald/30 bg-emerald/10 px-3 py-2 text-center text-xs text-emerald">✓ Guardado</p>}
+      </div>
+    </Modal>
   );
 }
 

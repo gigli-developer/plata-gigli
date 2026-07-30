@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { db, fetchRules, fetchCategories, insertRule, deleteRule, toggleRule, type Rule, type Category } from "@/lib/db";
 import { ars } from "@/lib/format";
 import { PageHeader } from "../components/Shell";
+import Modal from "../components/Modal";
 import { Trash, Plus, X } from "../icons";
 
 const OPS: { v: string; label: string }[] = [
@@ -66,13 +67,6 @@ export default function ReglasPage() {
         Las reglas se aplican a los consumos <b className="text-muted">nuevos</b> que entran por mail. Una regla puede cambiar la categoría, renombrar la descripción y/o forzar la moneda (todo combinable). Las condiciones se evalúan sobre la descripción <b className="text-muted">original</b> del banco. Si varias reglas matchean, <b className="text-muted">cada acción</b> la define la primera regla (por prioridad y antigüedad) que la tenga: una puede poner la categoría y otra distinta el nombre. Lo ya cargado no se toca.
       </p>
 
-      {/* Desplegable de alta, arriba del listado y a todo el ancho */}
-      <div className={`grid transition-all duration-300 ease-out ${formOpen ? "mt-5 grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"}`}>
-        <div className="overflow-hidden">
-          <NewRuleForm cats={cats} onSaved={reload} onDone={() => setFormOpen(false)} />
-        </div>
-      </div>
-
       <div className="mt-5">
         <div>
           <section className="panel divide-y divide-line p-2 sm:p-4">
@@ -108,6 +102,8 @@ export default function ReglasPage() {
           </section>
         </div>
       </div>
+
+      {formOpen && <NewRuleForm cats={cats} onSaved={reload} onDone={() => setFormOpen(false)} />}
     </>
   );
 }
@@ -176,9 +172,8 @@ function NewRuleForm({ cats, onSaved, onDone }: { cats: Category[]; onSaved: () 
   };
 
   return (
-    <section className="panel p-6">
-      <h2 className="font-display text-[17px] font-semibold text-fg">Nueva regla</h2>
-      <p className="text-xs text-faint">Condición(es) → acción(es)</p>
+    <Modal title="Nueva regla" onClose={onDone} maxWidth="max-w-2xl">
+      <p className="-mt-2 text-xs text-faint">Condición(es) → acción(es)</p>
 
       {/* Dos columnas en desktop: condiciones a la izquierda, acciones a la derecha */}
       <div className="mt-4 grid grid-cols-1 gap-x-8 gap-y-1 lg:grid-cols-2">
@@ -276,6 +271,6 @@ function NewRuleForm({ cats, onSaved, onDone }: { cats: Category[]; onSaved: () 
       </button>
       {ok && <p className="mt-3 rounded-lg border border-emerald/30 bg-emerald/10 px-3 py-2 text-center text-xs text-emerald">✓ Regla creada</p>}
       {err && <p className="mt-3 rounded-lg border border-coral/30 bg-coral/10 px-3 py-2 text-center text-xs text-coral">{err}</p>}
-    </section>
+    </Modal>
   );
 }

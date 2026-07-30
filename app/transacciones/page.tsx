@@ -8,6 +8,7 @@ import {
 import { readCache, writeCache } from "@/lib/cache";
 import { ars, compact } from "@/lib/format";
 import { PageHeader } from "../components/Shell";
+import Modal from "../components/Modal";
 import EditTxModal from "../components/EditTxModal";
 import { Search, Plus, Camera, Mail, Sparkle, ArrowUpRight, ArrowDownRight, Pencil } from "../icons";
 
@@ -21,6 +22,7 @@ export default function TransaccionesPage() {
   const [loading, setLoading] = useState(true);
   const [err, setErr] = useState<string | null>(null);
   const [editing, setEditing] = useState<TxView | null>(null);
+  const [nuevoOpen, setNuevoOpen] = useState(false);
 
   const [q, setQ] = useState("");
   const [type, setType] = useState<TypeFilter>("todos");
@@ -67,7 +69,11 @@ export default function TransaccionesPage() {
 
   return (
     <>
-      <PageHeader title="Transacciones" subtitle={loading ? "Cargando…" : `${items.length} movimientos`} />
+      <PageHeader title="Transacciones" subtitle={loading ? "Cargando…" : `${items.length} movimientos`}>
+        <button onClick={() => setNuevoOpen(true)} className="flex items-center gap-2 rounded-full bg-accent px-4 py-2 text-sm font-semibold text-bg transition-transform hover:scale-[1.03]">
+          <Plus className="h-4 w-4" /> Nuevo movimiento
+        </button>
+      </PageHeader>
 
       {err && <p className="mt-4 rounded-xl border border-coral/30 bg-coral/10 px-4 py-2 text-sm text-coral">Error: {err}</p>}
 
@@ -81,8 +87,8 @@ export default function TransaccionesPage() {
         </div>
       </div>
 
-      <div className="mt-6 grid grid-cols-1 gap-5 xl:grid-cols-3">
-        <div className="order-2 xl:order-1 xl:col-span-2">
+      <div className="mt-6">
+        <div>
           <div className="panel flex flex-col gap-3 p-4 sm:flex-row sm:items-center">
             <label className="flex flex-1 items-center gap-2 rounded-xl border border-line bg-white/[0.06] px-3 py-2">
               <Search className="h-4 w-4 text-faint" />
@@ -127,9 +133,9 @@ export default function TransaccionesPage() {
           </section>
         </div>
 
-        <NewMovementForm cats={cats} methods={methods} onSaved={reload} />
       </div>
 
+      {nuevoOpen && <NewMovementForm cats={cats} methods={methods} onSaved={reload} onClose={() => setNuevoOpen(false)} />}
       {editing && <EditTxModal tx={editing} cats={cats} methods={methods} onClose={() => setEditing(null)} onSaved={reload} />}
     </>
   );
@@ -200,7 +206,7 @@ function Row({ t, onEdit }: { t: TxView; onEdit: () => void }) {
   );
 }
 
-function NewMovementForm({ cats, methods, onSaved }: { cats: Category[]; methods: PaymentMethod[]; onSaved: () => Promise<void> }) {
+function NewMovementForm({ cats, methods, onSaved, onClose }: { cats: Category[]; methods: PaymentMethod[]; onSaved: () => Promise<void>; onClose: () => void }) {
   const [type, setType] = useState<"ingreso" | "egreso">("egreso");
   const [amount, setAmount] = useState("");
   const [categoryId, setCategoryId] = useState<string>("");
@@ -238,17 +244,17 @@ function NewMovementForm({ cats, methods, onSaved }: { cats: Category[]; methods
       });
       await onSaved();
       setAmount(""); setDesc(""); setOk(true);
-      setTimeout(() => setOk(false), 2500);
+      // Se cierra solo: el movimiento nuevo ya quedó arriba de la lista.
+      setTimeout(() => { setOk(false); onClose(); }, 1200);
     } finally {
       setSaving(false);
     }
   };
 
   return (
-    <aside className="order-1 xl:order-2 xl:sticky xl:top-6 xl:self-start">
-      <section className="panel p-6">
-        <h2 className="font-display text-lg text-fg">Nuevo movimiento</h2>
-        <p className="text-xs text-faint">Carga manual · también podés usar el asistente 🤖</p>
+    <Modal title="Nuevo movimiento" onClose={onClose}>
+      <div>
+        <p className="-mt-2 mb-4 text-xs text-faint">Carga manual · también podés usar el asistente 🤖</p>
 
         <div className="mt-4 grid grid-cols-2 gap-2">
           <button onClick={() => setType("egreso")} className={`rounded-xl border py-2.5 text-sm transition-colors ${type === "egreso" ? "border-coral/40 bg-coral/10 text-coral" : "border-line bg-white/[0.06] text-muted hover:text-fg"}`}>Egreso</button>
@@ -280,12 +286,12 @@ function NewMovementForm({ cats, methods, onSaved }: { cats: Category[]; methods
           <input value={desc} onChange={(e) => setDesc(e.target.value)} placeholder="Ej: Cena con amigos" className="w-full rounded-xl border border-line bg-white/[0.06] px-3 py-2.5 text-sm text-fg outline-none placeholder:text-faint focus:border-accent/40" />
         </Field>
 
-        <button onClick={save} disabled={saving} className="mt-5 w-full rounded-xl bg-accent py-3 text-sm font-medium text-bg transition-transform hover:scale-[1.02] disabled:opacity-60">
+        <button onClick={save} disabled={saving} className="mt-5 w-full rounded-[13px] bg-accent py-3 text-sm font-semibold text-bg transition-transform hover:scale-[1.02] disabled:opacity-60">
           {saving ? "Guardando…" : "Guardar movimiento"}
         </button>
-        {ok && <p className="mt-3 rounded-lg border border-emerald/30 bg-emerald/10 px-3 py-2 text-center text-xs text-emerald">✓ Guardado en Supabase</p>}
-      </section>
-    </aside>
+        {ok && <p className="mt-3 rounded-lg border border-emerald/30 bg-emerald/10 px-3 py-2 text-center text-xs text-emerald">✓ Guardado</p>}
+      </div>
+    </Modal>
   );
 }
 

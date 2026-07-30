@@ -464,7 +464,7 @@ function UncategorizedCard({ items, cats, onCategorize }: { items: TxView[]; cat
                 <span className="grid h-9 w-9 shrink-0 place-items-center rounded-xl border border-white/10 bg-white/[0.06] text-base">{t.emoji}</span>
                 <div className="min-w-0 flex-1">
                   <p className="truncate text-sm text-fg">{t.desc}</p>
-                  <p className="text-xs text-faint">{t.date.split(" · ")[0]} · {ars(t.amount)}</p>
+                  <p className="tnum text-xs text-faint">{t.date.split(" · ")[0]} · {ars(t.amount)}</p>
                 </div>
                 <div className="relative shrink-0">
                   <select defaultValue="" onChange={(e) => e.target.value && onCategorize(t.id, Number(e.target.value))} className="appearance-none rounded-lg border border-white/10 bg-white/[0.06] py-1.5 pl-2.5 pr-7 text-xs text-fg outline-none focus:border-accent/40">
