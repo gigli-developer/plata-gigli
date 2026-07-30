@@ -59,8 +59,10 @@ export default function ReglasPage() {
           {formOpen ? <><X className="h-4 w-4" /> Cerrar</> : <><Plus className="h-4 w-4" /> Nueva regla</>}
         </button>
       </PageHeader>
-      <p className="mt-3 flex items-start gap-2 text-xs text-faint">
-        <span className="mt-0.5 grid h-4 w-4 shrink-0 place-items-center rounded-full bg-white/[0.09] text-[0.6rem]">i</span>
+      {/* OJO: el contenedor NO puede ser flex. Antes lo era y cada <b> se volvía
+          un flex item, así que la frase salía partida en bloques sueltos. */}
+      <p className="mt-3 max-w-4xl text-xs leading-relaxed text-faint">
+        <span className="mr-1.5 inline-grid h-4 w-4 shrink-0 translate-y-0.5 place-items-center rounded-full bg-white/[0.09] text-[0.6rem]">i</span>
         Las reglas se aplican a los consumos <b className="text-muted">nuevos</b> que entran por mail. Una regla puede cambiar la categoría, renombrar la descripción y/o forzar la moneda (todo combinable). Las condiciones se evalúan sobre la descripción <b className="text-muted">original</b> del banco. Si varias reglas matchean, <b className="text-muted">cada acción</b> la define la primera regla (por prioridad y antigüedad) que la tenga: una puede poner la categoría y otra distinta el nombre. Lo ya cargado no se toca.
       </p>
 

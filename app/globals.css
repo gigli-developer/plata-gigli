@@ -209,15 +209,18 @@ body {
 }
 .grow-bar { transform-origin: bottom; animation: growBar 0.8s cubic-bezier(0.22, 1, 0.36, 1) both; }
 
-/* trazado de líneas en los charts SVG: requiere pathLength="1" en el path */
+/* Revelado de los charts de línea, de izquierda a derecha.
+   NO usar el truco de stroke-dasharray + pathLength: nuestros SVG van con
+   preserveAspectRatio="none" (X e Y se escalan distinto) y con esa distorsión el
+   navegador no respeta pathLength — el dasharray termina dibujando raya-hueco-raya
+   y la línea aparece CORTADA. Pasó en el sparkline de Divisas y en la línea del
+   patrimonio. El clip-path no depende de la longitud del trazo, así que es inmune.
+   Se aplica al <svg> entero para que el área y la línea se revelen juntas. */
 @keyframes drawLine {
-  from { stroke-dashoffset: 1; }
-  to { stroke-dashoffset: 0; }
+  from { clip-path: inset(0 100% 0 0); }
+  to { clip-path: inset(0 0 0 0); }
 }
-.draw-line {
-  stroke-dasharray: 1;
-  animation: drawLine 1s cubic-bezier(0.22, 1, 0.36, 1) both;
-}
+.draw-line { animation: drawLine 1s cubic-bezier(0.22, 1, 0.36, 1) both; }
 
 /* aparición del donut */
 @keyframes popIn {

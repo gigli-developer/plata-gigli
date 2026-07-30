@@ -208,10 +208,9 @@ export function NetWorthChart({ data, fmt, height = 220 }: { data: NetWorthCol[]
         {/* línea del neto, por encima de las columnas. El viewBox va 0..100 en X
             (porcentaje) y se estira; el trazo se compensa con vector-effect y los
             puntos son divs, que estirados se verían como elipses. */}
-        <svg className="pointer-events-none absolute inset-x-0 top-0" width="100%" height={height} preserveAspectRatio="none" viewBox={`0 0 100 ${height}`}>
+        {/* z-10: las columnas se pintan después en el DOM y si no taparían la línea */}
+        <svg className="draw-line pointer-events-none absolute inset-x-0 top-0 z-10" width="100%" height={height} preserveAspectRatio="none" viewBox={`0 0 100 ${height}`}>
           <polyline
-            className="draw-line"
-            pathLength={1}
             fill="none" stroke="var(--color-fg)" strokeWidth={1.5} strokeLinejoin="round"
             vectorEffect="non-scaling-stroke"
             points={data.map((d, i) => `${((i + 0.5) / data.length) * 100},${yNeto(d.patrimonio)}`).join(" ")}

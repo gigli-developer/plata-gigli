@@ -127,7 +127,7 @@ export default function Shell({ children }: { children: React.ReactNode }) {
           </div>
         </header>
 
-        <main className="pb-nav mx-auto w-full max-w-[1480px] px-4 pt-3 lg:px-16 lg:pb-14">
+        <main className="pb-nav mx-auto w-full max-w-[1480px] px-4 pt-5 lg:px-16 lg:pb-14 lg:pt-8">
           <div key={pathname} className="page-enter">{children}</div>
         </main>
       </div>

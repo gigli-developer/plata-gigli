@@ -368,7 +368,7 @@ function Volatilidad({ board }: { board: FxBoard | null }) {
             </span>
             <span className="ml-auto tnum text-[0.7rem] text-faint">amplitud {stats.amplitud.toFixed(1)}%</span>
           </div>
-          <svg viewBox="0 0 100 34" preserveAspectRatio="none" className="mt-3 h-24 w-full overflow-visible">
+          <svg key={`${casa}-${dias}`} viewBox="0 0 100 34" preserveAspectRatio="none" className="draw-line mt-3 h-24 w-full overflow-visible">
             <defs>
               <linearGradient id={`fxg-${casa}`} x1="0" y1="0" x2="0" y2="1">
                 <stop offset="0%" stopColor={color} stopOpacity="0.35" />
@@ -376,7 +376,7 @@ function Volatilidad({ board }: { board: FxBoard | null }) {
               </linearGradient>
             </defs>
             <path d={stats.area} fill={`url(#fxg-${casa})`} />
-            <path className="draw-line" pathLength={1} d={stats.path} fill="none" stroke={color} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" vectorEffect="non-scaling-stroke" />
+            <path d={stats.path} fill="none" stroke={color} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" vectorEffect="non-scaling-stroke" />
           </svg>
           <div className="mt-3 grid grid-cols-3 divide-x divide-white/10 border-t border-white/10 pt-3 text-center">
             <div><p className="label-micro">mínimo</p><p className="tnum mt-0.5 text-sm text-fg">${Math.round(stats.min).toLocaleString("es-AR")}</p></div>
