@@ -210,10 +210,20 @@ function NewMovementForm({ cats, methods, onSaved }: { cats: Category[]; methods
   const [saving, setSaving] = useState(false);
   const [ok, setOk] = useState(false);
 
+  // "Cambio Divisas" y "Préstamos" quedan fuera del alta manual: las generan
+  // solas /divisas y /deudas (con su contrasiento), y además están excluidas de
+  // las métricas de gasto. Cargar una a mano acá desbalancea la contabilidad —
+  // y encima "Cambio Divisas" venía preseleccionada por ser la primera de la
+  // lista, así que un movimiento guardado sin tocar el select no contaba.
+  const catsManuales = useMemo(() => cats.filter((c) => c.name !== "Cambio Divisas" && c.name !== "Préstamos"), [cats]);
+
   useEffect(() => {
-    if (cats.length && !categoryId) setCategoryId(String(cats[0].id));
+    if (catsManuales.length && !categoryId) {
+      const otros = catsManuales.find((c) => c.name === "Otros");
+      setCategoryId(String((otros ?? catsManuales[0]).id));
+    }
     if (methods.length && !methodId) setMethodId(String(methods[0].id));
-  }, [cats, methods]);
+  }, [catsManuales, methods]);
 
   const save = async () => {
     const value = Number(amount.replace(/[^\d]/g, ""));
@@ -258,7 +268,7 @@ function NewMovementForm({ cats, methods, onSaved }: { cats: Category[]; methods
 
         <Field label="Categoría">
           <FullSelect value={categoryId} onChange={setCategoryId}>
-            {cats.map((c) => <option key={c.id} value={c.id}>{c.emoji} {c.name}</option>)}
+            {catsManuales.map((c) => <option key={c.id} value={c.id}>{c.emoji} {c.name}</option>)}
           </FullSelect>
         </Field>
         <Field label="Método de pago">

@@ -15,6 +15,15 @@ import { toArs, arsDe } from "./fx";
 
 export const CATEGORIAS_HORMIGA = ["Delivery", "Comida", "Ocio", "Transporte", "Compras"];
 
+/**
+ * Gastos que caen en esas categorías pero NO son impulso: trámites, multas,
+ * impuestos y seguros. No se recortan decidiendo distinto, así que ensucian el
+ * análisis. Salieron de mirar los datos reales: una multa de la policía de Entre
+ * Ríos y un trámite de buenosaires.gob.ar encabezaban el ranking de "gastos
+ * hormiga" con casi $300.000 cada uno.
+ */
+const NO_ES_IMPULSO = /(gob\.ar|policia|polic[íi]a|rentas|arba|afip|multa|patente|infracci|vtv|seguro|aseguradora|impuesto|municipal|registro civil|migraciones)/i;
+
 // Prefijos de pasarelas de pago que ensucian el nombre del comercio.
 const PREFIJOS = /^(MERPAGO\*|MERPAGO\s|MP\*|DLO\*|PEDIDOSYA\*|PVS\*|CP\*|HPS\*|EBANX\*|RAPIPAGO\s)/i;
 // Palabras que delatan una suscripción aunque solo tengamos 2 meses de historia.
@@ -37,11 +46,12 @@ export type Suscripcion = { comercio: string; monto: number; currency: string; m
 export type Comercio = { comercio: string; veces: number; totalArs: number; emoji: string; categoria: string };
 export type HormigaResult = {
   umbral: number;
-  hormiga: ExpenseRow[];        // TODO el gasto evitable del período
-  goteo: ExpenseRow[];          // los de ticket chico (<= umbral)
-  grandes: ExpenseRow[];        // los pocos gordos (> umbral)
+  hormiga: ExpenseRow[];        // el goteo: lo chico y repetido (<= umbral). Es EL análisis.
+  goteo: ExpenseRow[];          // alias de `hormiga`, por claridad en la UI
+  grandes: ExpenseRow[];        // los pocos gordos (> umbral): contexto, NO entran en los totales
   suscripciones: Suscripcion[];
-  totalPorMes: Record<string, number>;
+  totalPorMes: Record<string, number>;        // solo goteo
+  grandesPorMes: Record<string, number>;      // solo los grandes, para comparar
   porCategoriaMes: Record<string, Record<string, number>>;
   comercios: Comercio[];
 };
@@ -90,11 +100,23 @@ export function analizarHormiga(rows: ExpenseRow[], fx: FxRates, umbralManual?: 
 
   const idsSuscripcion = new Set(suscripciones.flatMap((s) => s.ids));
 
-  // --- Gasto evitable: categoría prescindible, sin cuotas ni suscripciones ---
-  // El monto NO filtra: un delivery de $18.000 es tan evitable como uno de $8.000.
-  const hormiga = rows.filter((r) => !r.esCuota && CATEGORIAS_HORMIGA.includes(r.category) && !idsSuscripcion.has(r.id));
-  const goteo = hormiga.filter((r) => ars(r) <= umbral);
-  const grandes = hormiga.filter((r) => ars(r) > umbral).sort((a, b) => ars(b) - ars(a));
+  // --- Candidatos: categoría prescindible, sin cuotas ni suscripciones ---
+  // Se sacan además los trámites obligatorios (multas, patentes, impuestos): caen
+  // en categorías como Transporte pero no son una decisión que puedas recortar.
+  const candidatos = rows.filter((r) =>
+    !r.esCuota
+    && CATEGORIAS_HORMIGA.includes(r.category)
+    && !idsSuscripcion.has(r.id)
+    && !NO_ES_IMPULSO.test(normalizarComercio(r.desc)));
+
+  // EL GOTEO ES EL PROTAGONISTA. Un consumo grande y único (una multa de
+  // $269.000, un curso, una carga de nafta de $85.000) no es un gasto hormiga:
+  // se decide una vez y se ve venir. El hormiga es lo chico y repetido, que suma
+  // sin que lo notes. Por eso los grandes quedan como CONTEXTO y fuera de los
+  // totales — antes iban adentro y se comían el análisis.
+  const hormiga = candidatos.filter((r) => ars(r) <= umbral);
+  const goteo = hormiga;
+  const grandes = candidatos.filter((r) => ars(r) > umbral).sort((a, b) => ars(b) - ars(a));
 
   const totalPorMes: Record<string, number> = {};
   const porCategoriaMes: Record<string, Record<string, number>> = {};
@@ -103,6 +125,9 @@ export function analizarHormiga(rows: ExpenseRow[], fx: FxRates, umbralManual?: 
     (porCategoriaMes[r.category] ??= {});
     porCategoriaMes[r.category][r.month] = (porCategoriaMes[r.category][r.month] ?? 0) + ars(r);
   }
+  // Los grandes, aparte: sirven para poner el goteo en perspectiva.
+  const grandesPorMes: Record<string, number> = {};
+  for (const r of grandes) grandesPorMes[r.month] = (grandesPorMes[r.month] ?? 0) + ars(r);
 
   const cm = new Map<string, Comercio>();
   for (const r of hormiga) {
@@ -111,7 +136,8 @@ export function analizarHormiga(rows: ExpenseRow[], fx: FxRates, umbralManual?: 
     e.veces += 1; e.totalArs += ars(r);
     cm.set(c, e);
   }
+  // Primero lo que más se repite: en hormiga la frecuencia es la que duele.
   const comercios = [...cm.values()].sort((a, b) => b.totalArs - a.totalArs);
 
-  return { umbral, hormiga, goteo, grandes, suscripciones, totalPorMes, porCategoriaMes, comercios };
+  return { umbral, hormiga, goteo, grandes, suscripciones, totalPorMes, grandesPorMes, porCategoriaMes, comercios };
 }

@@ -43,11 +43,12 @@ export default function HormigaPage() {
   const totalPrev = mesPrev ? (a.totalPorMes[mesPrev] ?? 0) : 0;
   const delMes = a.hormiga.filter((r) => r.month === cur);
   const ticket = delMes.length ? totalMes / delMes.length : 0;
-  // Qué parte del total es goteo chico y qué parte son pocos consumos gordos.
   const enArs = (r: ExpenseRow) => arsDe(r.amount, r.currency, r.fxRate, fx);
-  const totGoteo = a.goteo.filter((r) => r.month === cur).reduce((s, r) => s + enArs(r), 0);
-  const pctGoteo = totalMes ? Math.round((totGoteo / totalMes) * 100) : 0;
+  // Los grandes ya no entran en el total: se muestran al lado para dimensionar
+  // cuánto del gasto evitable es goteo y cuánto fueron consumos puntuales.
   const grandesMes = a.grandes.filter((r) => r.month === cur);
+  const grandesMesTotal = a.grandesPorMes[cur] ?? 0;
+  const pctGoteo = totalMes + grandesMesTotal > 0 ? Math.round((totalMes / (totalMes + grandesMesTotal)) * 100) : 0;
   // Proyección anual: promedio de los meses COMPLETOS (el actual va por la mitad).
   const completos = meses.filter((m) => m !== cur);
   const promMensual = completos.length ? completos.reduce((s, m) => s + (a.totalPorMes[m] ?? 0), 0) / completos.length : totalMes;
@@ -62,39 +63,44 @@ export default function HormigaPage() {
 
   return (
     <>
-      <PageHeader title="Gastos hormiga" subtitle="El goteo chico y repetido" />
+      <PageHeader title="Gastos hormiga" subtitle={`Lo chico y repetido · tickets de menos de ${compact(a.umbral)}`} />
 
-      {/* 1 · HERO */}
+      {/* 1 · HERO — el protagonista es el GOTEO, no todo el gasto evitable */}
       <section className="rise panel relative mt-6 overflow-hidden p-6">
         <div className="pointer-events-none absolute -right-16 -top-20 h-56 w-56 rounded-full bg-coral/10 blur-3xl" />
         <div className="relative flex flex-wrap items-end justify-between gap-4">
           <div>
-            <p className="text-sm text-muted">Este mes en gasto evitable</p>
+            <p className="text-sm text-muted">Este mes en gasto hormiga</p>
             <CountUp value={totalMes} format={ars} className="tnum mt-1.5 block text-[38px] font-extrabold leading-none text-fg sm:text-[42px]" />
+            <p className="mt-1 text-sm text-faint">
+              en <span className="tnum text-subtle">{delMes.length}</span> consumos chicos · ticket promedio <span className="tnum text-subtle">{ars(ticket)}</span>
+            </p>
             {mesPrev && (
-              <p className={`mt-1 flex items-center gap-1 text-sm ${totalMes > totalPrev ? "text-coral" : "text-emerald"}`}>
+              <p className={`mt-1.5 flex items-center gap-1 text-sm ${totalMes > totalPrev ? "text-coral" : "text-emerald"}`}>
                 {totalMes > totalPrev ? <ArrowUpRight className="h-4 w-4" /> : <ArrowDownRight className="h-4 w-4" />}
                 <span className="tnum">{totalPrev ? `${Math.abs(Math.round(((totalMes - totalPrev) / totalPrev) * 100))}%` : "—"}</span>
                 <span className="text-faint">vs {mesLabel(mesPrev)}</span>
               </p>
             )}
           </div>
-          <div className="rounded-2xl border border-coral/25 bg-coral/8 px-4 py-3 text-right">
-            <p className="text-[0.65rem] uppercase tracking-widest text-faint">A este ritmo, en un año</p>
+          <div className="rounded-2xl border border-coral/25 bg-coral/10 px-4 py-3 text-right">
+            <p className="label-micro">A este ritmo, en un año</p>
             <p className="tnum mt-0.5 text-[22px] font-bold text-coral">{compact(promMensual * 12)}</p>
           </div>
         </div>
-        <div className="relative mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3">
-          <Mini label="Gastos evitables" value={String(delMes.length)} sub="este mes" />
-          <Mini label="Ticket promedio" value={ars(ticket)} sub="por gasto" />
-          <Mini label="Goteo vs bultos" value={`${pctGoteo}%`} sub={`del total son tickets < ${compact(a.umbral)}`} />
+        {/* Los consumos grandes van como contexto: no son hormiga, pero conviene
+            saber cuánto pesan al lado del goteo. */}
+        <div className="relative mt-6 grid grid-cols-1 gap-3 sm:grid-cols-3">
+          <Mini label="Goteo del mes" value={ars(totalMes)} sub={`${delMes.length} consumos de menos de ${compact(a.umbral)}`} />
+          <Mini label="Consumos grandes" value={compact(grandesMesTotal)} sub={`${grandesMes.length} de una sola vez · no cuentan acá`} />
+          <Mini label="Peso del goteo" value={`${pctGoteo}%`} sub="del total evitable del mes" />
         </div>
       </section>
 
       {/* 2 · TERMÓMETRO */}
       <section className="panel mt-5 p-6">
         <h2 className="font-display text-lg text-fg">Mes a mes</h2>
-        <p className="text-xs text-faint">Últimos {meses.length} meses · todo el gasto evitable</p>
+        <p className="text-xs text-faint">Últimos {meses.length} meses · solo el goteo (sin los consumos grandes)</p>
         <Barras meses={meses} valores={a.totalPorMes} actual={cur} />
       </section>
 
