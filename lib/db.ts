@@ -632,6 +632,59 @@ export async function fetchInflationData(sb: SupabaseClient): Promise<{ byMonth:
   return { byMonth, projected, latest: (data ?? [])[0]?.month ?? null };
 }
 
+// ---- Tablero de cotizaciones (pantalla Divisas) ----
+// Reemplaza los datos mock que vivían en lib/mock.ts (ya borrado: Divisas fue la
+// última pantalla que los usaba). Sale todo de `fx_rates`, la misma tabla que
+// alimenta las valuaciones del resto de la app y que sincroniza la Edge Function
+// fx-sync cada hora. La tabla tiene política `read_all`: se puede leer desde el
+// browser sin problema.
+export const FX_CASAS = [
+  { casa: "blue", label: "Blue", hint: "informal" },
+  { casa: "bolsa", label: "MEP", hint: "bolsa" },
+  { casa: "cripto", label: "Cripto", hint: "USDT" },
+  { casa: "oficial", label: "Oficial", hint: "BNA" },
+] as const;
+
+export type FxQuote = {
+  casa: string; label: string; hint: string;
+  day: string; compra: number; venta: number;
+  /** Variación % de la venta contra el día anterior con dato. */
+  changePct: number | null;
+};
+export type FxPoint = { day: string; compra: number; venta: number };
+export type FxBoard = { quotes: FxQuote[]; series: Record<string, FxPoint[]> };
+
+export async function fetchFxBoard(sb: SupabaseClient, dias = 90): Promise<FxBoard> {
+  const desde = new Date();
+  desde.setDate(desde.getDate() - dias);
+  const iso = desde.toISOString().slice(0, 10);
+  const { data, error } = await sb
+    .from("fx_rates")
+    .select("day,casa,compra,venta")
+    .in("casa", FX_CASAS.map((c) => c.casa))
+    .gte("day", iso)
+    .order("day", { ascending: true });
+  if (error) throw error;
+
+  const series: Record<string, FxPoint[]> = {};
+  for (const r of (data ?? []) as any[]) {
+    (series[r.casa] ??= []).push({ day: r.day, compra: Number(r.compra), venta: Number(r.venta) });
+  }
+  const quotes: FxQuote[] = [];
+  for (const c of FX_CASAS) {
+    const s = series[c.casa];
+    if (!s?.length) continue;
+    const last = s[s.length - 1];
+    const prev = s.length > 1 ? s[s.length - 2] : null;
+    quotes.push({
+      casa: c.casa, label: c.label, hint: c.hint,
+      day: last.day, compra: last.compra, venta: last.venta,
+      changePct: prev && prev.venta ? ((last.venta - prev.venta) / prev.venta) * 100 : null,
+    });
+  }
+  return { quotes, series };
+}
+
 // ---- Patrimonio neto en el tiempo ----
 // Serie reconstruida por la RPC `get_networth_series`: para el cierre de cada mes
 // calcula los mismos componentes que get_metrics() devuelve para hoy. Las tenencias
