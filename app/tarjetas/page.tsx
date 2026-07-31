@@ -25,13 +25,15 @@ const daysInYM = (ym: string) => { const [y, m] = ym.slice(0, 7).split("-").map(
 const esCredito = (c: { network?: string | null; name?: string | null }) =>
   !((c.network ?? "").toLowerCase().includes("déb") || (c.network ?? "").toLowerCase().includes("deb") || (c.name ?? "").toLowerCase().includes("débito") || (c.name ?? "").toLowerCase().includes("debito"));
 
+// Caras de las tarjetas: gradientes vibrantes, uno por tarjeta. `accent` se usa
+// para la barra de uso del límite y para el color de esa tarjeta en el gráfico.
 const palette = [
-  { hue: "from-[#10231c] via-[#0f2a20] to-[#0a1612]", accent: "#34e1a0" },
-  { hue: "from-[#221c3a] via-[#1c1830] to-[#120f1f]", accent: "#a78bfa" },
-  { hue: "from-[#0e2230] via-[#0c1b27] to-[#0a141c]", accent: "#5ec8ff" },
-  { hue: "from-[#2a2218] via-[#211a12] to-[#15110b]", accent: "#ff9f5e" },
+  { grad: "linear-gradient(135deg,#ff9e1b,#7bc400)", accent: "#7bc400" },
+  { grad: "linear-gradient(135deg,#ff9e1b,#6d4fd8)", accent: "#a78bfa" },
+  { grad: "linear-gradient(135deg,#5ec8ff,#2e7fd8)", accent: "#5ec8ff" },
+  { grad: "linear-gradient(135deg,#ffbf47,#ff7a3d)", accent: "#ffbf47" },
 ];
-type CardVis = CardFull & { hue: string; accent: string };
+type CardVis = CardFull & { grad: string; accent: string };
 
 export default function TarjetasPage() {
   const [cards, setCards] = useState<CardVis[]>([]);
@@ -459,24 +461,40 @@ export default function TarjetasPage() {
   );
 }
 
+/**
+ * Cara de la tarjeta. En el diseño son gradientes VIBRANTES con el texto en
+ * negro (#0a0a0a), no las superficies oscuras de antes: es lo que hace que se
+ * lean como plásticos y no como otra card más de la interfaz.
+ */
 function CreditCardVisual({ card, active, onClick }: { card: CardVis; active: boolean; onClick: () => void }) {
   return (
-    <button onClick={onClick} className={`group relative aspect-[1.6/1] w-full overflow-hidden rounded-2xl border bg-gradient-to-br ${card.hue} p-5 text-left transition-all ${active ? "border-transparent ring-2 ring-accent" : "border-line hover:-translate-y-0.5"}`}>
-      <div className="pointer-events-none absolute -right-8 -top-10 h-32 w-32 rounded-full opacity-30 blur-2xl" style={{ background: card.accent }} />
+    <button
+      onClick={onClick}
+      className="relative aspect-[1.6/1] w-full overflow-hidden rounded-2xl p-4 text-left text-[#0a0a0a] transition-all duration-150"
+      style={{
+        background: card.grad,
+        boxShadow: active
+          ? "0 0 0 2px #ff9e1b, 0 10px 30px rgba(0,0,0,0.4)"
+          : "0 6px 20px rgba(0,0,0,0.3)",
+        transform: active ? "translateY(-2px)" : undefined,
+      }}
+    >
+      {/* brillo diagonal, para que el plástico no quede plano */}
+      <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-white/25 via-transparent to-black/10" />
       <div className="relative flex h-full flex-col justify-between">
         <div className="flex items-start justify-between">
           <div>
-            <p className="text-sm text-fg/90">{card.name}</p>
-            <p className="text-[0.7rem] uppercase tracking-widest text-fg/40">{card.bank}</p>
+            <p className="text-sm font-bold">{card.name}</p>
+            <p className="text-[0.7rem] font-semibold uppercase tracking-widest opacity-60">{card.bank}</p>
           </div>
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" className="text-fg/40" strokeWidth="1.6" strokeLinecap="round">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" className="opacity-55" strokeWidth="1.8" strokeLinecap="round">
             <path d="M8 8a6 6 0 0 1 0 8M11.5 6a9 9 0 0 1 0 12M15 4.5a12 12 0 0 1 0 15" />
           </svg>
         </div>
-        <div className="h-7 w-10 rounded-md bg-gradient-to-br from-amber/80 to-amber/30 ring-1 ring-black/20" />
+        <div className="h-7 w-10 rounded-md bg-gradient-to-br from-[#f7e2a8] to-[#c9a53f] ring-1 ring-black/20" />
         <div className="flex items-end justify-between">
-          <p className="tnum text-fg/85">•••• {card.last4 ?? "----"}</p>
-          <span className="font-display text-lg italic text-fg/80">{card.network}</span>
+          <p className="tnum text-sm font-bold tracking-wider">•••• {card.last4 ?? "----"}</p>
+          <span className="font-display text-lg font-extrabold italic">{card.network}</span>
         </div>
       </div>
     </button>

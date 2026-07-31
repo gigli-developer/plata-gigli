@@ -215,9 +215,9 @@ export default function MetricasPage() {
         </div>
 
         <div className="relative mt-5 grid grid-cols-1 gap-3.5 sm:grid-cols-3">
-          <Mini label="Pesos" value={ars(m.ars_liquido)} tone="text-fg" />
-          <Mini label="Dólares" value={`US$ ${m.usd_liquido.toLocaleString("es-AR", { maximumFractionDigits: 0 })}`} sub={ars(calc.usdArs)} tone="text-gold" />
-          <Mini label="Cripto" value={`USDT ${m.usdt_liquido.toLocaleString("es-AR", { maximumFractionDigits: 0 })}`} sub={ars(calc.usdtArs)} tone="text-sky" />
+          <Mini label="Pesos" num={m.ars_liquido} format={ars} tone="text-fg" />
+          <Mini label="Dólares" num={m.usd_liquido} format={(n) => `US$ ${n.toLocaleString("es-AR", { maximumFractionDigits: 0 })}`} sub={ars(calc.usdArs)} tone="text-gold" />
+          <Mini label="Cripto" num={m.usdt_liquido} format={(n) => `USDT ${n.toLocaleString("es-AR", { maximumFractionDigits: 0 })}`} sub={ars(calc.usdtArs)} tone="text-sky" />
         </div>
 
         <div className="relative mt-3.5 grid grid-cols-1 gap-3.5 sm:grid-cols-2 xl:grid-cols-4">
@@ -312,11 +312,11 @@ export default function MetricasPage() {
   );
 }
 
-function Mini({ label, value, sub, tone }: { label: string; value: string; sub?: string; tone: string }) {
+function Mini({ label, num, format, sub, tone }: { label: string; num: number; format: (n: number) => string; sub?: string; tone: string }) {
   return (
     <div className="panel-inner p-4">
       <p className="label-micro">{label}</p>
-      <p className={`tnum mt-2 text-[21px] font-semibold ${tone}`}>{value}</p>
+      <CountUp value={num} format={format} className={`tnum mt-2 block text-[21px] font-semibold ${tone}`} />
       {sub && <p className="tnum mt-0.5 text-[0.7rem] text-faint">≈ {sub}</p>}
     </div>
   );

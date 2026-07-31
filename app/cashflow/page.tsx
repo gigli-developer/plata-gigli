@@ -12,6 +12,7 @@ import { aggArs, arsDe } from "@/lib/fx";
 import { readCache, writeCache } from "@/lib/cache";
 import { compact } from "@/lib/format";
 import { PageHeader } from "../components/Shell";
+import CountUp from "../components/CountUp";
 import { Chart, ArrowUpRight, ArrowDownRight, Pencil } from "../icons";
 
 const MESES = ["ene", "feb", "mar", "abr", "may", "jun", "jul", "ago", "sep", "oct", "nov", "dic"];
@@ -322,9 +323,9 @@ export default function CashflowPage() {
       <div className="mt-4 grid grid-cols-2 gap-4 lg:grid-cols-4">
         {mode === "proyeccion" ? (
           <>
-            <KpiBox label="Saldo hoy" value={compact(proj.startBalance)} hint="líquido en ARS" icon={<Chart className="h-4 w-4 text-sky" />} />
-            <KpiBox label={`Saldo en ${HORIZON}m`} value={compact(endBalance)} hint={`${endBalance - proj.startBalance >= 0 ? "+" : ""}${compact(endBalance - proj.startBalance)} proyectado`} tone={endBalance >= proj.startBalance ? "emerald" : "coral"} icon={endBalance - proj.startBalance >= 0 ? <ArrowUpRight className="h-4 w-4 text-emerald" /> : <ArrowDownRight className="h-4 w-4 text-coral" />} />
-            <KpiBox label="Ahorro mensual prom." value={compact(avgNeto)} hint="ingresos − egresos" tone={avgNeto >= 0 ? "emerald" : "coral"} />
+            <KpiBox label="Saldo hoy" num={proj.startBalance} hint="líquido en ARS" icon={<Chart className="h-4 w-4 text-sky" />} />
+            <KpiBox label={`Saldo en ${HORIZON}m`} num={endBalance} hint={`${endBalance - proj.startBalance >= 0 ? "+" : ""}${compact(endBalance - proj.startBalance)} proyectado`} tone={endBalance >= proj.startBalance ? "emerald" : "coral"} icon={endBalance - proj.startBalance >= 0 ? <ArrowUpRight className="h-4 w-4 text-emerald" /> : <ArrowDownRight className="h-4 w-4 text-coral" />} />
+            <KpiBox label="Ahorro mensual prom." num={avgNeto} hint="ingresos − egresos" tone={avgNeto >= 0 ? "emerald" : "coral"} />
             <KpiBox label="Inflación proyectada" value={`${inflation.toFixed(1)}%`} hint={`oficial · prom. 6m (${infl.latest ? monthName(infl.latest) : "—"})`} tone="amber" />
           </>
         ) : (
@@ -332,7 +333,7 @@ export default function CashflowPage() {
             <KpiBox label="Ingresos (rango)" value={compact(totIng)} tone="emerald" />
             <KpiBox label="Egresos (rango)" value={compact(totEgr)} tone="coral" />
             <KpiBox label="Ahorro (rango)" value={compact(totIng - totEgr)} hint="ingresos − egresos" tone={totIng - totEgr >= 0 ? "emerald" : "coral"} />
-            <KpiBox label="Ahorro mensual prom." value={compact(avgNeto)} tone={avgNeto >= 0 ? "emerald" : "coral"} />
+            <KpiBox label="Ahorro mensual prom." num={avgNeto} tone={avgNeto >= 0 ? "emerald" : "coral"} />
           </>
         )}
       </div>
@@ -489,12 +490,15 @@ function NumInput({ value, onChange, onCommit, className = "" }: { value: number
   );
 }
 
-function KpiBox({ label, value, hint, tone, icon }: { label: string; value: string; hint?: string; tone?: "emerald" | "coral" | "amber"; icon?: React.ReactNode }) {
+/** `num` anima el número (plata); `value` es para lo que no lo es, como el % de inflación. */
+function KpiBox({ label, value, num, hint, tone, icon }: { label: string; value?: string; num?: number; hint?: string; tone?: "emerald" | "coral" | "amber"; icon?: React.ReactNode }) {
   const c = tone === "emerald" ? "text-emerald" : tone === "coral" ? "text-coral" : tone === "amber" ? "text-amber" : "text-fg";
   return (
     <div className="panel p-4">
-      <p className="flex items-center gap-1.5 text-xs text-muted">{icon}{label}</p>
-      <p className={`tnum mt-1 text-[21px] font-semibold ${c}`}>{value}</p>
+      <p className="flex items-center gap-1.5 text-xs text-subtle">{icon}{label}</p>
+      {num != null
+        ? <CountUp value={num} format={compact} className={`tnum mt-1 block text-[21px] font-semibold ${c}`} />
+        : <p className={`tnum mt-1 text-[21px] font-semibold ${c}`}>{value}</p>}
       {hint && <p className="mt-0.5 truncate text-[0.7rem] text-faint">{hint}</p>}
     </div>
   );

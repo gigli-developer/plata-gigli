@@ -85,14 +85,14 @@ export default function HormigaPage() {
           </div>
           <div className="rounded-2xl border border-coral/25 bg-coral/10 px-4 py-3 text-right">
             <p className="label-micro">A este ritmo, en un año</p>
-            <p className="tnum mt-0.5 text-[22px] font-bold text-coral">{compact(promMensual * 12)}</p>
+            <CountUp value={promMensual * 12} format={compact} className="tnum mt-0.5 block text-[22px] font-bold text-coral" />
           </div>
         </div>
         {/* Los consumos grandes van como contexto: no son hormiga, pero conviene
             saber cuánto pesan al lado del goteo. */}
         <div className="relative mt-6 grid grid-cols-1 gap-3 sm:grid-cols-3">
-          <Mini label="Goteo del mes" value={ars(totalMes)} sub={`${delMes.length} consumos de menos de ${compact(a.umbral)}`} />
-          <Mini label="Consumos grandes" value={compact(grandesMesTotal)} sub={`${grandesMes.length} de una sola vez · no cuentan acá`} />
+          <Mini label="Goteo del mes" num={totalMes} format={ars} sub={`${delMes.length} consumos de menos de ${compact(a.umbral)}`} />
+          <Mini label="Consumos grandes" num={grandesMesTotal} format={compact} sub={`${grandesMes.length} de una sola vez · no cuentan acá`} />
           <Mini label="Peso del goteo" value={`${pctGoteo}%`} sub="del total evitable del mes" />
         </div>
       </section>
@@ -233,11 +233,14 @@ export default function HormigaPage() {
   );
 }
 
-function Mini({ label, value, sub }: { label: string; value: string; sub: string }) {
+/** `num` + `format` anima el número; `value` es para lo que no es plata. */
+function Mini({ label, value, num, format, sub }: { label: string; value?: string; num?: number; format?: (n: number) => string; sub: string }) {
   return (
-    <div className="rounded-2xl border border-line bg-white/[0.05] p-4">
-      <p className="text-xs text-muted">{label}</p>
-      <p className="tnum mt-1 text-lg text-fg">{value}</p>
+    <div className="panel-inner p-4">
+      <p className="label-micro">{label}</p>
+      {num != null && format
+        ? <CountUp value={num} format={format} className="tnum mt-1.5 block text-[19px] font-semibold text-fg" />
+        : <p className="tnum mt-1.5 text-[19px] font-semibold text-fg">{value}</p>}
       <p className="mt-0.5 text-[0.7rem] text-faint">{sub}</p>
     </div>
   );

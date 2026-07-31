@@ -210,6 +210,26 @@ body {
 }
 .page-enter { animation: pageEnter 0.35s ease both; }
 
+/* Entrada escalonada, IGUAL en todas las pantallas.
+   Antes cada página aplicaba `.rise` a mano y varias no lo hacían (Cash Flow,
+   Tarjetas, Transacciones, Deudas y Reglas entraban de golpe). Acá se anima cada
+   bloque de primer nivel de la página, así no hay que acordarse en cada archivo.
+
+   El `:not(.fixed)` NO es cosmético: los modales son hijos de la página, y un
+   ancestro con transform rompe su `position: fixed` (se posicionarían respecto
+   al contenedor en vez del viewport). Todos los overlays llevan la clase fixed. */
+.page-enter > *:not(.fixed) {
+  animation: rise 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+.page-enter > *:nth-child(2):not(.fixed) { animation-delay: 0.05s; }
+.page-enter > *:nth-child(3):not(.fixed) { animation-delay: 0.1s; }
+.page-enter > *:nth-child(4):not(.fixed) { animation-delay: 0.15s; }
+.page-enter > *:nth-child(n + 5):not(.fixed) { animation-delay: 0.2s; }
+
+@media (prefers-reduced-motion: reduce) {
+  .page-enter > *:not(.fixed) { animation: none; }
+}
+
 @keyframes pulseDot {
   0%, 100% { opacity: 1; transform: scale(1); }
   50% { opacity: 0.35; transform: scale(0.7); }

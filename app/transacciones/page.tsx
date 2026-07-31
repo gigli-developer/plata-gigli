@@ -9,6 +9,7 @@ import { readCache, writeCache } from "@/lib/cache";
 import { ars, compact } from "@/lib/format";
 import { PageHeader } from "../components/Shell";
 import Modal from "../components/Modal";
+import CountUp from "../components/CountUp";
 import EditTxModal from "../components/EditTxModal";
 import { Search, Plus, Camera, Mail, Sparkle, ArrowUpRight, ArrowDownRight, Pencil } from "../icons";
 
@@ -81,9 +82,9 @@ export default function TransaccionesPage() {
         <Stat label="Ingresos" value={totals.ingresos} tone="emerald" up />
         <Stat label="Egresos" value={totals.egresos} tone="coral" />
         <Stat label="Balance" value={totals.balance} tone="accent" up={totals.balance >= 0} />
-        <div className="rounded-2xl border border-line bg-white/[0.05] p-4">
-          <p className="text-xs text-muted">Movimientos</p>
-          <p className="tnum mt-2 text-lg text-fg">{totals.count}</p>
+        <div className="panel p-4">
+          <p className="text-xs text-subtle">Movimientos</p>
+          <p className="tnum mt-2 text-[21px] font-bold text-fg">{totals.count}</p>
         </div>
       </div>
 
@@ -143,13 +144,14 @@ export default function TransaccionesPage() {
 
 function Stat({ label, value, tone, up }: { label: string; value: number; tone: "emerald" | "coral" | "accent"; up?: boolean }) {
   const color = tone === "emerald" ? "text-emerald" : tone === "coral" ? "text-coral" : "text-accent";
+  const chip = tone === "emerald" ? "bg-emerald/12 text-emerald" : tone === "coral" ? "bg-coral/12 text-coral" : "bg-accent/12 text-accent";
   return (
-    <div className="rounded-2xl border border-line bg-white/[0.05] p-4">
-      <div className="flex items-center gap-1.5 text-xs text-muted">
-        <span className={`grid h-5 w-5 place-items-center rounded-md bg-white/5 ${color}`}>{up ? <ArrowUpRight className="h-3 w-3" /> : <ArrowDownRight className="h-3 w-3" />}</span>
+    <div className="panel p-4">
+      <div className="flex items-center gap-2 text-xs text-subtle">
+        <span className={`grid h-5 w-5 place-items-center rounded-md ${chip}`}>{up ? <ArrowUpRight className="h-3 w-3" /> : <ArrowDownRight className="h-3 w-3" />}</span>
         {label}
       </div>
-      <p className="tnum mt-2 text-lg text-fg">{ars(value)}</p>
+      <CountUp value={value} format={ars} className={`tnum mt-2 block text-[21px] font-bold ${color}`} />
     </div>
   );
 }

@@ -7,6 +7,7 @@ import { fxSync, loadFx, toArs } from "@/lib/fx";
 import { ars } from "@/lib/format";
 import { PageHeader } from "../components/Shell";
 import Modal from "../components/Modal";
+import CountUp from "../components/CountUp";
 import { ArrowUpRight, ArrowDownRight, Swap, Chevron, Plus } from "../icons";
 
 type DebtKind = "cash" | "in_kind" | "split";
@@ -82,7 +83,7 @@ export default function DeudasPage() {
       <div className="mt-6 grid grid-cols-1 gap-3 sm:grid-cols-3">
         <SummaryCard label="Te deben" value={toCollect} tone="emerald" up />
         <SummaryCard label="Debés" value={toPay} tone="coral" />
-        <SummaryCard label="Balance neto" value={toCollect - toPay} tone="accent" up={toCollect - toPay >= 0} />
+        <SummaryCard label="Balance neto" value={toCollect - toPay} tone={toCollect - toPay >= 0 ? "emerald" : "coral"} up={toCollect - toPay >= 0} />
       </div>
       <p className="mt-3 flex items-center gap-2 text-xs text-faint">
         <span className="grid h-4 w-4 place-items-center rounded-full bg-white/[0.09] text-[0.6rem]">i</span>
@@ -136,15 +137,21 @@ export default function DeudasPage() {
   );
 }
 
-function SummaryCard({ label, value, tone, up }: { label: string; value: number; tone: "emerald" | "coral" | "accent"; up?: boolean }) {
-  const color = tone === "emerald" ? "text-emerald" : tone === "coral" ? "text-coral" : "text-accent";
+/**
+ * El color va en el NÚMERO, no en un cuadradito suelto: antes el monto siempre
+ * salía blanco y el único color estaba en el ícono, así que un balance negativo
+ * no se leía como negativo.
+ */
+function SummaryCard({ label, value, tone, up }: { label: string; value: number; tone: "emerald" | "coral"; up?: boolean }) {
+  const color = tone === "emerald" ? "text-emerald" : "text-coral";
+  const chip = tone === "emerald" ? "bg-emerald/12 text-emerald" : "bg-coral/12 text-coral";
   return (
     <div className="panel p-5">
-      <div className="flex items-center gap-1.5 text-xs text-muted">
-        <span className={`grid h-5 w-5 place-items-center rounded-md bg-white/5 ${color}`}>{up ? <ArrowUpRight className="h-3 w-3" /> : <ArrowDownRight className="h-3 w-3" />}</span>
+      <div className="flex items-center gap-2 text-xs text-subtle">
+        <span className={`grid h-5 w-5 place-items-center rounded-md ${chip}`}>{up ? <ArrowUpRight className="h-3 w-3" /> : <ArrowDownRight className="h-3 w-3" />}</span>
         {label}
       </div>
-      <p className="tnum mt-2 text-[21px] font-semibold text-fg">{ars(value)}</p>
+      <CountUp value={value} format={ars} className={`tnum mt-2 block text-[24px] font-bold ${color}`} />
     </div>
   );
 }
