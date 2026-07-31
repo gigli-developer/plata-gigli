@@ -34,12 +34,15 @@ export default function Modal({
   return (
     <div
       onClick={onClose}
-      className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-[rgba(3,4,4,0.6)] p-4 backdrop-blur-[6px] sm:items-center"
+      className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-[rgba(3,4,4,0.78)] p-4 backdrop-blur-[6px] sm:items-center"
       style={{ animation: "pageEnter .2s ease both" }}
     >
+      {/* La card NO usa .panel: el vidrio translúcido se mezclaba con el fondo y
+          el modal no se despegaba. Va sólida (#101111) con borde de acento y una
+          sombra profunda, como en el diseño. */}
       <div
         onClick={(e) => e.stopPropagation()}
-        className={`rise panel my-auto w-full ${maxWidth} p-6`}
+        className={`rise my-auto w-full ${maxWidth} rounded-[18px] border border-accent/25 bg-[#101111] p-6 shadow-[0_40px_100px_rgba(0,0,0,0.6)]`}
         role="dialog"
         aria-modal="true"
         aria-label={title}

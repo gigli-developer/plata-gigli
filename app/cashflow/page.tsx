@@ -432,7 +432,7 @@ export default function CashflowPage() {
           <table className="w-full min-w-[680px] border-collapse text-sm">
             <thead>
               <tr className="border-b border-line">
-                <th className="sticky left-0 z-10 bg-white/[0.05] px-4 py-3 text-left font-medium text-muted">Flujo de Caja</th>
+                <th className="cf-sticky px-4 py-3 text-left font-medium text-muted">Flujo de Caja</th>
                 {proj.months.map((m, i) => (
                   <th key={m} className={`px-3 py-3 text-right font-medium ${proj.isFuture[i] ? "text-muted" : "text-fg"}`}>
                     {monthName(m)}<span className="block text-[0.6rem] font-normal text-faint">{proj.isFuture[i] ? "proyectado" : m === CUR ? "en curso" : "real"}</span>
@@ -449,18 +449,18 @@ export default function CashflowPage() {
               {proj.egresoRows.map((r) => <DataRow key={r.label} row={r} />)}
               <TotalRow label="Total Egresos" values={proj.totalEgr} tone="exp" />
 
-              <tr className="border-t-2 border-line bg-white/[0.04]">
-                <td className="sticky left-0 z-10 bg-white/[0.04] px-4 py-3 font-display text-fg">Neto del mes</td>
+              <tr className="border-t-2 border-line">
+                <td className="cf-sticky px-4 py-3 font-display text-fg">Neto del mes</td>
                 {proj.neto.map((n, i) => <td key={i} className={`tnum px-3 py-3 text-right font-medium ${n >= 0 ? "text-emerald" : "text-coral"}`}>{compact(n)}</td>)}
               </tr>
               {mode === "proyeccion" && (
-                <tr className="bg-sky/5">
-                  <td className="sticky left-0 z-10 bg-[#0b1119] px-4 py-3 font-display text-sky">Pesos líquidos</td>
+                <tr className="border-t border-line">
+                  <td className="cf-sticky px-4 py-3 font-display text-sky">Pesos líquidos</td>
                   {proj.pesosAcum.map((n, i) => <td key={i} className={`tnum px-3 py-3 text-right font-semibold ${n >= 0 ? "text-sky" : "text-coral"}`}>{compact(n)}</td>)}
                 </tr>
               )}
-              <tr className="bg-accent/5">
-                <td className="sticky left-0 z-10 bg-[#0d1410] px-4 py-3 font-display text-accent">{mode === "proyeccion" ? "Patrimonio neto acumulado" : "Neto Acumulado"}</td>
+              <tr className="border-t border-line">
+                <td className="cf-sticky px-4 py-3 font-display text-accent">{mode === "proyeccion" ? "Patrimonio neto acumulado" : "Neto Acumulado"}</td>
                 {proj.acum.map((n, i) => <td key={i} className={`tnum px-3 py-3 text-right font-semibold ${n >= 0 ? "text-accent" : "text-coral"}`}>{compact(n)}</td>)}
               </tr>
             </tbody>
@@ -501,12 +501,12 @@ function KpiBox({ label, value, hint, tone, icon }: { label: string; value: stri
 }
 
 function SectionRow({ label }: { label: string }) {
-  return (<tr className="border-t border-line"><td colSpan={HORIZON + 1} className="sticky left-0 bg-white/[0.05] px-4 pb-1 pt-3 text-[0.7rem] uppercase tracking-wider text-faint">{label}</td></tr>);
+  return (<tr className="border-t border-line"><td colSpan={HORIZON + 1} className="cf-sticky px-4 pb-1 pt-3 text-[0.7rem] uppercase tracking-wider text-faint">{label}</td></tr>);
 }
 function DataRow({ row }: { row: Row }) {
   return (
-    <tr className="border-b border-line/40 hover:bg-white/[0.03]">
-      <td className="sticky left-0 z-10 bg-white/[0.05] px-4 py-2 text-muted">{row.emoji} {row.label}</td>
+    <tr className="border-b border-line/40">
+      <td className="cf-sticky px-4 py-2 text-muted">{row.emoji} {row.label}</td>
       {row.values.map((v, i) => (<td key={i} className="tnum px-3 py-2 text-right text-fg/90">{v > 0 ? compact(v) : "—"}</td>))}
     </tr>
   );
@@ -514,8 +514,8 @@ function DataRow({ row }: { row: Row }) {
 function TotalRow({ label, values, tone }: { label: string; values: number[]; tone: "inc" | "exp" }) {
   const c = tone === "inc" ? "text-emerald" : "text-coral";
   return (
-    <tr className="border-b border-line bg-white/[0.03]">
-      <td className="sticky left-0 z-10 bg-[#13161d] px-4 py-2.5 font-medium text-fg">{label}</td>
+    <tr className="border-b border-line">
+      <td className="cf-sticky px-4 py-2.5 font-medium text-fg">{label}</td>
       {values.map((v, i) => <td key={i} className={`tnum px-3 py-2.5 text-right font-medium ${c}`}>{compact(v)}</td>)}
     </tr>
   );

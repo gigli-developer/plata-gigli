@@ -169,6 +169,19 @@ body {
   color: var(--color-fg);
 }
 
+/* Primera columna fija de la tabla de Cash Flow.
+   El fondo TIENE que ser opaco: con un translúcido, al scrollear la tabla en
+   horizontal los números pasan por debajo y se leen a través de las categorías.
+   Y tiene que ser el MISMO en todas las filas: antes había cinco fondos
+   distintos (dos translúcidos y tres sólidos con tintes de la paleta vieja) y la
+   columna se veía a parches. */
+.cf-sticky {
+  position: sticky;
+  left: 0;
+  z-index: 10;
+  background: #141618;
+}
+
 /* utilidades de texto */
 .text-muted { color: var(--color-muted); }
 .text-subtle { color: var(--color-subtle); }
