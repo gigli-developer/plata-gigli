@@ -1,0 +1,124 @@
+<!-- @dsCard group="Foundations" -->
+<!doctype html><html lang="es"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Superficies · Plata</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=Hanken+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  font-family:'Hanken Grotesk',system-ui,sans-serif;
+  color:#f4f4f3;background-color:#0a0a0a;
+  background-image:
+    radial-gradient(520px 460px at 7% 90%, rgba(255,176,84,.50), rgba(255,150,54,0) 62%),
+    radial-gradient(300px 300px at 3% 95%, rgba(255,205,120,.42), transparent 58%),
+    radial-gradient(820px 1000px at -4% 40%, rgba(74,120,72,.30), transparent 58%),
+    radial-gradient(980px 1080px at 102% 30%, rgba(96,152,206,.34), transparent 56%),
+    radial-gradient(1300px 1200px at 50% 122%, rgba(6,6,9,0), rgba(5,5,8,.62) 72%),
+    linear-gradient(158deg,#14110e 0%,#0d0b0d 46%,#0a0d12 100%);
+  background-attachment:fixed;
+  -webkit-font-smoothing:antialiased;
+  padding:28px;
+}
+.panel{
+  background:rgba(255,255,255,.08);
+  --glass:blur(26px) saturate(170%);
+  -webkit-backdrop-filter:var(--glass);backdrop-filter:var(--glass);
+  border:1px solid rgba(255,255,255,.32);border-radius:20px;
+  box-shadow:0 12px 44px rgba(0,0,0,.32),inset 0 1px 0 rgba(255,255,255,.42),inset 0 0 0 1px rgba(255,255,255,.06);
+}
+.panel-inner{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.10);border-radius:14px}
+.tnum{font-family:'JetBrains Mono',ui-monospace,monospace;font-feature-settings:'tnum' 1;letter-spacing:-.02em}
+.disp{font-family:'Bricolage Grotesque',system-ui,sans-serif;letter-spacing:-.02em}
+.label-micro{font-size:10.5px;letter-spacing:.05em;text-transform:uppercase;color:#9a9a9f}
+h1.t{font-size:24px;font-weight:700;letter-spacing:-.03em;margin-bottom:6px;font-family:'Bricolage Grotesque',system-ui,sans-serif}
+p.sub{font-size:13.5px;color:#9a9a9f;margin-bottom:22px;max-width:760px;line-height:1.5}
+h2.s{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:#6b6b70;margin:26px 0 12px}
+.grid{display:grid;gap:14px}
+code{font-family:'JetBrains Mono',ui-monospace,monospace;font-size:11.5px;color:#ffbf47;
+  background:rgba(255,255,255,.06);padding:2px 6px;border-radius:5px;white-space:nowrap}
+pre{font-family:'JetBrains Mono',ui-monospace,monospace;font-size:11px;line-height:1.65;color:#c2c2c6;
+  background:rgba(0,0,0,.34);border:1px solid rgba(255,255,255,.09);border-radius:11px;
+  padding:13px 15px;overflow-x:auto;margin-top:11px}
+.note{font-size:12.5px;color:#9a9a9f;line-height:1.55;margin-top:9px}
+.warn{border-left:2px solid #ff9e1b;padding-left:11px;color:#c2c2c6;font-size:12.5px;line-height:1.55;margin-top:11px}
+.bad{border-left:2px solid #ff433d;padding-left:11px}
+.good{border-left:2px solid #35e08a;padding-left:11px}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{text-align:left;font-size:10.5px;letter-spacing:.05em;text-transform:uppercase;color:#6b6b70;
+  padding:0 10px 9px 0;font-weight:400;border-bottom:1px solid rgba(255,255,255,.1)}
+td{padding:9px 10px 9px 0;border-bottom:1px solid rgba(255,255,255,.055);vertical-align:top;color:#c2c2c6}
+</style></head><body>
+<h1 class="t">Superficies</h1><p class="sub">El vidrio es la superficie firmada del rediseño. Flota sobre la atmósfera del body — si se saca el gradiente de fondo, las cards quedan grises y planas.</p>
+
+    <h2 class="s">.panel</h2>
+    <div class="" style="">
+      <div class="panel"
+           style="padding:17px;">
+        <div style="font-size:13.5px;color:#c2c2c6">Contenido sobre .panel</div>
+      </div>
+      <p class="note">La superficie de las cards: fondo translúcido sobre la atmósfera del body, borde claro y sombra. Fue vidrio real (backdrop-filter) hasta el 2026-08-03.</p>
+      <pre>background: rgba(255,255,255,0.07);
+border: 1px solid rgba(255,255,255,0.32);
+border-radius: 20px;
+box-shadow: 0 12px 44px rgba(0,0,0,.32),
+            inset 0 1px 0 rgba(255,255,255,.42),
+            inset 0 0 0 1px rgba(255,255,255,.06);</pre>
+      <div class="warn"><strong>Ojo:</strong> NO le devuelvas el <code>backdrop-filter</code>. Provocaba un bug de rasterizado de Chrome: al forzarse un repaint (pasar el cursor por el rail) aparecían franjas sombreadas sobre las cards y no se iban. Se probaron 13 variantes en el navegador del usuario — will-change, contain:paint, translateZ, isolation, tocar el fondo, bajar el blur hasta 4px — y ninguna lo evitó conservando el efecto. Lo único que lo elimina es no tener backdrop-filter.</div>
+    </div>
+    <h2 class="s">.panel-inner</h2>
+    <div class="panel" style="padding:17px">
+      <div class="panel-inner"
+           style="padding:17px;">
+        <div style="font-size:13.5px;color:#c2c2c6">Contenido sobre .panel-inner</div>
+      </div>
+      <p class="note">Sub-panel dentro de una card de vidrio. NO lleva blur propio: apilar backdrop-filters multiplica el costo y casi no se nota.</p>
+      <pre>background: rgba(255,255,255,0.05);
+border: 1px solid rgba(255,255,255,0.10);
+border-radius: 14px;</pre>
+      
+    </div>
+    <h2 class="s">.panel-hover</h2>
+    <div class="" style="">
+      <div class="panel-hover"
+           style="padding:17px;">
+        <div style="font-size:13.5px;color:#c2c2c6">Contenido sobre .panel-hover</div>
+      </div>
+      <p class="note">Estado hover para paneles clickeables. Sube 2px y aclara el borde.</p>
+      <pre>transition: border-color .15s ease, transform .15s ease, background .15s ease;
+/* :hover */
+border-color: rgba(255,255,255,0.45);
+background: rgba(255,255,255,0.11);
+transform: translateY(-2px);</pre>
+      
+    </div>
+    <h2 class="s">.ai-glow</h2>
+    <div class="" style="">
+      <div class=""
+           style="padding:17px;background:rgba(255,255,255,.06);border:1px solid rgba(255,158,27,.38);border-radius:20px;box-shadow:0 0 0 1px rgba(255,158,27,.06),0 18px 50px -22px rgba(255,158,27,.45)">
+        <div style="font-size:13.5px;color:#c2c2c6">Contenido sobre .ai-glow</div>
+      </div>
+      <p class="note">Reservado para el asistente IA. Borde naranja con gradiente enmascarado naranja→sky.</p>
+      <pre>background: rgba(255,255,255,0.06);
+border: 1px solid rgba(255,158,27,0.38);
+box-shadow: 0 0 0 1px rgba(255,158,27,.06),
+            0 18px 50px -22px rgba(255,158,27,.45);</pre>
+      <div class="warn"><strong>Ojo:</strong> El gradiente del borde se hace con ::before + mask-composite: exclude.</div>
+    </div>
+    <h2 class="s">.chip</h2>
+    <div class="" style="">
+      <div class=""
+           style="padding:17px;border:1px solid rgba(255,255,255,.10);background:rgba(255,255,255,.06);border-radius:999px;display:inline-block;padding:7px 15px">
+        <div style="font-size:13.5px;color:#c2c2c6">¿Cuánto gasté en Compras?</div>
+      </div>
+      <p class="note">Píldora de filtro o sugerencia.</p>
+      <pre>border: 1px solid rgba(255,255,255,0.10);
+background: rgba(255,255,255,0.06);
+border-radius: 999px;
+transition: all .15s ease;
+/* :hover */
+border-color: rgba(255,158,27,0.45);
+color: var(--color-fg);</pre>
+      
+    </div>
+</body></html>

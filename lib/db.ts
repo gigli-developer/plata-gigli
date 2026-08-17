@@ -1,5 +1,8 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { createClient } from "./supabase/client";
+// Fechas: siempre desde acá. Ver el encabezado de `lib/fechas.ts` — la lógica de
+// fechas desperdigada por archivo produjo siete bugs del mismo tipo.
+import { mes as mesDe, mesActual, sumarMeses, desdeElDia, hastaElDia } from "./fechas";
 
 export type Category = { id: number; name: string; emoji: string | null; kind: string };
 export type PaymentMethod = { id: number; name: string };
@@ -114,6 +117,100 @@ export async function fetchTransactions(sb: SupabaseClient, limit = 500): Promis
   }));
 }
 
+/**
+ * Transacciones de un rango de fechas, con filtro opcional por texto.
+ *
+ * `fetchTransactions` trae las últimas 500 sin filtrar, que sirve para la pantalla
+ * pero no para "qué gasté el martes": traer 500 filas para descartar 490 es caro
+ * y, si el rango es viejo, ni siquiera están. Acá el filtro va en la consulta.
+ *
+ * `desde`/`hasta` son YYYY-MM-DD **en hora de Argentina**, ambos inclusive.
+ */
+export async function fetchTransactionsRange(
+  sb: SupabaseClient,
+  desde: string,
+  hasta: string,
+  busqueda?: string,
+  limit = 300,
+): Promise<TxView[]> {
+  let q = sb
+    .from("transactions")
+    .select("id,type,amount,currency,fx_rate_ars,description,occurred_at,source,category_id,payment_method_id,categories(name,emoji),payment_methods(name),cards(name)")
+    .gte("occurred_at", desdeElDia(desde))
+    .lte("occurred_at", hastaElDia(hasta))
+    .order("occurred_at", { ascending: false })
+    .limit(limit);
+
+  if (busqueda) {
+    // Escapar los comodines. `*` va incluido: PostgREST lo traduce a `%`, así que
+    // una búsqueda de "*" devolvía TODA la base — el peor caso de tokens con un
+    // solo carácter — y "MERP*AUSA" matcheaba como comodín sin que nadie lo pidiera.
+    const t = busqueda.replace(/[\\%_*]/g, (c) => `\\${c}`);
+    q = q.ilike("description", `%${t}%`);
+  }
+
+  const { data, error } = await q;
+  if (error) throw error;
+  return (data ?? []).map((r: any): TxView => ({
+    id: r.id,
+    type: r.type,
+    amount: Number(r.amount),
+    currency: r.currency,
+    fxRate: r.fx_rate_ars != null ? Number(r.fx_rate_ars) : null,
+    desc: r.description || r.categories?.name || "Movimiento",
+    category: r.categories?.name ?? "Otros",
+    categoryId: r.category_id,
+    emoji: r.categories?.emoji ?? "✨",
+    method: r.payment_methods?.name ?? "—",
+    paymentMethodId: r.payment_method_id,
+    card: r.cards?.name ?? undefined,
+    source: r.source,
+    occurredAt: r.occurred_at,
+    date: formatDate(r.occurred_at),
+  }));
+}
+
+/**
+ * Movimientos dados de ALTA después de un instante (`created_at`, no `occurred_at`).
+ *
+ * Los dos campos se separan justo en el caso que importa: el importador de mails
+ * corre cada 15 minutos, así que un consumo del viernes a la noche puede aparecer
+ * en la base recién el sábado. Para "¿hay algo nuevo?" lo que vale es cuándo lo
+ * VISTE, no cuándo pasó — si no, un consumo viejo recién importado no figuraría
+ * nunca como novedad.
+ */
+export async function fetchTransactionsNuevas(
+  sb: SupabaseClient,
+  desdeIso: string,
+  limit = 60,
+): Promise<(TxView & { createdAt: string })[]> {
+  const { data, error } = await sb
+    .from("transactions")
+    .select("id,type,amount,currency,fx_rate_ars,description,occurred_at,created_at,source,category_id,payment_method_id,categories(name,emoji),payment_methods(name),cards(name)")
+    .gte("created_at", desdeIso)
+    .order("created_at", { ascending: false })
+    .limit(limit);
+  if (error) throw error;
+  return (data ?? []).map((r: any) => ({
+    id: r.id,
+    type: r.type,
+    amount: Number(r.amount),
+    currency: r.currency,
+    fxRate: r.fx_rate_ars != null ? Number(r.fx_rate_ars) : null,
+    desc: r.description || r.categories?.name || "Movimiento",
+    category: r.categories?.name ?? "Otros",
+    categoryId: r.category_id,
+    emoji: r.categories?.emoji ?? "✨",
+    method: r.payment_methods?.name ?? "—",
+    paymentMethodId: r.payment_method_id,
+    card: r.cards?.name ?? undefined,
+    source: r.source,
+    occurredAt: r.occurred_at,
+    createdAt: r.created_at,
+    date: formatDate(r.occurred_at),
+  }));
+}
+
 export type NewTx = {
   type: "ingreso" | "egreso";
   amount: number;
@@ -121,6 +218,8 @@ export type NewTx = {
   categoryId: number | null;
   paymentMethodId: number | null;
   description: string | null;
+  /** ISO. Si no viene, la base pone now(). Sirve para cargar un gasto de ayer. */
+  occurredAt?: string;
 };
 
 export function formatShort(iso: string | null): string {
@@ -410,10 +509,16 @@ export async function fetchExchanges(sb: SupabaseClient): Promise<ExchangeView[]
   return (data ?? []).map((e: any) => ({ id: e.id, from: e.from_currency, to: e.to_currency, fromAmount: Number(e.from_amount), toAmount: Number(e.to_amount), rate: Number(e.rate), rateSource: e.rate_source, date: formatShort(e.occurred_at) }));
 }
 
-export async function insertTransaction(sb: SupabaseClient, tx: NewTx) {
+/**
+ * `userId` solo hace falta del lado SERVIDOR. La columna `user_id` es NOT NULL con
+ * default `auth.uid()`: desde el browser la pone la sesión sola, pero con el
+ * service role no hay usuario autenticado, `auth.uid()` da NULL y el insert falla.
+ */
+export async function insertTransaction(sb: SupabaseClient, tx: NewTx, userId?: string) {
   const { data, error } = await sb
     .from("transactions")
     .insert({
+      ...(userId ? { user_id: userId } : {}),
       type: tx.type,
       amount: tx.amount,
       currency: tx.currency,
@@ -421,6 +526,10 @@ export async function insertTransaction(sb: SupabaseClient, tx: NewTx) {
       payment_method_id: tx.paymentMethodId,
       description: tx.description,
       source: "manual",
+      // Solo se manda si el usuario eligió fecha; si no, la base pone now().
+      // El trigger trg_tx_freeze_fx congela la cotización del día que quede acá,
+      // así que un gasto de abril se valúa con el dólar de abril.
+      ...(tx.occurredAt ? { occurred_at: tx.occurredAt } : {}),
     })
     .select("id")
     .single();
@@ -481,14 +590,23 @@ export type NewDebt = {
 };
 // Movimiento "Préstamo" en Transacciones (no cuenta como gasto/ingreso en métricas).
 // Devuelve el id de la transacción creada (para vincularla al pago y poder borrarlos juntos).
-async function loanTransaction(sb: SupabaseClient, type: "ingreso" | "egreso", amount: number, currency: string, desc: string): Promise<number | null> {
-  const { data: cat } = await sb.from("categories").select("id").eq("name", "Préstamos").maybeSingle();
+// Antes esta función NO leía ningún `error`: si el insert fallaba (RLS, constraint,
+// red) devolvía null y los tres llamadores lo trataban como éxito. Resultado: la
+// deuda quedaba registrada pero el movimiento de plata no existía, en silencio.
+async function loanTransaction(sb: SupabaseClient, type: "ingreso" | "egreso", amount: number, currency: string, desc: string): Promise<number> {
+  const { data: cat, error: eCat } = await sb.from("categories").select("id").eq("name", "Préstamos").maybeSingle();
+  if (eCat) throw eCat;
+  // Sin la categoría "Préstamos" la transacción caería en "Otros" y SÍ contaría como
+  // gasto en las métricas, rompiendo la decisión 3. Mejor fallar que falsear.
+  if (!cat?.id) throw new Error('Falta la categoría "Préstamos". Creala antes de registrar movimientos de deuda.');
   const { data: pm } = await sb.from("payment_methods").select("id").ilike("name", "%efectivo%").limit(1).maybeSingle();
-  const { data } = await sb.from("transactions").insert({
-    type, amount, currency, category_id: cat?.id ?? null, payment_method_id: pm?.id ?? null,
+  const { data, error } = await sb.from("transactions").insert({
+    type, amount, currency, category_id: cat.id, payment_method_id: pm?.id ?? null,
     description: desc, is_paid: true, source: "manual",
   }).select("id").maybeSingle();
-  return data?.id ?? null;
+  if (error) throw error;
+  if (!data?.id) throw new Error("No se pudo registrar el movimiento de plata de la deuda.");
+  return data.id as number;
 }
 
 export async function insertDebt(sb: SupabaseClient, d: NewDebt) {
@@ -512,6 +630,171 @@ export async function insertDebt(sb: SupabaseClient, d: NewDebt) {
     else await loanTransaction(sb, "ingreso", d.amount, d.currency, `Préstamo de ${pname}`);
   }
 }
+// ---- Registro de operaciones (botón "Deshacer") ----
+// Solo se anotan las operaciones que crean VARIAS filas de una. NO se registra lo
+// que hace el email-poller: "lo último que pasó" no es "lo último que hiciste vos".
+export type ActivityKind = "split" | "exchange" | "debt_payment";
+export type Activity = { id: number; kind: ActivityKind; label: string; detail: any; createdAt: string };
+
+async function logActivity(sb: SupabaseClient, kind: ActivityKind, label: string, detail: any) {
+  // Si falla, se pierde el deshacer pero NO la operación: nunca debe tirar el flujo.
+  try { await sb.from("activity_log").insert({ kind, label, detail }); } catch { /* noop */ }
+}
+
+/** La última operación deshecha-ble, o null si no hay ninguna pendiente. */
+export async function ultimaOperacion(sb: SupabaseClient): Promise<Activity | null> {
+  const { data, error } = await sb.from("activity_log")
+    .select("id,kind,label,detail,created_at")
+    .is("undone_at", null).order("created_at", { ascending: false }).limit(1).maybeSingle();
+  if (error) return null;   // la tabla puede no existir todavía (migración sin correr)
+  if (!data) return null;
+  return { id: data.id, kind: data.kind, label: data.label, detail: data.detail, createdAt: data.created_at };
+}
+
+/**
+ * Revierte una operación registrada. Cada tipo sabe deshacerse:
+ *   split        → junta las dos transacciones en una y borra las deudas
+ *   exchange     → borra el cambio (la FK en cascada se lleva su contrasiento)
+ *   debt_payment → borra el pago, su movimiento de plata y reabre la deuda
+ */
+export async function deshacerOperacion(sb: SupabaseClient, op: Activity) {
+  const d = op.detail ?? {};
+
+  if (op.kind === "split") {
+    // 1) la original vuelve a su monto y descripción de antes
+    const { error: e1 } = await sb.from("transactions")
+      .update({ amount: d.montoOriginal, description: d.descOriginal ?? null })
+      .eq("id", d.originalTxId);
+    if (e1) throw e1;
+    // 2) se va la hermana de "Préstamos"
+    if (d.hermanaTxId) {
+      const { error } = await sb.from("transactions").delete().eq("id", d.hermanaTxId);
+      if (error) throw error;
+    }
+    // 3) y las deudas que había generado
+    if (d.debtIds?.length) {
+      const { error } = await sb.from("debts").delete().in("id", d.debtIds);
+      if (error) throw error;
+    }
+  } else if (op.kind === "exchange") {
+    await deleteExchange(sb, d.exchangeId);
+  } else if (op.kind === "debt_payment") {
+    if (d.txId) await sb.from("transactions").delete().eq("id", d.txId);
+    const { error } = await sb.from("debt_payments").delete().eq("id", d.paymentId);
+    if (error) throw error;
+    // si el pago había saldado la deuda, vuelve a quedar pendiente
+    if (d.saldoLaDeuda) {
+      await sb.from("debts").update({ status: "pending", settled_at: null }).eq("id", d.debtId);
+    }
+  } else {
+    throw new Error(`No sé deshacer una operación de tipo "${op.kind}".`);
+  }
+
+  const { error } = await sb.from("activity_log").update({ undone_at: new Date().toISOString() }).eq("id", op.id);
+  if (error) throw error;
+}
+
+// ---- Dividir un gasto entre varias personas ----
+export type SplitParte = { personId: number; personName: string; amount: number };
+
+/**
+ * Convierte un gasto propio en un gasto compartido.
+ *
+ * El movimiento original se PARTE EN DOS, conservando fecha, tarjeta, resumen y
+ * método de pago:
+ *   · tu parte  → queda en la transacción original, con su categoría real
+ *   · lo ajeno  → una transacción hermana en "Préstamos"
+ * más una deuda `split` por persona.
+ *
+ * Por qué así:
+ *   - "Préstamos" ya está EXCLUIDA de las métricas de gasto (decisión 3), así que
+ *     "Gastos por categoría" pasa a mostrar solo lo tuyo sin tocar ningún cálculo.
+ *   - Los dos movimientos suman el total original → el saldo no se descuadra.
+ *   - Las dos conservan el `statement_id`, así que el resumen de la tarjeta sigue
+ *     sumando lo mismo y sigue cerrando contra el PDF del banco. Por eso esto
+ *     funciona igual con crédito, que era el caso "difícil".
+ *   - El patrimonio no se mueve: cambiás plata por "te deben".
+ *
+ * No hay RPC, así que la atomicidad se cubre con compensación: si falla un paso,
+ * se deshace lo ya creado.
+ */
+export async function splitTransaction(sb: SupabaseClient, txId: number, yourShare: number, partes: SplitParte[]) {
+  if (!partes.length) throw new Error("Elegí al menos una persona con quien dividir.");
+
+  const { data: tx, error: eTx } = await sb.from("transactions").select("*").eq("id", txId).maybeSingle();
+  if (eTx) throw eTx;
+  if (!tx) throw new Error("Ese movimiento ya no existe. Recargá la pantalla.");
+
+  const total = Number(tx.amount);
+  const ajeno = partes.reduce((a, p) => a + p.amount, 0);
+  if (Math.abs(yourShare + ajeno - total) > 0.5) {
+    throw new Error(`Las partes suman ${(yourShare + ajeno).toFixed(2)} y el gasto es ${total.toFixed(2)}.`);
+  }
+  if (yourShare < 0 || partes.some((p) => p.amount <= 0)) throw new Error("Cada parte tiene que ser mayor a cero.");
+
+  const { data: cat } = await sb.from("categories").select("id").eq("name", "Préstamos").maybeSingle();
+  if (!cat?.id) throw new Error('Falta la categoría "Préstamos", que es la que mantiene el gasto ajeno fuera de tus métricas.');
+
+  const base = (tx.description ?? "Gasto compartido").replace(/^Parte de otros · /, "");
+
+  // 1) la transacción hermana con la parte ajena
+  const { data: hermana, error: eH } = await sb.from("transactions").insert({
+    type: tx.type,
+    amount: ajeno,
+    currency: tx.currency,
+    category_id: cat.id,
+    payment_method_id: tx.payment_method_id,
+    card_id: tx.card_id,
+    statement_id: tx.statement_id,   // mismo resumen: el total de la tarjeta no cambia
+    occurred_at: tx.occurred_at,
+    description: `Parte de otros · ${base}`,
+    is_paid: tx.is_paid,
+    source: tx.source,
+  }).select("id").single();
+  if (eH) throw eH;
+
+  const deudas: number[] = [];
+  try {
+    // 2) una deuda por persona
+    for (const p of partes) {
+      const { data, error } = await sb.from("debts").insert({
+        person_id: p.personId,
+        kind: "split",
+        direction: "to_collect",
+        amount: p.amount,
+        currency: tx.currency,
+        description: base,
+        split_total: total,
+        your_share: yourShare,
+        participants: partes.length + 1,   // los otros + vos
+      }).select("id").single();
+      if (error) throw error;
+      deudas.push(data.id as number);
+    }
+
+    // 3) recién ahora se reduce la original a tu parte
+    const { error: eU } = await sb.from("transactions")
+      .update({ amount: yourShare, description: base })
+      .eq("id", txId);
+    if (eU) throw eU;
+
+    // 4) queda registrado para poder deshacerlo. Guarda el monto y la descripción
+    //    PREVIOS, que son los que hay que restaurar.
+    await logActivity(sb, "split", `División de «${base}» entre ${partes.length + 1}`, {
+      originalTxId: txId,
+      hermanaTxId: hermana.id,
+      debtIds: deudas,
+      montoOriginal: total,
+      descOriginal: tx.description,
+    });
+  } catch (err) {
+    // compensación: sin esto quedaría un egreso duplicado inflando el gasto
+    if (deudas.length) await sb.from("debts").delete().in("id", deudas);
+    await sb.from("transactions").delete().eq("id", hermana.id);
+    throw err;
+  }
+}
+
 export async function insertPerson(sb: SupabaseClient, name: string): Promise<number> {
   const { data, error } = await sb.from("persons").insert({ name }).select("id").single();
   if (error) throw error;
@@ -537,42 +820,93 @@ async function debtPaidSoFar(sb: SupabaseClient, debtId: number): Promise<number
   return (data ?? []).reduce((a: number, p: any) => a + Number(p.amount), 0);
 }
 // Al PAGAR/SALDAR una deuda, la plata entra o sale (sea préstamo, gasto compartido o en especie pagado en plata).
-async function debtCashMovement(sb: SupabaseClient, d: any, amount: number): Promise<number | null> {
+// `nota` es opcional y se anexa a la descripción del movimiento: sin ella, en
+// Transacciones solo se ve "Cobro a Branko" y no queda registro de por qué ni cómo.
+async function debtCashMovement(sb: SupabaseClient, d: any, amount: number, nota?: string): Promise<number> {
   const pname = d.persons?.name ?? "alguien";
-  if (d.direction === "to_collect") return loanTransaction(sb, "ingreso", amount, d.currency, `Cobro a ${pname}`);
-  return loanTransaction(sb, "egreso", amount, d.currency, `Pago a ${pname}`);
+  const sufijo = nota?.trim() ? ` · ${nota.trim()}` : "";
+  const base = d.direction === "to_collect" ? `Cobro a ${pname}` : `Pago a ${pname}`;
+  const contexto = d.description ? ` (${d.description})` : "";
+  return loanTransaction(sb, d.direction === "to_collect" ? "ingreso" : "egreso", amount, d.currency, `${base}${contexto}${sufijo}`);
+}
+
+/**
+ * Registra un pago de deuda: mueve la plata y anota el pago.
+ *
+ * Son dos escrituras en tablas distintas y NO hay transacción (esto corre desde el
+ * browser). Lo que sí hay es COMPENSACIÓN: si el insert del pago falla, se borra la
+ * transacción recién creada. Sin eso quedaba un ingreso/egreso fantasma que había
+ * movido el saldo sin ningún pago que lo justificara.
+ *
+ * Lo correcto de verdad sería una RPC, como se hizo con `register_exchange`.
+ */
+async function registrarPago(sb: SupabaseClient, d: any, debtId: number, amount: number, nota?: string): Promise<{ txId: number; paymentId: number }> {
+  const txId = await debtCashMovement(sb, d, amount, nota);
+  const { data, error } = await sb.from("debt_payments")
+    .insert({ debt_id: debtId, amount, transaction_id: txId }).select("id").single();
+  if (error) {
+    await sb.from("transactions").delete().eq("id", txId); // compensación
+    throw error;
+  }
+  return { txId, paymentId: data.id as number };
+}
+
+// Saldo pendiente real de una deuda, leído de la base (no del estado de la UI).
+async function debtOutstanding(sb: SupabaseClient, debtId: number, amount: number): Promise<number> {
+  const paid = await debtPaidSoFar(sb, debtId);
+  return Math.max(Number(amount) - paid, 0);
+}
+
+async function marcarSaldada(sb: SupabaseClient, id: number) {
+  const { error } = await sb.from("debts").update({ status: "settled", settled_at: new Date().toISOString() }).eq("id", id);
+  if (error) throw error;
 }
 
 // Saldar el total restante de una deuda (registra un pago por el saldo pendiente).
 export async function settleDebt(sb: SupabaseClient, id: number) {
-  const { data: debt } = await sb.from("debts").select("kind,direction,amount,currency,persons(name)").eq("id", id).maybeSingle();
-  if (!debt) return;
+  const { data: debt, error } = await sb.from("debts").select("kind,direction,amount,currency,persons(name)").eq("id", id).maybeSingle();
+  if (error) throw error;
+  // Antes era `return` a secas: si la deuda ya no existía, el botón no hacía nada
+  // y tampoco avisaba.
+  if (!debt) throw new Error("Esa deuda ya no existe. Recargá la pantalla.");
   const d = debt as any;
-  const paid = await debtPaidSoFar(sb, id);
-  const outstanding = Math.max(Number(d.amount) - paid, 0);
-  if (outstanding > 0.5) {
-    const txId = await debtCashMovement(sb, d, outstanding);
-    await sb.from("debt_payments").insert({ debt_id: id, amount: outstanding, transaction_id: txId });
-  }
-  await sb.from("debts").update({ status: "settled", settled_at: new Date().toISOString() }).eq("id", id);
+  const outstanding = await debtOutstanding(sb, id, d.amount);
+  if (outstanding > 0.5) await registrarPago(sb, d, id, outstanding);
+  await marcarSaldada(sb, id);
 }
 
 // Pago parcial de una deuda: registra un pago (NO toca el monto original) y mueve la plata.
-export async function payDebt(sb: SupabaseClient, debtId: number, amount: number) {
-  const { data: debt } = await sb.from("debts").select("kind,direction,amount,currency,persons(name)").eq("id", debtId).maybeSingle();
-  if (!debt) return;
+export async function payDebt(sb: SupabaseClient, debtId: number, amount: number, nota?: string) {
+  const { data: debt, error } = await sb.from("debts").select("kind,direction,amount,currency,persons(name)").eq("id", debtId).maybeSingle();
+  if (error) throw error;
+  if (!debt) throw new Error("Esa deuda ya no existe. Recargá la pantalla.");
   const d = debt as any;
-  const txId = await debtCashMovement(sb, d, amount);
-  await sb.from("debt_payments").insert({ debt_id: debtId, amount, transaction_id: txId });
-  const paid = await debtPaidSoFar(sb, debtId);
-  if (paid >= Number(d.amount) - 0.5) await sb.from("debts").update({ status: "settled", settled_at: new Date().toISOString() }).eq("id", debtId);
+
+  // El saldo pendiente se relee de la base, no se confía en la UI: sin este tope se
+  // podía pagar $50.000 de una deuda de $10.000. La deuda quedaba saldada (outstanding
+  // hace Math.max(…, 0), así que el exceso no se veía) pero el movimiento de plata se
+  // generaba por el monto completo y te descuadraba el saldo líquido.
+  const outstanding = await debtOutstanding(sb, debtId, d.amount);
+  if (amount > outstanding + 0.5) {
+    throw new Error(`El pago (${amount.toLocaleString("es-AR")}) supera el saldo pendiente (${outstanding.toLocaleString("es-AR")}).`);
+  }
+
+  const { txId, paymentId } = await registrarPago(sb, d, debtId, amount, nota);
+  const saldoLaDeuda = (await debtOutstanding(sb, debtId, d.amount)) <= 0.5;
+  if (saldoLaDeuda) await marcarSaldada(sb, debtId);
+
+  const quien = d.persons?.name ?? "alguien";
+  await logActivity(sb, "debt_payment", `Pago de ${amount.toLocaleString("es-AR")} ${d.currency} de ${quien}`, {
+    debtId, paymentId, txId, saldoLaDeuda,
+  });
 }
 
 // Borrar un pago de deuda (ej: click duplicado): elimina también su movimiento de plata
 // y, si la deuda estaba saldada, la reabre con el saldo pendiente que corresponda.
 export async function deleteDebtPayment(sb: SupabaseClient, debtId: number, p: DebtPayment) {
   if (p.transactionId) {
-    await sb.from("transactions").delete().eq("id", p.transactionId);
+    const { error } = await sb.from("transactions").delete().eq("id", p.transactionId);
+    if (error) throw error;
   } else {
     // Pagos viejos sin vínculo: matchear el movimiento "Cobro a/Pago a" por monto y ±2 min.
     const t = new Date(p.at).getTime();
@@ -581,11 +915,15 @@ export async function deleteDebtPayment(sb: SupabaseClient, debtId: number, p: D
     const hit = (cand ?? []).find((x: any) => /^(cobro a|pago a)/i.test(x.description ?? ""));
     if (hit) await sb.from("transactions").delete().eq("id", hit.id);
   }
-  await sb.from("debt_payments").delete().eq("id", p.id);
+  const { error: ePago } = await sb.from("debt_payments").delete().eq("id", p.id);
+  if (ePago) throw ePago;
   const { data: d } = await sb.from("debts").select("amount,status").eq("id", debtId).maybeSingle();
   if (d && (d as any).status === "settled") {
     const paid = await debtPaidSoFar(sb, debtId);
-    if (Number((d as any).amount) - paid > 0.5) await sb.from("debts").update({ status: "pending", settled_at: null }).eq("id", debtId);
+    if (Number((d as any).amount) - paid > 0.5) {
+      const { error } = await sb.from("debts").update({ status: "pending", settled_at: null }).eq("id", debtId);
+      if (error) throw error;
+    }
   }
 }
 
@@ -719,20 +1057,30 @@ export async function fetchNetWorthSeries(sb: SupabaseClient, months = 12): Prom
 // moneda), para que el llamador lo valúe con la cotización viva vía `aggArs()`.
 export type MonthAgg = { month: string; type: "ingreso" | "egreso"; category: string; emoji: string; method: string; currency: "ARS" | "USD" | "USDT"; total: number; totalArs: number; totalPend: number; count: number };
 export async function fetchMonthlyBreakdown(sb: SupabaseClient, monthsBack = 6): Promise<MonthAgg[]> {
-  const since = new Date();
-  since.setMonth(since.getMonth() - monthsBack);
-  since.setDate(1);
+  // Ventana de meses CALENDARIO completos, desde el día 1 a las 00:00 de Argentina.
+  //
+  // ⚠️ Antes era `setMonth(getMonth()-monthsBack); setDate(1)` sin poner la hora en
+  // cero, así que `since` conservaba la hora actual y **el mes más viejo salía
+  // truncado según la hora en que preguntaras**: a las 12:50 se perdía todo lo
+  // anterior a las 12:50 del día 1. Medido: abril daba $474.764 con `meses:4` y
+  // $1.013.974 con `meses:5` — el 53% del mes aparecía o desaparecía solo.
+  // Además devolvía monthsBack+1 buckets en vez de monthsBack.
+  const desde = desdeElDia(`${sumarMeses(mesActual(), -Math.max(monthsBack - 1, 0))}-01`);
+
   const { data, error } = await sb
     .from("transactions")
     .select("type,amount,currency,fx_rate_ars,occurred_at,categories(name,emoji),payment_methods(name)")
-    .gte("occurred_at", since.toISOString())
+    .gte("occurred_at", desde)
     .order("occurred_at", { ascending: false });
   if (error) throw error;
   const map = new Map<string, MonthAgg>();
   for (const r of (data ?? []) as any[]) {
     const cat = r.categories?.name ?? "Otros";
     if (cat === "Cambio Divisas" || cat === "Préstamos") continue; // no son gasto/ingreso real
-    const month = String(r.occurred_at).slice(0, 7); // YYYY-MM
+    // ⚠️ NO `slice(0,7)`: eso agrupa por mes UTC. Un gasto del 31 de mayo a las
+    // 23:23 de Argentina se guarda como 1 de junio en UTC y caía en el mes
+    // siguiente. Medido: $67.250 de mayo contados en junio.
+    const month = mesDe(r.occurred_at);
     const method = r.payment_methods?.name ?? "—";
     const key = `${month}|${r.type}|${cat}|${method}|${r.currency}`;
     const cur = map.get(key) ?? { month, type: r.type, category: cat, emoji: r.categories?.emoji ?? "✨", method, currency: r.currency, total: 0, totalArs: 0, totalPend: 0, count: 0 };
@@ -817,7 +1165,7 @@ export type NewExchange = { from: string; to: string; fromAmount: number; toAmou
  * fallara la segunda, quedaría un saldo mal sin su contrapartida.
  */
 export async function insertExchange(sb: SupabaseClient, e: NewExchange) {
-  const { error } = await sb.rpc("register_exchange", {
+  const { data, error } = await sb.rpc("register_exchange", {
     p_from: e.from,
     p_to: e.to,
     p_from_amount: e.fromAmount,
@@ -825,5 +1173,73 @@ export async function insertExchange(sb: SupabaseClient, e: NewExchange) {
     p_rate: e.rate,
     p_rate_source: e.rateSource,
   });
+  if (error) throw error;
+  // La RPC devuelve el id del cambio; con eso el deshacer borra en cascada.
+  if (data) await logActivity(sb, "exchange", `Cambio de ${e.fromAmount.toLocaleString("es-AR")} ${e.from} a ${e.toAmount.toLocaleString("es-AR")} ${e.to}`, { exchangeId: data });
+}
+
+/**
+ * Edita un cambio ya registrado y su contrasiento.
+ *
+ * Va por RPC porque toca tres filas (la operación + las dos transacciones) y
+ * tienen que moverse juntas: si se hiciera por partes y fallara la segunda, el
+ * saldo quedaría inconsistente con el cambio.
+ */
+export async function updateExchange(sb: SupabaseClient, id: number, e: NewExchange) {
+  // Si la migración no corrió, la RPC no existe y el error de PostgREST es críptico
+  // ("Could not find the function..."). Mejor decir qué falta.
+  const { error } = await sb.rpc("update_exchange", {
+    p_id: id,
+    p_from: e.from,
+    p_to: e.to,
+    p_from_amount: e.fromAmount,
+    p_to_amount: e.toAmount,
+    p_rate: e.rate,
+    p_rate_source: e.rateSource,
+  });
+  if (error) {
+    if (/find the function|does not exist|PGRST202/i.test(error.message ?? "")) {
+      throw new Error("Falta correr la migración 2026-08-03 en Supabase para poder editar cambios. Por ahora podés borrarlo y cargarlo de nuevo.");
+    }
+    throw error;
+  }
+}
+
+/**
+ * Borra un cambio junto con las dos transacciones que generó.
+ *
+ * Con la migración `2026-08-03_exchange_link` aplicada alcanza con borrar el cambio:
+ * la FK `transactions.exchange_id` es ON DELETE CASCADE. Pero si todavía NO se corrió,
+ * ese borrado dejaría los dos movimientos huérfanos y el saldo descuadrado — por eso
+ * acá se borran explícitamente ANTES, con el vínculo si existe y por coincidencia de
+ * fecha y montos si no. Cuando la migración esté, la primera rama cubre todo y esta
+ * salvaguarda queda inerte.
+ */
+export async function deleteExchange(sb: SupabaseClient, id: number) {
+  const { data: ex } = await sb.from("currency_exchanges")
+    .select("from_currency,to_currency,from_amount,to_amount,occurred_at").eq("id", id).maybeSingle();
+
+  // 1) por el vínculo (post-migración)
+  const { error: eLink } = await sb.from("transactions").delete().eq("exchange_id", id);
+
+  // 2) sin la columna, PostgREST devuelve 42703: caer al matcheo por fecha + monto,
+  //    el mismo criterio que usa el backfill de la migración.
+  if (eLink && ex) {
+    const t = new Date(ex.occurred_at as string).getTime();
+    const desde = new Date(t - 2000).toISOString();
+    const hasta = new Date(t + 2000).toISOString();
+    const { data: cat } = await sb.from("categories").select("id").eq("name", "Cambio Divisas").maybeSingle();
+    if (cat?.id) {
+      const { data: cand } = await sb.from("transactions")
+        .select("id,type,amount,currency")
+        .eq("category_id", cat.id).gte("occurred_at", desde).lte("occurred_at", hasta);
+      const hit = (cand ?? []).filter((t: any) =>
+        (t.type === "egreso" && t.currency === ex.from_currency && Number(t.amount) === Number(ex.from_amount)) ||
+        (t.type === "ingreso" && t.currency === ex.to_currency && Number(t.amount) === Number(ex.to_amount)));
+      if (hit.length) await sb.from("transactions").delete().in("id", hit.map((h: any) => h.id));
+    }
+  }
+
+  const { error } = await sb.from("currency_exchanges").delete().eq("id", id);
   if (error) throw error;
 }

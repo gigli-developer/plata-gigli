@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import { db, insertCard, updateCard, archiveCard, last4EnUso, type CardFull } from "@/lib/db";
-import { X, Trash, Card as CardIcon } from "../icons";
+import { Trash, Card as CardIcon } from "../icons";
+import Modal from "./Modal";
 
 const REDES = ["VISA", "Mastercard", "AMEX"];
 
@@ -64,13 +65,8 @@ export default function CardModal({ card, onClose, onSaved }: {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto overscroll-contain bg-black/60 p-4 backdrop-blur-sm" onClick={onClose}>
-      <div className="panel w-full max-w-md p-6" onClick={(e) => e.stopPropagation()}>
-        <div className="flex items-center justify-between">
-          <h2 className="font-display text-lg text-fg">{card ? "Editar tarjeta" : "Nueva tarjeta"}</h2>
-          <button onClick={onClose} className="grid h-8 w-8 place-items-center rounded-lg text-muted hover:text-fg"><X className="h-4 w-4" /></button>
-        </div>
-
+    <Modal title={card ? "Editar tarjeta" : "Nueva tarjeta"} onClose={onClose}>
+      <>
         {!card && (
           <p className="mt-3 flex items-center gap-2 rounded-xl border border-sky/25 bg-sky/8 px-3 py-2 text-xs text-sky">
             <CardIcon className="h-4 w-4 shrink-0" /> Solo tarjetas de <b>crédito</b>. Al guardarla se genera automáticamente su primer resumen.
@@ -129,8 +125,8 @@ export default function CardModal({ card, onClose, onSaved }: {
             {busy ? "Guardando…" : card ? "Guardar cambios" : "Crear tarjeta"}
           </button>
         </div>
-      </div>
-    </div>
+      </>
+    </Modal>
   );
 }
 

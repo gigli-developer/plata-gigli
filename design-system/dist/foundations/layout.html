@@ -1,0 +1,95 @@
+<!-- @dsCard group="Foundations" -->
+<!doctype html><html lang="es"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Grilla y espaciado · Plata</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=Hanken+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  font-family:'Hanken Grotesk',system-ui,sans-serif;
+  color:#f4f4f3;background-color:#0a0a0a;
+  background-image:
+    radial-gradient(520px 460px at 7% 90%, rgba(255,176,84,.50), rgba(255,150,54,0) 62%),
+    radial-gradient(300px 300px at 3% 95%, rgba(255,205,120,.42), transparent 58%),
+    radial-gradient(820px 1000px at -4% 40%, rgba(74,120,72,.30), transparent 58%),
+    radial-gradient(980px 1080px at 102% 30%, rgba(96,152,206,.34), transparent 56%),
+    radial-gradient(1300px 1200px at 50% 122%, rgba(6,6,9,0), rgba(5,5,8,.62) 72%),
+    linear-gradient(158deg,#14110e 0%,#0d0b0d 46%,#0a0d12 100%);
+  background-attachment:fixed;
+  -webkit-font-smoothing:antialiased;
+  padding:28px;
+}
+.panel{
+  background:rgba(255,255,255,.08);
+  --glass:blur(26px) saturate(170%);
+  -webkit-backdrop-filter:var(--glass);backdrop-filter:var(--glass);
+  border:1px solid rgba(255,255,255,.32);border-radius:20px;
+  box-shadow:0 12px 44px rgba(0,0,0,.32),inset 0 1px 0 rgba(255,255,255,.42),inset 0 0 0 1px rgba(255,255,255,.06);
+}
+.panel-inner{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.10);border-radius:14px}
+.tnum{font-family:'JetBrains Mono',ui-monospace,monospace;font-feature-settings:'tnum' 1;letter-spacing:-.02em}
+.disp{font-family:'Bricolage Grotesque',system-ui,sans-serif;letter-spacing:-.02em}
+.label-micro{font-size:10.5px;letter-spacing:.05em;text-transform:uppercase;color:#9a9a9f}
+h1.t{font-size:24px;font-weight:700;letter-spacing:-.03em;margin-bottom:6px;font-family:'Bricolage Grotesque',system-ui,sans-serif}
+p.sub{font-size:13.5px;color:#9a9a9f;margin-bottom:22px;max-width:760px;line-height:1.5}
+h2.s{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:#6b6b70;margin:26px 0 12px}
+.grid{display:grid;gap:14px}
+code{font-family:'JetBrains Mono',ui-monospace,monospace;font-size:11.5px;color:#ffbf47;
+  background:rgba(255,255,255,.06);padding:2px 6px;border-radius:5px;white-space:nowrap}
+pre{font-family:'JetBrains Mono',ui-monospace,monospace;font-size:11px;line-height:1.65;color:#c2c2c6;
+  background:rgba(0,0,0,.34);border:1px solid rgba(255,255,255,.09);border-radius:11px;
+  padding:13px 15px;overflow-x:auto;margin-top:11px}
+.note{font-size:12.5px;color:#9a9a9f;line-height:1.55;margin-top:9px}
+.warn{border-left:2px solid #ff9e1b;padding-left:11px;color:#c2c2c6;font-size:12.5px;line-height:1.55;margin-top:11px}
+.bad{border-left:2px solid #ff433d;padding-left:11px}
+.good{border-left:2px solid #35e08a;padding-left:11px}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{text-align:left;font-size:10.5px;letter-spacing:.05em;text-transform:uppercase;color:#6b6b70;
+  padding:0 10px 9px 0;font-weight:400;border-bottom:1px solid rgba(255,255,255,.1)}
+td{padding:9px 10px 9px 0;border-bottom:1px solid rgba(255,255,255,.055);vertical-align:top;color:#c2c2c6}
+</style></head><body>
+<h1 class="t">Grilla y espaciado</h1><p class="sub">El usuario lo describió así: «en divisas está todo en un cuadrado y todo forma un cuadrado; en resumen no forma un cuadrado, y eso me choca».</p>
+
+  <div class="note good" style="margin-bottom:22px"><strong>La referencia es /divisas.</strong>
+  Es la pantalla donde los KPIs, los gráficos y las cards cierran en un rectángulo parejo.
+  El resto debería replicar su receta.</div>
+
+  <h2 class="s">La receta</h2>
+  <div class="panel" style="padding:17px">
+    <table>
+      <tr><th>Decisión</th><th>Valor</th></tr>
+      <tr><td>Gap del grid principal</td><td><code>gap-4</code></td></tr>
+      <tr><td>Padding de panel</td><td><code>p-5</code> (cards de contenido) · <code>p-4</code> (KPI chicos)</td></tr>
+      <tr><td>Separación entre secciones</td><td><code>mt-6</code></td></tr>
+      <tr><td>Altura pareja en una fila</td><td><code>items-stretch</code> + <code>h-full</code> en la card</td></tr>
+      <tr><td>Columnas</td><td>arrancan en <code>grid-cols-1</code> y suben con <code>sm:</code>/<code>lg:</code></td></tr>
+    </table>
+  </div>
+
+  <h2 class="s">Lo que rompe el rectángulo</h2>
+  <div class="panel" style="padding:17px">
+    <div class="grid" style="grid-template-columns:1fr 1fr;align-items:start">
+      <div>
+        <div class="label-micro" style="margin-bottom:9px;color:#ff433d">✗ desfasado</div>
+        <div style="display:grid;gap:9px">
+          <div class="panel-inner" style="height:78px"></div>
+          <div class="panel-inner" style="height:52px"></div>
+        </div>
+        <div class="note" style="font-size:11.5px">Cards de distinta altura en la misma fila: sin
+        <code>h-full</code>, cada una mide lo que mide su contenido y abajo queda un escalón.</div>
+      </div>
+      <div>
+        <div class="label-micro" style="margin-bottom:9px;color:#35e08a">✓ cuadrado</div>
+        <div style="display:grid;gap:9px">
+          <div class="panel-inner" style="height:65px"></div>
+          <div class="panel-inner" style="height:65px"></div>
+        </div>
+        <div class="note" style="font-size:11.5px">Con <code>items-stretch</code> + <code>h-full</code> las dos
+        terminan al mismo nivel y la sección cierra en un rectángulo.</div>
+      </div>
+    </div>
+    <div class="note" style="margin-top:15px">La otra causa: <strong>grids que no cierran</strong> —
+    3 columnas con 4 items deja uno solo abajo. O se completa la fila, o se baja a 2 columnas.</div>
+  </div>
+</body></html>

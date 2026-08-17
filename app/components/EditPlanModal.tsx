@@ -2,7 +2,9 @@
 
 import { useState } from "react";
 import { db, updateInstallmentPlan, deleteInstallmentPlan, type InstallmentRow } from "@/lib/db";
-import { X, Trash, Repeat } from "../icons";
+import { parseAmount } from "@/lib/format";
+import { Trash, Repeat } from "../icons";
+import Modal from "./Modal";
 
 export default function EditPlanModal({ plan, onClose, onSaved }: {
   plan: InstallmentRow; onClose: () => void; onSaved: () => Promise<void>;
@@ -15,7 +17,7 @@ export default function EditPlanModal({ plan, onClose, onSaved }: {
   const [busy, setBusy] = useState(false);
 
   const save = async () => {
-    const m = Number(monthly.replace(/[^\d.]/g, ""));
+    const m = parseAmount(monthly);
     const t = Number(total) || plan.total;
     if (!m || !t) return;
     setBusy(true);
@@ -32,14 +34,9 @@ export default function EditPlanModal({ plan, onClose, onSaved }: {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto overscroll-contain bg-black/60 p-4 backdrop-blur-sm" onClick={onClose}>
-      <div className="panel w-full max-w-md p-6" onClick={(e) => e.stopPropagation()}>
-        <div className="flex items-center justify-between">
-          <h2 className="font-display text-lg text-fg">Editar plan de cuotas</h2>
-          <button onClick={onClose} className="grid h-8 w-8 place-items-center rounded-lg text-muted hover:text-fg"><X className="h-4 w-4" /></button>
-        </div>
-
-        <p className="mt-3 flex items-center gap-2 rounded-xl border border-accent/25 bg-accent/8 px-3 py-2 text-xs text-accent">
+    <Modal title="Editar plan de cuotas" onClose={onClose}>
+      <>
+        <p className="flex items-center gap-2 rounded-xl border border-accent/25 bg-accent/8 px-3 py-2 text-xs text-accent">
           <Repeat className="h-4 w-4 shrink-0" /> Editar el monto o el total afecta <b>todas</b> las cuotas del plan (anteriores y posteriores).
         </p>
 
@@ -68,8 +65,8 @@ export default function EditPlanModal({ plan, onClose, onSaved }: {
           <button onClick={remove} disabled={busy} className="flex items-center gap-1.5 rounded-xl border border-coral/30 bg-coral/10 px-3 py-3 text-sm text-coral transition-colors hover:bg-coral/20 disabled:opacity-60"><Trash className="h-4 w-4" /> Borrar</button>
           <button onClick={save} disabled={busy} className="flex-1 rounded-xl bg-accent py-3 text-sm font-medium text-bg transition-transform hover:scale-[1.02] disabled:opacity-60">{busy ? "Guardando…" : "Guardar cambios"}</button>
         </div>
-      </div>
-    </div>
+      </>
+    </Modal>
   );
 }
 

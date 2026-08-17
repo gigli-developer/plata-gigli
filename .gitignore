@@ -42,3 +42,6 @@ next-env.d.ts
 
 # Notas personales: contiene el token de Railway, nunca al repo
 PROMPT_NUEVO_CHAT.md
+
+# Salida de scripts/auditar-plata.mjs: son saldos reales, no van al repo
+scripts/.verdad.json

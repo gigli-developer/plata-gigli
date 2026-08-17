@@ -306,8 +306,8 @@ export default function CashflowPage() {
             <button onClick={() => setMode("historico")} className={`rounded-full px-4 py-1.5 transition-colors ${mode === "historico" ? "bg-accent/15 text-accent" : "text-muted hover:text-fg"}`}>Histórico</button>
           </div>
           <div className="flex rounded-full border border-line bg-white/[0.06] p-0.5 text-sm">
-            <button onClick={() => setBasis("caja")} title="Cuándo se mueve la plata (la tarjeta cuenta el mes que pagás el resumen)" className={`rounded-full px-4 py-1.5 transition-colors ${basis === "caja" ? "bg-white/[0.09] text-fg" : "text-muted hover:text-fg"}`}>Caja</button>
-            <button onClick={() => setBasis("devengado")} title="Cuánto consumiste (la tarjeta cuenta por fecha de compra)" className={`rounded-full px-4 py-1.5 transition-colors ${basis === "devengado" ? "bg-white/[0.09] text-fg" : "text-muted hover:text-fg"}`}>Devengado</button>
+            <button onClick={() => setBasis("caja")} title="Cuándo se mueve la plata (la tarjeta cuenta el mes que pagás el resumen)" className={`rounded-full px-4 py-1.5 transition-colors ${basis === "caja" ? "bg-accent/15 text-accent" : "text-muted hover:text-fg"}`}>Caja</button>
+            <button onClick={() => setBasis("devengado")} title="Cuánto consumiste (la tarjeta cuenta por fecha de compra)" className={`rounded-full px-4 py-1.5 transition-colors ${basis === "devengado" ? "bg-accent/15 text-accent" : "text-muted hover:text-fg"}`}>Devengado</button>
           </div>
         </div>
         {mode === "historico" && (
@@ -324,7 +324,7 @@ export default function CashflowPage() {
         {mode === "proyeccion" ? (
           <>
             <KpiBox label="Saldo hoy" num={proj.startBalance} hint="líquido en ARS" icon={<Chart className="h-4 w-4 text-sky" />} />
-            <KpiBox label={`Saldo en ${HORIZON}m`} num={endBalance} hint={`${endBalance - proj.startBalance >= 0 ? "+" : ""}${compact(endBalance - proj.startBalance)} proyectado`} tone={endBalance >= proj.startBalance ? "emerald" : "coral"} icon={endBalance - proj.startBalance >= 0 ? <ArrowUpRight className="h-4 w-4 text-emerald" /> : <ArrowDownRight className="h-4 w-4 text-coral" />} />
+            <KpiBox label={`Saldo en ${HORIZON}m`} num={endBalance} hint={<><span className="tnum">{endBalance - proj.startBalance >= 0 ? "+" : ""}{compact(endBalance - proj.startBalance)}</span> proyectado</>} tone={endBalance >= proj.startBalance ? "emerald" : "coral"} icon={endBalance - proj.startBalance >= 0 ? <ArrowUpRight className="h-4 w-4 text-emerald" /> : <ArrowDownRight className="h-4 w-4 text-coral" />} />
             <KpiBox label="Ahorro mensual prom." num={avgNeto} hint="ingresos − egresos" tone={avgNeto >= 0 ? "emerald" : "coral"} />
             <KpiBox label="Inflación proyectada" value={`${inflation.toFixed(1)}%`} hint={`oficial · prom. 6m (${infl.latest ? monthName(infl.latest) : "—"})`} tone="amber" />
           </>
@@ -491,7 +491,7 @@ function NumInput({ value, onChange, onCommit, className = "" }: { value: number
 }
 
 /** `num` anima el número (plata); `value` es para lo que no lo es, como el % de inflación. */
-function KpiBox({ label, value, num, hint, tone, icon }: { label: string; value?: string; num?: number; hint?: string; tone?: "emerald" | "coral" | "amber"; icon?: React.ReactNode }) {
+function KpiBox({ label, value, num, hint, tone, icon }: { label: string; value?: string; num?: number; hint?: React.ReactNode; tone?: "emerald" | "coral" | "amber"; icon?: React.ReactNode }) {
   const c = tone === "emerald" ? "text-emerald" : tone === "coral" ? "text-coral" : tone === "amber" ? "text-amber" : "text-fg";
   return (
     <div className="panel p-4">

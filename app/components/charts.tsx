@@ -344,3 +344,82 @@ export function VariationTable({ data, fmt, labelA, labelB, showEst }: { data: V
     </div>
   );
 }
+
+// ---- Patrimonio neto en tabla ----
+// Los mismos datos que NetWorthChart pero mes por mes y con los números exactos.
+// El gráfico da la forma; la tabla responde "¿en QUÉ mes perdí y por qué?".
+export type NetWorthRow = {
+  month: string; label: string;
+  ars: number; usd: number; usdt: number;   // tenencias, cada una en SU moneda
+  patrimonio: number;                        // ya convertido a la vara elegida
+  varAbs: number | null; varPct: number | null;
+  propio: number;   // parte de la variación que pusiste vos (flujo real)
+  externo: number;  // parte que explica el dólar (o la inflación, según la vara)
+  /** true cuando todavía no hay IPC publicado para ese mes: el efecto es desconocido,
+   *  no cero. Sin esto la tabla mostraba "+$0" y se leía como "no hubo inflación". */
+  sinDato?: boolean;
+};
+
+export function NetWorthTable({ rows, fmt, externoLabel }: {
+  rows: NetWorthRow[];
+  fmt: (n: number) => string;
+  /** "Dólar" o "Inflación", según contra qué se esté midiendo. */
+  externoLabel: string;
+}) {
+  if (!rows.length) return <div className="grid h-32 place-items-center text-sm text-faint">Sin historia todavía</div>;
+  const nUsd = (n: number) => (n ? `US$ ${Math.round(n).toLocaleString("es-AR")}` : "—");
+
+  // Más reciente arriba: la pregunta es "cómo vengo", no "cómo empecé".
+  const orden = [...rows].reverse();
+
+  return (
+    // Sin scroll horizontal a propósito: las columnas de detalle se ocultan por
+    // breakpoint en vez de empujar la tabla fuera de la pantalla.
+    <div className="overflow-x-auto">
+      <table className="w-full text-sm">
+        <thead>
+          <tr className="border-b border-line text-xs text-faint">
+            <th className="py-2 text-left font-medium">Mes</th>
+            <th className="hidden py-2 text-right font-medium lg:table-cell">Pesos</th>
+            <th className="hidden py-2 text-right font-medium lg:table-cell">Dólares</th>
+            <th className="hidden py-2 text-right font-medium lg:table-cell">USDT</th>
+            <th className="py-2 text-right font-medium text-fg">Patrimonio</th>
+            <th className="py-2 text-right font-medium">Variación</th>
+            <th className="hidden py-2 text-right font-medium sm:table-cell">Tuyo</th>
+            <th className="hidden py-2 text-right font-medium sm:table-cell">{externoLabel}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {orden.map((r) => {
+            const sube = (r.varAbs ?? 0) >= 0;
+            const tonoVar = r.varAbs === null ? "text-faint" : sube ? "text-emerald" : "text-coral";
+            // El signo del efecto externo es lo que responde la pregunta del usuario:
+            // negativo = el dólar (o la inflación) te comió patrimonio ese mes.
+            const tonoExt = r.externo === 0 ? "text-faint" : r.externo > 0 ? "text-emerald" : "text-coral";
+            const tonoPro = r.propio === 0 ? "text-faint" : r.propio > 0 ? "text-emerald" : "text-coral";
+            const signo = (n: number) => (n >= 0 ? "+" : "−");
+            return (
+              <tr key={r.month} className="row-hover border-b border-line/40">
+                <td className="py-2.5 text-muted">{r.label}</td>
+                <td className="tnum hidden py-2.5 text-right text-fg/70 lg:table-cell">{r.ars ? fmt(r.ars) : "—"}</td>
+                <td className="tnum hidden py-2.5 text-right text-gold/80 lg:table-cell">{nUsd(r.usd)}</td>
+                <td className="tnum hidden py-2.5 text-right text-sky/80 lg:table-cell">{r.usdt ? `${Math.round(r.usdt).toLocaleString("es-AR")}` : "—"}</td>
+                <td className="tnum py-2.5 text-right font-semibold text-fg">{fmt(r.patrimonio)}</td>
+                <td className={`tnum py-2.5 text-right ${tonoVar}`}>
+                  {r.varAbs === null ? "—" : <>{sube ? "▲" : "▼"}{r.varPct !== null && ` ${signo(r.varPct)}${Math.abs(r.varPct * 100).toFixed(0)}%`}
+                    <span className="block text-[0.6rem] text-faint">{signo(r.varAbs)}{fmt(Math.abs(r.varAbs))}</span></>}
+                </td>
+                <td className={`tnum hidden py-2.5 text-right sm:table-cell ${tonoPro}`}>{r.varAbs === null || r.sinDato ? "—" : `${signo(r.propio)}${fmt(Math.abs(r.propio))}`}</td>
+                <td className={`hidden py-2.5 text-right sm:table-cell ${r.sinDato ? "text-faint" : `tnum ${tonoExt}`}`}>
+                  {r.varAbs === null ? "—" : r.sinDato
+                    ? <span title="Todavía no se publicó el IPC de este mes" className="text-[0.7rem]">s/d</span>
+                    : `${signo(r.externo)}${fmt(Math.abs(r.externo))}`}
+                </td>
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
+    </div>
+  );
+}

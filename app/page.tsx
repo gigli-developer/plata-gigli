@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, type ReactNode } from "react";
 import {
   db, fetchTransactions, fetchCardsFull, fetchDebts, fetchCategories, fetchMetrics, updateTxCategory,
   fetchStatements, fetchInstallments, fetchStatementConsumos,
@@ -99,7 +99,11 @@ export default function Dashboard() {
 
       {/* AI command bar — el chat se despliega DENTRO de la misma barra */}
       <section className="rise mt-0 lg:mt-6">
-        <div className={`ai-glow rounded-2xl p-4 transition-all duration-500 sm:p-5 ${chatActive ? "ring-1 ring-accent/25" : ""}`}>
+        {/* rounded-xl = 20px (--radius-xl), el mismo radio que .panel. Ojo: en este
+            theme `rounded-2xl` (16px, default de Tailwind) es MÁS CHICO que
+            `rounded-xl`, así que la barra tenía esquinas más cerradas que las cards
+            de abajo. Y p-6 para que el texto arranque en la misma vertical. */}
+        <div className={`ai-glow rounded-xl p-6 transition-shadow duration-500 ${chatActive ? "ring-1 ring-accent/25" : ""}`}>
           <div className="flex items-center gap-2 text-accent">
             <Sparkle className="h-[18px] w-[18px]" />
             <span className="text-xs font-medium uppercase tracking-[0.18em]">Asistente</span>
@@ -133,7 +137,12 @@ export default function Dashboard() {
       </section>
 
       <div className={`transition-all duration-500 ease-out ${chatActive ? "pointer-events-none max-h-0 translate-y-10 overflow-hidden opacity-0" : "max-h-[6000px] translate-y-0 opacity-100"}`}>
-      <div className="mt-6 grid grid-cols-1 gap-5 xl:grid-cols-3">
+      {/* 3 cards por columna, y la ÚLTIMA de cada una con flex-1: así las dos
+          columnas cierran a la misma altura pase lo que pase con los datos.
+          Antes eran 3 vs 4 cards de alto variable y la retícula nunca cuadraba.
+          "Sin categorizar" pasó abajo, full-width: es la de largo más impredecible
+          (de 0 a 6 filas) y desde acá desbalanceaba toda la columna. */}
+      <div className="mt-5 grid grid-cols-1 items-stretch gap-5 xl:grid-cols-3">
         <div className="flex flex-col gap-5 xl:col-span-2">
           <SaldosHero metrics={metrics} loading={loading} />
           <CashflowCard cashflow={data.cashflow} />
@@ -141,14 +150,23 @@ export default function Dashboard() {
         </div>
         <div className="flex flex-col gap-5">
           <CategoryCard cats={data.categories} />
-          <CardsStrip cards={data.cardSummaries} />
-          <UncategorizedCard items={uncategorized} cats={cats} onCategorize={categorize} />
+          <ProximosResumenes items={data.proximosResumenes} />
           <DebtsCard toCollect={data.toCollect} toPay={data.toPay} people={data.people} />
         </div>
+      </div>
+      <div className="mt-5">
+        <UncategorizedCard items={uncategorized} cats={cats} onCategorize={categorize} />
       </div>
       </div>
     </>
   );
+}
+
+// `new Date('YYYY-MM-DD')` parsea como UTC → en ART cae un día antes. Ver el
+// gotcha en CLAUDE.md y `formatShort` en lib/db.ts.
+function parseLocal(iso: string) {
+  const [y, m, d] = iso.slice(0, 10).split("-").map(Number);
+  return new Date(y, m - 1, d);
 }
 
 type Computed = ReturnType<typeof compute>;
@@ -190,22 +208,31 @@ function compute(txs: TxView[], cards: CardFull[], debts: DebtView[], installmen
   const categories = catArr.map((c, i) => ({ ...c, color: CAT_COLORS[i % CAT_COLORS.length] }));
 
   const today = new Date();
-  const cardSummaries = cards.map((c) => {
-    const isDebit = (c.network ?? "").toLowerCase().includes("déb") || (c.network ?? "").toLowerCase().includes("deb");
-    let spent: number;
-    let label: string;
-    if (isDebit) {
-      spent = monthTxs.filter((t) => t.type === "egreso" && t.card === c.name).reduce((a, t) => a + t.amount, 0);
-      label = "Gasto del mes";
-    } else {
-      // crédito: estimado del resumen abierto = cuotas + consumos posteados
-      const cuotasSum = installments.filter((i) => i.cardId === c.id).reduce((a, q) => a + q.monthly, 0);
+  const isDebit = (net: string | null) => {
+    const n = (net ?? "").toLowerCase();
+    return n.includes("déb") || n.includes("deb");
+  };
+
+  // Próximos resúmenes a pagar, ordenados por vencimiento. Reemplaza a la tira de
+  // tarjetas: en el Resumen lo accionable es "cuánto y cuándo pago", no el inventario
+  // de plásticos (eso vive en /tarjetas).
+  const proximosResumenes = cards
+    .filter((c) => !isDebit(c.network))
+    .map((c) => {
       const open = statements.filter((s) => s.cardId === c.id).find((s) => s.closingRaw && new Date(s.closingRaw) > today);
-      spent = cuotasSum + (open ? consumos[open.id]?.ars ?? 0 : 0);
-      label = "Resumen en curso";
-    }
-    return { name: c.name, bank: c.bank ?? "", network: c.network ?? "", last4: c.last4 ?? "----", spentArs: spent, label, limitArs: c.limitArs, closeDay: c.closeDay, dueDay: c.dueDay };
-  });
+      if (!open) return null;
+      const cuotasSum = installments.filter((i) => i.cardId === c.id).reduce((a, q) => a + q.monthly, 0);
+      const cons = consumos[open.id] ?? { ars: 0, usd: 0 };
+      // Un resumen SIN pagar se valúa en vivo (decisión 5b): todavía es deuda en
+      // dólares. Antes acá se usaba solo `.ars` y la parte en USD se perdía.
+      const total = cuotasSum + cons.ars + cons.usd * fx.usd;
+      const dueDate = open.dueRaw ? parseLocal(open.dueRaw) : null;
+      const dias = dueDate ? Math.ceil((+dueDate - +today) / 86400000) : null;
+      return { cardName: c.name, last4: c.last4 ?? "----", period: open.period, due: open.due, dias, total, usdPart: cons.usd };
+    })
+    .filter((x): x is NonNullable<typeof x> => x !== null)
+    .sort((a, b) => (a.dias ?? 999) - (b.dias ?? 999))
+    .slice(0, 3);
 
   const pending = debts.filter((d) => d.status === "pending");
   const debtArs = (d: DebtView) => (d.currency === "USD" ? d.outstanding * fx.usd : d.currency === "USDT" ? d.outstanding * fx.usdt : d.outstanding);
@@ -213,7 +240,7 @@ function compute(txs: TxView[], cards: CardFull[], debts: DebtView[], installmen
   const toPay = pending.filter((d) => d.direction === "to_pay").reduce((a, d) => a + debtArs(d), 0);
   const people = pending.slice(0, 3).map((d) => ({ name: d.person, emoji: d.emoji, amount: debtArs(d), type: d.direction, note: d.description }));
 
-  return { monthLabel: SHORT[refM], cashflow, categories, recent: txs.slice(0, 6), cardSummaries, toCollect, toPay, people };
+  return { monthLabel: SHORT[refM], cashflow, categories, recent: txs.slice(0, 6), proximosResumenes, toCollect, toPay, people };
 }
 
 function IconBtn({ children, title }: { children: React.ReactNode; title: string }) {
@@ -235,10 +262,12 @@ function SaldosHero({ metrics, loading }: { metrics: Metrics | null; loading: bo
   const usdtArs = metrics.usdt_liquido * metrics.usdt_ars;
   const patrimonio = metrics.ars_liquido + usdArs + usdtArs + metrics.te_deben - metrics.deuda_cuotas_ars - metrics.deuda_vencida_ars - metrics.debes;
 
+  // El equivalente en pesos va envuelto en `.tnum`: sin eso el modo privacidad no
+  // lo tapa (solo alcanza a los .tnum) y dejaba a la vista cuánto valen tus dólares.
   const hero =
-    tab === "ars" ? { value: metrics.ars_liquido, format: ars, sub: "en pesos, disponible hoy" }
-    : tab === "usd" ? { value: metrics.usd_liquido, format: fmtUsd, sub: `≈ ${ars(usdArs)} al blue de hoy` }
-    : { value: metrics.usdt_liquido, format: fmtUsdt, sub: `≈ ${ars(usdtArs)} al cripto de hoy` };
+    tab === "ars" ? { value: metrics.ars_liquido, format: ars, sub: <>en pesos, disponible hoy</> }
+    : tab === "usd" ? { value: metrics.usd_liquido, format: fmtUsd, sub: <>≈ <span className="tnum">{ars(usdArs)}</span> al blue de hoy</> }
+    : { value: metrics.usdt_liquido, format: fmtUsdt, sub: <>≈ <span className="tnum">{ars(usdtArs)}</span> al cripto de hoy</> };
 
   return (
     <section className="rise panel relative overflow-hidden p-6">
@@ -253,7 +282,7 @@ function SaldosHero({ metrics, loading }: { metrics: Metrics | null; loading: bo
             <button
               key={t.key}
               onClick={() => setTab(t.key)}
-              className={`rounded-full px-3 py-1 transition-colors ${tab === t.key ? "bg-accent text-bg" : "text-subtle hover:text-fg"}`}
+              className={`rounded-full px-3 py-1 transition-colors ${tab === t.key ? "bg-accent/15 text-accent" : "text-muted hover:text-fg"}`}
             >
               {t.label}
             </button>
@@ -267,20 +296,25 @@ function SaldosHero({ metrics, loading }: { metrics: Metrics | null; loading: bo
         className="tnum relative mt-2 block text-[36px] font-extrabold leading-none text-fg sm:text-[44px]"
       />
       <p className="relative mt-2 text-sm text-faint">{hero.sub}</p>
-      <div className="relative mt-6 grid grid-cols-2 gap-3.5 sm:grid-cols-3">
-        <SaldoStat label="Dólares" value={metrics.usd_liquido} format={fmtUsd} sub={`≈ ${compact(usdArs)}`} accent="text-gold" />
-        <SaldoStat label="USDT" value={metrics.usdt_liquido} format={fmtUsdt} sub={`≈ ${compact(usdtArs)}`} accent="text-sky" />
+      {/* 3 hijos en grid-cols-2 dejaban a "Patrimonio neto" solo en la fila de
+          abajo. Con grid-cols-1 la grilla cierra en los dos breakpoints. */}
+      <div className="relative mt-6 grid grid-cols-1 gap-3.5 sm:grid-cols-3">
+        <SaldoStat label="Dólares" value={metrics.usd_liquido} format={fmtUsd} sub={<>≈ <span className="tnum">{compact(usdArs)}</span></>} accent="text-gold" />
+        <SaldoStat label="USDT" value={metrics.usdt_liquido} format={fmtUsdt} sub={<>≈ <span className="tnum">{compact(usdtArs)}</span></>} accent="text-sky" />
         <SaldoStat label="Patrimonio neto" value={patrimonio} format={compact} sub="todo valuado en ARS" accent="text-fg" />
       </div>
     </section>
   );
 }
-function SaldoStat({ label, value, format, sub, accent }: { label: string; value: number; format: (n: number) => string; sub: string; accent: string }) {
+// `sub` es ReactNode y NO lleva `.tnum` acá: el marcador va en el call site,
+// envolviendo solo la cifra. Con `.tnum` en el <p> entero, "todo valuado en ARS"
+// también se convertía en **** al activar privacidad.
+function SaldoStat({ label, value, format, sub, accent }: { label: string; value: number; format: (n: number) => string; sub: ReactNode; accent: string }) {
   return (
     <div className="panel-inner p-4">
       <p className="label-micro">{label}</p>
       <CountUp value={value} format={format} className={`tnum mt-1.5 block text-[19px] font-semibold ${accent}`} />
-      <p className="tnum mt-0.5 text-[0.7rem] text-faint">{sub}</p>
+      <p className="mt-0.5 text-[0.7rem] text-faint">{sub}</p>
     </div>
   );
 }
@@ -390,7 +424,8 @@ function CategoryCard({ cats }: { cats: Computed["categories"] }) {
 
 function RecentTransactions({ txs, loading, count }: { txs: TxView[]; loading: boolean; count: number }) {
   return (
-    <section className="rise panel p-6">
+    // flex-1: última card de la columna izquierda, absorbe el sobrante vertical
+    <section className="rise panel flex-1 p-6">
       <CardHeader title="Movimientos recientes" subtitle={loading ? "Cargando…" : `${count} en total`}>
         <a href="/transacciones" className="flex items-center gap-1 text-sm text-accent hover:underline">Ver todo</a>
       </CardHeader>
@@ -419,31 +454,42 @@ function SourceTag({ source }: { source: string }) {
   return <span className={`hidden items-center gap-1 rounded-full border border-white/10 bg-white/[0.06] px-2 py-0.5 text-[0.65rem] sm:flex ${it.cls}`}><it.Icon className="h-3 w-3" /> {it.label}</span>;
 }
 
-function CardsStrip({ cards }: { cards: Computed["cardSummaries"] }) {
+// Aridad FIJA (máx. 3) a propósito: es lo que permite que la columna cierre a la
+// misma altura que la de al lado. Ver foundations/layout en el design system.
+function ProximosResumenes({ items }: { items: Computed["proximosResumenes"] }) {
+  const total = items.reduce((a, r) => a + r.total, 0);
   return (
     <section className="rise panel p-6">
-      <CardHeader title="Tarjetas" subtitle={`${cards.length} activas`}>
-        <a href="/tarjetas" className="grid h-7 w-7 place-items-center rounded-lg border border-white/10 bg-white/[0.06] text-subtle hover:text-fg"><Plus className="h-4 w-4" /></a>
+      <CardHeader title="Próximos resúmenes" subtitle={items.length ? <><span className="tnum">{ars(total)}</span> en total</> : "nada por vencer"}>
+        <a href="/tarjetas" className="icon-btn h-7 w-7 border border-white/10 bg-white/[0.06]" aria-label="Ver tarjetas"><Plus className="h-4 w-4" /></a>
       </CardHeader>
-      <div className="mt-4 space-y-3">
-        {cards.map((c) => {
-          const pct = c.limitArs ? Math.min(100, Math.round((c.spentArs / c.limitArs) * 100)) : 0;
+      <ul className="mt-4 space-y-3">
+        {items.map((r) => {
+          // El color comunica urgencia: vencido → coral, ≤7 días → acento, resto → normal.
+          const urgente = r.dias !== null && r.dias <= 7;
+          const vencido = r.dias !== null && r.dias < 0;
+          const tono = vencido ? "text-coral" : urgente ? "text-accent" : "text-fg";
           return (
-            <div key={c.last4} className="panel-inner p-4">
-              <div className="flex items-start justify-between">
-                <div><p className="text-sm text-fg">{c.name}</p><p className="text-xs text-faint">{c.bank} · {c.network} ···· {c.last4}</p></div>
-                <CardIcon className="h-5 w-5 text-subtle" />
+            <li key={`${r.last4}-${r.period}`} className="panel-inner flex items-center gap-3 p-4">
+              <span className="grid h-9 w-9 shrink-0 place-items-center rounded-xl border border-white/10 bg-white/[0.06]">
+                <CardIcon className="h-4 w-4 text-subtle" />
+              </span>
+              <div className="min-w-0 flex-1">
+                <p className="truncate text-sm text-fg">{r.cardName}</p>
+                <p className="text-xs text-faint">
+                  ···· {r.last4} · vence {r.due}
+                  {r.dias !== null && <span className={vencido || urgente ? tono : ""}> · {vencido ? `vencido hace ${-r.dias}d` : r.dias === 0 ? "vence hoy" : `en ${r.dias}d`}</span>}
+                </p>
               </div>
-              <div className="mt-4 flex items-end justify-between">
-                <div><p className="label-micro">{c.label}</p><p className="tnum text-[17px] font-semibold text-fg">{ars(c.spentArs)}</p></div>
-                <p className="tnum text-xs text-faint">{c.closeDay ? `Cierra ${c.closeDay}` : ""}{c.dueDay ? ` · Vence ${c.dueDay}` : ""}</p>
+              <div className="shrink-0 text-right">
+                <p className={`tnum text-[17px] font-semibold ${tono}`}>{ars(r.total)}</p>
+                {r.usdPart > 0 && <p className="tnum text-[0.65rem] text-faint">incl. {fmtUsd(r.usdPart)}</p>}
               </div>
-              <div className="mt-3 h-1.5 w-full overflow-hidden rounded-full bg-white/[0.08]"><div className="h-full rounded-full bg-gradient-to-r from-accent to-gold" style={{ width: `${pct}%` }} /></div>
-            </div>
+            </li>
           );
         })}
-        {cards.length === 0 && <p className="text-sm text-muted">Sin tarjetas.</p>}
-      </div>
+        {items.length === 0 && <p className="text-sm text-muted">Ningún resumen abierto.</p>}
+      </ul>
     </section>
   );
 }
@@ -484,11 +530,12 @@ function UncategorizedCard({ items, cats, onCategorize }: { items: TxView[]; cat
 
 function DebtsCard({ toCollect, toPay, people }: { toCollect: number; toPay: number; people: Computed["people"] }) {
   return (
-    <section className="rise panel p-6">
+    // flex-1: última card de la columna derecha (ver RecentTransactions)
+    <section className="rise panel flex-1 p-6">
       <CardHeader title="Deudas" subtitle="A cobrar y a pagar" />
-      <div className="mt-4 grid grid-cols-2 gap-3">
-        <div className="panel-inner border-emerald/25 bg-emerald/10 p-3"><p className="text-xs text-muted">Te deben</p><p className="tnum mt-1 text-emerald">{ars(toCollect)}</p></div>
-        <div className="panel-inner border-coral/25 bg-coral/10 p-3"><p className="text-xs text-muted">Debés</p><p className="tnum mt-1 text-coral">{ars(toPay)}</p></div>
+      <div className="mt-4 grid grid-cols-2 gap-3.5">
+        <div className="panel-inner border-emerald/25 bg-emerald/10 p-4"><p className="text-xs text-muted">Te deben</p><p className="tnum mt-1 text-emerald">{ars(toCollect)}</p></div>
+        <div className="panel-inner border-coral/25 bg-coral/10 p-4"><p className="text-xs text-muted">Debés</p><p className="tnum mt-1 text-coral">{ars(toPay)}</p></div>
       </div>
       <ul className="mt-4 space-y-2.5">
         {people.map((p, i) => (
@@ -504,10 +551,14 @@ function DebtsCard({ toCollect, toPay, people }: { toCollect: number; toPay: num
   );
 }
 
-function CardHeader({ title, subtitle, children }: { title: string; subtitle?: string; children?: React.ReactNode }) {
+function CardHeader({ title, subtitle, children }: { title: string; subtitle?: ReactNode; children?: React.ReactNode }) {
   return (
     <div className="flex items-start justify-between gap-3">
-      <div><h2 className="font-display text-lg text-fg">{title}</h2>{subtitle && <p className="text-xs text-faint">{subtitle}</p>}</div>
+      {/* 17px/600 es el estándar de título de card (el de /divisas y los ChartCard).
+          Preflight resetea h2 a font-weight:inherit, así que sin `font-semibold`
+          esto caía a 400 y los títulos no coincidían entre pantallas.
+          `subtitle` es ReactNode para poder marcar con .tnum los montos que traiga. */}
+      <div><h2 className="font-display text-[17px] font-semibold text-fg">{title}</h2>{subtitle && <p className="text-xs text-faint">{subtitle}</p>}</div>
       {children}
     </div>
   );

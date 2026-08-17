@@ -1,0 +1,222 @@
+<!-- @dsCard group="Foundations" -->
+<!doctype html><html lang="es"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Color · Plata</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=Hanken+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  font-family:'Hanken Grotesk',system-ui,sans-serif;
+  color:#f4f4f3;background-color:#0a0a0a;
+  background-image:
+    radial-gradient(520px 460px at 7% 90%, rgba(255,176,84,.50), rgba(255,150,54,0) 62%),
+    radial-gradient(300px 300px at 3% 95%, rgba(255,205,120,.42), transparent 58%),
+    radial-gradient(820px 1000px at -4% 40%, rgba(74,120,72,.30), transparent 58%),
+    radial-gradient(980px 1080px at 102% 30%, rgba(96,152,206,.34), transparent 56%),
+    radial-gradient(1300px 1200px at 50% 122%, rgba(6,6,9,0), rgba(5,5,8,.62) 72%),
+    linear-gradient(158deg,#14110e 0%,#0d0b0d 46%,#0a0d12 100%);
+  background-attachment:fixed;
+  -webkit-font-smoothing:antialiased;
+  padding:28px;
+}
+.panel{
+  background:rgba(255,255,255,.08);
+  --glass:blur(26px) saturate(170%);
+  -webkit-backdrop-filter:var(--glass);backdrop-filter:var(--glass);
+  border:1px solid rgba(255,255,255,.32);border-radius:20px;
+  box-shadow:0 12px 44px rgba(0,0,0,.32),inset 0 1px 0 rgba(255,255,255,.42),inset 0 0 0 1px rgba(255,255,255,.06);
+}
+.panel-inner{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.10);border-radius:14px}
+.tnum{font-family:'JetBrains Mono',ui-monospace,monospace;font-feature-settings:'tnum' 1;letter-spacing:-.02em}
+.disp{font-family:'Bricolage Grotesque',system-ui,sans-serif;letter-spacing:-.02em}
+.label-micro{font-size:10.5px;letter-spacing:.05em;text-transform:uppercase;color:#9a9a9f}
+h1.t{font-size:24px;font-weight:700;letter-spacing:-.03em;margin-bottom:6px;font-family:'Bricolage Grotesque',system-ui,sans-serif}
+p.sub{font-size:13.5px;color:#9a9a9f;margin-bottom:22px;max-width:760px;line-height:1.5}
+h2.s{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:#6b6b70;margin:26px 0 12px}
+.grid{display:grid;gap:14px}
+code{font-family:'JetBrains Mono',ui-monospace,monospace;font-size:11.5px;color:#ffbf47;
+  background:rgba(255,255,255,.06);padding:2px 6px;border-radius:5px;white-space:nowrap}
+pre{font-family:'JetBrains Mono',ui-monospace,monospace;font-size:11px;line-height:1.65;color:#c2c2c6;
+  background:rgba(0,0,0,.34);border:1px solid rgba(255,255,255,.09);border-radius:11px;
+  padding:13px 15px;overflow-x:auto;margin-top:11px}
+.note{font-size:12.5px;color:#9a9a9f;line-height:1.55;margin-top:9px}
+.warn{border-left:2px solid #ff9e1b;padding-left:11px;color:#c2c2c6;font-size:12.5px;line-height:1.55;margin-top:11px}
+.bad{border-left:2px solid #ff433d;padding-left:11px}
+.good{border-left:2px solid #35e08a;padding-left:11px}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{text-align:left;font-size:10.5px;letter-spacing:.05em;text-transform:uppercase;color:#6b6b70;
+  padding:0 10px 9px 0;font-weight:400;border-bottom:1px solid rgba(255,255,255,.1)}
+td{padding:9px 10px 9px 0;border-bottom:1px solid rgba(255,255,255,.055);vertical-align:top;color:#c2c2c6}
+</style></head><body>
+<h1 class="t">Color</h1><p class="sub">Los tokens viven en <code>@theme</code> de app/globals.css. El acento se llama <code>accent</code> y no <code>orange</code> a propósito: ya cambió una vez (era lima ácido) y así el próximo cambio no obliga a tocar 129 clases en 22 archivos.</p>
+
+    <h2 class="s">Base</h2>
+    <p class="note" style="margin-bottom:13px">El fondo real no es plano: body pinta 7 radial-gradients encima de #0a0a0a. Las superficies son translúcidas y flotan sobre esa atmósfera.</p>
+    <div class="grid" style="grid-template-columns:repeat(auto-fill,minmax(232px,1fr))">
+      
+        <div class="panel-inner" style="padding:13px;display:flex;gap:12px;align-items:flex-start">
+          <div style="width:42px;height:42px;border-radius:9px;flex-shrink:0;background:#0a0a0a;
+                      border:1px solid rgba(255,255,255,.18)"></div>
+          <div style="min-width:0">
+            <div style="font-size:13.5px;font-weight:600">bg</div>
+            <div class="tnum" style="font-size:10.5px;color:#6b6b70;margin:2px 0 4px">#0a0a0a</div>
+            <div style="font-size:11.5px;color:#9a9a9f;line-height:1.45">fondo de la app (debajo del gradiente de atmósfera)</div>
+          </div>
+        </div>
+        <div class="panel-inner" style="padding:13px;display:flex;gap:12px;align-items:flex-start">
+          <div style="width:42px;height:42px;border-radius:9px;flex-shrink:0;background:#101111;
+                      border:1px solid rgba(255,255,255,.18)"></div>
+          <div style="min-width:0">
+            <div style="font-size:13.5px;font-weight:600">surface</div>
+            <div class="tnum" style="font-size:10.5px;color:#6b6b70;margin:2px 0 4px">#101111</div>
+            <div style="font-size:11.5px;color:#9a9a9f;line-height:1.45">card de modal sólida (Modal.tsx)</div>
+          </div>
+        </div>
+        <div class="panel-inner" style="padding:13px;display:flex;gap:12px;align-items:flex-start">
+          <div style="width:42px;height:42px;border-radius:9px;flex-shrink:0;background:#141515;
+                      border:1px solid rgba(255,255,255,.18)"></div>
+          <div style="min-width:0">
+            <div style="font-size:13.5px;font-weight:600">surface-2</div>
+            <div class="tnum" style="font-size:10.5px;color:#6b6b70;margin:2px 0 4px">#141515</div>
+            <div style="font-size:11.5px;color:#9a9a9f;line-height:1.45">definido, hoy sin uso directo</div>
+          </div>
+        </div>
+        <div class="panel-inner" style="padding:13px;display:flex;gap:12px;align-items:flex-start">
+          <div style="width:42px;height:42px;border-radius:9px;flex-shrink:0;background:#1c1d1d;
+                      border:1px solid rgba(255,255,255,.18)"></div>
+          <div style="min-width:0">
+            <div style="font-size:13.5px;font-weight:600">surface-3</div>
+            <div class="tnum" style="font-size:10.5px;color:#6b6b70;margin:2px 0 4px">#1c1d1d</div>
+            <div style="font-size:11.5px;color:#9a9a9f;line-height:1.45">fallback de dona vacía</div>
+          </div>
+        </div>
+        <div class="panel-inner" style="padding:13px;display:flex;gap:12px;align-items:flex-start">
+          <div style="width:42px;height:42px;border-radius:9px;flex-shrink:0;background:rgba(255,255,255,0.10);
+                      border:1px solid rgba(255,255,255,.18)"></div>
+          <div style="min-width:0">
+            <div style="font-size:13.5px;font-weight:600">line</div>
+            <div class="tnum" style="font-size:10.5px;color:#6b6b70;margin:2px 0 4px">rgba(255,255,255,0.10)</div>
+            <div style="font-size:11.5px;color:#9a9a9f;line-height:1.45">borde por defecto de todo</div>
+          </div>
+        </div>
+    </div>
+    <h2 class="s">Texto</h2>
+    <p class="note" style="margin-bottom:13px">Cuatro niveles, de más a menos peso visual. La regla: un dato es fg, su etiqueta es subtle, el apoyo es faint.</p>
+    <div class="grid" style="grid-template-columns:repeat(auto-fill,minmax(232px,1fr))">
+      
+        <div class="panel-inner" style="padding:13px;display:flex;gap:12px;align-items:flex-start">
+          <div style="width:42px;height:42px;border-radius:9px;flex-shrink:0;background:#f4f4f3;
+                      border:1px solid rgba(255,255,255,.18)"></div>
+          <div style="min-width:0">
+            <div style="font-size:13.5px;font-weight:600">fg</div>
+            <div class="tnum" style="font-size:10.5px;color:#6b6b70;margin:2px 0 4px">#f4f4f3</div>
+            <div style="font-size:11.5px;color:#9a9a9f;line-height:1.45">dato principal, títulos</div>
+          </div>
+        </div>
+        <div class="panel-inner" style="padding:13px;display:flex;gap:12px;align-items:flex-start">
+          <div style="width:42px;height:42px;border-radius:9px;flex-shrink:0;background:#c2c2c6;
+                      border:1px solid rgba(255,255,255,.18)"></div>
+          <div style="min-width:0">
+            <div style="font-size:13.5px;font-weight:600">muted</div>
+            <div class="tnum" style="font-size:10.5px;color:#6b6b70;margin:2px 0 4px">#c2c2c6</div>
+            <div style="font-size:11.5px;color:#9a9a9f;line-height:1.45">texto secundario legible</div>
+          </div>
+        </div>
+        <div class="panel-inner" style="padding:13px;display:flex;gap:12px;align-items:flex-start">
+          <div style="width:42px;height:42px;border-radius:9px;flex-shrink:0;background:#9a9a9f;
+                      border:1px solid rgba(255,255,255,.18)"></div>
+          <div style="min-width:0">
+            <div style="font-size:13.5px;font-weight:600">subtle</div>
+            <div class="tnum" style="font-size:10.5px;color:#6b6b70;margin:2px 0 4px">#9a9a9f</div>
+            <div style="font-size:11.5px;color:#9a9a9f;line-height:1.45">labels, estado inactivo de pills</div>
+          </div>
+        </div>
+        <div class="panel-inner" style="padding:13px;display:flex;gap:12px;align-items:flex-start">
+          <div style="width:42px;height:42px;border-radius:9px;flex-shrink:0;background:#6b6b70;
+                      border:1px solid rgba(255,255,255,.18)"></div>
+          <div style="min-width:0">
+            <div style="font-size:13.5px;font-weight:600">faint</div>
+            <div class="tnum" style="font-size:10.5px;color:#6b6b70;margin:2px 0 4px">#6b6b70</div>
+            <div style="font-size:11.5px;color:#9a9a9f;line-height:1.45">apoyo, hints, metadatos</div>
+          </div>
+        </div>
+    </div>
+    <h2 class="s">Semánticos</h2>
+    <p class="note" style="margin-bottom:13px">Cada color tiene UN significado en el dominio. No se usan por estética: el verde siempre es plata que entra.</p>
+    <div class="grid" style="grid-template-columns:repeat(auto-fill,minmax(232px,1fr))">
+      
+        <div class="panel-inner" style="padding:13px;display:flex;gap:12px;align-items:flex-start">
+          <div style="width:42px;height:42px;border-radius:9px;flex-shrink:0;background:#ff9e1b;
+                      border:1px solid rgba(255,255,255,.18)"></div>
+          <div style="min-width:0">
+            <div style="font-size:13.5px;font-weight:600">accent</div>
+            <div class="tnum" style="font-size:10.5px;color:#6b6b70;margin:2px 0 4px">#ff9e1b</div>
+            <div style="font-size:11.5px;color:#9a9a9f;line-height:1.45">acento principal · pesos (ARS) · acción primaria</div>
+          </div>
+        </div>
+        <div class="panel-inner" style="padding:13px;display:flex;gap:12px;align-items:flex-start">
+          <div style="width:42px;height:42px;border-radius:9px;flex-shrink:0;background:#ffb84d;
+                      border:1px solid rgba(255,255,255,.18)"></div>
+          <div style="min-width:0">
+            <div style="font-size:13.5px;font-weight:600">accent-hover</div>
+            <div class="tnum" style="font-size:10.5px;color:#6b6b70;margin:2px 0 4px">#ffb84d</div>
+            <div style="font-size:11.5px;color:#9a9a9f;line-height:1.45">hover del acento</div>
+          </div>
+        </div>
+        <div class="panel-inner" style="padding:13px;display:flex;gap:12px;align-items:flex-start">
+          <div style="width:42px;height:42px;border-radius:9px;flex-shrink:0;background:#ffbf47;
+                      border:1px solid rgba(255,255,255,.18)"></div>
+          <div style="min-width:0">
+            <div style="font-size:13.5px;font-weight:600">gold</div>
+            <div class="tnum" style="font-size:10.5px;color:#6b6b70;margin:2px 0 4px">#ffbf47</div>
+            <div style="font-size:11.5px;color:#9a9a9f;line-height:1.45">dólares (USD)</div>
+          </div>
+        </div>
+        <div class="panel-inner" style="padding:13px;display:flex;gap:12px;align-items:flex-start">
+          <div style="width:42px;height:42px;border-radius:9px;flex-shrink:0;background:#5ec8ff;
+                      border:1px solid rgba(255,255,255,.18)"></div>
+          <div style="min-width:0">
+            <div style="font-size:13.5px;font-weight:600">sky</div>
+            <div class="tnum" style="font-size:10.5px;color:#6b6b70;margin:2px 0 4px">#5ec8ff</div>
+            <div style="font-size:11.5px;color:#9a9a9f;line-height:1.45">USDT / cripto / serie secundaria</div>
+          </div>
+        </div>
+        <div class="panel-inner" style="padding:13px;display:flex;gap:12px;align-items:flex-start">
+          <div style="width:42px;height:42px;border-radius:9px;flex-shrink:0;background:#35e08a;
+                      border:1px solid rgba(255,255,255,.18)"></div>
+          <div style="min-width:0">
+            <div style="font-size:13.5px;font-weight:600">emerald</div>
+            <div class="tnum" style="font-size:10.5px;color:#6b6b70;margin:2px 0 4px">#35e08a</div>
+            <div style="font-size:11.5px;color:#9a9a9f;line-height:1.45">positivo · ingresos · te deben</div>
+          </div>
+        </div>
+        <div class="panel-inner" style="padding:13px;display:flex;gap:12px;align-items:flex-start">
+          <div style="width:42px;height:42px;border-radius:9px;flex-shrink:0;background:#ff433d;
+                      border:1px solid rgba(255,255,255,.18)"></div>
+          <div style="min-width:0">
+            <div style="font-size:13.5px;font-weight:600">coral</div>
+            <div class="tnum" style="font-size:10.5px;color:#6b6b70;margin:2px 0 4px">#ff433d</div>
+            <div style="font-size:11.5px;color:#9a9a9f;line-height:1.45">negativo · egresos · pasivos</div>
+          </div>
+        </div>
+        <div class="panel-inner" style="padding:13px;display:flex;gap:12px;align-items:flex-start">
+          <div style="width:42px;height:42px;border-radius:9px;flex-shrink:0;background:#a78bfa;
+                      border:1px solid rgba(255,255,255,.18)"></div>
+          <div style="min-width:0">
+            <div style="font-size:13.5px;font-weight:600">violet</div>
+            <div class="tnum" style="font-size:10.5px;color:#6b6b70;margin:2px 0 4px">#a78bfa</div>
+            <div style="font-size:11.5px;color:#9a9a9f;line-height:1.45">LEGACY — se está migrando, no usar en nuevo código</div>
+          </div>
+        </div>
+        <div class="panel-inner" style="padding:13px;display:flex;gap:12px;align-items:flex-start">
+          <div style="width:42px;height:42px;border-radius:9px;flex-shrink:0;background:#ffbf47;
+                      border:1px solid rgba(255,255,255,.18)"></div>
+          <div style="min-width:0">
+            <div style="font-size:13.5px;font-weight:600">amber</div>
+            <div class="tnum" style="font-size:10.5px;color:#6b6b70;margin:2px 0 4px">#ffbf47</div>
+            <div style="font-size:11.5px;color:#9a9a9f;line-height:1.45">alias exacto de gold — duplicado histórico, preferí gold</div>
+          </div>
+        </div>
+    </div>
+</body></html>

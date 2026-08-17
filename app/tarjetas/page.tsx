@@ -256,9 +256,13 @@ export default function TarjetasPage() {
     <>
       <PageHeader title="Tarjetas" subtitle="Resúmenes y consumos">{nuevaTarjetaBtn}</PageHeader>
 
-      <div className="mt-6 grid grid-cols-1 gap-5 xl:grid-cols-3">
+      <div className="mt-5 grid grid-cols-1 items-stretch gap-5 xl:grid-cols-3">
         <div className="flex flex-col gap-5 xl:col-span-2">
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          {/* 2xl:grid-cols-4 → en pantalla ancha las tarjetas entran en UNA fila.
+              Con 2 columnas ocupaban 565px de alto (el bloque más grande de la
+              pantalla) solo para el inventario de plásticos. 2 y 4 columnas cierran
+              parejo con cualquier cantidad par de tarjetas. */}
+          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 2xl:grid-cols-4">
             {cards.map((c) => (
               <CreditCardVisual key={c.id} card={c} active={c.id === card.id} onClick={() => setSelectedId(c.id)} />
             ))}
@@ -320,7 +324,7 @@ export default function TarjetasPage() {
 
           <section className="panel p-6">
             <div className="flex items-center justify-between gap-2">
-              <h2 className="font-display text-lg text-fg">Resúmenes futuros</h2>
+              <h2 className="font-display text-[17px] font-semibold text-fg">Resúmenes futuros</h2>
               <span className="rounded-full border border-accent/30 bg-accent/10 px-2.5 py-0.5 text-[0.65rem] text-accent">Proyección</span>
             </div>
             <p className="text-xs text-faint">
@@ -335,8 +339,10 @@ export default function TarjetasPage() {
             </p>
           </section>
 
-          <section className="panel p-6">
-            <h2 className="font-display text-lg text-fg">Resúmenes anteriores</h2>
+          {/* flex-1: última card de la columna izquierda, absorbe el sobrante para
+              que las dos columnas cierren a la misma altura. */}
+          <section className="panel flex-1 p-6">
+            <h2 className="font-display text-[17px] font-semibold text-fg">Resúmenes anteriores</h2>
             <p className="text-xs text-faint">{card.name} · {anteriores.length} resúmenes</p>
             <ul className="mt-4">
               {anteriores.map(renderStmt)}
@@ -347,7 +353,7 @@ export default function TarjetasPage() {
 
         <div className="flex flex-col gap-5">
           <section className="panel p-6">
-            <h2 className="font-display text-lg text-fg">Cuotas activas</h2>
+            <h2 className="font-display text-[17px] font-semibold text-fg">Cuotas activas</h2>
             <p className="text-xs text-faint">{card.name}</p>
             {cuotas.length === 0 ? (
               <div className="mt-4">
@@ -396,9 +402,12 @@ export default function TarjetasPage() {
             )}
           </section>
 
-          <section className="panel p-6">
+          {/* El sobrante lo absorbe Suscripciones (lista de largo variable), NO el
+              "Tip de cierre" que va después: estirar un bloque de 106px a ~700px
+              dejaría una card casi vacía. */}
+          <section className="panel flex-1 p-6">
             <div className="flex items-center justify-between gap-2">
-              <h2 className="font-display text-lg text-fg">Suscripciones</h2>
+              <h2 className="font-display text-[17px] font-semibold text-fg">Suscripciones</h2>
               <span className="rounded-full border border-sky/30 bg-sky/10 px-2.5 py-0.5 text-[0.65rem] text-sky">🔁 mensual</span>
             </div>
             <p className="text-xs text-faint">{card.name} · se suman a cada resumen proyectado</p>
@@ -448,7 +457,7 @@ export default function TarjetasPage() {
 
       <section className="panel mt-5 p-6">
         <div className="mb-1">
-          <h2 className="font-display text-lg text-fg">Totales por mes</h2>
+          <h2 className="font-display text-[17px] font-semibold text-fg">Totales por mes</h2>
           <p className="text-xs text-faint">Resúmenes de todas las tarjetas · elegí rango y moneda</p>
         </div>
         <CardBars data={chartData} />
@@ -470,7 +479,11 @@ function CreditCardVisual({ card, active, onClick }: { card: CardVis; active: bo
   return (
     <button
       onClick={onClick}
-      className="relative aspect-[1.6/1] w-full overflow-hidden rounded-2xl p-4 text-left text-[#0a0a0a] transition-all duration-150"
+      // rounded-xl = 20px, el radio de .panel. `rounded-2xl` es 16px en este theme
+      // (default de Tailwind), o sea MÁS CHICO que las cards que la rodean.
+      // transition acotada: `transition-all` intentaba animar el gradiente de fondo,
+      // que no es animable, y saltaba.
+      className="relative aspect-[1.6/1] w-full overflow-hidden rounded-xl p-4 text-left text-[#0a0a0a] transition-[transform,box-shadow] duration-150"
       style={{
         background: card.grad,
         boxShadow: active

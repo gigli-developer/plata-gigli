@@ -41,6 +41,19 @@ export async function proxy(request: NextRequest) {
   return response;
 }
 
+/**
+ * ⚠️ `api/` queda AFUERA a propósito.
+ *
+ * Este proxy redirige a /login cuando no hay sesión, y una request de máquina
+ * (el webhook de Telegram, el canal PC) nunca trae cookies: sin esta exclusión
+ * se comía el POST y devolvía el HTML del login con un 200, que es el peor error
+ * posible — no falla, simplemente no pasa nada.
+ *
+ * Las rutas de `app/api/` NO quedan desprotegidas: cada una valida su propio
+ * secreto compartido, que es más estricto que la sesión de navegador. Si algún
+ * día se agrega una ruta de API que sí deba ir con sesión, se autentica adentro
+ * del handler, no acá.
+ */
 export const config = {
-  matcher: ["/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)"],
+  matcher: ["/((?!api/|_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)"],
 };

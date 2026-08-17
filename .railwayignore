@@ -8,3 +8,5 @@ build
 coverage
 .DS_Store
 db_backup_vieja
+
+scripts/.verdad.json

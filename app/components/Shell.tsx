@@ -77,7 +77,10 @@ export default function Shell({ children }: { children: React.ReactNode }) {
         <nav
           aria-label="Secciones"
           className="fixed top-1/2 z-40 flex w-[76px] -translate-y-1/2 flex-col items-center rounded-[40px] border border-white/30 bg-white/[0.06] shadow-[0_24px_60px_rgba(0,0,0,0.45),inset_0_1px_0_rgba(255,255,255,0.16)] backdrop-blur-[28px] backdrop-saturate-150"
-          style={{ left: "max(20px, calc((100vw - 1580px) / 2))" }}
+          // `isolation: isolate` da al rail su propio stacking context: el hover de un
+          // ítem re-rasteriza solo adentro del nav y no arrastra a los .panel de la
+          // página, que también tienen backdrop-filter.
+          style={{ left: "max(20px, calc((100vw - 1580px) / 2))", isolation: "isolate" }}
         >
           <div className="flex w-full flex-col items-center gap-2 px-0 pb-1.5 pt-4">
             {nav.map(({ label, Icon, href }) => {
@@ -89,7 +92,13 @@ export default function Shell({ children }: { children: React.ReactNode }) {
                   title={label}
                   aria-label={label}
                   aria-current={a ? "page" : undefined}
-                  className={`grid h-[46px] w-[46px] place-items-center rounded-[15px] transition-transform duration-150 ease-[cubic-bezier(.22,.61,.36,1)] hover:scale-[1.16] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent ${
+                  // `transition-transform` NO cubre background ni color: el ícono crecía
+                  // suave pero el recuadro del hover aparecía de golpe, y sobre el vidrio
+                  // del rail se leía como un parche gris. Hay que listar las tres.
+                  // El scale baja de 1.16 a 1.08: 1.16 era el más agresivo de la app y,
+                  // al crear capa de composición dentro de un ancestro con backdrop-filter,
+                  // acentuaba el corte del vidrio.
+                  className={`grid h-[46px] w-[46px] place-items-center rounded-[15px] transition-[scale,background-color,color] duration-150 ease-[cubic-bezier(.22,.61,.36,1)] hover:scale-[1.08] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent ${
                     a
                       ? "bg-accent text-bg shadow-[0_6px_18px_rgba(255,158,27,0.45)]"
                       : "text-subtle hover:bg-white/[0.07] hover:text-fg"
@@ -144,7 +153,9 @@ export default function Shell({ children }: { children: React.ReactNode }) {
                 key={href}
                 href={href}
                 aria-current={a ? "page" : undefined}
-                className={`flex w-[58px] flex-col items-center gap-1 rounded-[16px] px-1 py-1.5 text-[0.6rem] transition-colors ${
+                // `active:` en vez de `hover:`: es el único feedback que sirve en
+                // touch. Antes el nav principal de mobile no respondía al tap.
+                className={`flex w-[58px] flex-col items-center gap-1 rounded-[16px] px-1 py-1.5 text-[0.6rem] transition-colors active:bg-white/[0.10] ${
                   a ? "bg-accent text-bg" : "text-subtle"
                 }`}
               >
@@ -156,7 +167,7 @@ export default function Shell({ children }: { children: React.ReactNode }) {
           <button
             onClick={() => setMoreOpen(true)}
             aria-label="Más secciones"
-            className={`flex w-[58px] flex-col items-center gap-1 rounded-[16px] px-1 py-1.5 text-[0.6rem] transition-colors ${
+            className={`flex w-[58px] flex-col items-center gap-1 rounded-[16px] px-1 py-1.5 text-[0.6rem] transition-colors active:bg-white/[0.10] ${
               navResto.some((n) => isActive(pathname, n.href)) ? "bg-accent text-bg" : "text-subtle"
             }`}
           >
@@ -171,7 +182,9 @@ export default function Shell({ children }: { children: React.ReactNode }) {
   );
 }
 
-export function PageHeader({ title, subtitle, children }: { title: string; subtitle?: string; children?: React.ReactNode }) {
+// `subtitle` acepta ReactNode para poder marcar con `.tnum` los montos que traiga:
+// sin ese marcador el modo privacidad no los tapa.
+export function PageHeader({ title, subtitle, children }: { title: string; subtitle?: React.ReactNode; children?: React.ReactNode }) {
   return (
     <header className="flex flex-wrap items-end justify-between gap-3">
       <div>

@@ -1,0 +1,138 @@
+<!-- @dsCard group="Foundations" -->
+<!doctype html><html lang="es"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Estados interactivos · Plata</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=Hanken+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  font-family:'Hanken Grotesk',system-ui,sans-serif;
+  color:#f4f4f3;background-color:#0a0a0a;
+  background-image:
+    radial-gradient(520px 460px at 7% 90%, rgba(255,176,84,.50), rgba(255,150,54,0) 62%),
+    radial-gradient(300px 300px at 3% 95%, rgba(255,205,120,.42), transparent 58%),
+    radial-gradient(820px 1000px at -4% 40%, rgba(74,120,72,.30), transparent 58%),
+    radial-gradient(980px 1080px at 102% 30%, rgba(96,152,206,.34), transparent 56%),
+    radial-gradient(1300px 1200px at 50% 122%, rgba(6,6,9,0), rgba(5,5,8,.62) 72%),
+    linear-gradient(158deg,#14110e 0%,#0d0b0d 46%,#0a0d12 100%);
+  background-attachment:fixed;
+  -webkit-font-smoothing:antialiased;
+  padding:28px;
+}
+.panel{
+  background:rgba(255,255,255,.08);
+  --glass:blur(26px) saturate(170%);
+  -webkit-backdrop-filter:var(--glass);backdrop-filter:var(--glass);
+  border:1px solid rgba(255,255,255,.32);border-radius:20px;
+  box-shadow:0 12px 44px rgba(0,0,0,.32),inset 0 1px 0 rgba(255,255,255,.42),inset 0 0 0 1px rgba(255,255,255,.06);
+}
+.panel-inner{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.10);border-radius:14px}
+.tnum{font-family:'JetBrains Mono',ui-monospace,monospace;font-feature-settings:'tnum' 1;letter-spacing:-.02em}
+.disp{font-family:'Bricolage Grotesque',system-ui,sans-serif;letter-spacing:-.02em}
+.label-micro{font-size:10.5px;letter-spacing:.05em;text-transform:uppercase;color:#9a9a9f}
+h1.t{font-size:24px;font-weight:700;letter-spacing:-.03em;margin-bottom:6px;font-family:'Bricolage Grotesque',system-ui,sans-serif}
+p.sub{font-size:13.5px;color:#9a9a9f;margin-bottom:22px;max-width:760px;line-height:1.5}
+h2.s{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:#6b6b70;margin:26px 0 12px}
+.grid{display:grid;gap:14px}
+code{font-family:'JetBrains Mono',ui-monospace,monospace;font-size:11.5px;color:#ffbf47;
+  background:rgba(255,255,255,.06);padding:2px 6px;border-radius:5px;white-space:nowrap}
+pre{font-family:'JetBrains Mono',ui-monospace,monospace;font-size:11px;line-height:1.65;color:#c2c2c6;
+  background:rgba(0,0,0,.34);border:1px solid rgba(255,255,255,.09);border-radius:11px;
+  padding:13px 15px;overflow-x:auto;margin-top:11px}
+.note{font-size:12.5px;color:#9a9a9f;line-height:1.55;margin-top:9px}
+.warn{border-left:2px solid #ff9e1b;padding-left:11px;color:#c2c2c6;font-size:12.5px;line-height:1.55;margin-top:11px}
+.bad{border-left:2px solid #ff433d;padding-left:11px}
+.good{border-left:2px solid #35e08a;padding-left:11px}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{text-align:left;font-size:10.5px;letter-spacing:.05em;text-transform:uppercase;color:#6b6b70;
+  padding:0 10px 9px 0;font-weight:400;border-bottom:1px solid rgba(255,255,255,.1)}
+td{padding:9px 10px 9px 0;border-bottom:1px solid rgba(255,255,255,.055);vertical-align:top;color:#c2c2c6}
+</style></head><body>
+<h1 class="t">Estados interactivos</h1><p class="sub">La capa que la app no tiene. Cada valor de acá es el que ya usa la mayoría del código — no es un rediseño, es unificar lo que se dispersó.</p>
+
+  <div class="warn" style="margin-bottom:24px">
+    <strong>El problema que esto resuelve.</strong> Hoy la app tiene
+    <strong>3 convenciones distintas de pill toggle</strong>, <strong>4 alfas distintos</strong> para el hover de una fila
+    y <strong>28 inputs</strong> con <code>outline-none</code> sin reemplazo. Cada pantalla reimplementó lo mismo con su
+    propio hover. Esta página fija el canon: el valor elegido es siempre el que ya usa la mayoría del código.
+  </div>
+
+  <h2 class="s">Pill toggle — el canon</h2>
+  <div class="panel" style="padding:17px">
+    <div style="display:inline-flex;border-radius:999px;border:1px solid rgba(255,255,255,.10);
+                background:rgba(255,255,255,.06);padding:2px">
+      <button style="border:0;cursor:pointer;font:inherit;border-radius:999px;padding:5px 13px;font-size:12px;
+    transition:color .15s ease,background-color .15s ease;
+    background:rgba(255,158,27,.15);color:#ff9e1b">Pesos</button><button style="border:0;cursor:pointer;font:inherit;border-radius:999px;padding:5px 13px;font-size:12px;
+    transition:color .15s ease,background-color .15s ease;
+    background:transparent;color:#c2c2c6">Dólares</button><button style="border:0;cursor:pointer;font:inherit;border-radius:999px;padding:5px 13px;font-size:12px;
+    transition:color .15s ease,background-color .15s ease;
+    background:transparent;color:#c2c2c6">USDT</button>
+    </div>
+    <pre>activo    → bg-accent/15 text-accent
+inactivo  → text-muted hover:text-fg
+ítem      → rounded-full px-3 py-1 transition-colors
+contenedor→ rounded-full border border-white/10 bg-white/[0.06] p-0.5</pre>
+    <div class="note bad" style="margin-top:13px"><strong>Lo que hay que reemplazar:</strong>
+      <code>bg-accent text-bg</code> (naranja sólido) y <code>bg-white/[0.09] text-fg</code> (blanco).
+      El caso más visible es <code>cashflow/page.tsx:305-310</code>: dos grupos de píldoras pegados
+      en la misma fila, uno pinta el activo naranja y el otro blanco.</div>
+  </div>
+
+  <h2 class="s">Hover por rol</h2>
+  <div class="panel" style="padding:17px">
+    <table>
+      <tr><th>Rol</th><th>Hover</th><th>Nota</th></tr>
+      <tr><td>Fila de lista</td><td><code>hover:bg-white/[0.05]</code></td><td>+ <code>transition-colors</code> siempre</td></tr>
+      <tr><td>Botón de ícono</td><td><code>hover:bg-white/[0.07] hover:text-fg</code></td><td>el alfa más alto queda reservado acá</td></tr>
+      <tr><td>Card clickeable</td><td><code>.panel-hover</code></td><td>sube 2px y aclara el borde</td></tr>
+      <tr><td>Chip / filtro</td><td>activo <code>border-accent/40 bg-accent/10 text-accent</code></td><td>inactivo <code>text-muted hover:text-fg</code></td></tr>
+      <tr><td>Botón primario</td><td><code>hover:scale-[1.02]</code></td><td>un solo valor de escala en toda la app</td></tr>
+    </table>
+    <div class="note bad" style="margin-top:13px"><strong>Hoy conviven</strong> cuatro alfas para el mismo hover de fila
+      (<code>0.04</code>, <code>0.05</code>, <code>0.07</code>, <code>0.11</code>) y tres escalas
+      (<code>1.02</code>, <code>1.03</code>, <code>105</code>).</div>
+  </div>
+
+  <h2 class="s">Foco — accesibilidad</h2>
+  <div class="panel" style="padding:17px">
+    <div style="display:flex;gap:11px;flex-wrap:wrap;align-items:center">
+      <div style="border:1px solid rgba(255,255,255,.10);border-radius:11px;padding:9px 13px;font-size:13px;color:#6b6b70">
+        sin foco</div>
+      <div style="border:1px solid rgba(255,158,27,.40);border-radius:11px;padding:9px 13px;font-size:13px;color:#f4f4f3">
+        con foco &nbsp;<span style="color:#ff9e1b">←</span></div>
+    </div>
+    <pre>input   → focus:border-accent/40      (un solo tono, siempre)
+botón   → focus-visible:outline-2 focus-visible:outline-offset-2
+          focus-visible:outline-accent</pre>
+    <div class="note bad" style="margin-top:13px"><strong>Estado actual:</strong> 61 <code>outline-none</code> y solo 33
+      <code>focus:border-*</code> → <strong>28 campos sin ninguna señal de foco</strong>. Y un solo elemento en toda la app
+      tiene <code>focus-visible</code> propio (el rail de desktop). Navegar con teclado es prácticamente a ciegas.</div>
+  </div>
+
+  <h2 class="s">Disabled</h2>
+  <div class="panel" style="padding:17px">
+    <button style="border:0;font:inherit;border-radius:11px;padding:9px 17px;background:#ff9e1b;color:#0a0a0a;
+                   font-weight:600;font-size:13px;opacity:.6;cursor:not-allowed">Guardando…</button>
+    <pre>disabled:opacity-60 disabled:pointer-events-none</pre>
+    <div class="note bad" style="margin-top:13px"><strong>Bug real:</strong> <code>:hover</code> matchea igual sobre un
+      <code>&lt;button disabled&gt;</code>. Hoy hay <strong>12 botones</strong> que siguen agrandándose con
+      <code>hover:scale-*</code> mientras están deshabilitados y dicen "Guardando…".
+      Y el <code>disabled:opacity</code> va de 40 a 60 sin criterio.</div>
+  </div>
+
+  <h2 class="s">Touch — hover pegado</h2>
+  <div class="panel" style="padding:17px">
+    <p class="note" style="margin-top:0">Tailwind envuelve <code>hover:</code> en <code>@media (hover:hover)</code>,
+    pero las clases escritas a mano en <code>globals.css</code> no. <code>.panel-hover</code> y <code>.chip</code>
+    quedan <strong>pegadas tras un tap en el celular</strong>: la card se queda levantada y más clara hasta recargar.</p>
+    <pre>@media (hover: hover) {
+  .panel-hover:hover { … }
+  .chip:hover { … }
+}</pre>
+    <div class="note" style="margin-top:11px">Lo mismo pasa con los gráficos: usan
+      <code>onMouseEnter</code>/<code>onMouseLeave</code> sin equivalente táctil, así que en un tap el tooltip
+      queda fijo y el resto de las barras atenuadas.</div>
+  </div>
+</body></html>

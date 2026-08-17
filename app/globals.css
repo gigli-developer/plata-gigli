@@ -48,6 +48,16 @@
   border-color: var(--color-line);
 }
 
+/* El desplegable de un <select> nativo lo pinta el SISTEMA OPERATIVO, no la página:
+   por eso el control se veía oscuro pero la lista de opciones salía con fondo blanco.
+   `color-scheme: dark` en <html> no alcanza en Chrome/Windows, hay que pintar las
+   <option> a mano. Va acá, global, porque afecta a TODOS los select de la app. */
+select option,
+select optgroup {
+  background-color: #0d0e0e;
+  color: var(--color-fg);
+}
+
 html {
   color-scheme: dark;
   scrollbar-color: rgba(255, 255, 255, 0.12) transparent;
@@ -79,11 +89,38 @@ body {
   letter-spacing: -0.02em;
 }
 
-/* modo privacidad: desenfoca todos los montos */
+/* modo privacidad: reemplaza todos los montos por **** (como el diseño original).
+   `visibility` en vez de `color: transparent` porque es heredable y se puede
+   revertir en el ::after: así los asteriscos conservan el color semántico del
+   monto (verde/coral/naranja) y su font-size, sin tener que repetirlos acá.
+   El elemento sigue ocupando su ancho real → el layout no salta al togglear. */
 .privacy .tnum {
-  filter: blur(8px);
+  visibility: hidden;
+  position: relative;
   user-select: none;
   cursor: default;
+}
+
+.privacy .tnum::after {
+  content: "****";
+  visibility: visible;
+  position: absolute;
+  inset: 0;
+  letter-spacing: 0.06em;
+  text-align: inherit;
+}
+
+/* Los campos de formulario quedan afuera: son elementos reemplazados y NO renderizan
+   ::after, así que con `visibility: hidden` desaparecían del todo — el modal de alta
+   de tarjeta quedaba con 4 campos invisibles e imposible de completar. Con el blur
+   viejo se veían borrosos pero existían, y por eso no se había notado.
+   Además, tapar lo que estás tipeando vos no es lo que el modo privacidad protege:
+   protege los saldos a la vista, no tu propio input. */
+.privacy input.tnum,
+.privacy textarea.tnum,
+.privacy select.tnum {
+  visibility: visible;
+  position: static;
 }
 
 .font-display {
@@ -95,16 +132,32 @@ body {
    La superficie firmada del rediseño. El blur es caro: si el scroll en mobile
    se siente pesado, lo primero a bajar es el radio del blur (ver @media abajo),
    no el resto del efecto. */
+/* ⚠️ NO le devuelvas el `backdrop-filter` a esta clase. Lee esto antes.
+ *
+ * El panel era vidrio real (`backdrop-filter: blur(26px) saturate(170%)`). Se sacó
+ * el 2026-08-03 porque provocaba un bug de rasterizado de Chrome: al forzarse un
+ * repaint —por ejemplo pasando el cursor por el rail— aparecían franjas sombreadas
+ * sobre las cards, en la zona izquierda de las tablas grandes y en el medio de los
+ * KPIs, y NO se iban. Se veía en todas las pantallas salvo el Resumen (donde las
+ * cards van anidadas dentro de un wrapper, no como hijas directas de `.page-enter`).
+ *
+ * Se probaron 13 variantes con el usuario, en su navegador, y NINGUNA lo evitó
+ * conservando el efecto:
+ *   · will-change / contain:paint / translateZ(0) / isolation en las cards
+ *   · aislar el rail, sacarle sombra, blur o z-index
+ *   · quitar `background-attachment: fixed`, reducir de 7 gradientes a 2, moverlos
+ *     al <html>, pasarlos a un pseudo-elemento fijo
+ *   · bajar el blur a 12, 8 y hasta 4px — con 4px seguía apareciendo
+ * Lo único que lo elimina es no tener `backdrop-filter`. Es un bug del compositor
+ * con varias capas de vidrio en pantalla (acá había hasta 7 a la vez), no un error
+ * de CSS que se pueda escribir mejor.
+ *
+ * Qué se conserva: el fondo translúcido (se sigue viendo la atmósfera del body a
+ * través), el borde claro y las sombras. Lo único que se pierde es el desenfoque.
+ * Beneficio colateral: `backdrop-filter` era lo más caro de renderizar de la app.
+ */
 .panel {
-  background: rgba(255, 255, 255, 0.08);
-  /* El valor va por variable a propósito: Lightning CSS (el procesador de
-     Tailwind v4) colapsa `backdrop-filter` + `-webkit-backdrop-filter` cuando el
-     valor es literal y se queda SOLO con la prefijada — el vidrio desaparecía en
-     Firefox. Con var() no puede evaluarlo y deja las dos. Verificado leyendo el
-     CSS compilado; si tocás esto, volvé a chequearlo ahí. */
-  --glass: blur(26px) saturate(170%);
-  -webkit-backdrop-filter: var(--glass);
-  backdrop-filter: var(--glass);
+  background: rgba(255, 255, 255, 0.07);
   border: 1px solid rgba(255, 255, 255, 0.32);
   border-radius: var(--radius-xl);
   box-shadow:
@@ -122,20 +175,20 @@ body {
 .panel-hover {
   transition: border-color 0.15s ease, transform 0.15s ease, background 0.15s ease;
 }
-.panel-hover:hover {
-  border-color: rgba(255, 255, 255, 0.45);
-  background: rgba(255, 255, 255, 0.11);
-  transform: translateY(-2px);
+/* El @media es obligatorio: Tailwind envuelve sus `hover:` así, pero las reglas
+   escritas a mano acá no lo hacían y el estado quedaba PEGADO tras un tap en
+   mobile (la card se quedaba levantada y más clara hasta recargar). */
+@media (hover: hover) {
+  .panel-hover:hover {
+    border-color: rgba(255, 255, 255, 0.45);
+    background: rgba(255, 255, 255, 0.11);
+    transform: translateY(-2px);
+  }
 }
 
-/* En pantallas chicas el blur se recorta: es donde más cuesta y menos se ve. */
-@media (max-width: 1023px) {
-  .panel { --glass: blur(16px) saturate(150%); }
-}
-/* Sin soporte de backdrop-filter, el vidrio se cae a un sólido legible. */
-@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
-  .panel { background: rgba(22, 24, 26, 0.92); }
-}
+/* (Acá vivían el recorte de blur en mobile y el fallback `@supports not
+   backdrop-filter`. Los dos quedaron sin sentido al sacarle el vidrio a .panel:
+   ya no hay blur que recortar ni soporte que detectar.) */
 
 /* halo del asistente IA — ahora naranja→sky (antes violeta) */
 .ai-glow {
@@ -162,11 +215,76 @@ body {
   border: 1px solid rgba(255, 255, 255, 0.10);
   background: rgba(255, 255, 255, 0.06);
   border-radius: 999px;
-  transition: all 0.15s ease;
+  /* propiedades explícitas, no `all`: con `all` se animaba también el padding y
+     el borde en cada relayout */
+  transition: color 0.15s ease, border-color 0.15s ease, background-color 0.15s ease;
 }
-.chip:hover {
-  border-color: rgba(255, 158, 27, 0.45);
-  color: var(--color-fg);
+@media (hover: hover) {
+  .chip:hover {
+    border-color: rgba(255, 158, 27, 0.45);
+    color: var(--color-fg);
+  }
+}
+
+/* ============ Estados interactivos — capa canónica ============
+   Antes cada pantalla reimplementaba el mismo control con su propio hover: había
+   3 convenciones de pill toggle, 4 alfas distintos para el hover de una fila y
+   28 inputs con `outline-none` sin reemplazo. Estas clases fijan un solo valor
+   por rol — en cada caso, el que ya usaba la mayoría del código.
+   Documentadas en el design system (foundations/states). */
+
+/* Segmented control (Pesos/Dólares/USDT, Proyección/Histórico, 3M/6M…) */
+.seg {
+  display: inline-flex;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  background: rgba(255, 255, 255, 0.06);
+  padding: 2px;
+}
+.seg-item {
+  border-radius: 999px;
+  padding: 0.25rem 0.75rem;
+  font-size: 0.75rem;
+  color: var(--color-muted);
+  transition: color 0.15s ease, background-color 0.15s ease;
+}
+@media (hover: hover) {
+  .seg-item:hover { color: var(--color-fg); }
+}
+.seg-item[aria-selected="true"] {
+  background: rgba(255, 158, 27, 0.15);
+  color: var(--color-accent);
+}
+
+/* Fila de lista clickeable */
+.row-hover { transition: background-color 0.15s ease; }
+@media (hover: hover) {
+  .row-hover:hover { background: rgba(255, 255, 255, 0.05); }
+}
+
+/* Botón de ícono (el alfa más alto queda reservado para este rol) */
+.icon-btn {
+  display: grid;
+  place-items: center;
+  border-radius: 12px;
+  color: var(--color-subtle);
+  transition: color 0.15s ease, background-color 0.15s ease, border-color 0.15s ease;
+}
+@media (hover: hover) {
+  .icon-btn:hover { background: rgba(255, 255, 255, 0.07); color: var(--color-fg); }
+}
+
+/* `:hover` matchea igual sobre un <button disabled> — sin esto, 12 botones
+   seguían agrandándose con hover:scale mientras decían "Guardando…". */
+button:disabled, a[aria-disabled="true"] {
+  pointer-events: none;
+}
+
+/* Foco visible sobre vidrio: el ring por defecto del navegador casi no se ve. */
+:where(button, a, [role="button"], summary):focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+  border-radius: 8px;
 }
 
 /* Primera columna fija de la tabla de Cash Flow.
@@ -197,9 +315,46 @@ body {
 /* ============ Movimiento ============ */
 @keyframes rise {
   from { opacity: 0; transform: translateY(14px); }
-  to { opacity: 1; transform: translateY(0); }
+  to { opacity: 1; transform: none; }
 }
-.rise { animation: rise 0.5s ease both; }
+
+/* ¿Por qué la entrada está partida en DOS animaciones?
+ *
+ * El problema: con `animation-fill-mode: both` el último keyframe queda aplicado, y
+ * un `transform` retenido —aunque sea la identidad— crea stacking context y
+ * containing block PERMANENTES en cada bloque animado. Los `.panel` que quedan
+ * adentro tienen `backdrop-filter`, que entonces se rasteriza contra ese ancestro en
+ * vez de contra la página: aparecen bandas y sombras sobre las cards en cuanto algo
+ * fuerza un repaint (pasar el cursor por el nav), y no se van.
+ * Poner `transform: none` en el keyframe final NO alcanza: al interpolar, CSS lo
+ * resuelve a matriz identidad y `forwards` retiene la matriz, no la keyword.
+ *
+ * La solución: separar las dos propiedades y darle a cada una el fill-mode que le
+ * corresponde.
+ *   - opacidad → `both`: SIEMPRE termina en 1. Si la animación no llegara a correr
+ *     (pestaña en segundo plano), el contenido igual se ve.
+ *   - desplazamiento → `backwards`: al terminar, el elemento vuelve a su estilo base
+ *     y el transform desaparece de verdad. Peor caso si no corre: queda 14px
+ *     corrido, pero visible.
+ * Es el mismo mecanismo que ya documenta `.page-enter` más abajo, donde un ancestro
+ * con transform rompía el `position: fixed` de los modales. */
+@keyframes riseFade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes riseSlide {
+  from { transform: translateY(14px); }
+}
+/* `backwards`, NO `both`. `both` incluye `forwards`, que deja aplicado el último
+   keyframe — y ese keyframe es `transform: translateY(0)`, que NO es `none`: es un
+   transform activo que sobrevive a la animación. Un elemento con transform crea
+   stacking context y containing block permanentes, y los `.panel` que quedan adentro
+   tienen `backdrop-filter`, que pasa a rasterizarse contra ese ancestro en vez de
+   contra la página → bandas y sombras espurias sobre las cards, que aparecen cuando
+   algo fuerza un repaint (pasar el cursor por el nav) y NO se van.
+   Con `backwards` el estado final vuelve al natural (opacity 1, transform none), que
+   es idéntico visualmente, y el transform residual desaparece. */
+.rise { animation: riseFade 0.5s ease both, riseSlide 0.5s ease backwards; }
 
 /* entrada consistente al cambiar de pestaña (se aplica en el layout, key=pathname) */
 /* Solo opacidad: un transform acá rompería el position:fixed de los modales (se posicionarían
@@ -218,8 +373,12 @@ body {
    El `:not(.fixed)` NO es cosmético: los modales son hijos de la página, y un
    ancestro con transform rompe su `position: fixed` (se posicionarían respecto
    al contenedor en vez del viewport). Todos los overlays llevan la clase fixed. */
+/* Ver la nota de `.rise`: `backwards` en vez de `both`. Acá es donde más pesaba,
+   porque son los bloques de primer nivel de CADA pantalla los que quedaban con
+   transform residual. En el Resumen no se notaba: sus cards viven anidadas dentro
+   de un único wrapper, no son hijas directas de `.page-enter`. */
 .page-enter > *:not(.fixed) {
-  animation: rise 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation: riseFade 0.5s cubic-bezier(0.22, 1, 0.36, 1) both, riseSlide 0.5s cubic-bezier(0.22, 1, 0.36, 1) backwards;
 }
 .page-enter > *:nth-child(2):not(.fixed) { animation-delay: 0.05s; }
 .page-enter > *:nth-child(3):not(.fixed) { animation-delay: 0.1s; }

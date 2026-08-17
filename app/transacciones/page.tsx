@@ -6,15 +6,24 @@ import {
   type TxView, type Category, type PaymentMethod,
 } from "@/lib/db";
 import { readCache, writeCache } from "@/lib/cache";
-import { ars, compact } from "@/lib/format";
+import { arsDe, fxSync, loadFx } from "@/lib/fx";
+import { ars, compact, parseAmount } from "@/lib/format";
 import { PageHeader } from "../components/Shell";
 import Modal from "../components/Modal";
 import CountUp from "../components/CountUp";
 import EditTxModal from "../components/EditTxModal";
-import { Search, Plus, Camera, Mail, Sparkle, ArrowUpRight, ArrowDownRight, Pencil } from "../icons";
+import UndoButton from "../components/UndoButton";
+import { Search, Plus, Camera, Mail, Sparkle, ArrowUpRight, ArrowDownRight, Pencil, Swap } from "../icons";
 
 type TypeFilter = "todos" | "ingreso" | "egreso";
 const CURRENCIES = ["ARS", "USD", "USDT"];
+
+/** Hoy en formato YYYY-MM-DD, en hora LOCAL. `toISOString()` devuelve UTC y en ART
+ *  (UTC−3) daría el día siguiente a partir de las 21hs. */
+function hoyLocal() {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+}
 
 export default function TransaccionesPage() {
   const [items, setItems] = useState<TxView[]>([]);
@@ -29,6 +38,8 @@ export default function TransaccionesPage() {
   const [type, setType] = useState<TypeFilter>("todos");
   const [cat, setCat] = useState("todas");
   const [method, setMethod] = useState("todos");
+  // Cotización para valuar en ARS los movimientos en USD/USDT antes de sumarlos.
+  const [fx, setFx] = useState(fxSync());
 
   const reload = async () => {
     const sb = db();
@@ -41,6 +52,7 @@ export default function TransaccionesPage() {
     // Pintar al instante el último snapshot; lo fresco llega por atrás.
     const s = readCache<{ tx: TxView[]; c: Category[]; m: PaymentMethod[] }>("transacciones");
     if (s) { setItems(s.tx); setCats(s.c); setMethods(s.m); setLoading(false); }
+    loadFx().then(() => setFx(fxSync()));
     reload().catch((e) => setErr(e.message)).finally(() => setLoading(false));
   }, []);
 
@@ -52,11 +64,18 @@ export default function TransaccionesPage() {
     return true;
   }), [items, type, cat, method, q]);
 
+  // Los KPIs se muestran con ars(), así que hay que valuar en pesos ANTES de sumar.
+  // Antes se sumaba `t.amount` crudo: un ingreso de US$ 1.000 aportaba $1.000 en vez
+  // de ~$1.5M, y el error iba siempre hacia abajo. Se usa la cotización congelada
+  // del movimiento (decisión 5b): son flujos ya ocurridos.
   const totals = useMemo(() => {
     let ingresos = 0, egresos = 0;
-    for (const t of filtered) (t.type === "ingreso" ? (ingresos += t.amount) : (egresos += t.amount));
+    for (const t of filtered) {
+      const v = arsDe(t.amount, t.currency, t.fxRate, fx);
+      if (t.type === "ingreso") ingresos += v; else egresos += v;
+    }
     return { ingresos, egresos, balance: ingresos - egresos, count: filtered.length };
-  }, [filtered]);
+  }, [filtered, fx.usd, fx.usdt]);
 
   const groups = useMemo(() => {
     const map = new Map<string, TxView[]>();
@@ -71,6 +90,7 @@ export default function TransaccionesPage() {
   return (
     <>
       <PageHeader title="Transacciones" subtitle={loading ? "Cargando…" : `${items.length} movimientos`}>
+        <UndoButton onDone={reload} />
         <button onClick={() => setNuevoOpen(true)} className="flex items-center gap-2 rounded-full bg-accent px-4 py-2 text-sm font-semibold text-bg transition-transform hover:scale-[1.03]">
           <Plus className="h-4 w-4" /> Nuevo movimiento
         </button>
@@ -119,7 +139,7 @@ export default function TransaccionesPage() {
               <p className="px-2 py-10 text-center text-sm text-muted">No hay movimientos con esos filtros.</p>
             ) : (
               groups.map(([day, rows]) => {
-                const dayTotal = rows.reduce((a, t) => a + (t.type === "ingreso" ? t.amount : -t.amount), 0);
+                const dayTotal = rows.reduce((a, t) => { const v = arsDe(t.amount, t.currency, t.fxRate, fx); return a + (t.type === "ingreso" ? v : -v); }, 0);
                 return (
                   <div key={day} className="px-2">
                     <div className="flex items-center justify-between border-b border-line py-2">
@@ -163,7 +183,7 @@ function Segmented({ value, onChange }: { value: TypeFilter; onChange: (v: TypeF
   return (
     <div className="flex rounded-xl border border-line bg-white/[0.06] p-1 text-sm">
       {opts.map((o) => (
-        <button key={o.v} onClick={() => onChange(o.v)} className={`rounded-lg px-3 py-1.5 transition-colors ${value === o.v ? "bg-white/[0.09] text-fg" : "text-muted hover:text-fg"}`}>{o.label}</button>
+        <button key={o.v} onClick={() => onChange(o.v)} className={`rounded-lg px-3 py-1.5 transition-colors ${value === o.v ? "bg-accent/15 text-accent" : "text-muted hover:text-fg"}`}>{o.label}</button>
       ))}
     </div>
   );
@@ -187,14 +207,28 @@ function Row({ t, onEdit }: { t: TxView; onEdit: () => void }) {
   };
   const s = sources[t.source] ?? sources.manual;
   const time = t.date.split(" · ")[1] ?? "";
+  // Estos movimientos no son gasto ni ingreso propio: son la contracara de una deuda
+  // o de un cambio de divisas (decisión 3). Sin marcarlos, un "Cobro a Branko" de
+  // $50.000 se lee como un ingreso más y no se entiende de dónde salió.
+  const origen = t.category === "Préstamos" ? { label: "Deuda", cls: "text-sky border-sky/30 bg-sky/10" }
+    : t.category === "Cambio Divisas" ? { label: "Cambio", cls: "text-gold border-gold/30 bg-gold/10" }
+    : null;
   return (
     <li onClick={onEdit} className="group flex cursor-pointer items-center gap-3 rounded-lg px-2 py-3 transition-colors hover:bg-white/[0.05]">
       <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl border border-line bg-white/[0.06] text-lg">{t.emoji}</span>
       <div className="min-w-0">
         <p className="truncate text-[0.95rem] text-fg">{t.desc}</p>
-        <p className="truncate text-xs text-faint">{t.category} · {t.method}{t.card ? ` · ${t.card}` : ""}{time ? ` · ${time}` : ""}</p>
+        <p className="truncate text-xs text-faint">
+          {t.category} · {t.method}{t.card ? ` · ${t.card}` : ""}{time ? ` · ${time}` : ""}
+          {origen && <span className="text-sky"> · no cuenta como gasto del mes</span>}
+        </p>
       </div>
       <div className="ml-auto flex items-center gap-3">
+        {origen && (
+          <span className={`hidden items-center gap-1 rounded-full border px-2 py-0.5 text-[0.65rem] sm:flex ${origen.cls}`}>
+            <Swap className="h-3 w-3" /> {origen.label}
+          </span>
+        )}
         <span className={`hidden items-center gap-1 rounded-full border border-line bg-white/[0.06] px-2 py-0.5 text-[0.65rem] sm:flex ${s.cls}`}>
           <s.Icon className="h-3 w-3" /> {s.label}
         </span>
@@ -215,6 +249,9 @@ function NewMovementForm({ cats, methods, onSaved, onClose }: { cats: Category[]
   const [methodId, setMethodId] = useState<string>("");
   const [currency, setCurrency] = useState("ARS");
   const [desc, setDesc] = useState("");
+  // Arranca en hoy, que es el caso normal. Ver `hoyLocal`: usar toISOString() acá
+  // daría el día equivocado después de las 21hs (ART es UTC−3).
+  const [date, setDate] = useState(hoyLocal());
   const [saving, setSaving] = useState(false);
   const [ok, setOk] = useState(false);
 
@@ -234,7 +271,7 @@ function NewMovementForm({ cats, methods, onSaved, onClose }: { cats: Category[]
   }, [catsManuales, methods]);
 
   const save = async () => {
-    const value = Number(amount.replace(/[^\d]/g, ""));
+    const value = parseAmount(amount);
     if (!value) return;
     setSaving(true); setOk(false);
     try {
@@ -243,9 +280,13 @@ function NewMovementForm({ cats, methods, onSaved, onClose }: { cats: Category[]
         categoryId: categoryId ? Number(categoryId) : null,
         paymentMethodId: methodId ? Number(methodId) : null,
         description: desc || null,
+        // Mediodía, no medianoche: `new Date("2026-08-03T00:00")` en una zona
+        // negativa se va al día anterior al pasar a UTC. A las 12 no hay corrimiento
+        // posible. Es el mismo criterio que usa EditTxModal.
+        occurredAt: new Date(`${date}T12:00:00`).toISOString(),
       });
       await onSaved();
-      setAmount(""); setDesc(""); setOk(true);
+      setAmount(""); setDesc(""); setDate(hoyLocal()); setOk(true);
       // Se cierra solo: el movimiento nuevo ya quedó arriba de la lista.
       setTimeout(() => { setOk(false); onClose(); }, 1200);
     } finally {
@@ -273,6 +314,17 @@ function NewMovementForm({ cats, methods, onSaved, onClose }: { cats: Category[]
             </select>
           </div>
         </div>
+
+        <Field label="Fecha">
+          <input
+            type="date"
+            value={date}
+            max={hoyLocal()}
+            onChange={(e) => setDate(e.target.value)}
+            className="w-full rounded-xl border border-line bg-white/[0.06] px-3 py-2.5 text-sm text-fg outline-none [color-scheme:dark] focus:border-accent/40"
+          />
+          {date !== hoyLocal() && <p className="mt-1 text-[0.68rem] text-accent">Se carga con fecha del {date.split("-").reverse().join("/")}, no de hoy.</p>}
+        </Field>
 
         <Field label="Categoría">
           <FullSelect value={categoryId} onChange={setCategoryId}>

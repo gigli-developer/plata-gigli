@@ -4,10 +4,11 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { db, fetchDebts, fetchPersons, insertDebt, insertPerson, settleDebt, payDebt, deleteDebtPayment, type DebtView, type DebtPayment } from "@/lib/db";
 import { readCache, writeCache } from "@/lib/cache";
 import { fxSync, loadFx, toArs } from "@/lib/fx";
-import { ars } from "@/lib/format";
+import { ars, parseAmount } from "@/lib/format";
 import { PageHeader } from "../components/Shell";
 import Modal from "../components/Modal";
 import CountUp from "../components/CountUp";
+import UndoButton from "../components/UndoButton";
 import { ArrowUpRight, ArrowDownRight, Swap, Chevron, Plus } from "../icons";
 
 type DebtKind = "cash" | "in_kind" | "split";
@@ -31,6 +32,7 @@ export default function DeudasPage() {
   const [nuevaOpen, setNuevaOpen] = useState(false);
   const [view, setView] = useState<"personas" | "historial">("personas");
   const [selected, setSelected] = useState<string | null>(null);
+  const [err, setErr] = useState<string | null>(null);
 
   const reload = async () => {
     const sb = db();
@@ -56,15 +58,24 @@ export default function DeudasPage() {
   );
 
   // Guardia anti doble-click: una sola operación de pago/saldado/borrado en vuelo a la vez.
+  // El `catch` NO es opcional: sin él la promesa quedaba rechazada sin que nadie la
+  // mirara, y la UI seguía mostrando el resultado optimista como si hubiera salido bien.
   const busyRef = useRef(false);
-  const guarded = async (fn: () => Promise<void>) => { if (busyRef.current) return; busyRef.current = true; try { await fn(); } finally { busyRef.current = false; } };
+  const guarded = async (fn: () => Promise<void>) => {
+    if (busyRef.current) return;
+    busyRef.current = true;
+    setErr(null);
+    try { await fn(); }
+    catch (e) { setErr(e instanceof Error ? e.message : String(e)); await reload(); } // reload = revierte lo optimista
+    finally { busyRef.current = false; }
+  };
 
   const settle = (id: number) => guarded(async () => {
     setItems((p) => p.map((d) => (d.id === id ? { ...d, status: "settled" } : d)));
     await settleDebt(db(), id);
     await reload();
   });
-  const pay = (id: number, amount: number) => guarded(async () => { await payDebt(db(), id, amount); await reload(); });
+  const pay = (id: number, amount: number, nota?: string) => guarded(async () => { await payDebt(db(), id, amount, nota); await reload(); });
   // Borrar un pago mal cargado (ej: click duplicado): elimina el pago y su movimiento en Transacciones.
   const removePayment = (d: DebtView, p: DebtPayment) => guarded(async () => {
     if (!window.confirm(`¿Borrar el pago de ${money(p.amount, d.currency)} del ${p.date}?\n\nTambién se borra su movimiento en Transacciones y el saldo pendiente vuelve a subir.`)) return;
@@ -75,12 +86,21 @@ export default function DeudasPage() {
   return (
     <>
       <PageHeader title="Deudas" subtitle={loading ? "Cargando…" : "A cobrar y a pagar"}>
+        <UndoButton onDone={reload} />
         <button onClick={() => setNuevaOpen(true)} className="flex items-center gap-2 rounded-full bg-accent px-4 py-2 text-sm font-semibold text-bg transition-transform hover:scale-[1.03]">
           <Plus className="h-4 w-4" /> Nueva deuda
         </button>
       </PageHeader>
 
-      <div className="mt-6 grid grid-cols-1 gap-3 sm:grid-cols-3">
+      {err && (
+        <p className="mt-4 flex items-start gap-2 rounded-xl border border-coral/30 bg-coral/10 px-4 py-2.5 text-sm text-coral">
+          <span className="shrink-0">⚠</span>
+          <span className="flex-1">{err}</span>
+          <button onClick={() => setErr(null)} aria-label="Cerrar" className="shrink-0 text-coral/70 transition-colors hover:text-coral">✕</button>
+        </p>
+      )}
+
+      <div className="mt-5 grid grid-cols-1 gap-3.5 sm:grid-cols-3">
         <SummaryCard label="Te deben" value={toCollect} tone="emerald" up />
         <SummaryCard label="Debés" value={toPay} tone="coral" />
         <SummaryCard label="Balance neto" value={toCollect - toPay} tone={toCollect - toPay >= 0 ? "emerald" : "coral"} up={toCollect - toPay >= 0} />
@@ -94,7 +114,7 @@ export default function DeudasPage() {
         <div>
           <div className="flex rounded-xl border border-line bg-white/[0.06] p-1 text-sm">
             {(["personas", "historial"] as const).map((v) => (
-              <button key={v} onClick={() => { setView(v); setSelected(null); }} className={`rounded-lg px-3 py-1.5 transition-colors ${view === v ? "bg-white/[0.09] text-fg" : "text-muted hover:text-fg"}`}>
+              <button key={v} onClick={() => { setView(v); setSelected(null); }} className={`rounded-lg px-3 py-1.5 transition-colors ${view === v ? "bg-accent/15 text-accent" : "text-muted hover:text-fg"}`}>
                 {v === "personas" ? "Por persona" : "Historial"}
               </button>
             ))}
@@ -146,7 +166,7 @@ function SummaryCard({ label, value, tone, up }: { label: string; value: number;
   const color = tone === "emerald" ? "text-emerald" : "text-coral";
   const chip = tone === "emerald" ? "bg-emerald/12 text-emerald" : "bg-coral/12 text-coral";
   return (
-    <div className="panel p-5">
+    <div className="panel p-4">
       <div className="flex items-center gap-2 text-xs text-subtle">
         <span className={`grid h-5 w-5 place-items-center rounded-md ${chip}`}>{up ? <ArrowUpRight className="h-3 w-3" /> : <ArrowDownRight className="h-3 w-3" />}</span>
         {label}
@@ -163,7 +183,7 @@ function Segmented({ value, onChange }: { value: DirFilter; onChange: (v: DirFil
   return (
     <div className="flex rounded-xl border border-line bg-white/[0.06] p-1 text-sm">
       {opts.map((o) => (
-        <button key={o.v} onClick={() => onChange(o.v)} className={`rounded-lg px-3 py-1.5 transition-colors ${value === o.v ? "bg-white/[0.09] text-fg" : "text-muted hover:text-fg"}`}>{o.label}</button>
+        <button key={o.v} onClick={() => onChange(o.v)} className={`rounded-lg px-3 py-1.5 transition-colors ${value === o.v ? "bg-accent/15 text-accent" : "text-muted hover:text-fg"}`}>{o.label}</button>
       ))}
     </div>
   );
@@ -229,8 +249,11 @@ function PeopleSummary({ items, loading, onOpen }: { items: DebtView[]; loading:
   if (loading) return <section className="panel mt-3 p-10 text-center text-sm text-muted">Cargando…</section>;
   if (!people.length) return <section className="panel mt-3 p-10 text-center text-sm text-muted">Todavía no hay deudas registradas.</section>;
 
+  // p-2 sm:p-4: el MISMO padding que DebtHistory y PersonDetail, que ocupan este
+  // mismo lugar de la pantalla. Con tres valores distintos el contenido saltaba
+  // de costado al cambiar de tab o al abrir una persona.
   return (
-    <section className="panel mt-3 divide-y divide-line p-2 sm:p-3">
+    <section className="panel mt-3 divide-y divide-line p-2 sm:p-4">
       {people.map((p) => {
         const net = p.collect - p.pay;
         return (
@@ -252,13 +275,13 @@ function PeopleSummary({ items, loading, onOpen }: { items: DebtView[]; loading:
   );
 }
 
-function PersonDetail({ person, items, onBack, onSettle, onPay, onDeletePayment }: { person: string; items: DebtView[]; onBack: () => void; onSettle: (id: number) => void; onPay: (id: number, amount: number) => void; onDeletePayment: (d: DebtView, p: DebtPayment) => void }) {
+function PersonDetail({ person, items, onBack, onSettle, onPay, onDeletePayment }: { person: string; items: DebtView[]; onBack: () => void; onSettle: (id: number) => void; onPay: (id: number, amount: number, nota?: string) => void; onDeletePayment: (d: DebtView, p: DebtPayment) => void }) {
   const sorted = [...items].sort((a, b) => (a.occurredAt < b.occurredAt ? 1 : -1));
   const collect = items.filter((d) => d.status === "pending" && d.direction === "to_collect").reduce((a, d) => a + inArs(d.outstanding, d.currency), 0);
   const pay = items.filter((d) => d.status === "pending" && d.direction === "to_pay").reduce((a, d) => a + inArs(d.outstanding, d.currency), 0);
   const net = collect - pay;
   return (
-    <section className="panel mt-3 p-4 sm:p-5">
+    <section className="panel mt-3 p-2 sm:p-4">
       <div className="flex items-center gap-3">
         <button onClick={onBack} className="grid h-8 w-8 shrink-0 place-items-center rounded-lg border border-line bg-white/[0.06] text-muted hover:text-fg"><Chevron className="h-4 w-4 rotate-90" /></button>
         <span className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-gradient-to-br from-accent/30 to-sky/20 font-display text-fg">{person.slice(0, 1).toUpperCase()}</span>
@@ -273,7 +296,7 @@ function PersonDetail({ person, items, onBack, onSettle, onPay, onDeletePayment 
       </div>
 
       {(collect > 0 || pay > 0) && (
-        <div className="mt-3 grid grid-cols-2 gap-2 text-center text-xs">
+        <div className="mt-3 grid grid-cols-2 gap-3.5 text-center text-xs">
           <div className="rounded-xl border border-emerald/20 bg-emerald/8 px-3 py-2"><p className="text-muted">Te debe</p><p className="tnum text-emerald">{ars(collect)}</p></div>
           <div className="rounded-xl border border-coral/20 bg-coral/8 px-3 py-2"><p className="text-muted">Le debés</p><p className="tnum text-coral">{ars(pay)}</p></div>
         </div>
@@ -308,7 +331,7 @@ function PersonDetail({ person, items, onBack, onSettle, onPay, onDeletePayment 
                       </>
                     )}
                   </div>
-                  {d.status === "pending" && <DebtActions onSettle={() => onSettle(d.id)} onPay={(amt) => onPay(d.id, amt)} />}
+                  {d.status === "pending" && <DebtActions onSettle={() => onSettle(d.id)} onPay={(amt, nota) => onPay(d.id, amt, nota)} />}
                 </div>
               </div>
               {d.payments.length > 0 && (
@@ -330,9 +353,10 @@ function PersonDetail({ person, items, onBack, onSettle, onPay, onDeletePayment 
   );
 }
 
-function DebtActions({ onSettle, onPay }: { onSettle: () => void; onPay: (amount: number) => void }) {
+function DebtActions({ onSettle, onPay }: { onSettle: () => void; onPay: (amount: number, nota: string) => void }) {
   const [paying, setPaying] = useState(false);
   const [val, setVal] = useState("");
+  const [nota, setNota] = useState("");
   if (!paying) {
     return (
       <div className="flex items-center gap-1.5">
@@ -341,15 +365,27 @@ function DebtActions({ onSettle, onPay }: { onSettle: () => void; onPay: (amount
       </div>
     );
   }
-  const amount = Number(val.replace(/[^\d]/g, "")) || 0;
+  const amount = parseAmount(val) || 0;
+  const confirmar = () => { if (amount > 0) onPay(amount, nota); };
   return (
-    <div className="flex items-center gap-1">
-      <div className="flex items-center rounded-lg border border-line bg-white/[0.05] px-2 py-1">
-        <span className="text-xs text-faint">$</span>
-        <input autoFocus value={val} onChange={(e) => setVal(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter" && amount > 0) onPay(amount); }} inputMode="numeric" placeholder="monto" className="tnum w-20 bg-transparent text-xs text-fg outline-none placeholder:text-faint" />
+    // En columna: con el input de nota al lado, la fila desbordaba en mobile.
+    <div className="flex flex-col items-end gap-1">
+      <div className="flex items-center gap-1">
+        <div className="flex items-center rounded-lg border border-line bg-white/[0.05] px-2 py-1">
+          <span className="text-xs text-faint">$</span>
+          <input autoFocus value={val} onChange={(e) => setVal(e.target.value)} onKeyDown={(e) => e.key === "Enter" && confirmar()} inputMode="decimal" placeholder="monto" className="tnum w-20 bg-transparent text-xs text-fg outline-none placeholder:text-faint" />
+        </div>
+        <button onClick={confirmar} className="rounded-lg bg-emerald/90 px-2.5 py-1.5 text-xs font-medium text-bg">OK</button>
+        <button onClick={() => { setPaying(false); setVal(""); setNota(""); }} aria-label="Cancelar" className="grid h-7 w-7 place-items-center rounded-lg border border-line text-xs text-muted transition-colors hover:text-fg">✕</button>
       </div>
-      <button onClick={() => { if (amount > 0) onPay(amount); }} className="rounded-lg bg-emerald/90 px-2 py-1 text-xs font-medium text-bg">OK</button>
-      <button onClick={() => { setPaying(false); setVal(""); }} className="grid h-6 w-6 place-items-center rounded-lg border border-line text-xs text-muted">✕</button>
+      {/* La nota viaja a la descripción del movimiento en Transacciones. */}
+      <input
+        value={nota}
+        onChange={(e) => setNota(e.target.value)}
+        onKeyDown={(e) => e.key === "Enter" && confirmar()}
+        placeholder="nota (ej: en efectivo)"
+        className="w-[190px] rounded-lg border border-line bg-white/[0.05] px-2 py-1 text-[0.7rem] text-fg outline-none placeholder:text-faint focus:border-accent/40"
+      />
     </div>
   );
 }
@@ -366,28 +402,35 @@ function NewDebtForm({ persons, onSaved, onClose }: { persons: { id: number; nam
   const [ok, setOk] = useState(false);
   const [addingPerson, setAddingPerson] = useState(false);
   const [newPerson, setNewPerson] = useState("");
+  const [formErr, setFormErr] = useState<string | null>(null);
 
   useEffect(() => { if (persons.length && !personId) setPersonId(String(persons[0].id)); }, [persons]);
 
   const savePerson = async () => {
     const name = newPerson.trim();
     if (!name) return;
-    const id = await insertPerson(db(), name);
-    await onSaved(); // recarga la lista de personas
-    setPersonId(String(id));
-    setNewPerson("");
-    setAddingPerson(false);
+    setFormErr(null);
+    try {
+      const id = await insertPerson(db(), name);
+      await onSaved(); // recarga la lista de personas
+      setPersonId(String(id));
+      setNewPerson("");
+      setAddingPerson(false);
+    } catch (e) {
+      // Sin esto, un nombre duplicado no hacía absolutamente nada visible.
+      setFormErr(e instanceof Error ? e.message : String(e));
+    }
   };
 
   const m = kindMeta[kind];
-  const total = Number(amount.replace(/[^\d]/g, "")) || 0;
+  const total = parseAmount(amount) || 0;
   const parts = Math.max(1, Number(participants) || 1);
   const yourShare = kind === "split" ? Math.round(total / parts) : 0;
   const owed = kind === "split" ? total - yourShare : total;
 
   const save = async () => {
     if (!total) return;
-    setSaving(true); setOk(false);
+    setSaving(true); setOk(false); setFormErr(null);
     try {
       await insertDebt(db(), {
         personId: personId ? Number(personId) : null,
@@ -399,6 +442,8 @@ function NewDebtForm({ persons, onSaved, onClose }: { persons: { id: number; nam
       setAmount(""); setDesc(""); setOk(true);
       // Se cierra solo: la deuda ya aparece en la lista de la izquierda.
       setTimeout(() => { setOk(false); onClose(); }, 1200);
+    } catch (e) {
+      setFormErr(e instanceof Error ? e.message : String(e));
     } finally { setSaving(false); }
   };
 
@@ -476,6 +521,8 @@ function NewDebtForm({ persons, onSaved, onClose }: { persons: { id: number; nam
         <Field label="Descripción">
           <input value={desc} onChange={(e) => setDesc(e.target.value)} placeholder="Ej: Cena, préstamo, objeto…" className="w-full rounded-xl border border-line bg-white/[0.06] px-3 py-2.5 text-sm text-fg outline-none placeholder:text-faint focus:border-accent/40" />
         </Field>
+
+        {formErr && <p className="mt-4 rounded-lg border border-coral/30 bg-coral/10 px-3 py-2 text-xs text-coral">{formErr}</p>}
 
         <button onClick={save} disabled={saving} className="mt-5 w-full rounded-[13px] bg-accent py-3 text-sm font-semibold text-bg transition-transform hover:scale-[1.02] disabled:opacity-60">
           {saving ? "Guardando…" : "Registrar deuda"}

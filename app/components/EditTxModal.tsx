@@ -2,7 +2,10 @@
 
 import { useState } from "react";
 import { db, updateTransaction, deleteTransaction, type TxView, type Category, type PaymentMethod } from "@/lib/db";
-import { X, Trash } from "../icons";
+import { parseAmount } from "@/lib/format";
+import { Trash, Swap } from "../icons";
+import Modal from "./Modal";
+import SplitModal from "./SplitModal";
 
 const CURRENCIES = ["ARS", "USD", "USDT"];
 
@@ -22,9 +25,10 @@ export default function EditTxModal({ tx, cats, methods, onClose, onSaved }: {
   const [desc, setDesc] = useState(tx.desc);
   const [date, setDate] = useState(toDateInput(tx.occurredAt));
   const [busy, setBusy] = useState(false);
+  const [splitting, setSplitting] = useState(false);
 
   const save = async () => {
-    const value = Number(amount.replace(/[^\d.]/g, ""));
+    const value = parseAmount(amount);
     if (!value) return;
     setBusy(true);
     try {
@@ -45,15 +49,16 @@ export default function EditTxModal({ tx, cats, methods, onClose, onSaved }: {
     try { await deleteTransaction(db(), tx.id); await onSaved(); onClose(); } finally { setBusy(false); }
   };
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto overscroll-contain bg-black/60 p-4 backdrop-blur-sm" onClick={onClose}>
-      <div className="panel w-full max-w-md p-6" onClick={(e) => e.stopPropagation()}>
-        <div className="flex items-center justify-between">
-          <h2 className="font-display text-lg text-fg">Editar movimiento</h2>
-          <button onClick={onClose} className="grid h-8 w-8 place-items-center rounded-lg text-muted hover:text-fg"><X className="h-4 w-4" /></button>
-        </div>
+  // Reemplaza al de edición en vez de apilarse encima: dos modales anidados pelean
+  // por el bloqueo de scroll del body y al cerrar el de arriba lo dejan trabado.
+  if (splitting) {
+    return <SplitModal tx={tx} onClose={() => setSplitting(false)} onSaved={async () => { await onSaved(); onClose(); }} />;
+  }
 
-        <div className="mt-4 grid grid-cols-2 gap-2">
+  return (
+    <Modal title="Editar movimiento" onClose={onClose}>
+      <>
+        <div className="grid grid-cols-2 gap-2">
           <button onClick={() => setType("egreso")} className={`rounded-xl border py-2.5 text-sm transition-colors ${type === "egreso" ? "border-coral/40 bg-coral/10 text-coral" : "border-line bg-white/[0.06] text-muted hover:text-fg"}`}>Egreso</button>
           <button onClick={() => setType("ingreso")} className={`rounded-xl border py-2.5 text-sm transition-colors ${type === "ingreso" ? "border-emerald/40 bg-emerald/10 text-emerald" : "border-line bg-white/[0.06] text-muted hover:text-fg"}`}>Ingreso</button>
         </div>
@@ -80,12 +85,23 @@ export default function EditTxModal({ tx, cats, methods, onClose, onSaved }: {
           <input type="date" value={date} onChange={(e) => setDate(e.target.value)} className="w-full rounded-xl border border-line bg-white/[0.06] px-3 py-2.5 text-sm text-fg outline-none [color-scheme:dark] focus:border-accent/40" />
         </Field>
 
+        {/* Solo tiene sentido dividir un EGRESO, y solo si no está ya dividido. */}
+        {type === "egreso" && tx.category !== "Préstamos" && !tx.desc.startsWith("Parte de otros ·") && (
+          <button
+            onClick={() => setSplitting(true)}
+            disabled={busy}
+            className="mt-4 flex w-full items-center justify-center gap-2 rounded-xl border border-sky/30 bg-sky/10 py-2.5 text-sm text-sky transition-colors hover:bg-sky/20 disabled:opacity-60"
+          >
+            <Swap className="h-4 w-4" /> Dividir gasto entre varios
+          </button>
+        )}
+
         <div className="mt-5 flex gap-2">
           <button onClick={remove} disabled={busy} className="flex items-center gap-1.5 rounded-xl border border-coral/30 bg-coral/10 px-3 py-3 text-sm text-coral transition-colors hover:bg-coral/20 disabled:opacity-60"><Trash className="h-4 w-4" /> Borrar</button>
           <button onClick={save} disabled={busy} className="flex-1 rounded-xl bg-accent py-3 text-sm font-medium text-bg transition-transform hover:scale-[1.02] disabled:opacity-60">{busy ? "Guardando…" : "Guardar cambios"}</button>
         </div>
-      </div>
-    </div>
+      </>
+    </Modal>
   );
 }
 

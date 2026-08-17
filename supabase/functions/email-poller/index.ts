@@ -8,7 +8,32 @@
 // app_secrets.POLLER_SECRET. Sin ese header devuelve 401.
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
-const USD_ARS = 1455; // misma cotización hardcodeada que usa la app para valuar
+/**
+ * Cotización para las reglas que fuerzan moneda.
+ *
+ * Antes acá había `const USD_ARS = 1455` hardcodeado. El banco convierte con la
+ * cotización REAL del día, así que cada consumo entraba con unos centavos de más y
+ * el resumen no cerraba contra el PDF: en julio 2026, PARAMOUNT+ quedó en 3,83 vs
+ * 3,78 del banco y Spotify en 2,27 vs 2,23. La brecha crece a medida que el dólar
+ * se aleja de 1455.
+ *
+ * Ahora sale de `fx_rates`, que es la fuente única (decisión 5 del CLAUDE.md:
+ * "ningún archivo debe volver a hardcodear 1455/1462"). Se usa el blue VENTA del
+ * día del consumo: es lo que te cobra el banco por un consumo en dólares, no el
+ * compra que se usa para valuar tenencias.
+ *
+ * El fallback existe para no perder el consumo si `fx_rates` no tuviera ese día:
+ * mejor importarlo con una cotización aproximada que descartarlo.
+ */
+const USD_ARS_FALLBACK = 1455;
+async function usdArsDe(sb: any, cuando: Date): Promise<number> {
+  const day = cuando.toISOString().slice(0, 10);
+  const { data } = await sb
+    .from("fx_rates").select("venta")
+    .eq("casa", "blue").lte("day", day)     // lte + desc: resuelve fines de semana y feriados
+    .order("day", { ascending: false }).limit(1).maybeSingle();
+  return Number(data?.venta) || USD_ARS_FALLBACK;
+}
 
 const dec = (d: string) => new TextDecoder().decode(Uint8Array.from(atob(d.replace(/-/g, "+").replace(/_/g, "/")), (c) => c.charCodeAt(0)));
 function bodyText(part: any): string | null {
@@ -150,7 +175,10 @@ Deno.serve(async (req) => {
     let monto = p.monto;
     let moneda = p.moneda;
     if (acts.currency && acts.currency !== p.moneda) {
-      monto = acts.currency === "USD" ? Math.round((p.monto / USD_ARS) * 100) / 100 : Math.round(p.monto * USD_ARS * 100) / 100;
+      // Cotización del DÍA DEL CONSUMO, no la de hoy: un consumo de hace dos meses
+      // se convierte con el dólar de aquel momento, igual que lo liquidó el banco.
+      const usdArs = await usdArsDe(sb, new Date(occMs));
+      monto = acts.currency === "USD" ? Math.round((p.monto / usdArs) * 100) / 100 : Math.round(p.monto * usdArs * 100) / 100;
       moneda = acts.currency;
     }
     const descripcion = acts.rename ?? p.comercio;

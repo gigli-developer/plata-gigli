@@ -2,14 +2,16 @@
 
 import { useEffect, useMemo, useState } from "react";
 import {
-  db, fetchExchanges, insertExchange, fetchFxBoard, fetchMetrics,
+  db, fetchExchanges, insertExchange, updateExchange, deleteExchange, fetchFxBoard, fetchMetrics,
   type ExchangeView, type FxBoard, type FxQuote, type Metrics,
 } from "@/lib/db";
 import { readCache, writeCache } from "@/lib/cache";
-import { ars, compact } from "@/lib/format";
+import { ars, compact, parseAmount } from "@/lib/format";
 import { PageHeader } from "../components/Shell";
+import Modal from "../components/Modal";
 import CountUp from "../components/CountUp";
-import { Swap, ArrowUpRight, ArrowDownRight, Coins } from "../icons";
+import UndoButton from "../components/UndoButton";
+import { Swap, ArrowUpRight, ArrowDownRight, Coins, Pencil, Trash } from "../icons";
 
 const MONEDAS = ["ARS", "USD", "USDT"] as const;
 type Moneda = (typeof MONEDAS)[number];
@@ -23,6 +25,7 @@ export default function DivisasPage() {
   const [board, setBoard] = useState<FxBoard | null>(null);
   const [metrics, setMetrics] = useState<Metrics | null>(null);
   const [loading, setLoading] = useState(true);
+  const [editing, setEditing] = useState<ExchangeView | null>(null);
 
   // Tras registrar un cambio hay que refrescar también las tenencias: la
   // operación ahora genera las dos transacciones y mueve los saldos.
@@ -50,6 +53,7 @@ export default function DivisasPage() {
   return (
     <>
       <PageHeader title="Divisas" subtitle="Cotizaciones, conversor y tenencias">
+        <UndoButton onDone={reload} />
         <span className="flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.06] px-3 py-1.5 text-xs text-subtle">
           <span className="h-1.5 w-1.5 rounded-full bg-emerald pulse-dot" />
           {actualizado ? `Al ${diaCorto(actualizado)}` : "Cargando…"}
@@ -85,7 +89,7 @@ export default function DivisasPage() {
         ) : (
           <ul className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">
             {history.map((h) => (
-              <li key={h.id} className="panel-inner flex items-center gap-3 p-3.5">
+              <li key={h.id} className="panel-inner group flex items-center gap-3 p-3.5">
                 <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl border border-white/10 bg-white/[0.06]"><Swap className="h-5 w-5 text-accent" /></span>
                 <div className="min-w-0">
                   <p className="truncate text-[0.95rem] text-fg">{h.from} → {h.to}</p>
@@ -95,12 +99,128 @@ export default function DivisasPage() {
                   <p className="tnum text-[0.95rem] font-semibold text-fg">{h.to === "ARS" ? ars(h.toAmount) : `${h.toAmount.toLocaleString("es-AR")} ${h.to}`}</p>
                   <p className="tnum text-xs text-faint">−{h.fromAmount.toLocaleString("es-AR")} {h.from}</p>
                 </div>
+                {/* Editar/borrar aparecen al pasar el mouse; en touch quedan siempre
+                    visibles porque `group-hover` no dispara sin cursor. */}
+                <button
+                  onClick={() => setEditing(h)}
+                  aria-label="Editar cambio"
+                  className="icon-btn h-8 w-8 shrink-0 opacity-100 lg:opacity-0 lg:group-hover:opacity-100"
+                >
+                  <Pencil className="h-4 w-4" />
+                </button>
               </li>
             ))}
           </ul>
         )}
       </section>
+
+      {editing && (
+        <EditExchangeModal
+          ex={editing}
+          onClose={() => setEditing(null)}
+          onSaved={reload}
+        />
+      )}
     </>
+  );
+}
+
+/**
+ * Editar o borrar un cambio ya registrado.
+ *
+ * Las dos operaciones arrastran el contrasiento en Transacciones: editar actualiza
+ * las dos transacciones (RPC `update_exchange`) y borrar las elimina por la FK
+ * ON DELETE CASCADE. Por eso no pueden quedar duplicados ni movimientos sueltos.
+ */
+function EditExchangeModal({ ex, onClose, onSaved }: {
+  ex: ExchangeView; onClose: () => void; onSaved: () => Promise<void>;
+}) {
+  const [from, setFrom] = useState<Moneda>(ex.from as Moneda);
+  const [to, setTo] = useState<Moneda>(ex.to as Moneda);
+  // En es-AR para que el parser los lea igual que los tipea el usuario.
+  const [fromAmount, setFromAmount] = useState(ex.fromAmount.toLocaleString("es-AR", { maximumFractionDigits: 2 }));
+  const [toAmount, setToAmount] = useState(ex.toAmount.toLocaleString("es-AR", { maximumFractionDigits: 2 }));
+  const [busy, setBusy] = useState(false);
+  const [err, setErr] = useState<string | null>(null);
+
+  const vFrom = parseAmount(fromAmount);
+  const vTo = parseAmount(toAmount);
+  // La tasa se deriva de los montos: es lo que de verdad pagaste, no un dato aparte
+  // que pueda quedar desincronizado.
+  const rate = vFrom ? vTo / vFrom : 0;
+  const fuerte: Moneda = from === to ? from : from === "ARS" ? to : to === "ARS" ? from : "USD";
+  const quote = fuerte === from ? to : from;
+  const rateVisible = fuerte === from ? rate : rate ? 1 / rate : 0;
+
+  const guardar = async () => {
+    if (!vFrom || !vTo) { setErr("Los montos tienen que ser mayores a cero."); return; }
+    if (from === to) { setErr("El cambio tiene que ser entre monedas distintas."); return; }
+    setBusy(true); setErr(null);
+    try {
+      await updateExchange(db(), ex.id, { from, to, fromAmount: vFrom, toAmount: vTo, rate: Number(rate.toFixed(10)), rateSource: "manual" });
+      await onSaved(); onClose();
+    } catch (e) { setErr(e instanceof Error ? e.message : String(e)); }
+    finally { setBusy(false); }
+  };
+
+  const borrar = async () => {
+    if (!window.confirm(`¿Borrar este cambio de ${ex.from} → ${ex.to}?\n\nTambién se borran los dos movimientos que generó en Transacciones y los saldos vuelven atrás.`)) return;
+    setBusy(true); setErr(null);
+    try {
+      await deleteExchange(db(), ex.id);
+      await onSaved(); onClose();
+    } catch (e) { setErr(e instanceof Error ? e.message : String(e)); }
+    finally { setBusy(false); }
+  };
+
+  return (
+    <Modal title="Editar cambio" onClose={onClose}>
+      <>
+        <p className="flex items-center gap-2 rounded-xl border border-sky/25 bg-sky/8 px-3 py-2 text-xs text-sky">
+          <Swap className="h-4 w-4 shrink-0" /> Se actualizan también los dos movimientos en Transacciones.
+        </p>
+
+        <div className="mt-4 grid grid-cols-2 gap-3">
+          <div>
+            <label className="text-xs text-muted">Entregaste</label>
+            <div className="mt-1 flex items-center gap-2 rounded-xl border border-line bg-white/[0.06] px-3 py-2.5">
+              <input value={fromAmount} onChange={(e) => setFromAmount(e.target.value)} inputMode="decimal" className="tnum w-full bg-transparent text-fg outline-none" />
+              <MonedaSelect value={from} onChange={setFrom} />
+            </div>
+          </div>
+          <div>
+            <label className="text-xs text-muted">Recibiste</label>
+            <div className="mt-1 flex items-center gap-2 rounded-xl border border-line bg-white/[0.06] px-3 py-2.5">
+              <input value={toAmount} onChange={(e) => setToAmount(e.target.value)} inputMode="decimal" className="tnum w-full bg-transparent text-fg outline-none" />
+              <MonedaSelect value={to} onChange={setTo} />
+            </div>
+          </div>
+        </div>
+
+        <p className="mt-3 rounded-xl border border-line bg-white/[0.04] px-3 py-2 text-xs text-faint">
+          Tipo de cambio resultante: <span className="tnum text-fg">1 {fuerte} = {rateVisible.toLocaleString("es-AR", { maximumFractionDigits: quote === "ARS" ? 2 : 4 })} {quote}</span>
+        </p>
+
+        {err && <p className="mt-3 rounded-lg border border-coral/30 bg-coral/10 px-3 py-2 text-xs text-coral">{err}</p>}
+
+        <div className="mt-5 flex gap-2">
+          <button onClick={borrar} disabled={busy} className="flex items-center gap-1.5 rounded-xl border border-coral/30 bg-coral/10 px-3 py-3 text-sm text-coral transition-colors hover:bg-coral/20 disabled:opacity-60">
+            <Trash className="h-4 w-4" /> Borrar
+          </button>
+          <button onClick={guardar} disabled={busy} className="flex-1 rounded-xl bg-accent py-3 text-sm font-medium text-bg transition-transform hover:scale-[1.02] disabled:opacity-60">
+            {busy ? "Guardando…" : "Guardar cambios"}
+          </button>
+        </div>
+      </>
+    </Modal>
+  );
+}
+
+function MonedaSelect({ value, onChange }: { value: Moneda; onChange: (v: Moneda) => void }) {
+  return (
+    <select value={value} onChange={(e) => onChange(e.target.value as Moneda)} className="appearance-none rounded-lg border border-line bg-white/[0.09] px-2 py-1 text-xs text-muted outline-none">
+      {MONEDAS.map((m) => <option key={m} value={m}>{m}</option>)}
+    </select>
   );
 }
 
@@ -149,9 +269,22 @@ function Converter({ quotes, onRegister }: { quotes: FxQuote[]; onRegister: () =
   const alVender = (m: Moneda) => (m === "ARS" ? 1 : q(CASA_DE[m])?.compra ?? 0);
   const alComprar = (m: Moneda) => (m === "ARS" ? 1 : q(CASA_DE[m])?.venta ?? 0);
 
-  const value = Number(amount.replace(/[^\d.,]/g, "").replace(",", ".")) || 0;
+  const value = parseAmount(amount) || 0;
+  // Tasa interna, en la dirección del cambio (from → to). Es la que multiplica al monto.
   const autoRate = from === to ? 1 : (alComprar(to) ? alVender(from) / alComprar(to) : 0);
-  const rate = manual ? Number(manualRate.replace(/[^\d.,]/g, "").replace(",", ".")) || 0 : autoRate;
+
+  // La cotización se MUESTRA y se PIDE siempre como "1 [moneda fuerte] = X pesos",
+  // nunca al revés. Comprando dólares, la dirección del cambio es ARS → USD y la
+  // tasa interna da 0,00065: nadie piensa cuánto vale un peso en dólares. Acá se
+  // invierte para la UI y se vuelve a invertir para el cálculo.
+  const fuerte = (a: Moneda, b: Moneda): Moneda => (a === b ? a : a === "ARS" ? b : b === "ARS" ? a : "USD");
+  const base = fuerte(from, to);          // la que vale más: USD, USDT o (si es par igual) la misma
+  const quote = base === from ? to : from; // la otra
+  const inv = (n: number) => (n ? 1 / n : 0);
+  const autoShown = from === to ? 1 : base === from ? autoRate : inv(autoRate);
+
+  const shownRate = manual ? parseAmount(manualRate) || 0 : autoShown;
+  const rate = from === to ? 1 : base === from ? shownRate : inv(shownRate);
   const result = value * rate;
 
   const swap = () => { setFrom(to); setTo(from); };
@@ -160,7 +293,9 @@ function Converter({ quotes, onRegister }: { quotes: FxQuote[]; onRegister: () =
     if (!value || !rate) return;
     setSaving(true);
     try {
-      await insertExchange(db(), { from, to, fromAmount: value, toAmount: Math.round(result * 100) / 100, rate: Number(rate.toFixed(4)), rateSource: manual ? "manual" : "auto" });
+      // 10 decimales, no 4: la tasa ARS→USD es ~0,00065 y `toFixed(4)` la dejaba en
+      // 0,0006 — un 7% de error metido en la fila que se guarda.
+      await insertExchange(db(), { from, to, fromAmount: value, toAmount: Math.round(result * 100) / 100, rate: Number(rate.toFixed(10)), rateSource: manual ? "manual" : "auto" });
       await onRegister();
       setOk(true);
       setTimeout(() => setOk(false), 2200);
@@ -176,7 +311,9 @@ function Converter({ quotes, onRegister }: { quotes: FxQuote[]; onRegister: () =
         <MoneyField label="Entregás" amount={amount} onAmount={setAmount} currency={from} onCurrency={(v) => setFrom(v as Moneda)} editable />
         <button
           onClick={swap}
-          className="mx-auto grid h-11 w-11 shrink-0 place-items-center self-center rounded-full border border-white/10 bg-white/[0.06] text-accent transition-transform hover:rotate-180 hover:text-fg"
+          // igual que el rail: `transition-transform` no cubre `color`, así que la
+          // rotación era suave y el cambio de color un corte seco
+          className="mx-auto grid h-11 w-11 shrink-0 place-items-center self-center rounded-full border border-white/10 bg-white/[0.06] text-accent transition-[rotate,color] duration-300 hover:rotate-180 hover:text-fg"
           title="Invertir"
         >
           <Swap className="h-5 w-5" />
@@ -188,25 +325,27 @@ function Converter({ quotes, onRegister }: { quotes: FxQuote[]; onRegister: () =
         <div className="flex flex-wrap items-center justify-between gap-2 text-sm">
           <span className="text-subtle">Tipo de cambio</span>
           <div className="flex rounded-full border border-white/10 bg-white/[0.06] p-0.5 text-xs">
-            <button onClick={() => setManual(false)} className={`rounded-full px-2.5 py-1 transition-colors ${!manual ? "bg-accent text-bg" : "text-subtle hover:text-fg"}`}>Auto</button>
-            <button onClick={() => { setManual(true); if (!manualRate) setManualRate(autoRate.toFixed(2)); }} className={`rounded-full px-2.5 py-1 transition-colors ${manual ? "bg-accent text-bg" : "text-subtle hover:text-fg"}`}>Manual</button>
+            <button onClick={() => setManual(false)} className={`rounded-full px-2.5 py-1 transition-colors ${!manual ? "bg-accent/15 text-accent" : "text-muted hover:text-fg"}`}>Auto</button>
+            <button onClick={() => { setManual(true); if (!manualRate) setManualRate(autoShown.toFixed(2)); }} className={`rounded-full px-2.5 py-1 transition-colors ${manual ? "bg-accent/15 text-accent" : "text-muted hover:text-fg"}`}>Manual</button>
           </div>
         </div>
         <div className="mt-2 flex items-center gap-2 text-sm">
-          <span className="tnum text-faint">1 {from} =</span>
+          {/* Siempre "1 [moneda fuerte] = X [la otra]", sin importar la dirección del
+              cambio: es como se piensa la cotización acá. */}
+          <span className="tnum text-faint">1 {base} =</span>
           {manual ? (
             <input
               value={manualRate}
               onChange={(e) => setManualRate(e.target.value)}
               inputMode="decimal"
-              placeholder="cotización…"
+              placeholder={base === "ARS" ? "cotización…" : "ej: 1.535"}
               autoFocus
               className="tnum w-32 rounded-lg border border-accent/40 bg-white/[0.09] px-2 py-1 text-fg outline-none"
             />
           ) : (
-            <span className="tnum text-fg">{autoRate.toLocaleString("es-AR", { maximumFractionDigits: 4 })}</span>
+            <span className="tnum text-fg">{autoShown.toLocaleString("es-AR", { maximumFractionDigits: quote === "ARS" ? 2 : 4 })}</span>
           )}
-          <span className="tnum text-faint">{to}</span>
+          <span className="tnum text-faint">{quote}</span>
           {!manual && from !== to && (
             <span className="ml-auto text-[0.7rem] text-faint">
               {from !== "ARS" ? `${CASA_DE[from]} compra` : `${CASA_DE[to]} venta`}
@@ -351,7 +490,7 @@ function Volatilidad({ board }: { board: FxBoard | null }) {
           </div>
           <div className="flex rounded-full border border-white/10 bg-white/[0.06] p-0.5 text-xs">
             {PERIODOS.map((p) => (
-              <button key={p.dias} onClick={() => setDias(p.dias)} className={`rounded-full px-2.5 py-1 transition-colors ${dias === p.dias ? "bg-accent text-bg" : "text-subtle hover:text-fg"}`}>{p.label}</button>
+              <button key={p.dias} onClick={() => setDias(p.dias)} className={`rounded-full px-2.5 py-1 transition-colors ${dias === p.dias ? "bg-accent/15 text-accent" : "text-muted hover:text-fg"}`}>{p.label}</button>
             ))}
           </div>
         </div>

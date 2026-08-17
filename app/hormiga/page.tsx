@@ -63,7 +63,7 @@ export default function HormigaPage() {
 
   return (
     <>
-      <PageHeader title="Gastos hormiga" subtitle={`Lo chico y repetido · tickets de menos de ${compact(a.umbral)}`} />
+      <PageHeader title="Gastos hormiga" subtitle={<>Lo chico y repetido · tickets de menos de <span className="tnum">{compact(a.umbral)}</span></>} />
 
       {/* 1 · HERO — el protagonista es el GOTEO, no todo el gasto evitable */}
       <section className="rise panel relative mt-6 overflow-hidden p-6">
@@ -204,7 +204,7 @@ export default function HormigaPage() {
           <div>
             <h2 className="font-display text-lg text-fg">Los que más pesan</h2>
             <p className="text-xs text-faint">
-              {grandesMes.length} consumos de más de {ars(a.umbral)} este mes · las salidas y deliverys grandes son los que más mueven la aguja
+              {grandesMes.length} consumos de más de <span className="tnum">{ars(a.umbral)}</span> este mes · las salidas y deliverys grandes son los que más mueven la aguja
             </p>
           </div>
           <Chevron className={`ml-auto h-4 w-4 shrink-0 text-faint transition-transform ${verExcluidos ? "rotate-180 text-accent" : ""}`} />
@@ -226,7 +226,7 @@ export default function HormigaPage() {
 
       <p className="mt-6 text-xs text-faint">
         Cuenta todo el gasto <b className="text-muted">evitable</b>: {CATEGORIAS_HORMIGA.join(", ")} — sin importar el monto, porque una cena de $30.000 es más recortable que un café de $4.000.
-        El umbral de <b className="text-muted">{ars(a.umbral)}</b> (percentil 70 de tus tickets, se recalcula solo) no excluye nada: solo separa el goteo de los consumos grandes.
+        El umbral de <b className="tnum text-muted">{ars(a.umbral)}</b> (percentil 70 de tus tickets, se recalcula solo) no excluye nada: solo separa el goteo de los consumos grandes.
         Quedan afuera las <b className="text-muted">cuotas</b> de tarjeta (no son decisión de este mes) y las <b className="text-muted">suscripciones</b> (se analizan aparte), por eso el total no coincide con “Gastos por categoría” de Métricas.
       </p>
     </>

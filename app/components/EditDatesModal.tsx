@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { db, updateStatementDates, type StatementRow } from "@/lib/db";
-import { X } from "../icons";
+import Modal from "./Modal";
 
 export default function EditDatesModal({ statement, onClose, onSaved }: {
   statement: StatementRow; onClose: () => void; onSaved: () => Promise<void>;
@@ -22,14 +22,9 @@ export default function EditDatesModal({ statement, onClose, onSaved }: {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto overscroll-contain bg-black/60 p-4 backdrop-blur-sm" onClick={onClose}>
-      <div className="panel w-full max-w-sm p-6" onClick={(e) => e.stopPropagation()}>
-        <div className="flex items-center justify-between">
-          <h2 className="font-display text-lg text-fg">Fechas del resumen {statement.period}</h2>
-          <button onClick={onClose} className="grid h-8 w-8 place-items-center rounded-lg text-muted hover:text-fg"><X className="h-4 w-4" /></button>
-        </div>
-
-        <p className="mt-3 rounded-xl border border-line bg-white/[0.06] px-3 py-2 text-xs text-muted">
+    <Modal title={`Fechas del resumen ${statement.period}`} onClose={onClose} maxWidth="max-w-sm">
+      <>
+        <p className="rounded-xl border border-line bg-white/[0.06] px-3 py-2 text-xs text-muted">
           Editás solo este resumen. Los <b>anteriores no se modifican</b> y los <b>próximos heredan</b> estas fechas.
         </p>
 
@@ -43,7 +38,7 @@ export default function EditDatesModal({ statement, onClose, onSaved }: {
         </div>
 
         <button onClick={save} disabled={busy} className="mt-5 w-full rounded-xl bg-accent py-3 text-sm font-medium text-bg transition-transform hover:scale-[1.02] disabled:opacity-60">{busy ? "Guardando…" : "Guardar fechas"}</button>
-      </div>
-    </div>
+      </>
+    </Modal>
   );
 }

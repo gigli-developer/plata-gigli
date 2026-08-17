@@ -47,7 +47,7 @@ Lleva el seguimiento completo de las finanzas de una persona: saldos en tiempo r
 - **Ámbar** — advertencia/USD/pendiente
 
 ### Componentes CSS reutilizables (clases custom en globals.css)
-- `.panel` — contenedor tipo card (base de casi toda la UI): fondo surface, borde `.line`, radio grande
+- `.panel` — contenedor tipo card (base de casi toda la UI): fondo translúcido, borde claro, radio grande. **Sin `backdrop-filter`**: fue vidrio con blur hasta el 2026-08-03, pero provocaba un bug de rasterizado de Chrome (franjas sombreadas sobre las cards al forzarse un repaint, ej. pasar el cursor por el rail). Se probaron 13 variantes y ninguna lo evitó conservando el blur — ver el comentario largo en `globals.css`. **No se lo devuelvas.**
 - `.panel-hover` — eleva y resalta borde al hover
 - `.chip` — pill button para sugerencias rápidas
 - `.tnum` — tipografía monoespaciada para números
@@ -56,7 +56,7 @@ Lleva el seguimiento completo de las finanzas de una persona: saldos en tiempo r
 - `.page-enter` — transición de opacidad al cambiar de pestaña (aplicada en el layout por `key={pathname}`). Solo opacidad, nunca transform — un transform en el wrapper rompe el `position:fixed` de los modales.
 - `.grow-bar` — animación de "crecimiento" para barras de gráficos
 - `.pulse-dot` — punto pulsante (indicadores "en vivo", notificaciones)
-- Modo privacidad: `.privacy .tnum { filter: blur(8px) }` — difumina todos los números cuando está activo
+- Modo privacidad: `.privacy .tnum` reemplaza todos los números por `****` (via `::after`, como el diseño original). Ojo: solo alcanza a los `.tnum` — un monto sin esa clase queda a la vista
 
 ### Responsive
 - **Desktop (lg+)**: sidebar fija a la izquierda (256px) con logo, los 10 items de navegación, y footer con "Configuración" + tarjeta de usuario/logout.
