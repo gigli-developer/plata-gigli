@@ -8,7 +8,7 @@ import {
   fetchCashflowPlans, insertCashflowPlan, deleteCashflowPlan,
   type Metrics, type RecurringView, type PlanProj, type MonthAgg, type StatementRow, type CashflowPlan,
 } from "@/lib/db";
-import { aggArs, arsDe } from "@/lib/fx";
+import { aggArs, arsDe, cuotaArs } from "@/lib/fx";
 import { readCache, writeCache } from "@/lib/cache";
 import { compact } from "@/lib/format";
 import { PageHeader } from "../components/Shell";
@@ -73,6 +73,8 @@ export default function CashflowPage() {
 
   const proj = useMemo(() => {
     if (!metrics) return null;
+    // Las cuotas vienen en la moneda de su plan: una de US$ 100 no son $100.
+    const fxc = { usd: usdRate, usdt: usdtRate, day: null };
     // Movimientos ya ocurridos: se valúan con la cotización congelada de su día, para que
     // los meses cerrados no se muevan al cambiar el dólar. La cotización editable de arriba
     // sigue mandando en los saldos, las proyecciones y los resúmenes de tarjeta sin pagar.
@@ -112,8 +114,8 @@ export default function CashflowPage() {
     for (const r of recurring) if (!emojiOf.has(r.category)) emojiOf.set(r.category, r.emoji);
     for (const pl of manualPlans) if (!emojiOf.has(pl.concept)) emojiOf.set(pl.concept, "📌");
 
-    const monthlyCuotas = (ym: string) => plans.reduce((s, p) => { const k = monthsBetween(p.firstMonth, ym); return (k >= 0 && k < p.total) ? s + p.monthly : s; }, 0);
-    const stmtCuotas = (cardId: number, period: string) => plans.reduce((s, p) => { if (p.cardId !== cardId) return s; const k = monthsBetween(p.firstMonth, period); return (k >= 0 && k < p.total) ? s + p.monthly : s; }, 0);
+    const monthlyCuotas = (ym: string) => plans.reduce((s, p) => { const k = monthsBetween(p.firstMonth, ym); return (k >= 0 && k < p.total) ? s + cuotaArs(p, fxc) : s; }, 0);
+    const stmtCuotas = (cardId: number, period: string) => plans.reduce((s, p) => { if (p.cardId !== cardId) return s; const k = monthsBetween(p.firstMonth, period); return (k >= 0 && k < p.total) ? s + cuotaArs(p, fxc) : s; }, 0);
     // total de un resumen: si está pagado, el reconciliado (guardado); si no, en vivo (consumos linkeados + cuotas).
     const stmtTotal = (st: StatementRow) => {
       // Pagado: los USD se saldaron al dólar de ESE día (fxRate), no al de hoy.
@@ -156,14 +158,14 @@ export default function CashflowPage() {
       if (basis === "devengado") {
         // consumo del mes (tarjeta por fecha de compra) + cuotas
         if (future) {
-          for (const p of plans) { const k = monthsBetween(p.firstMonth, mm); if (k >= 0 && k < p.total) egr.set(p.category, (egr.get(p.category) ?? 0) + p.monthly); }
+          for (const p of plans) { const k = monthsBetween(p.firstMonth, mm); if (k >= 0 && k < p.total) egr.set(p.category, (egr.get(p.category) ?? 0) + cuotaArs(p, fxc)); }
           for (const [cat, v] of budgetByCat) egr.set(cat, (egr.get(cat) ?? 0) + v * f);
         } else {
           for (const b of breakdown) {
             if (b.month !== mm || b.type !== "egreso" || !NOFLOW(b.category)) continue;
             egr.set(b.category, (egr.get(b.category) ?? 0) + valuar(b));
           }
-          for (const p of plans) { const k = monthsBetween(p.firstMonth, mm); if (k >= 0 && k < p.total) egr.set(p.category, (egr.get(p.category) ?? 0) + p.monthly); }
+          for (const p of plans) { const k = monthsBetween(p.firstMonth, mm); if (k >= 0 && k < p.total) egr.set(p.category, (egr.get(p.category) ?? 0) + cuotaArs(p, fxc)); }
         }
       } else {
         // CAJA: gasto no-crédito (efectivo/débito) por fecha/presupuesto + pago del resumen del mes

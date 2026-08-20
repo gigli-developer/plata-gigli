@@ -281,7 +281,12 @@ function esAceptacion(texto: string): boolean {
 }
 
 /** Las que arman una propuesta en vez de ejecutar. */
-const PROPONEN = new Set(["plata_registrar", "agenda_cambiar"]);
+const PROPONEN = new Set([
+  "plata_registrar", "agenda_cambiar",
+  // Las tres de `acciones-plata.ts`: proponen igual, y necesitan las mismas
+  // redes (no confirmar una propuesta vieja, no confirmar una corrección).
+  "deuda_pagar", "cuotas_convertir", "divisas_registrar",
+]);
 
 /**
  * Un "sí" a secas, sin decir a qué.
@@ -325,7 +330,8 @@ const esCorreccion = (texto: string) => CORRIGE.test(sinTildes(texto));
  * 14/08/2026, después de la primera consulta el 94% de la entrada sale del caché
  * (16.792 leídos contra ~1.050 nuevos) y el costo cae de US$ 0,0126 a US$ 0,0031.
  * Este comentario decía lo contrario, de cuando había 9 herramientas y el prefijo no
- * llegaba al mínimo de 2.048 de Haiku; con 21 lo pasa cómodo.
+ * llegaba al mínimo de 2.048 de Haiku; hoy son 23 y lo pasa cómodo. (Si volvés a
+ * contarlas y no da 23, el número de acá quedó viejo, no el argumento.)
  *
  * ⚠️ Por eso NO conviene filtrar la lista de herramientas según la consulta: cambiar
  * los `tools` cambia el prefijo y tira el caché, y reescribirlo cuesta ~100 veces más

@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { db, fetchMetrics, fetchMonthlyBreakdown, fetchPlansForProjection, fetchNetWorthSeries, fetchInflationData, type Metrics, type MonthAgg, type PlanProj, type NetWorthPoint } from "@/lib/db";
-import { aggArs } from "@/lib/fx";
+import { aggArs, cuotaArs } from "@/lib/fx";
 import { readCache, writeCache } from "@/lib/cache";
 import { ars, compact, compactUsd } from "@/lib/format";
 import { PageHeader } from "../components/Shell";
@@ -67,7 +67,9 @@ export default function MetricasPage() {
     // Los movimientos en USD/USDT se valúan con la cotización CONGELADA de su día
     // (viene ya sumada en el agregado); la cotización editable de arriba solo entra
     // si alguna fila no tuviera rate congelado.
-    const valuar = (b: MonthAgg) => aggArs(b, { usd: usdRate, usdt: usdtRate, day: null });
+    // Las cuotas vienen en la moneda de su plan: una de US$ 100 no son $100.
+    const fxm = { usd: usdRate, usdt: usdtRate, day: null };
+    const valuar = (b: MonthAgg) => aggArs(b, fxm);
     const scopeMonths = monthFilter === "all" ? [...new Set(breakdown.map((b) => b.month))] : [monthFilter];
     const scope = new Set(scopeMonths);
     let ing = 0, egr = 0;
@@ -79,7 +81,7 @@ export default function MetricasPage() {
     let cuotas = 0;
     for (const p of plans) for (const mm of scopeMonths) {
       const k = monthsBetweenYM(p.firstMonth, mm);
-      if (k >= 0 && k < p.total) cuotas += p.monthly;
+      if (k >= 0 && k < p.total) cuotas += cuotaArs(p, fxm);
     }
     egr += cuotas;
     const ahorro = ing - egr;
@@ -180,7 +182,9 @@ export default function MetricasPage() {
   }, [netWorth, nwCur, defl]);
 
   const charts = useMemo(() => {
-    const valuar = (b: MonthAgg) => aggArs(b, { usd: usdRate, usdt: usdtRate, day: null });
+    // Las cuotas vienen en la moneda de su plan: una de US$ 100 no son $100.
+    const fxm = { usd: usdRate, usdt: usdtRate, day: null };
+    const valuar = (b: MonthAgg) => aggArs(b, fxm);
     const filtered = monthFilter === "all" ? breakdown : breakdown.filter((b) => b.month === monthFilter);
 
     const cap8 = (arr: Slice[]): Slice[] => { if (arr.length <= 8) return arr; const top = arr.slice(0, 7); const rest = arr.slice(7).reduce((s, x) => s + x.value, 0); top.push({ label: "Resto", value: rest, emoji: undefined }); return top; };
@@ -199,7 +203,7 @@ export default function MetricasPage() {
     const catMap = new Map<string, { v: number; emoji?: string }>();
     for (const b of filtered) { if (b.type !== "egreso") continue; const e = catMap.get(b.category) ?? { v: 0, emoji: b.emoji }; e.v += valuar(b); catMap.set(b.category, e); }
     let cuotasTotal = 0;
-    for (const p of plans) for (const mm of scopeMonths) { const k = monthsBetweenYM(p.firstMonth, mm); if (k >= 0 && k < p.total) { const e = catMap.get(p.category) ?? { v: 0, emoji: p.emoji }; e.v += p.monthly; catMap.set(p.category, e); cuotasTotal += p.monthly; } }
+    for (const p of plans) for (const mm of scopeMonths) { const k = monthsBetweenYM(p.firstMonth, mm); if (k >= 0 && k < p.total) { const e = catMap.get(p.category) ?? { v: 0, emoji: p.emoji }; const v = cuotaArs(p, fxm); e.v += v; catMap.set(p.category, e); cuotasTotal += v; } }
     const gastosCat = cap8([...catMap.entries()].map(([label, e]) => ({ label, value: e.v, emoji: e.emoji })).sort((a, b) => b.value - a.value));
 
     // gastos por método = consumos + cuotas (las cuotas se pagan con Tarjeta de Crédito)
@@ -212,7 +216,7 @@ export default function MetricasPage() {
     const catTotals = (mm: string) => {
       const map = new Map<string, { v: number; emoji?: string }>();
       for (const b of breakdown) { if (b.type !== "egreso" || b.month !== mm) continue; const e = map.get(b.category) ?? { v: 0, emoji: b.emoji }; e.v += valuar(b); map.set(b.category, e); }
-      for (const p of plans) { const k = monthsBetweenYM(p.firstMonth, mm); if (k >= 0 && k < p.total) { const e = map.get(p.category) ?? { v: 0, emoji: p.emoji }; e.v += p.monthly; map.set(p.category, e); } }
+      for (const p of plans) { const k = monthsBetweenYM(p.firstMonth, mm); if (k >= 0 && k < p.total) { const e = map.get(p.category) ?? { v: 0, emoji: p.emoji }; e.v += cuotaArs(p, fxm); map.set(p.category, e); } }
       return map;
     };
     const curTot = catTotals(cmpB), prevTot = catTotals(cmpA);
@@ -226,7 +230,7 @@ export default function MetricasPage() {
     const consB = new Map<string, number>();
     for (const b of breakdown) { if (b.type !== "egreso" || b.month !== cmpB) continue; consB.set(b.category, (consB.get(b.category) ?? 0) + valuar(b)); }
     const cuoB = new Map<string, number>();
-    for (const p of plans) { const k = monthsBetweenYM(p.firstMonth, cmpB); if (k >= 0 && k < p.total) cuoB.set(p.category, (cuoB.get(p.category) ?? 0) + p.monthly); }
+    for (const p of plans) { const k = monthsBetweenYM(p.firstMonth, cmpB); if (k >= 0 && k < p.total) cuoB.set(p.category, (cuoB.get(p.category) ?? 0) + cuotaArs(p, fxm)); }
 
     const variacion: VarRow[] = [...new Set([...curTot.keys(), ...prevTot.keys()])].map((cat) => {
       const cur = curTot.get(cat)?.v ?? 0, prev = prevTot.get(cat)?.v ?? 0;

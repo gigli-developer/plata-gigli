@@ -42,10 +42,9 @@ finanzas-app/
 │  ├─ icons.tsx             Íconos SVG a mano
 │  ├─ globals.css           Design tokens (@theme) + clases (.panel, .ai-glow, .rise, .tnum…)
 │  └─ components/
-│     ├─ Shell.tsx          Layout + nav + monta <Assistant/>
+│     ├─ Shell.tsx          Layout + nav (NO monta ningún asistente: el chat vive solo en el Resumen)
 │     ├─ charts.tsx         Donut, BarList, GroupedColumns, VariationTable
 │     ├─ assistantChat.tsx  Hook useAssistantChat (lógica del chat) + MessageList + ProposalCard
-│     ├─ Assistant.tsx      Asistente flotante (modal) para páginas que no son Resumen
 │     ├─ useDictation.ts    Dictado por voz (Web Speech API, corta a 3s de silencio y envía)
 │     └─ Edit*Modal.tsx     Modales de edición (Tx, Plan de cuotas, Fechas de resumen)
 ├─ lib/
@@ -53,8 +52,9 @@ finanzas-app/
 │  ├─ format.ts             ars(), usd(), compact()
 │  └─ supabase/             clientes browser/server (@supabase/ssr)
 ├─ supabase/functions/
-│  └─ assistant/index.ts    Edge Function del asistente IA (Claude tool-use)
-│     (email-poller NO está en el repo: se deployó vía MCP)
+│  ├─ assistant/index.ts    Edge Function del asistente IA (Claude tool-use)
+│  └─ email-poller/index.ts Importador de mails (en el repo desde 04/08; el deploy
+│     de AMBAS sigue yendo por MCP — la copia deployada puede diferir del repo)
 ├─ scripts/gmail-*.mjs      OAuth de Gmail + scripts del poller
 └─ .env.local              NEXT_PUBLIC_SUPABASE_*, GOOGLE_* (Gmail). Secrets server-side en app_secrets.
 ```
@@ -96,7 +96,7 @@ finanzas-app/
    - Arriba del gráfico se descompone la variación del mes en **"tuyo" vs "por el dólar"**: el efecto cambiario se mide sobre las tenencias con las que arrancó el mes (`usd_prev * Δusd_ars + usdt_prev * Δusdt_ars`) y el resto es flujo.
    - **Toggle $ / US$** (default pesos). En dólares se divide cada punto por el blue **de su propio corte** (no por el de hoy): así cada mes queda medido con la vara de su momento. La descomposición se invierte y pasa a ser "lo que te costó tener PESOS": `ars_prev * (1/usd_ars_cur − 1/usd_ars_prev)`, que da negativo cuando el dólar sube. Julio 2026: +13% en pesos pero +10% en dólares, y US$ 85 perdidos por estar en pesos.
 
-6. **`get_metrics`:** `ars_liquido = ingresos_ARS − egresos_ARS_no_credito − resúmenes_pagados`. `te_deben`/`debes` usan el saldo pendiente, valuados en ARS. `usd_ars` fijo 1455, `usdt_ars` = último cambio.
+6. **`get_metrics`:** `ars_liquido = ingresos_ARS − egresos_ARS_no_credito − resúmenes_pagados`. `te_deben`/`debes` usan el saldo pendiente, valuados en ARS. `usd_ars`/`usdt_ars` salen de `fx_rates` (decisión 5) — el «fijo 1455» que decía acá quedó viejo; la definición vive solo en la base (`select pg_get_functiondef('public.get_metrics()'::regprocedure)`).
    - ⚠️ **El resumen pagado se descuenta POR MONEDA, cada parte de su bolsillo**: `total_ars` sale de los pesos y `total_usd` sale de los DÓLARES, sin convertir. Verificado al peso el 2026-08-13 (`scripts/auditar-plata.mjs`). Si se valúa el `total_usd` en pesos y se lo resta del saldo ARS, dan US$ 601,66 de más en dólares y $854.467 de menos en pesos — la suma exacta de los `total_usd` de los diez resúmenes pagados.
    - **Confirmado con el usuario (13/08/2026): la parte en dólares de un resumen la paga con dólares**, de su cuenta en USD. Por eso `get_metrics` la descuenta de `usd_liquido` y no de los pesos.
    - Los tres cálculos del Cash Flow son coherentes con eso y **NO se contradicen**, aunque a primera vista lo parezca — cada uno mide algo distinto:
@@ -128,6 +128,16 @@ finanzas-app/
 ## Estado actual
 ✅ **En producción y funcionando.** Todas las pantallas principales operativas con datos reales.
 
+### Estado de la base al 18/08/2026 noche (el repo NO registra qué migración corrió — este cuadro sí; su gemelo vive en cerebro/saber/plata)
+| SQL | ¿Corrida en producción? |
+|---|---|
+| `migrations/2026-08-03_exchange_link.sql` | ✅ SÍ (18/08 noche) — RPCs de divisas + `activity_log` + cascade. Backfill 14/7 verificado. |
+| `migrations/2026-08-14_tareas_codigo.sql` | ✅ SÍ (18/08 noche) — Fase 6 desbloqueada. |
+| `2026-08-18_papelera.sql` | ✅ SÍ — todo DELETE de las 5 tablas grandes deja copia en `papelera`. |
+| `2026-08-18_convertir_a_cuotas.sql` | ✅ SÍ — RPC atómica probada; sin caller en UI/asistente todavía. |
+| `2026-08-18_papelera_divisas.sql` | ✅ SÍ (18/08 noche) — probada en vivo con un cambio de juguete. |
+| `migrations/2026-08-18_pagar_deuda.sql` | ✅ SÍ (18/08 noche, vía MCP `apply_migration`) — RPC atómica de pago/saldado de deudas, probada. La app AÚN llama su camino viejo (payDebt/settleDebt); cablear a la RPC está pendiente. |
+
 **Módulos (10):** Resumen `/` · Métricas `/metricas` · **Gastos hormiga `/hormiga`** · Cash Flow `/cashflow` · Transacciones · Tarjetas · Deudas · Recurrentes (vacía) · Divisas (mock) · Reglas. Login `/login` y recuperación `/auth/reset` van sin shell.
 
 **Gastos hormiga** (`/hormiga`, `lib/hormiga.ts`): mide el gasto **evitable**, no el chico. Entra todo Delivery/Comida/Ocio/Transporte/Compras **sin filtrar por monto** (una cena de $30.000 es más recortable que un café de $4.000). El umbral (percentil 70 auto-calibrado) NO excluye: solo separa "goteo" de "consumos grandes". Quedan afuera cuotas y suscripciones. Las suscripciones se detectan por comercio+monto repetido en 3 meses (o 2 si el nombre lo delata) y desde ahí se marcan como `nature='fijo'`.
@@ -150,12 +160,12 @@ Los 4 primeros items del backlog original YA ESTÁN HECHOS: alta/edición de tar
 
 **Planteado por el usuario el 2026-07-27 (sin resolver):**
 - **Gastos hormiga perdió el foco.** Le entra nafta y consumos grandes porque el criterio es "evitable, sin filtrar por monto". Al usuario le servía más cuando analizaba **microgastos**. Hay que repensar la pantalla — probablemente volver a poner el ticket chico en el centro, con los consumos grandes como contexto y no como parte del total.
-- **Completar acciones que faltan**: "Nueva regla" en `/reglas` no funciona (y el usuario prefiere un **desplegable** antes que el formulario al costado). Repasar botones sin acción en el resto de las pantallas.
+- ✅ **"Nueva regla" en `/reglas` YA FUNCIONA** (modal completo con condiciones y acciones; resuelto después del 27/07). Siguen sin acción: el botón cámara (OCR), la lupa, la campana y el engranaje de configuración. Sigue faltando: editar una regla (solo borrar y recrear), cambiar prioridad desde la UI, y aplicar reglas retroactivamente.
 - Tarjetas: revisar el resto de la pantalla (bloques de abajo) contra lo que la app tiene hoy.
 
 **Otros pendientes menores:**
 - **Pago de resumen como transacción visible**: el botón "Pagar resumen" funciona (fija el total + `is_paid`, baja el saldo), pero el movimiento no aparece en Transacciones.
-- **`insertExchange` no mueve saldos**: registrar un cambio en /divisas solo escribe `currency_exchanges`, no genera las transacciones "Cambio Divisas". Por eso una compra de dólares no impacta el balance.
+- ✅ **Divisas SANA desde el 18/08/2026 a la noche**: el viejo bullet «insertExchange no mueve saldos» murió dos veces — primero el código pasó a la RPC atómica `register_exchange` (migración `2026-08-03_exchange_link.sql`), y después esa migración por fin se corrió (backfill verificado: 14 patas / 7 cambios). Alta y edición atómicas, borrado en cascada, papelera, y `activity_log` vivo (el botón Deshacer aparece desde entonces). Lección que queda: entre el deploy y la migración hubo una ventana donde registrar un cambio no hacía NADA sin error visible — si «no se registró», verificar primero que código y base estén parejos.
 - **Divisas sigue con datos mock** (`lib/mock.ts`: liveQuotes, fxHoldings, fxTrend) aunque `fx_rates` ya tiene todo lo necesario para reemplazarlos.
 - **El asistente no sabe de deudas**: si le decís "X me pagó", lo registra como ingreso suelto.
 - **OCR de tickets** (botón cámara es placeholder), **Recurrentes** (pantalla `ComingSoon` vacía).

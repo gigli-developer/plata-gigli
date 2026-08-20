@@ -404,11 +404,20 @@ export async function payStatement(sb: SupabaseClient, id: number, totalArs: num
 
 // Cuotas activas: se leen de la tabla installment_plans (fuente limpia).
 // La cuota actual se calcula según cuántos meses pasaron desde first_charge_date.
-export type InstallmentRow = { id: number; cardId: number | null; desc: string; emoji: string; monthly: number; current: number; total: number; firstChargeDate: string; category: string; catEmoji: string };
+/**
+ * ⚠️ `monthly` viene EN LA MONEDA DEL PLAN, no en pesos. Todo lo que lo sume o
+ * lo muestre como ARS tiene que valuarlo antes con `currency`.
+ *
+ * No traer la moneda fue un agujero real: hasta el 19/08/2026 no había forma de
+ * crear un plan que no fuera en pesos, así que nadie lo notó — y el día que la
+ * herramienta de voz permitió convertir un consumo en dólares, una cuota de
+ * US$ 100 empezó a mostrarse como $100 (son ~$154.000).
+ */
+export type InstallmentRow = { id: number; cardId: number | null; desc: string; emoji: string; monthly: number; currency: string; current: number; total: number; firstChargeDate: string; category: string; catEmoji: string };
 export async function fetchInstallments(sb: SupabaseClient): Promise<InstallmentRow[]> {
   const { data, error } = await sb
     .from("installment_plans")
-    .select("id,card_id,description,emoji,monthly_amount,total_installments,first_charge_date,categories(name,emoji)");
+    .select("id,card_id,description,emoji,monthly_amount,currency,total_installments,first_charge_date,categories(name,emoji)");
   if (error) throw error;
   const now = new Date();
   const out: InstallmentRow[] = [];
@@ -424,6 +433,7 @@ export async function fetchInstallments(sb: SupabaseClient): Promise<Installment
       desc: p.description,
       emoji: p.emoji ?? "💳",
       monthly: Number(p.monthly_amount),
+      currency: String((p as any).currency ?? "ARS"),
       current: Math.min(Math.max(current, 1), p.total_installments),
       total: p.total_installments,
       firstChargeDate: p.first_charge_date,
@@ -636,9 +646,16 @@ export async function insertDebt(sb: SupabaseClient, d: NewDebt) {
 export type ActivityKind = "split" | "exchange" | "debt_payment";
 export type Activity = { id: number; kind: ActivityKind; label: string; detail: any; createdAt: string };
 
-async function logActivity(sb: SupabaseClient, kind: ActivityKind, label: string, detail: any) {
+async function logActivity(sb: SupabaseClient, kind: ActivityKind, label: string, detail: any, userId?: string) {
   // Si falla, se pierde el deshacer pero NO la operación: nunca debe tirar el flujo.
-  try { await sb.from("activity_log").insert({ kind, label, detail }); } catch { /* noop */ }
+  //
+  // `userId` es para quien escribe SIN sesión (el agente, con service role): ahí
+  // el default `auth.uid()` de la columna da NULL y el insert se caería en
+  // silencio, dejando la operación fuera del Deshacer. Desde el browser no se
+  // pasa y todo sigue igual que antes.
+  try {
+    await sb.from("activity_log").insert({ kind, label, detail, ...(userId ? { user_id: userId } : {}) });
+  } catch { /* noop */ }
 }
 
 /** La última operación deshecha-ble, o null si no hay ninguna pendiente. */
@@ -1146,11 +1163,12 @@ export async function updateRecurringAmount(sb: SupabaseClient, id: number, amou
 }
 
 // ---- Proyección: todos los planes de cuotas con su calendario completo ----
-export type PlanProj = { id: number; desc: string; monthly: number; total: number; firstMonth: string; category: string; emoji: string; cardId: number | null };
+/** `monthly` va en la moneda del plan — ver el aviso en `InstallmentRow`. */
+export type PlanProj = { id: number; desc: string; monthly: number; currency: string; total: number; firstMonth: string; category: string; emoji: string; cardId: number | null };
 export async function fetchPlansForProjection(sb: SupabaseClient): Promise<PlanProj[]> {
-  const { data, error } = await sb.from("installment_plans").select("id,description,monthly_amount,total_installments,first_charge_date,card_id,categories(name,emoji)");
+  const { data, error } = await sb.from("installment_plans").select("id,description,monthly_amount,currency,total_installments,first_charge_date,card_id,categories(name,emoji)");
   if (error) throw error;
-  return (data ?? []).map((p: any) => ({ id: p.id, desc: p.description, monthly: Number(p.monthly_amount), total: p.total_installments, firstMonth: String(p.first_charge_date).slice(0, 7), category: p.categories?.name ?? "Cuotas", emoji: p.categories?.emoji ?? "💳", cardId: p.card_id }));
+  return (data ?? []).map((p: any) => ({ id: p.id, desc: p.description, monthly: Number(p.monthly_amount), currency: String(p.currency ?? "ARS"), total: p.total_installments, firstMonth: String(p.first_charge_date).slice(0, 7), category: p.categories?.name ?? "Cuotas", emoji: p.categories?.emoji ?? "💳", cardId: p.card_id }));
 }
 
 export type NewExchange = { from: string; to: string; fromAmount: number; toAmount: number; rate: number; rateSource: "auto" | "manual" };
@@ -1164,7 +1182,7 @@ export type NewExchange = { from: string; to: string; fromAmount: number; toAmou
  * está excluida de las métricas de gasto/ingreso. Si se hiciera por partes y
  * fallara la segunda, quedaría un saldo mal sin su contrapartida.
  */
-export async function insertExchange(sb: SupabaseClient, e: NewExchange) {
+export async function insertExchange(sb: SupabaseClient, e: NewExchange, userId?: string) {
   const { data, error } = await sb.rpc("register_exchange", {
     p_from: e.from,
     p_to: e.to,
@@ -1172,10 +1190,13 @@ export async function insertExchange(sb: SupabaseClient, e: NewExchange) {
     p_to_amount: e.toAmount,
     p_rate: e.rate,
     p_rate_source: e.rateSource,
+    // Solo lo manda quien no tiene sesión (el agente). Desde el browser va
+    // undefined y la RPC usa `auth.uid()`, como siempre.
+    ...(userId ? { p_user_id: userId } : {}),
   });
   if (error) throw error;
   // La RPC devuelve el id del cambio; con eso el deshacer borra en cascada.
-  if (data) await logActivity(sb, "exchange", `Cambio de ${e.fromAmount.toLocaleString("es-AR")} ${e.from} a ${e.toAmount.toLocaleString("es-AR")} ${e.to}`, { exchangeId: data });
+  if (data) await logActivity(sb, "exchange", `Cambio de ${e.fromAmount.toLocaleString("es-AR")} ${e.from} a ${e.toAmount.toLocaleString("es-AR")} ${e.to}`, { exchangeId: data }, userId);
 }
 
 /**

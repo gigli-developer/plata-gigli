@@ -27,6 +27,28 @@ export const toArs = (amount: number, currency: string, fx: FxRates) =>
   currency === "USD" ? amount * fx.usd : currency === "USDT" ? amount * fx.usdt : amount;
 
 /**
+ * La cuota de un plan, en pesos.
+ *
+ * Existe para que no haya veintitrés lugares sumando `p.monthly` a mano. Hasta
+ * el 19/08/2026 no se podía crear un plan que no fuera en pesos, así que sumarlo
+ * crudo funcionaba de casualidad; cuando la herramienta de voz permitió
+ * convertir un consumo en dólares, una cuota de US$ 100 pasó a mostrarse como
+ * $100 en el Cash Flow, en Métricas, en Tarjetas y en el Resumen a la vez.
+ *
+ * ⚠️ Va a cotización VIVA, no congelada: una cuota que todavía no venció es un
+ * compromiso a futuro, y esos valen el dólar de hoy (decisión 5b).
+ */
+export const cuotaArs = (
+  p: { monthly: number; currency?: string },
+  // Solo las dos cotizaciones: así lo puede llamar tanto quien tiene un `FxRates`
+  // completo como quien armó `{usd, usdt}` desde `get_metrics`.
+  fx: { usd: number; usdt: number },
+) =>
+  p.currency === "USD" ? p.monthly * fx.usd
+  : p.currency === "USDT" ? p.monthly * fx.usdt
+  : p.monthly;
+
+/**
  * Valúa un movimiento en ARS usando la cotización CONGELADA del día en que ocurrió
  * (`transactions.fx_rate_ars`, que setea el trigger trg_tx_freeze_fx). Así un gasto
  * de abril vale lo que valió en abril y los meses cerrados dejan de moverse cada vez

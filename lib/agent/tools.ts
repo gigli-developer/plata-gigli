@@ -4,7 +4,7 @@ import {
   fetchDebts, fetchRecurring, fetchTransactionsRange, fetchCategories,
   fetchPaymentMethods, insertTransaction, updateTransaction, deleteTransaction,
   fetchStatementConsumos, fetchCardsFull, fetchNetWorthSeries, fetchFxBoard,
-  fetchTransactionsNuevas,
+  fetchTransactionsNuevas, insertExchange,
   type Metrics, type MonthAgg, type TxView, type NewTx, type EditTx,
 } from "../db";
 import { fetchCardCharges, detectarSubs } from "../subs";
@@ -19,6 +19,9 @@ import { buscar, reproducir, sonando, SinCredenciales } from "./spotify";
 import { resolverAlias, TOOL_REGISTRAR_TARGET } from "./targets";
 import { investigarEnLaWeb } from "./web";
 import { TOOLS_CODIGO } from "./codigo";
+import { TOOLS_MUNDO } from "./mundo";
+import { TOOLS_ACCIONES_PLATA } from "./acciones-plata";
+import { TOOLS_CEREBRO } from "./cerebro";
 // ⚠️ TODO lo de fechas sale de acá. No agregues helpers de fecha en este archivo:
 // `lib/fechas.ts` existe porque tenerlos desperdigados produjo siete bugs del
 // mismo tipo, todos por el UTC del servidor contra el UTC-3 del usuario.
@@ -138,7 +141,7 @@ export type Accion = {
    * servidor no manda un solo flag, y el cliente arma el `claude -p` con su propia
    * lista de argumentos. Ver el contrato en `codigo.ts`.
    */
-  tipo: "app" | "url" | "discord" | "spotify" | "media" | "codigo" | "salir" | "setup";
+  tipo: "app" | "url" | "discord" | "spotify" | "media" | "codigo" | "salir" | "setup" | "cerebro";
   valor: string;
 };
 
@@ -249,7 +252,7 @@ const compromisosFuturos: Tool = {
     for (let k = 0; k < meses; k++) {
       // Cuota número current+k del plan: si supera el total, el plan ya terminó.
       const activas = cuotas.filter((c) => c.current + k <= c.total);
-      const cuotasArs = activas.reduce((a, c) => a + c.monthly, 0);
+      const cuotasArs = activas.reduce((a, c) => a + toArs(c.monthly, c.currency, fx), 0);
       porMes.push({
         mes: sumarMeses(hoy, k),
         cuotas_ars: redondear(cuotasArs),
@@ -264,7 +267,7 @@ const compromisosFuturos: Tool = {
       .filter((c) => c.total - c.current < meses)
       .map((c) => ({
         que: c.desc,
-        cuota_mensual_ars: redondear(c.monthly),
+        cuota_mensual_ars: redondear(toArs(c.monthly, c.currency, fx)),
         va_por: `${c.current} de ${c.total}`,
         ultimo_mes: sumarMeses(hoy, c.total - c.current),
       }))
@@ -463,7 +466,8 @@ const proyeccionFinDeMes: Tool = {
     const cuotasPorTarjeta = new Map<number, number>();
     for (const c of cuotas) {
       if (c.cardId == null) continue;
-      cuotasPorTarjeta.set(c.cardId, (cuotasPorTarjeta.get(c.cardId) ?? 0) + c.monthly);
+      // `monthly` viene en la moneda del plan: una cuota de US$ 100 no son $100.
+      cuotasPorTarjeta.set(c.cardId, (cuotasPorTarjeta.get(c.cardId) ?? 0) + toArs(c.monthly, c.currency, fx));
     }
     const tarjetasArs = aPagar.reduce((a, s) => {
       const c = consumos[s.id] ?? { ars: 0, usd: 0 };
@@ -504,10 +508,27 @@ const DIA_HASTA = 22 * 60;   // 22:00
 const HUECO_MINIMO = 30;     // minutos; menos que esto no es un rato libre
 
 /** Fecha en castellano, para que se entienda leída en voz alta. */
+/*
+ * ⚠️ Una fecha-hora SIN zona se interpreta como hora argentina.
+ *
+ * El modelo manda `2026-08-22T09:00:00` a secas. `new Date()` de un ISO sin
+ * sufijo usa la zona del proceso, y en Railway eso es UTC: la previsualización
+ * mostraba 06:00 mientras el evento se creaba a las 09:00, porque la ejecución
+ * sí le pasa la zona a Google. Tres horas de diferencia entre lo que el usuario
+ * aprueba y lo que pasa — y la tarjeta es LO ÚNICO que ve antes de decir que sí.
+ *
+ * Lo encontró la prueba adversarial del 19/08. Solo toca las cadenas sin zona:
+ * un evento leído de Google ya viene con offset y pasa de largo.
+ */
+const enHoraLocal = (iso: string): string =>
+  /T\d{2}:\d{2}/.test(iso) && !/(Z|[+-]\d{2}:?\d{2})$/.test(iso) ? iso + OFFSET : iso;
+
 function cuando(e: { inicio: string; fin: string; todo_el_dia: boolean }): string {
   if (!e.inicio) return "";
   if (e.todo_el_dia) return `${diaLargo(e.inicio.slice(0, 10))}, todo el día`;
-  return `${diaLargo(diaAr(e.inicio))}, de ${hora(e.inicio)} a ${hora(e.fin)}`;
+  const desde = enHoraLocal(e.inicio);
+  const hasta = enHoraLocal(e.fin);
+  return `${diaLargo(diaAr(desde))}, de ${hora(desde)} a ${hora(hasta)}`;
 }
 
 /** Lo que se le muestra al usuario en la previsualización. */
@@ -877,8 +898,9 @@ const agendaCambiar: Tool = {
 const confirmar: Tool = {
   name: "confirmar",
   description:
-    "Ejecuta un cambio que ya se propuso (con `agenda_cambiar` o con `plata_registrar`) y que " +
-    "el usuario ACEPTÓ. Sirve para los dos: agenda y movimientos de plata. " +
+    "Ejecuta un cambio que ya se propuso y que el usuario ACEPTÓ. Sirve para TODAS las " +
+    "que proponen: `agenda_cambiar`, `plata_registrar`, `deuda_pagar`, `cuotas_convertir` " +
+    "y `divisas_registrar`. " +
     "Nunca la llames sin que haya dicho explícitamente que sí. Si dijo que no, usá cancelar=true.",
   input_schema: {
     type: "object",
@@ -892,6 +914,21 @@ const confirmar: Tool = {
   async handler(sb, input) {
     const id = String(input?.propuesta_id ?? "").trim().toLowerCase();
     if (input?.cancelar) {
+      // ⚠️ Cancelar una propuesta que YA se ejecutó no la deshace: cancelar solo
+      // saca de la lista lo que todavía no pasó. Antes contestaba "no toco nada"
+      // igual, y el usuario quedaba creyendo que el gasto no se había cargado.
+      const hecha = yaEjecutada(id);
+      if (hecha) {
+        return {
+          ok: true,
+          cancelada: false,
+          ya_estaba: true,
+          para_decir: `Eso ya lo había hecho: ${hecha}. Cancelar ahora no lo deshace.`,
+          que_hacer:
+            "Decíselo claro. Si lo quiere revertir de verdad, hay que borrar el movimiento " +
+            "(con `plata_registrar` en modo borrar) o deshacerlo desde la app.",
+        };
+      }
       descartar(id);
       return { ok: true, cancelada: true, para_decir: "Listo, no toco nada." };
     }
@@ -918,12 +955,21 @@ const confirmar: Tool = {
           que_hacer: "NO lo vuelvas a proponer ni a ejecutar. Solo confirmale que ya está.",
         };
       }
+      // El id puede no existir por cuatro motivos distintos, y decir siempre
+      // "se venció a los 10 minutos" manda a buscar donde no está. Lo único
+      // que se puede distinguir desde acá es si el id tiene forma de id: los
+      // nuestros son cuatro caracteres de un alfabeto sin i, l, o, 0 ni 1.
+      const pareceId = /^[abcdefghjkmnpqrstuvwxyz23456789]{4}$/.test(id);
       return {
         ok: false,
-        motivo: "Esa propuesta ya no existe (se venció a los 10 minutos, o hubo un deploy).",
+        motivo: pareceId
+          ? "Esa propuesta ya no está: se venció (duran 10 minutos), la desalojó una más " +
+            "nueva, o hubo un deploy en el medio."
+          : `"${id}" no tiene forma de id de propuesta (son cuatro letras o números).`,
         que_hacer:
-          "Volvé a proponerlo con `agenda_cambiar` o `plata_registrar`, según de qué " +
-          "era. NO inventes que se hizo.",
+          "Volvé a proponerlo con la herramienta que corresponda (`plata_registrar`, " +
+          "`agenda_cambiar`, `deuda_pagar`, `cuotas_convertir` o `divisas_registrar`) y " +
+          "esperá que confirme de nuevo. NO inventes que se hizo.",
       };
     }
 
@@ -936,6 +982,67 @@ const confirmar: Tool = {
     try {
       // --- movimientos de Plata ---
       if (p.dominio === "plata") {
+        /*
+         * Las tres operaciones sobre lo YA cargado van primero, y cada una es UNA
+         * llamada a una función de Postgres: o pasa todo o no pasa nada. No se
+         * arman acá con varias escrituras sueltas, que es exactamente lo que un
+         * 18/08 borró un consumo de $457.500 sin crear sus cuotas.
+         */
+        if (p.pagoDeuda) {
+          const d = p.pagoDeuda;
+          const { data, error } = await sb.rpc("pagar_deuda", {
+            p_debt_id: d.debtId,
+            p_monto: d.monto,          // null = saldar el resto
+            p_nota: d.nota ?? null,
+          });
+          if (error) throw error;
+          const r = (data ?? {}) as { monto?: number; saldada?: boolean; restante?: number };
+          const cobro = d.direccion === "to_collect";
+          const cuanto = importe(Number(r.monto ?? 0), d.moneda);
+          return hecho({
+            ok: true,
+            que: "pago de deuda",
+            saldada: !!r.saldada,
+            restante: Number(r.restante ?? 0),
+            para_decir: r.saldada
+              ? `Listo, ${cobro ? "cobré" : "pagué"} ${cuanto} y con ${d.persona} quedás a mano.`
+              : `Listo, ${cobro ? "cobré" : "pagué"} ${cuanto}. Quedan ${importe(Number(r.restante ?? 0), d.moneda)}.`,
+          });
+        }
+
+        if (p.cuotas) {
+          const c = p.cuotas;
+          const { data, error } = await sb.rpc("convertir_a_cuotas", {
+            p_tx_id: c.txId,
+            p_cuotas: c.cantidad,
+            p_primera: c.primera ?? null,
+          });
+          if (error) throw error;
+          const plan = (data ?? {}) as { monthly_amount?: number };
+          const mensual = Number(plan.monthly_amount ?? c.monto / c.cantidad);
+          return hecho({
+            ok: true,
+            que: "pasado a cuotas",
+            para_decir: `Listo, ${c.desc} quedó en ${c.cantidad} cuotas de ${importe(mensual, c.moneda)}.`,
+          });
+        }
+
+        if (p.cambio) {
+          const c = p.cambio;
+          // Va por `insertExchange` y no por la RPC pelada para que quede también
+          // el registro del botón Deshacer, igual que cuando lo hacés en la app.
+          await insertExchange(
+            sb,
+            { from: c.de, to: c.a, fromAmount: c.montoDe, toAmount: c.montoA, rate: c.rate, rateSource: c.fuente },
+            await idDeUsuario(sb),
+          );
+          return hecho({
+            ok: true,
+            que: "cambio registrado",
+            para_decir: `Listo, salieron ${importe(c.montoDe, c.de)} y entraron ${importe(c.montoA, c.a)}.`,
+          });
+        }
+
         if (p.tipo === "crear") {
           await insertTransaction(sb, p.tx!, await idDeUsuario(sb));
           const t = p.tx!;
@@ -1501,7 +1608,8 @@ const tarjetasVer: Tool = {
     const cuotasPorTarjeta = new Map<number, number>();
     for (const c of cuotas) {
       if (c.cardId == null) continue;
-      cuotasPorTarjeta.set(c.cardId, (cuotasPorTarjeta.get(c.cardId) ?? 0) + c.monthly);
+      // `monthly` viene en la moneda del plan: una cuota de US$ 100 no son $100.
+      cuotasPorTarjeta.set(c.cardId, (cuotasPorTarjeta.get(c.cardId) ?? 0) + toArs(c.monthly, c.currency, fx));
     }
 
     // Un resumen PAGADO tiene su total congelado; uno SIN pagar se calcula en vivo
@@ -1554,7 +1662,7 @@ const tarjetasVer: Tool = {
       .map((c) => ({
         que: c.desc,
         tarjeta: c.cardId != null ? nombreDe.get(c.cardId) ?? "—" : "—",
-        cuota_ars: redondear(c.monthly),
+        cuota_ars: redondear(toArs(c.monthly, c.currency, fx)),
         va_por: `${c.current} de ${c.total}`,
         le_quedan: c.total - c.current,
       }));
@@ -1564,7 +1672,7 @@ const tarjetasVer: Tool = {
       resumenes_sin_pagar: abiertos,
       total_sin_pagar_ars: redondear(abiertos.reduce((a, s) => a + s.total_ars, 0)),
       cuotas_activas: cuotas.length,
-      cuota_mensual_total_ars: redondear(cuotas.reduce((a, c) => a + c.monthly, 0)),
+      cuota_mensual_total_ars: redondear(cuotas.reduce((a, c) => a + toArs(c.monthly, c.currency, fx), 0)),
       cuotas: terminan,
       // Frase armada, igual que en `resumen_diario`. Con cuatro resúmenes, tres
       // monedas y siete cuotas a la vista, pedirle que redacte el total es pedirle
@@ -1752,7 +1860,8 @@ const resumenDiario: Tool = {
     const cuotasPorTarjeta = new Map<number, number>();
     for (const c of cuotas) {
       if (c.cardId == null) continue;
-      cuotasPorTarjeta.set(c.cardId, (cuotasPorTarjeta.get(c.cardId) ?? 0) + c.monthly);
+      // `monthly` viene en la moneda del plan: una cuota de US$ 100 no son $100.
+      cuotasPorTarjeta.set(c.cardId, (cuotasPorTarjeta.get(c.cardId) ?? 0) + toArs(c.monthly, c.currency, fx));
     }
     // Un resumen sin pagar se calcula EN VIVO (decisión 7): el total guardado queda
     // stale y a veces en cero.
@@ -2252,6 +2361,16 @@ export const TOOLS: Tool[] = [
   // Fase 6: dictar y lanzar tareas de código. `dictar` guarda un borrador y `lanzar`
   // devuelve la acción; entre las dos tiene que haber hablado él. Ver `codigo.ts`.
   ...TOOLS_CODIGO,
+  // Clima, feriados (AR y US) y rutas. Las únicas que no tocan Supabase: son el
+  // mundo de afuera, y por eso viven aparte. Ver `mundo.ts`.
+  ...TOOLS_MUNDO,
+  // Cobrar/pagar deudas, pasar un consumo a cuotas y registrar cambios de
+  // divisas. Proponen igual que `plata_registrar`; las ejecuta `confirmar`
+  // llamando a UNA función de Postgres cada una. Ver `acciones-plata.ts`.
+  ...TOOLS_ACCIONES_PLATA,
+  // Las notas de Lucas. El servidor solo devuelve la acción: el contenido lo
+  // lee la PC de su propio disco y nunca pasa por acá. Ver `cerebro.ts`.
+  ...TOOLS_CEREBRO,
   desplegarSetup,
   cerrarse,
 ];

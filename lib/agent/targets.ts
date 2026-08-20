@@ -427,17 +427,19 @@ export async function registrarTarget(
 // ---------------------------------------------------------------------------
 
 /**
- * La herramienta `registrar_target`, lista para enchufar.
+ * La herramienta `registrar_target`. **Enchufada**: está en el array `TOOLS` de
+ * `tools.ts`, así que el modelo la ve.
  *
- * ⚠️ NO está en el array `TOOLS` de `tools.ts`: el encargo de esta tanda decía
- * explícitamente no tocar ese array. Enchufarla es agregar `TOOL_REGISTRAR_TARGET`
- * a la lista, una línea. Hasta que eso pase, el modelo no la ve y `abrir` se limita
- * a avisar que el alias no existe.
+ * (Este comentario decía lo contrario —que no estaba en el array y que el modelo
+ * no la veía— desde la tanda en que se escribió sin tocar `tools.ts`. Quedó viejo
+ * cuando se enchufó y estuvo mintiendo un tiempo, que es peor que no decir nada:
+ * manda a "arreglar" algo que ya está hecho.)
  *
- * Cuando se enchufe, ojo con dos cosas: `canales: ["pc"]` (Telegram no tiene por
- * qué dar de alta ejecutables de una máquina que no está escuchando) y `esAccion`
- * en false a propósito — un alta no devuelve ninguna acción para ejecutar y hay
- * que dejar que el modelo redacte, sobre todo para avisar que quedó sin aprobar.
+ * Dos cosas que no son obvias y son a propósito: `canales: ["pc"]` — Telegram no
+ * tiene por qué dar de alta ejecutables de una máquina que no está escuchando — y
+ * `esAccion` en false, porque un alta no devuelve ninguna acción para ejecutar y
+ * hay que dejar que el modelo redacte, sobre todo para avisar que quedó sin
+ * aprobar.
  */
 export const TOOL_REGISTRAR_TARGET: Tool = {
   name: "registrar_target",

@@ -7,7 +7,7 @@ import {
   FX_FALLBACK,
   type TxView, type CardFull, type DebtView, type Category, type Metrics, type StatementRow, type InstallmentRow,
 } from "@/lib/db";
-import { arsDe } from "@/lib/fx";
+import { arsDe, cuotaArs } from "@/lib/fx";
 import { readCache, writeCache } from "@/lib/cache";
 import { ars, compact } from "@/lib/format";
 import { Card as CardIcon, Sparkle, Bell, Search, Plus, ArrowUpRight, ArrowDownRight, Camera, Mail, Mic, Send, Coins, X } from "./icons";
@@ -200,7 +200,7 @@ function compute(txs: TxView[], cards: CardFull[], debts: DebtView[], installmen
   if (refY === nowD.getFullYear() && refM === nowD.getMonth()) {
     for (const q of installments) {
       const e = catMap.get(q.category) ?? { emoji: q.catEmoji, amount: 0 };
-      e.amount += q.monthly; catMap.set(q.category, e);
+      e.amount += cuotaArs(q, fx); catMap.set(q.category, e);
     }
   }
   let catArr = [...catMap.entries()].map(([name, v]) => ({ name, emoji: v.emoji, amount: v.amount })).sort((a, b) => b.amount - a.amount);
@@ -221,7 +221,7 @@ function compute(txs: TxView[], cards: CardFull[], debts: DebtView[], installmen
     .map((c) => {
       const open = statements.filter((s) => s.cardId === c.id).find((s) => s.closingRaw && new Date(s.closingRaw) > today);
       if (!open) return null;
-      const cuotasSum = installments.filter((i) => i.cardId === c.id).reduce((a, q) => a + q.monthly, 0);
+      const cuotasSum = installments.filter((i) => i.cardId === c.id).reduce((a, q) => a + cuotaArs(q, fx), 0);
       const cons = consumos[open.id] ?? { ars: 0, usd: 0 };
       // Un resumen SIN pagar se valúa en vivo (decisión 5b): todavía es deuda en
       // dólares. Antes acá se usaba solo `.ars` y la parte en USD se perdía.

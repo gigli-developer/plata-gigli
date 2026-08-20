@@ -44,6 +44,46 @@ export type Pendiente = {
   txAntes?: TxView;              // cómo está hoy
   /** Borrado en lote, igual que `bases` en agenda: varios movimientos, UNA confirmación. */
   txVarios?: TxView[];
+
+  /*
+   * --- operaciones sobre lo YA cargado ---
+   *
+   * Pagar una deuda, partir un consumo en cuotas y registrar un cambio de
+   * divisas. Las tres van con `dominio: "plata"` a propósito: la tarjeta del HUD
+   * elige el rótulo por dominio, y «se va a cargar / va a quedar así» es
+   * exactamente lo que hay que preguntar. Un dominio nuevo caería en el
+   * fallback de agenda y diría «¿lo agendo?» sobre un pago de deuda.
+   *
+   * Cada una guarda lo MÍNIMO para ejecutar (los ids) más lo que hace falta para
+   * redactar la respuesta sin volver a consultar la base.
+   */
+  pagoDeuda?: {
+    debtId: number;
+    /** null = saldar el resto. La RPC lo interpreta así. */
+    monto: number | null;
+    nota?: string;
+    persona: string;
+    moneda: string;
+    /** Lo que quedaba pendiente al momento de proponer, para poder redactar. */
+    saldo: number;
+    direccion: "to_collect" | "to_pay";
+  };
+  cuotas?: {
+    txId: number;
+    cantidad: number;
+    primera?: string;
+    desc: string;
+    monto: number;
+    moneda: string;
+  };
+  cambio?: {
+    de: string;
+    a: string;
+    montoDe: number;
+    montoA: number;
+    rate: number;
+    fuente: "auto" | "manual";
+  };
 };
 
 const PENDIENTES = new Map<string, Pendiente>();

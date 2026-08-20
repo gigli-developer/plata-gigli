@@ -5,7 +5,7 @@ import { db, fetchCardsFull, fetchStatements, fetchInstallments, fetchStatementC
 import { fetchCardCharges, detectarSubs, subsTotals, type CardSub } from "@/lib/subs";
 import { readCache, writeCache } from "@/lib/cache";
 import CardModal from "../components/CardModal";
-import { fxSync, loadFx } from "@/lib/fx";
+import { cuotaArs, fxSync, loadFx } from "@/lib/fx";
 import { ars, usd, compact } from "@/lib/format";
 import { PageHeader } from "../components/Shell";
 import CountUp from "../components/CountUp";
@@ -140,7 +140,7 @@ export default function TarjetasPage() {
   const cuotas = installments.filter((i) => i.cardId === card.id);
   const isOpen = (s: StatementRow) => !!s.closingRaw && parseYMD(s.closingRaw) > today;
   // Cuotas que caen en el período de ese resumen.
-  const cuotasForStmt = (s: StatementRow) => cuotasForPeriod(s.period, s.cardId).reduce((a, p) => a + p.monthly, 0);
+  const cuotasForStmt = (s: StatementRow) => cuotasForPeriod(s.period, s.cardId).reduce((a, p) => a + cuotaArs(p, fxSync()), 0);
   // Suscripciones y abonos que se van a repetir. SOLO se suman a los resúmenes
   // PROYECTADOS (id < 0): en uno real, esos consumos entran por el importador de
   // mails, y sumarles la proyección encima los contaría dos veces.
@@ -228,7 +228,7 @@ export default function TarjetasPage() {
   const lastOfCard = (cid: number) => statements.filter((s) => s.cardId === cid).map((s) => s.period).sort().pop() ?? null;
   // Un período proyectado = cuotas del período + suscripciones mensuales de esa tarjeta.
   const projValue = (period: string, cid: number) => {
-    const cuotasArs = cuotasForPeriod(period, cid).reduce((a, p) => a + p.monthly, 0);
+    const cuotasArs = cuotasForPeriod(period, cid).reduce((a, p) => a + cuotaArs(p, fxSync()), 0);
     const s = subsForCard(cid);
     return { ars: cuotasArs + s.ars, usd: s.usd };
   };
@@ -390,7 +390,7 @@ export default function TarjetasPage() {
                           <p className="text-xs text-faint">Cuota {q.current} de {q.total}</p>
                         </div>
                         <Pencil className="h-4 w-4 text-faint opacity-0 transition-opacity group-hover:opacity-100" />
-                        <span className="tnum text-sm text-fg">{ars(q.monthly)}</span>
+                        <span className="tnum text-sm text-fg">{q.currency === "ARS" ? ars(q.monthly) : `${q.currency} ${q.monthly.toLocaleString("es-AR")}`}</span>
                       </div>
                       <div className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-white/[0.09]">
                         <div className="h-full rounded-full bg-gradient-to-r from-accent to-sky" style={{ width: `${pct}%` }} />
@@ -538,7 +538,7 @@ function MovementsPanel({ statement, consumos, cuotas, subs, loading, open }: { 
 
   type Item = { key: string; emoji: string; desc: string; sub: string; category: string; amount: number; currency: string; isCuota: boolean; isSub?: boolean };
   const base: Item[] = [
-    ...cuotas.map((c) => ({ key: `q${c.id}`, emoji: c.emoji, desc: c.desc, sub: `Cuota ${c.n}/${c.total}`, category: c.category, amount: c.monthly, currency: "ARS", isCuota: true })),
+    ...cuotas.map((c) => ({ key: `q${c.id}`, emoji: c.emoji, desc: c.desc, sub: `Cuota ${c.n}/${c.total}`, category: c.category, amount: c.monthly, currency: c.currency, isCuota: true })),
     // Suscripciones proyectadas (solo en resúmenes que todavía no existen).
     ...subs.map((s) => ({ key: `s${s.cardId}-${s.comercio}-${s.currency}`, emoji: s.emoji, desc: s.comercio, sub: s.motivo === "marcada" ? "abono fijo" : `se repite hace ${s.meses.length} meses`, category: s.category, amount: s.amount, currency: s.currency, isCuota: false, isSub: true })),
     ...(consumos ?? []).map((c) => ({ key: `t${c.id}`, emoji: c.emoji, desc: c.desc, sub: c.date, category: c.category, amount: c.amount, currency: c.currency, isCuota: false })),
