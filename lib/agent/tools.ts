@@ -899,8 +899,8 @@ const confirmar: Tool = {
   name: "confirmar",
   description:
     "Ejecuta un cambio que ya se propuso y que el usuario ACEPTÓ. Sirve para TODAS las " +
-    "que proponen: `agenda_cambiar`, `plata_registrar`, `deuda_pagar`, `cuotas_convertir` " +
-    "y `divisas_registrar`. " +
+    "que proponen: `agenda_cambiar`, `plata_registrar`, `deuda_pagar`, `cuotas_convertir`, " +
+    "`divisas_registrar` y `cerebro_anotar`. " +
     "Nunca la llames sin que haya dicho explícitamente que sí. Si dijo que no, usá cancelar=true.",
   input_schema: {
     type: "object",
@@ -980,6 +980,20 @@ const confirmar: Tool = {
     };
 
     try {
+      // --- una nota para el cerebro ---
+      // El servidor no escribe: devuelve la acción y la PC crea el archivo en su
+      // bitácora. El resultado real (en qué archivo quedó) vuelve por el mismo
+      // merge que usa la consulta — la acción es tipo "cerebro", como todas.
+      if (p.dominio === "cerebro" && p.notaCerebro) {
+        const n = p.notaCerebro;
+        return hecho({
+          ok: true,
+          que: "nota para el cerebro",
+          para_decir: `Listo, anoto ${n.tipo === "decision" ? "la decisión" : "la corrección"} "${n.titulo}".`,
+          accion: { tipo: "cerebro", valor: JSON.stringify({ accion: "anotar", ...n }) },
+        });
+      }
+
       // --- movimientos de Plata ---
       if (p.dominio === "plata") {
         /*

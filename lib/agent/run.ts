@@ -286,6 +286,8 @@ const PROPONEN = new Set([
   // Las tres de `acciones-plata.ts`: proponen igual, y necesitan las mismas
   // redes (no confirmar una propuesta vieja, no confirmar una corrección).
   "deuda_pagar", "cuotas_convertir", "divisas_registrar",
+  // Escribe un archivo en el disco de la PC: mismas redes que las de plata.
+  "cerebro_anotar",
 ]);
 
 /**

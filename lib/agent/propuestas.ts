@@ -21,7 +21,7 @@ import type { EditTx, NewTx, TxView } from "../db";
 export type TipoCambio = "crear" | "editar" | "borrar";
 
 /** Sobre qué se propone el cambio. Una sola herramienta confirma los dos. */
-export type Dominio = "agenda" | "plata";
+export type Dominio = "agenda" | "plata" | "cerebro";
 
 export type Pendiente = {
   id: string;
@@ -44,6 +44,23 @@ export type Pendiente = {
   txAntes?: TxView;              // cómo está hoy
   /** Borrado en lote, igual que `bases` en agenda: varios movimientos, UNA confirmación. */
   txVarios?: TxView[];
+
+  /*
+   * --- una nota para el cerebro ---
+   *
+   * `cerebro_anotar` propone y `confirmar` NO escribe nada acá: devuelve la
+   * acción y la PC escribe en su disco, igual que la consulta. El servidor
+   * nunca ve la bitácora — solo transporta lo que el modelo redactó y Lucas
+   * aprobó mirando la tarjeta.
+   */
+  notaCerebro?: {
+    tipo: "decision" | "correccion";
+    titulo: string;
+    /** La línea `que:` del encabezado — para una corrección, LA REGLA. */
+    resumen: string;
+    detalle: string;
+    verificar?: string;
+  };
 
   /*
    * --- operaciones sobre lo YA cargado ---
