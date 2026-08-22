@@ -229,6 +229,10 @@ function cuandoTarjeta(vence?: string): string | undefined {
   return h.startsWith("vencida") ? h : `vence ${h}`;
 }
 
+/** `"A, B y C"`: una lista corta como se lee en voz alta. La usa también el lote de plata. */
+export const enumerar = (xs: string[]): string =>
+  xs.length <= 1 ? (xs[0] ?? "") : `${xs.slice(0, -1).join(", ")} y ${xs[xs.length - 1]}`;
+
 /**
  * Vencidas primero (la más vieja arriba), después por fecha, y las sin fecha al
  * final en su orden original — que es el orden manual de la lista, y el sort de
@@ -304,8 +308,9 @@ const tareasCambiar: Tool = {
     "para 'anotá que tengo que comprar pilas', 'acordame de llamar al contador el " +
     "viernes', 'listo lo de la farmacia' (→ completar), 'sacá lo del service' (→ " +
     "borrar). Para completar, editar o borrar pasá el título TAL COMO lo dijo, aunque " +
-    "sea aproximado: la herramienta la busca sola. ⚠️ Las tareas de CÓDIGO van por " +
-    "`tarea_codigo_dictar`, no por acá.",
+    "sea aproximado: la herramienta la busca sola. Si dicta VARIAS tareas de una, van " +
+    "todas juntas en `varias`: una sola propuesta y una sola confirmación. ⚠️ Las " +
+    "tareas de CÓDIGO van por `tarea_codigo_dictar`, no por acá.",
   input_schema: {
     type: "object",
     properties: {
@@ -319,6 +324,22 @@ const tareasCambiar: Tool = {
         description:
           "Para crear: el título de la tarea nueva. Para el resto: el título tal como " +
           "lo dijo — se busca por coincidencia, no hace falta que sea exacto.",
+      },
+      varias: {
+        type: "array",
+        items: {
+          type: "object",
+          properties: {
+            titulo: { type: "string" },
+            nota: { type: "string" },
+            vence: { type: "string" },
+          },
+          required: ["titulo"],
+        },
+        description:
+          "Para CREAR varias tareas de una: va la lista completa acá y UNA sola " +
+          "propuesta. Si el usuario dicta más de una tarea, usá esto y NO llames " +
+          "varias veces.",
       },
       titulo_nuevo: { type: "string", description: "Solo para editar: el título nuevo, si cambia." },
       nota: { type: "string", description: "Detalle o aclaración de la tarea." },
@@ -338,6 +359,50 @@ const tareasCambiar: Tool = {
       if (!["crear", "completar", "editar", "borrar"].includes(accion)) {
         return { ok: false, motivo: `Acción desconocida: ${accion}` };
       }
+
+      // --- alta en LOTE: "anotá A, B y C" → UNA tarjeta y UN solo sí ---------
+      // Antes salía cuadrito por cuadrito, una confirmación por tarea. Se valida
+      // TODO antes de proponer: una fecha rota en la tarea 3 no puede dejar dos
+      // cargadas y una en el aire.
+      const varias = accion === "crear" && Array.isArray(input?.varias)
+        ? (input.varias as Record<string, unknown>[])
+        : [];
+      if (varias.length >= 1) {
+        const lote: { titulo: string; notas?: string; vence?: string }[] = [];
+        for (let i = 0; i < varias.length; i++) {
+          const t = varias[i] ?? {};
+          const tit = String(t?.titulo ?? "").trim();
+          if (!tit) return { ok: false, motivo: `La tarea ${i + 1} de la lista viene sin título.` };
+          const v = t?.vence !== undefined ? String(t.vence).trim() : undefined;
+          if (v && !esFecha(v)) {
+            return {
+              ok: false,
+              motivo: `El vencimiento de "${tit}" no es una fecha válida: "${v}" (va YYYY-MM-DD).`,
+            };
+          }
+          const n = t?.nota !== undefined ? String(t.nota).trim() : undefined;
+          lote.push({ titulo: tit, notas: n || undefined, vence: v || undefined });
+        }
+
+        const p = guardar({ dominio: "tarea", tipo: "crear", tareasNuevas: lote });
+        return {
+          ok: true,
+          propuesta: {
+            id: p.id, dominio: "tarea", tipo: "crear", antes: null, despues: null,
+            // El contrato del lote con la cara: un renglón por tarea, con su
+            // vence ya humanizado. Sin tachar — esto es un alta, no un borrado.
+            lista_rica: lote.map((t) => {
+              const cu = cuandoTarjeta(t.vence);
+              return { titulo: t.titulo, ...(cu ? { detalle: cu } : {}) };
+            }),
+          },
+          para_decir:
+            `Anotar ${lote.length} tarea${lote.length === 1 ? "" : "s"}: ` +
+            `${enumerar(lote.map((t) => t.titulo))}.`,
+          que_hacer: `Leéselas y preguntale UNA sola vez. Si confirma, llamá confirmar con id "${p.id}".`,
+        };
+      }
+
       const titulo = String(input?.titulo ?? "").trim();
       if (!titulo) return { ok: false, motivo: "Falta el título de la tarea." };
       const nota = input?.nota !== undefined ? String(input.nota).trim() : undefined;
@@ -389,6 +454,14 @@ const tareasCambiar: Tool = {
           motivo: `Hay ${candidatas.length} tareas que coinciden con "${titulo}".`,
           opciones: candidatas.map((t) => `${t.titulo} (${t.lista})`),
           que_hacer: "Preguntale cuál es y volvé a llamar con un título menos ambiguo.",
+          // La pantalla ofrece las candidatas para tocar; run.ts lo saca antes de
+          // que le cueste tokens al modelo. El `tag` es la lista donde vive.
+          panel: {
+            tipo: "eleccion",
+            titulo,
+            pregunta: "¿Cuál de estas es?",
+            opciones: candidatas.map((t) => ({ v: t.titulo, tag: t.lista })),
+          },
         };
       }
 

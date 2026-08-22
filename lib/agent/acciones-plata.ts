@@ -4,7 +4,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Tool } from "./tools";
 import { fetchDebts, fetchFxBoard, fetchTransactionsRange, type DebtView, type TxView } from "../db";
 import { guardar } from "./propuestas";
-import { dia as diaAr, esFecha, sumarMeses } from "../fechas";
+import { dia as diaAr, esFecha, sumarMeses, mesLargo } from "../fechas";
 
 /**
  * Las tres operaciones que Plata sabía hacer y la voz no alcanzaba: cobrar o
@@ -37,6 +37,17 @@ import { dia as diaAr, esFecha, sumarMeses } from "../fechas";
 const importe = (n: number, moneda: string) =>
   `${moneda === "ARS" ? "$" : `${moneda} `}` +
   n.toLocaleString("es-AR", { maximumFractionDigits: 2 });
+
+/** Solo el número: `15000` → `"15.000"`. Copia local, igual que `importe`. */
+const numero = (n: number) => n.toLocaleString("es-AR", { maximumFractionDigits: 2 });
+
+/**
+ * El número grande de la tarjeta rica: con signo y SIN el "$" (el contrato con
+ * la cara es `"-15.000"`); las otras monedas llevan su nombre. Copia local de
+ * `montoPanel` en tools.ts, por el mismo motivo del ciclo.
+ */
+const montoPanel = (n: number, moneda: string, signo: "" | "-" | "+" = "") =>
+  `${signo}${moneda === "ARS" ? "" : `${moneda} `}${numero(n)}`;
 
 const plano = (s: string) =>
   s.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().trim();
@@ -362,6 +373,11 @@ const cuotasConvertir: Tool = {
           "Ese monto no se puede partir en tantas cuotas sin deformarlo. Proponé menos cuotas.",
       };
     }
+    // Para la tarjeta rica: el mes de la primera y la última cuota, resueltos
+    // acá para que la cara no tenga que hacer aritmética de meses.
+    const primeraMes = primera ? primera.slice(0, 7) : mesDelConsumo;
+    const ultimaMes = sumarMeses(primeraMes, cantidad - 1);
+
     return {
       ok: true,
       propuesta: {
@@ -378,6 +394,20 @@ const cuotasConvertir: Tool = {
           nota: (primera ? `desde ${primera}` : "desde el mes del consumo")
             + (diferencia !== 0 ? ` · suma ${importe(suma, tx.currency)}` : ""),
         },
+        // La tarjeta rica: el total como número grande, los casilleros de
+        // cuotas, y el aviso de qué pasa con el consumo original.
+        monto: montoPanel(tx.amount, tx.currency),
+        sub: tx.card ? `${tx.desc} · ${tx.card}` : tx.desc,
+        cuotas_n: cantidad,
+        campos: [
+          { k: "cada mes", v: importe(mensual, tx.currency) },
+          { k: "primera", v: mesLargo(primeraMes) },
+          { k: "última", v: mesLargo(ultimaMes) },
+        ],
+        aviso:
+          "El consumo se borra y queda en la papelera. Se hace en una sola " +
+          "operación: o pasan las dos cosas o no pasa ninguna.",
+        aviso_tono: "ambar",
       },
       suma_del_plan: suma,
       diferencia_con_el_consumo: diferencia,
@@ -536,12 +566,6 @@ const divisasRegistrar: Tool = {
       return { ok: false, motivo: "No pude calcular una cotización válida para ese cambio." };
     }
 
-    const p = guardar({
-      dominio: "plata",
-      tipo: "crear",
-      cambio: { de, a, montoDe: salen, montoA: entran, rate, fuente },
-    });
-
     // El precio por unidad, que es como lo piensa cualquiera; la tasa cruda de
     // la base (0,00065) no le dice nada a nadie.
     //
@@ -554,6 +578,28 @@ const divisasRegistrar: Tool = {
       ? entran / salen
       : (de === "ARS" ? valorA : valorDe);
     const parExtranjero = de === "ARS" ? a : de;
+
+    const p = guardar({
+      dominio: "plata",
+      tipo: "crear",
+      // `porUnidad` viaja con la propuesta para que el panel de "hecho" no
+      // tenga que derivarlo de los montos redondeados (ver el ⚠️ de arriba).
+      cambio: {
+        de, a, montoDe: salen, montoA: entran, rate, fuente,
+        ...(cruceExtranjero ? {} : { porUnidad }),
+      },
+    });
+
+    // Cómo se llama la fuente cuando la cotización es automática: la casa que
+    // cotiza el par (blue para USD, cripto para USDT); en un cruce hay dos.
+    const nombreFuente = fuente === "manual"
+      ? "la que dijiste"
+      : cruceExtranjero
+        ? "cotizaciones del día"
+        : `${CASA[parExtranjero]} del día`;
+    const cotizacionTexto = cruceExtranjero
+      ? `${entran / salen} ${a} por ${de}`
+      : `${importe(porUnidad, "ARS")} por ${parExtranjero}`;
 
     return {
       ok: true,
@@ -570,6 +616,18 @@ const divisasRegistrar: Tool = {
             : `${importe(porUnidad, "ARS")} por ${parExtranjero}` +
               (fuente === "manual" ? " (la que dijiste)" : " (del día)"),
         },
+        // La tarjeta rica: las dos patas del cambio, cada una con su moneda en
+        // el rótulo (el `n` va pelado: repetirla sería decirla dos veces).
+        patas: {
+          sale: { n: numero(salen), l: `${de} salen` },
+          entra: { n: numero(entran), l: `${a} entran` },
+        },
+        campos: [
+          { k: "cotización", v: cotizacionTexto },
+          { k: "fuente", v: nombreFuente },
+        ],
+        aviso: "El patrimonio no cambia: es la misma plata en otro bolsillo.",
+        aviso_tono: "azul",
       },
       para_decir:
         `Salen ${importe(salen, de)} y entran ${importe(entran, a)}` +

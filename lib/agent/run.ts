@@ -74,7 +74,15 @@ export type Panel =
       dias: {
         fecha: string;
         dia: string;
-        eventos: { id: string; titulo: string; hora: string; lugar?: string }[];
+        /** Solo en el día de HOY: la hora actual argentina, "HH:MM", para la línea de tiempo. */
+        ahora?: string;
+        eventos: {
+          id: string; titulo: string; hora: string; lugar?: string;
+          /** "HH:MM" del fin, solo en eventos con hora. */
+          fin?: string;
+          /** true en los de día completo — esos NO llevan horas. */
+          todo_el_dia?: boolean;
+        }[];
         huecos: { desde: string; hasta: string }[];
       }[];
     }
@@ -131,6 +139,42 @@ export type Panel =
         nombre: string;
         tareas: { titulo: string; vence: string | null; nota: string | null }[];
       }[];
+    }
+  | {
+      // Lo que QUEDÓ después de confirmar: el resultado, no la propuesta. Lo
+      // emiten las ramas de `confirmar` de plata (pago de deuda, cuotas,
+      // divisas, altas). Agenda y tareas no lo necesitan.
+      tipo: "hecho";
+      monto: string;
+      sub: string;
+      filas: { k: string; v: string; d?: string }[];
+      /** Presente solo si la operación quedó en activity_log y se puede deshacer desde la app. */
+      deshacer?: string;
+    }
+  | {
+      // Quién te debe y a quién le debés. Lo arma `deudas_con_personas`.
+      tipo: "deudas";
+      te_deben: { total: string; filas: { monto: string; quien: string; detalle?: string }[] };
+      debes: { total: string; filas: { monto: string; quien: string; detalle?: string }[] };
+      neto: string;
+    }
+  | {
+      // La foto patrimonial. Lo arma `estado_financiero`. Cada activo no-ARS
+      // dice a qué cotización está valuado (regla del proyecto).
+      tipo: "estado";
+      patrimonio: string;
+      activos: { monto: string; que: string; detalle?: string }[];
+      pasivos: { monto: string; que: string; detalle?: string }[];
+    }
+  | {
+      // Falta un dato: la pantalla ofrece las opciones para tocar. Lo emiten
+      // `plata_registrar` (categoría/método sin resolver) y `tareas_cambiar`
+      // (más de una candidata). `tag` solo cuando el dato existe de verdad.
+      tipo: "eleccion";
+      titulo: string;
+      sub?: string;
+      pregunta: string;
+      opciones: { v: string; tag?: string }[];
     };
 
 /** Previsualización de un cambio pendiente. `antes`/`despues` son null según el tipo. */
@@ -150,6 +194,30 @@ export type Propuesta = {
    * confirmar de a uno cuando pide borrar tres cosas.
    */
   lista?: { titulo: string; cuando: string }[];
+
+  /*
+   * --- la tarjeta rica (todo OPCIONAL y aditivo) ---
+   *
+   * La cara dibuja lo viejo (titulo/cuando/lugar/nota) si nada de esto viene.
+   * Las propuestas de agenda siguen con la forma vieja a propósito.
+   */
+  /** El número grande, YA formateado y con signo: "-15.000", "457.500". */
+  monto?: string;
+  /** La línea bajo el monto: "🍔 Delivery · efectivo". */
+  sub?: string;
+  /** Pares clave/valor: "cuándo: hoy, 20 ago". */
+  campos?: { k: string; v: string }[];
+  /** Caja de advertencia, con su tono. */
+  aviso?: string;
+  aviso_tono?: "ambar" | "azul";
+  /** Pasar a cuotas: dibuja n casilleros 1..n. */
+  cuotas_n?: number;
+  /** Divisas: las dos patas, cada una con su monto y su rótulo ("USD salen"). */
+  patas?: { sale: { n: string; l: string }; entra: { n: string; l: string } };
+  /** Lotes: un renglón por ítem; `tachado` para los borrados. */
+  lista_rica?: { monto?: string; titulo: string; detalle?: string; tachado?: boolean }[];
+  /** Minutos de vida de la propuesta (hoy siempre 10). */
+  vence_min?: number;
 };
 
 export type Opciones = {
@@ -217,9 +285,10 @@ ESCRIBIR SE CONFIRMA, SIEMPRE — vale para la agenda y para la plata:
   te lo dijo y comentáselo DESPUÉS.
 
 LO QUE NO PODÉS HACER — decilo en vez de improvisar:
-- **Deudas: solo lectura.** No hay herramienta para registrar un pago ni para saldar una
-  deuda. Si te dice "fulano me pagó", decile que eso lo tiene que cargar él en Plata. Nunca
-  afirmes que una deuda quedó saldada, y nunca inventes el saldo nuevo.
+- **Deudas: los pagos van por \`deuda_pagar\`** ("fulano me pagó cinco mil", "quedamos a
+  mano" → saldar). Propone y se confirma, como todo. Nunca afirmes que una deuda quedó
+  saldada si \`confirmar\` no te devolvió ok, y nunca inventes el saldo nuevo: el que vale
+  es el que devuelve la herramienta.
 - Si no tenés una herramienta para algo, decí que no podés. **Nunca calcules un total de
   cabeza**: si necesitás la suma de dos períodos, pedí el rango completo a la herramienta.
 

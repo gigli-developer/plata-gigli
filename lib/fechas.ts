@@ -146,6 +146,16 @@ export const diaCorto = (fecha: string): string =>
     day: "numeric", month: "long", timeZone: ZONA,
   });
 
+/**
+ * `"agosto de 2026"`, a partir de un `YYYY-MM`. Para hablar de un mes entero
+ * (la primera o la última cuota de un plan), donde el día no dice nada y el
+ * año sí: un plan de 12 cuotas cruza de año seguro.
+ */
+export const mesLargo = (ym: string): string =>
+  new Date(mediodia(`${ym}-01`)).toLocaleDateString("es-AR", {
+    month: "long", year: "numeric", timeZone: ZONA,
+  });
+
 // ---------------------------------------------------------------------------
 // Validación
 // ---------------------------------------------------------------------------

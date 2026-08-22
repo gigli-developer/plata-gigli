@@ -13,7 +13,7 @@ import {
   type CamposEvento, type Evento,
 } from "./google";
 import {
-  guardar, tomar, descartar, marcarEjecutada, yaEjecutada, type TipoCambio,
+  guardar, tomar, descartar, marcarEjecutada, yaEjecutada, VENCE_MIN, type TipoCambio,
 } from "./propuestas";
 import { buscar, reproducir, sonando, SinCredenciales } from "./spotify";
 import { resolverAlias, TOOL_REGISTRAR_TARGET } from "./targets";
@@ -22,14 +22,16 @@ import { TOOLS_CODIGO } from "./codigo";
 import { TOOLS_MUNDO } from "./mundo";
 import { TOOLS_ACCIONES_PLATA } from "./acciones-plata";
 import { TOOLS_CEREBRO } from "./cerebro";
-import { TOOLS_TAREAS, crearTarea, editarTarea, completarTarea, borrarTarea } from "./tasks";
+import {
+  TOOLS_TAREAS, crearTarea, editarTarea, completarTarea, borrarTarea, enumerar,
+} from "./tasks";
 // ⚠️ TODO lo de fechas sale de acá. No agregues helpers de fecha en este archivo:
 // `lib/fechas.ts` existe porque tenerlos desperdigados produjo siete bugs del
 // mismo tipo, todos por el UTC del servidor contra el UTC-3 del usuario.
 import {
   hoy as hoyAr, dia as diaAr, cuando as cuandoAr, mes as mesDe,
   sumarMeses, sumarDias, rango, esFecha, minutosDelDia, deMinutos, diaLargo, hora,
-  diasDelMes, mediodia, OFFSET, periodo as periodoDe, PERIODOS, diaCorto,
+  diasDelMes, mediodia, OFFSET, periodo as periodoDe, PERIODOS, diaCorto, mesLargo,
 } from "../fechas";
 
 /**
@@ -80,6 +82,17 @@ const redondear = (n: number) => Math.round(n);
 const importe = (n: number, moneda: string) =>
   `${moneda === "ARS" ? "$" : `${moneda} `}` +
   n.toLocaleString("es-AR", { maximumFractionDigits: 2 });
+
+/** Solo el número, formateado: `15000` → `"15.000"`. Para los montos del contrato con la cara. */
+const numero = (n: number) => n.toLocaleString("es-AR", { maximumFractionDigits: 2 });
+
+/**
+ * El número grande de las tarjetas y paneles nuevos: con signo y SIN el "$"
+ * (el contrato con la cara es `"-15.000"`, no `"-$15.000"`). Las otras monedas
+ * llevan su nombre, porque un "45" pelado no dice si son dólares.
+ */
+const montoPanel = (n: number, moneda: string, signo: "" | "-" | "+" = "") =>
+  `${signo}${moneda === "ARS" ? "" : `${moneda} `}${numero(n)}`;
 
 /**
  * Categorías que NO son gasto ni ingreso: mueven plata de un bolsillo a otro
@@ -214,6 +227,41 @@ const estadoFinanciero: Tool = {
         };
       })(),
       cotizaciones: { usd_blue: fx.usd, usdt: fx.usdt },
+      // El detalle para dibujar; run.ts lo saca antes de que cueste tokens.
+      // TODO sale de lo que ya se consultó — cero queries nuevas. Regla del
+      // proyecto: un número en otra moneda nunca va solo — cada activo no-ARS
+      // dice a qué cotización está valuado.
+      panel: {
+        tipo: "estado",
+        patrimonio: numero(redondear(patrimonio)),
+        activos: [
+          { monto: numero(redondear(m.ars_liquido)), que: "pesos líquidos" },
+          ...(m.usd_liquido > 0 ? [{
+            monto: montoPanel(m.usd_liquido, "USD"),
+            que: "dólares",
+            detalle: `al blue compra ${importe(fx.usd, "ARS")} · ${importe(redondear(m.usd_liquido * fx.usd), "ARS")}`,
+          }] : []),
+          ...(m.usdt_liquido > 0 ? [{
+            monto: montoPanel(m.usdt_liquido, "USDT"),
+            que: "USDT",
+            detalle: `a cripto compra ${importe(fx.usdt, "ARS")} · ${importe(redondear(m.usdt_liquido * fx.usdt), "ARS")}`,
+          }] : []),
+          ...(m.te_deben > 0 ? [{ monto: numero(redondear(m.te_deben)), que: "te deben" }] : []),
+        ],
+        pasivos: [
+          ...(m.deuda_cuotas_ars > 0
+            ? [{ monto: `-${numero(redondear(m.deuda_cuotas_ars))}`, que: "en cuotas" }]
+            : []),
+          ...(m.debes > 0 ? [{ monto: `-${numero(redondear(m.debes))}`, que: "debés a personas" }] : []),
+          // Solo lo VENCIDO: get_metrics no trae el resumen abierto al día, y
+          // acá no se agregan consultas. Ojo que este renglón no está restado
+          // en el patrimonio de arriba (los consumos con crédito no tocan el
+          // saldo hasta que se paga el resumen — decisión 1).
+          ...(m.deuda_vencida_ars > 0
+            ? [{ monto: `-${numero(redondear(m.deuda_vencida_ars))}`, que: "resumen vencido", detalle: "sin pagar, ya venció" }]
+            : []),
+        ],
+      },
     };
   },
 };
@@ -390,21 +438,55 @@ const deudasPersonas: Tool = {
 
     const teDeben = pendientes.filter((d) => d.direction === "to_collect").map(fila);
     const debes = pendientes.filter((d) => d.direction === "to_pay").map(fila);
+    const totalTeDeben = redondear(teDeben.reduce((a, d) => a + d.pendiente_ars, 0));
+    const totalDebes = redondear(debes.reduce((a, d) => a + d.pendiente_ars, 0));
+
+    // La fila del panel. El detalle usa solo lo que la deuda ya trae (desde
+    // cuándo, pagos parciales); una moneda extranjera va nombrada al lado de su
+    // valor en pesos, nunca sola.
+    const filaPanel = (d: (typeof pendientes)[number]) => ({
+      monto: numero(redondear(toArs(d.outstanding, d.currency, fx))),
+      quien: d.person,
+      detalle: [
+        d.currency !== "ARS" ? importe(d.outstanding, d.currency) : null,
+        `desde ${d.date}`,
+        d.paid > 0
+          ? `${d.direction === "to_collect" ? "ya te pagó" : "ya pagaste"} ${importe(d.paid, d.currency)}`
+          : null,
+      ].filter(Boolean).join(" · "),
+    });
+    const neto = totalTeDeben - totalDebes;
 
     return {
       te_deben: teDeben,
       le_debes: debes,
-      total_te_deben_ars: redondear(teDeben.reduce((a, d) => a + d.pendiente_ars, 0)),
-      total_debes_ars: redondear(debes.reduce((a, d) => a + d.pendiente_ars, 0)),
+      total_te_deben_ars: totalTeDeben,
+      total_debes_ars: totalDebes,
+      // El detalle para dibujar; run.ts lo saca antes de que cueste tokens.
+      panel: {
+        tipo: "deudas",
+        te_deben: {
+          total: numero(totalTeDeben),
+          filas: pendientes.filter((d) => d.direction === "to_collect").map(filaPanel),
+        },
+        debes: {
+          total: numero(totalDebes),
+          filas: pendientes.filter((d) => d.direction === "to_pay").map(filaPanel),
+        },
+        // Con signo: "300.000" a favor no dice para qué lado; "+/-" sí.
+        neto: neto < 0 ? `-${numero(-neto)}` : neto > 0 ? `+${numero(neto)}` : "0",
+      },
       // Sin esto el modelo daba por saldada una deuda que seguía viva, sin
-      // consultar nada. Prefiero que diga "no puedo" antes que inventar un número.
-      solo_lectura:
-        "NO existe ninguna herramienta para registrar pagos de deuda ni para saldarlas. " +
-        "Si te dice que alguien le pagó: decile con todas las letras que eso hay que " +
-        "cargarlo a mano en Plata, que vos no podés. NUNCA afirmes que una deuda quedó " +
-        "saldada ni inventes el saldo nuevo: los únicos saldos válidos son los de acá. " +
-        "Cargar un ingreso suelto NO actualiza la deuda — si lo hacés, aclarale que la " +
-        "deuda sigue figurando igual.",
+      // consultar nada. La versión vieja de este campo decía «no existe ninguna
+      // herramienta» — quedó falsa el 18/08 cuando entró `deuda_pagar`, y estuvo
+      // cuatro días negando una capacidad deployada. El prompt también envejece
+      // (corrección del 22/08 en el cerebro): al tocar herramientas, releer todo
+      // «no se puede» que hable de sus hermanas.
+      como_operar:
+        "Estos saldos son los únicos válidos: NUNCA inventes un saldo nuevo. Un pago o " +
+        "un saldado va por `deuda_pagar` (propone y se confirma); cargar un ingreso " +
+        "suelto NO actualiza la deuda. Nunca afirmes que quedó saldada si `confirmar` " +
+        "no te devolvió ok.",
     };
   },
 };
@@ -692,12 +774,22 @@ const agendaVer: Tool = {
         dias.push({
           fecha: iso,
           dia: diaLargo(iso),
+          // Al día de HOY se le agrega la hora actual (argentina, vía fechas.ts:
+          // el reloj pelado del proceso está en UTC), para que la cara pueda
+          // dibujar el "ahora" sobre la línea de tiempo. Choques y viajes los
+          // resuelve ella con hora/fin — acá no se marca nada de eso.
+          ...(iso === h ? { ahora: hora(new Date()) } : {}),
           eventos: delDia.map((e) => ({
             id: e.id,
             titulo: e.titulo,
             hora: e.todo_el_dia
               ? "todo el día"
               : `${hhmm(minutos(e.inicio))}–${hhmm(minutos(e.fin))}`,
+            // Para la línea de tiempo: fin suelto en los que tienen hora, y la
+            // marca de día completo en los que no (esos NO llevan horas).
+            ...(e.todo_el_dia
+              ? { todo_el_dia: true }
+              : { fin: hhmm(minutos(e.fin)) }),
             lugar: e.lugar,
           })),
           huecos,
@@ -996,6 +1088,29 @@ const confirmar: Tool = {
       }
 
       // --- tareas de Google ---
+      // Lote: EN SERIE y no Promise.all a propósito — si una falla a la mitad
+      // hay que poder decir exactamente cuáles entraron y cuáles no.
+      if (p.dominio === "tarea" && p.tareasNuevas?.length) {
+        const fallaron: string[] = [];
+        for (const t of p.tareasNuevas) {
+          try {
+            await crearTarea(sb, { titulo: t.titulo, notas: t.notas, vence: t.vence });
+          } catch {
+            fallaron.push(t.titulo);
+          }
+        }
+        const cuantas = p.tareasNuevas.length - fallaron.length;
+        return hecho({
+          ok: fallaron.length === 0,
+          que: "tareas creadas",
+          cuantas,
+          fallaron,
+          para_decir: fallaron.length
+            ? `Anoté ${cuantas} de ${p.tareasNuevas.length}. No pude con: ${fallaron.join(", ")}.`
+            : `Listo, anoté ${cuantas === 1 ? "la tarea" : `las ${cuantas} tareas`}.`,
+        });
+      }
+
       // El `taskId` ya viene resuelto de la propuesta: acá no se vuelve a buscar
       // por título. Lo que se ejecuta es exactamente la tarea que se mostró.
       if (p.dominio === "tarea" && p.tarea) {
@@ -1043,6 +1158,27 @@ const confirmar: Tool = {
             para_decir: r.saldada
               ? `Listo, ${cobro ? "cobré" : "pagué"} ${cuanto} y con ${d.persona} quedás a mano.`
               : `Listo, ${cobro ? "cobré" : "pagué"} ${cuanto}. Quedan ${importe(Number(r.restante ?? 0), d.moneda)}.`,
+            // Lo que QUEDÓ, para la pantalla; run.ts lo saca antes de que
+            // cueste tokens. El saldo de antes viene guardado en la propuesta,
+            // así que no hay que volver a consultar nada.
+            panel: {
+              tipo: "hecho",
+              monto: montoPanel(Number(r.monto ?? 0), d.moneda, cobro ? "+" : "-"),
+              sub: cobro ? `cobrado a ${d.persona}` : `pagado a ${d.persona}`,
+              filas: [
+                {
+                  k: "antes",
+                  v: cobro ? `te debía ${importe(d.saldo, d.moneda)}` : `le debías ${importe(d.saldo, d.moneda)}`,
+                },
+                {
+                  k: "ahora",
+                  v: r.saldada ? "a mano" : `quedan ${importe(Number(r.restante ?? 0), d.moneda)}`,
+                },
+              ],
+              // `pagar_deuda` deja su fila en activity_log, así que esto SÍ se
+              // puede deshacer desde la app.
+              deshacer: "Quedó en el registro de actividad: se puede deshacer desde la app.",
+            },
           });
         }
 
@@ -1054,12 +1190,29 @@ const confirmar: Tool = {
             p_primera: c.primera ?? null,
           });
           if (error) throw error;
-          const plan = (data ?? {}) as { monthly_amount?: number };
+          const plan = (data ?? {}) as { monthly_amount?: number; first_charge_date?: string };
           const mensual = Number(plan.monthly_amount ?? c.monto / c.cantidad);
+          // La primera cuota sale del plan que la RPC devolvió (es la verdad);
+          // si no vino, de lo que se propuso.
+          const primeraMes = plan.first_charge_date
+            ? String(plan.first_charge_date).slice(0, 7)
+            : c.primera?.slice(0, 7);
           return hecho({
             ok: true,
             que: "pasado a cuotas",
             para_decir: `Listo, ${c.desc} quedó en ${c.cantidad} cuotas de ${importe(mensual, c.moneda)}.`,
+            // Sin `deshacer`: la RPC no registra en activity_log. El consumo
+            // original quedó en la papelera, pero eso no es un deshacer de un botón.
+            panel: {
+              tipo: "hecho",
+              monto: montoPanel(c.monto, c.moneda),
+              sub: `${c.desc} · en ${c.cantidad} cuotas`,
+              filas: [
+                { k: "cada mes", v: importe(mensual, c.moneda) },
+                { k: "cuotas", v: String(c.cantidad) },
+                { k: "primera", v: primeraMes ? mesLargo(primeraMes) : "el mes del consumo" },
+              ],
+            },
           });
         }
 
@@ -1076,6 +1229,74 @@ const confirmar: Tool = {
             ok: true,
             que: "cambio registrado",
             para_decir: `Listo, salieron ${importe(c.montoDe, c.de)} y entraron ${importe(c.montoA, c.a)}.`,
+            panel: {
+              tipo: "hecho",
+              monto: montoPanel(c.montoA, c.a, "+"),
+              sub: `cambio ${c.de} → ${c.a}`,
+              filas: [
+                { k: "salieron", v: importe(c.montoDe, c.de) },
+                { k: "entraron", v: importe(c.montoA, c.a) },
+                {
+                  k: "cotización",
+                  // `porUnidad` viene guardado de la propuesta, que lo calculó
+                  // con la cotización que se USÓ — derivarlo acá de los montos
+                  // ya redondeados daba un precio falso con montos chicos. En
+                  // el cruce USD↔USDT no existe y va la tasa cruda.
+                  v: c.porUnidad
+                    ? `${importe(c.porUnidad, "ARS")} por ${c.de === "ARS" ? c.a : c.de}`
+                    : `${c.rate} ${c.a} por ${c.de}`,
+                },
+              ],
+              // `insertExchange` deja su fila en activity_log (el botón Deshacer).
+              deshacer: "Quedó en el registro de actividad: se puede deshacer desde la app.",
+            },
+          });
+        }
+
+        // Lote de altas: EN SERIE con la MISMA función del alta suelta, no
+        // Promise.all — si una falla a la mitad hay que poder decir exactamente
+        // cuáles entraron y cuáles no.
+        if (p.tipo === "crear" && p.txNuevas?.length) {
+          const uid = await idDeUsuario(sb);
+          const cargados: NewTx[] = [];
+          const fallaron: string[] = [];
+          for (const t of p.txNuevas) {
+            try {
+              await insertTransaction(sb, t, uid);
+              cargados.push(t);
+            } catch {
+              fallaron.push(t.description ?? `${t.currency} ${t.amount}`);
+            }
+          }
+          const cuantos = cargados.length;
+          // El total va POR MONEDA: mezclar monedas en una suma es justo lo que
+          // este archivo no hace nunca de cabeza.
+          const porMoneda = new Map<string, number>();
+          for (const t of cargados) {
+            porMoneda.set(t.currency, (porMoneda.get(t.currency) ?? 0) + (t.type === "ingreso" ? t.amount : -t.amount));
+          }
+          const totalStr = [...porMoneda.entries()]
+            .map(([mo, n]) => montoPanel(Math.abs(n), mo, n < 0 ? "-" : n > 0 ? "+" : ""))
+            .join(" · ");
+          return hecho({
+            ok: fallaron.length === 0,
+            que: "registrados",
+            cuantos,
+            fallaron,
+            para_decir: fallaron.length
+              ? `Cargué ${cuantos} de ${p.txNuevas.length}. No pude con: ${fallaron.join(", ")}.`
+              : `Listo, cargué ${cuantos === 1 ? "el movimiento" : `los ${cuantos} movimientos`}.`,
+            panel: {
+              tipo: "hecho",
+              monto: totalStr || "0",
+              sub: `${cuantos} movimiento${cuantos === 1 ? "" : "s"} cargado${cuantos === 1 ? "" : "s"}`,
+              // Solo los que ENTRARON: un panel de "hecho" no lista lo que falló.
+              filas: cargados.map((t) => ({
+                k: t.description ?? "movimiento",
+                v: montoPanel(t.amount, t.currency, t.type === "ingreso" ? "+" : "-"),
+                ...(t.occurredAt ? { d: diaCorto(diaAr(t.occurredAt)) } : {}),
+              })),
+            },
           });
         }
 
@@ -1085,6 +1306,17 @@ const confirmar: Tool = {
           return hecho({
             ok: true, que: "registrado",
             para_decir: `Listo, cargué ${t.currency} ${t.amount}${t.description ? ` de ${t.description}` : ""}.`,
+            // La propuesta guarda ids de categoría/método, no nombres, y acá no
+            // se vuelve a consultar nada: el panel dice lo que hay sin otra query.
+            panel: {
+              tipo: "hecho",
+              monto: montoPanel(t.amount, t.currency, t.type === "ingreso" ? "+" : "-"),
+              sub: t.description ?? (t.type === "ingreso" ? "ingreso" : "gasto"),
+              filas: [
+                { k: "tipo", v: t.type === "ingreso" ? "ingreso" : "gasto" },
+                ...(t.occurredAt ? [{ k: "cuándo", v: diaCorto(diaAr(t.occurredAt)) }] : []),
+              ],
+            },
           });
         }
         if (p.tipo === "editar") {
@@ -1412,11 +1644,32 @@ const plataRegistrar: Tool = {
     "Para cargar: monto, si es gasto o ingreso, y una descripción. La categoría y el medio " +
     "de pago se buscan por nombre; si no los aclara, se deja vacío y se avisa. " +
     "Para editar o borrar necesitás el id, que sale de `transacciones_ver`. " +
-    "Si no aclara la moneda, es ARS. Si no aclara la fecha, es hoy.",
+    "Si no aclara la moneda, es ARS. Si no aclara la fecha, es hoy. " +
+    "Si dicta VARIOS movimientos de una, van todos juntos en `movimientos`: una sola " +
+    "propuesta y una sola confirmación.",
   input_schema: {
     type: "object",
     properties: {
       accion: { type: "string", enum: ["crear", "editar", "borrar"] },
+      movimientos: {
+        type: "array",
+        items: {
+          type: "object",
+          properties: {
+            tipo: { type: "string", enum: ["egreso", "ingreso"] },
+            monto: { type: "number" },
+            moneda: { type: "string", enum: ["ARS", "USD", "USDT"] },
+            categoria: { type: "string" },
+            metodo: { type: "string" },
+            descripcion: { type: "string" },
+            fecha: { type: "string" },
+          },
+          required: ["monto"],
+        },
+        description:
+          "Para CARGAR varios movimientos de una: la lista completa acá, UNA " +
+          "propuesta, UNA confirmación. Si dice 'y también', va todo junto acá.",
+      },
       transaccion_id: { type: "number", description: "Obligatorio para editar y borrar de a uno." },
       transaccion_ids: {
         type: "array",
@@ -1477,9 +1730,28 @@ const plataRegistrar: Tool = {
           titulo: t.desc,
           cuando: `${diaCorto(diaAr(t.occurredAt))} · ${importe(t.amount, t.currency)}`,
         }));
+        // El total del lote en ARS a cotización congelada. Una fila no-ARS sin
+        // rate (no debería existir: lo pone un trigger) cuenta como cero — la
+        // misma red de abajo que `toArs`, mejor que sumar un número inventado.
+        const totalArs = encontradas.reduce(
+          (a, t) => a + (t.currency === "ARS" ? t.amount : t.fxRate ? t.amount * t.fxRate : 0),
+          0,
+        );
         return {
           ok: true,
-          propuesta: { id: p.id, dominio: "plata", tipo: "borrar", antes: null, despues: null, lista },
+          propuesta: {
+            id: p.id, dominio: "plata", tipo: "borrar", antes: null, despues: null, lista,
+            // La tarjeta rica del lote: cada renglón tachado, y el total con
+            // signo menos (es plata que se va del registro).
+            monto: `-${numero(redondear(totalArs))}`,
+            lista_rica: encontradas.map((t) => ({
+              monto: montoPanel(t.amount, t.currency, t.type === "ingreso" ? "+" : "-"),
+              titulo: t.desc,
+              detalle: diaCorto(diaAr(t.occurredAt)),
+              tachado: true,
+            })),
+            aviso: `Una sola confirmación para ${encontradas.length === 1 ? "esta" : `las ${encontradas.length}`}. Se pueden recuperar de la papelera.`,
+          },
           ...(noEstan.length ? { no_encontrados: noEstan } : {}),
           para_decir:
             `Borrar ${encontradas.length} movimiento${encontradas.length === 1 ? "" : "s"}: ` +
@@ -1551,6 +1823,84 @@ const plataRegistrar: Tool = {
     }
 
     // Crear
+
+    // --- alta en LOTE: "cargá 5 lucas de uber y 12 de comida" → UNA tarjeta y
+    // UN solo sí. Se valida TODO antes de proponer, con la misma vara que el
+    // alta suelta (`validarTx`): un renglón roto no puede dejar media propuesta.
+    const enLote = Array.isArray(input?.movimientos)
+      ? (input.movimientos as Record<string, unknown>[])
+      : [];
+    if (enLote.length >= 1) {
+      for (let i = 0; i < enLote.length; i++) {
+        const item = enLote[i] ?? {};
+        const queEs = item?.descripcion ? `"${item.descripcion}"` : `el movimiento ${i + 1}`;
+        const problema = validarTx(item);
+        if (problema) return { ok: false, motivo: `En ${queEs}: ${problema}` };
+        const n = Number(item?.monto);
+        if (!Number.isFinite(n) || n <= 0) {
+          return { ok: false, motivo: `A ${queEs} le falta el monto, positivo.` };
+        }
+      }
+
+      const [cats, mets] = await Promise.all([fetchCategories(sb), fetchPaymentMethods(sb)]);
+      const dHoy = hoyAr();
+      const filas = enLote.map((item) => {
+        const cat = item?.categoria ? porNombre(cats, String(item.categoria)) : null;
+        const met = item?.metodo ? porNombre(mets, String(item.metodo)) : null;
+        const fecha = String(item?.fecha ?? dHoy).slice(0, 10);
+        const tx: NewTx = {
+          type: (item?.tipo ? String(item.tipo) : "egreso") as "ingreso" | "egreso",
+          amount: Number(item?.monto),
+          currency: String(item?.moneda ?? "ARS"),
+          categoryId: cat?.id ?? null,
+          paymentMethodId: met?.id ?? null,
+          description: item?.descripcion ? String(item.descripcion) : null,
+          occurredAt: `${fecha}T12:00:00-03:00`,
+        };
+        return { tx, cat, met, fecha };
+      });
+
+      const txs = filas.map((f) => f.tx);
+      const p = guardar({ dominio: "plata", tipo: "crear", txNuevas: txs });
+
+      // El total va POR MONEDA: no se mezclan dólares con pesos en una suma.
+      const porMoneda = new Map<string, number>();
+      for (const t of txs) {
+        porMoneda.set(t.currency, (porMoneda.get(t.currency) ?? 0) + (t.type === "ingreso" ? t.amount : -t.amount));
+      }
+      const totalStr = [...porMoneda.entries()]
+        .map(([mo, n]) => montoPanel(Math.abs(n), mo, n < 0 ? "-" : n > 0 ? "+" : ""))
+        .join(" · ");
+
+      const sinResolver = filas.some((f) => !f.cat || !f.met);
+      const nombres = txs.map((t) => t.description ?? importe(t.amount, t.currency));
+      return {
+        ok: true,
+        propuesta: {
+          id: p.id, dominio: "plata", tipo: "crear", antes: null, despues: null,
+          monto: totalStr,
+          sub: `${txs.length} movimiento${txs.length === 1 ? "" : "s"}`,
+          // Un renglón por movimiento, sin tachar: es un alta, no un borrado.
+          lista_rica: filas.map((f) => ({
+            monto: montoPanel(f.tx.amount, f.tx.currency, f.tx.type === "ingreso" ? "+" : "-"),
+            titulo: f.tx.description ?? "(sin descripción)",
+            detalle: [
+              f.cat?.name ?? "sin categoría",
+              f.met?.name,
+              f.fecha !== dHoy ? diaCorto(f.fecha) : null,
+            ].filter(Boolean).join(" · "),
+          })),
+        },
+        para_decir:
+          `Cargar ${txs.length} movimiento${txs.length === 1 ? "" : "s"}: ${enumerar(nombres)}.`,
+        que_hacer:
+          (sinResolver
+            ? "Algún renglón quedó sin categoría o medio de pago: se cargan igual, mencionalo de paso. "
+            : "") +
+          `Leele la lista y confirmá UNA sola vez con id "${p.id}".`,
+      };
+    }
+
     const monto = Number(input?.monto);
     if (!Number.isFinite(monto) || monto <= 0) {
       return { ok: false, motivo: "Necesito el monto, positivo." };
@@ -1580,6 +1930,29 @@ const plataRegistrar: Tool = {
     if (!met) (input?.metodo ? noEncontrados : faltantes).push(
       input?.metodo ? `medio de pago "${input.metodo}"` : "medio de pago");
 
+    // Panel "eleccion": cuando quedó un dato sin resolver, la pantalla ofrece
+    // las opciones para tocar. La propuesta sale IGUAL (la regla de siempre:
+    // proponer con lo que hay, no trabarse preguntando); esto solo le da a la
+    // cara la lista. Sin `tag` de "lo más usado": la herramienta no sabe cuál
+    // es, y un dato que no se tiene no se inventa.
+    const eleccion = (!met || !cat)
+      ? {
+          panel: {
+            tipo: "eleccion",
+            titulo: montoPanel(tx.amount, tx.currency, tx.type === "ingreso" ? "+" : "-"),
+            ...(tx.description ? { sub: tx.description } : {}),
+            pregunta: !met
+              ? (input?.metodo
+                  ? `No existe el medio de pago "${input.metodo}": ¿cuál es?`
+                  : "¿Con qué método fue?")
+              : (input?.categoria
+                  ? `No existe la categoría "${input.categoria}": ¿cuál va?`
+                  : "¿En qué categoría va?"),
+            opciones: (!met ? mets : cats).map((x) => ({ v: x.name })),
+          },
+        }
+      : {};
+
     return {
       ok: true,
       propuesta: {
@@ -1592,7 +1965,26 @@ const plataRegistrar: Tool = {
             `${cat?.name ?? "sin categoría"} · ${importe(tx.amount, tx.currency)} · ${diaCorto(fecha)}`,
           lugar: met?.name,
         },
+        // La tarjeta rica (la cara dibuja lo de arriba si esto no viene): el
+        // monto con signo es el número grande — es LA tarjeta donde se atrapa
+        // un "cincuenta mil" que en realidad fue "quince mil".
+        monto: montoPanel(tx.amount, tx.currency, tx.type === "ingreso" ? "+" : "-"),
+        ...(cat || met
+          ? {
+              sub: [
+                cat ? `${cat.emoji ? `${cat.emoji} ` : ""}${cat.name}` : null,
+                met?.name,
+              ].filter(Boolean).join(" · "),
+            }
+          : {}),
+        campos: [
+          { k: "cuándo", v: fecha === hoyAr() ? `hoy, ${diaCorto(fecha)}` : diaCorto(fecha) },
+          ...(tx.description ? [{ k: "qué", v: tx.description }] : []),
+          { k: "categoría", v: cat?.name ?? "sin categoría" },
+        ],
+        vence_min: VENCE_MIN,
       },
+      ...eleccion,
       sin_resolver: faltantes,
       ...(noEncontrados.length ? { no_encontrados: noEncontrados } : {}),
       para_decir:

@@ -81,6 +81,11 @@ export type Pendiente = {
     tituloNuevo?: string;
   };
 
+  /** Alta de tareas en lote: varias de una, UNA confirmación — mismo espíritu que `bases`/`txVarios`. */
+  tareasNuevas?: { titulo: string; notas?: string; vence?: string }[];
+  /** Alta de movimientos en lote, ídem: la lista entera se propuso junta y se ejecuta junta. */
+  txNuevas?: NewTx[];
+
   /*
    * --- operaciones sobre lo YA cargado ---
    *
@@ -119,6 +124,13 @@ export type Pendiente = {
     montoA: number;
     rate: number;
     fuente: "auto" | "manual";
+    /**
+     * Pesos por unidad de la moneda extranjera, tal como se USÓ al proponer.
+     * Viaja acá para que el panel de "hecho" no lo derive de los montos ya
+     * redondeados — con montos chicos eso daba un precio falso pero creíble
+     * (está documentado en divisas_registrar). En cruces USD↔USDT no existe.
+     */
+    porUnidad?: number;
   };
 };
 
@@ -139,6 +151,8 @@ const PENDIENTES = new Map<string, Pendiente>();
 let turnoActual = 0;
 export const nuevoTurno = () => ++turnoActual;
 const TTL_MS = 10 * 60 * 1000;   // 10 minutos: si tardaste más, mejor volver a proponer
+/** La vida de una propuesta en minutos, para el `vence_min` de la tarjeta rica. */
+export const VENCE_MIN = TTL_MS / 60_000;
 const MAX = 20;
 
 /** Ids cortos y fáciles de decir en voz alta, sin caracteres ambiguos. */
