@@ -18,7 +18,11 @@ import { hoy as hoyAr, sumarDias, esFecha } from "../fechas";
  * que re-autorizar con `node scripts/tasks-auth.mjs`, que pide los dos scopes
  * juntos (si se pide solo Tasks, el token nuevo pierde Calendar).
  *
- * Todo va contra la lista por defecto (`@default`): Lucas usa una sola, y el
+ * Las tareas se LEEN de todas las listas (Lucas tiene cinco: Emprendimiento,
+ * Trabajo, Desarrollo Personal, Generales, Estudios — verificado el 21/08 con
+ * datos vivos; leer solo `@default` escondia la mayoria). Las nuevas van a la
+ * lista por defecto: decidir lista por voz es mas friccion que moverla despues.
+ * El
  * scope de Tasks tampoco da para mucho más protagonismo por voz.
  */
 
@@ -106,6 +110,9 @@ function errorTasks(e: unknown) {
 
 export type Tarea = {
   id: string;
+  /** En que lista vive: sin esto, editarla o borrarla apuntaria a `@default` y fallaria. */
+  listaId: string;
+  lista: string;
   titulo: string;
   nota?: string;
   /** YYYY-MM-DD, sin hora: es lo único que Google Tasks guarda. */
@@ -115,9 +122,11 @@ export type Tarea = {
 /** La parte de la respuesta de Google que nos interesa. */
 type TareaGoogle = { id?: string; title?: string; notes?: string; due?: string };
 
-function aTarea(t: TareaGoogle): Tarea {
+function aTarea(t: TareaGoogle, listaId: string, lista: string): Tarea {
   return {
     id: String(t.id),
+    listaId,
+    lista,
     titulo: String(t.title ?? "(sin título)"),
     nota: t.notes ? String(t.notes).slice(0, 300) : undefined,
     // ⚠️ `due` llega como medianoche UTC ("...T00:00:00.000Z") pero es una FECHA
@@ -128,10 +137,29 @@ function aTarea(t: TareaGoogle): Tarea {
   };
 }
 
+// Las listas se cachean para siempre en memoria del proceso: crear una lista
+// nueva es un evento raro, y el cache muere solo en cada deploy.
+let cacheListas: { id: string; titulo: string }[] | null = null;
+async function listas(sb: SupabaseClient): Promise<{ id: string; titulo: string }[]> {
+  if (cacheListas) return cacheListas;
+  const d = await api(sb, "/users/@me/lists");
+  const filas = ((d?.items ?? []) as { id?: string; title?: string }[])
+    .map((l) => ({ id: String(l.id), titulo: String(l.title ?? "Tareas") }));
+  if (filas.length) cacheListas = filas;
+  return filas.length ? filas : [{ id: "@default", titulo: "Tareas" }];
+}
+
 export async function listarTareas(sb: SupabaseClient): Promise<Tarea[]> {
   const q = new URLSearchParams({ showCompleted: "false", maxResults: "100" });
-  const d = await api(sb, `/lists/@default/tasks?${q}`);
-  return ((d?.items ?? []) as TareaGoogle[]).map(aTarea);
+  const ls = await listas(sb);
+  // A la par: son pocas listas y la latencia total es la de la mas lenta.
+  const porLista = await Promise.all(
+    ls.map(async (l) => {
+      const d = await api(sb, `/lists/${encodeURIComponent(l.id)}/tasks?${q}`);
+      return ((d?.items ?? []) as TareaGoogle[]).map((x) => aTarea(x, l.id, l.titulo));
+    }),
+  );
+  return porLista.flat();
 }
 
 export type CamposTarea = { titulo?: string; notas?: string; vence?: string };
@@ -146,46 +174,33 @@ function aBody(c: CamposTarea): Record<string, unknown> {
   return body;
 }
 
-export async function crearTarea(sb: SupabaseClient, c: CamposTarea): Promise<Tarea> {
-  return aTarea(await api(sb, "/lists/@default/tasks", { method: "POST", body: JSON.stringify(aBody(c)) }));
+export async function crearTarea(sb: SupabaseClient, c: CamposTarea): Promise<{ titulo: string }> {
+  const d = await api(sb, "/lists/@default/tasks", { method: "POST", body: JSON.stringify(aBody(c)) });
+  return { titulo: String(d?.title ?? c.titulo ?? "(sin titulo)") };
 }
 
-export async function editarTarea(sb: SupabaseClient, id: string, c: CamposTarea): Promise<Tarea> {
+export async function editarTarea(
+  sb: SupabaseClient, listaId: string, id: string, c: CamposTarea,
+): Promise<void> {
   // PATCH y no update completo: solo se pisa lo que se tocó, igual que la agenda.
-  return aTarea(
-    await api(sb, `/lists/@default/tasks/${encodeURIComponent(id)}`, {
-      method: "PATCH",
-      body: JSON.stringify(aBody(c)),
-    }),
-  );
+  await api(sb, `/lists/${encodeURIComponent(listaId)}/tasks/${encodeURIComponent(id)}`, {
+    method: "PATCH",
+    body: JSON.stringify(aBody(c)),
+  });
 }
 
-export async function completarTarea(sb: SupabaseClient, id: string): Promise<void> {
+export async function completarTarea(sb: SupabaseClient, listaId: string, id: string): Promise<void> {
   // Completar es un PATCH de estado; Google le pone el timestamp solo.
-  await api(sb, `/lists/@default/tasks/${encodeURIComponent(id)}`, {
+  await api(sb, `/lists/${encodeURIComponent(listaId)}/tasks/${encodeURIComponent(id)}`, {
     method: "PATCH",
     body: JSON.stringify({ status: "completed" }),
   });
 }
 
-export async function borrarTarea(sb: SupabaseClient, id: string): Promise<void> {
-  await api(sb, `/lists/@default/tasks/${encodeURIComponent(id)}`, { method: "DELETE" });
-}
-
-// El título de la lista por defecto ("Mis tareas" o como la haya llamado). Se
-// cachea para siempre: renombrarla es un evento de una vez por década, y el
-// panel no amerita una request extra por consulta.
-let nombreLista: string | null = null;
-async function tituloLista(sb: SupabaseClient): Promise<string> {
-  if (nombreLista) return nombreLista;
-  try {
-    const d = await api(sb, "/users/@me/lists/@default");
-    nombreLista = String(d?.title ?? "Tareas");
-  } catch {
-    // El nombre es cosmético: no puede voltear una consulta que ya salió bien.
-    return "Tareas";
-  }
-  return nombreLista;
+export async function borrarTarea(sb: SupabaseClient, listaId: string, id: string): Promise<void> {
+  await api(sb, `/lists/${encodeURIComponent(listaId)}/tasks/${encodeURIComponent(id)}`, {
+    method: "DELETE",
+  });
 }
 
 // ---------------------------------------------------------------------------
@@ -245,11 +260,21 @@ const tareasVer: Tool = {
     try {
       const tareas = ordenar(await listarTareas(sb));
       const filas = tareas.map((t) => ({
+        lista: t.lista,
         titulo: t.titulo,
         vence: humanizarVence(t.vence),
         nota: t.nota ?? null,
       }));
       const vencidas = filas.filter((f) => f.vence?.startsWith("vencida")).length;
+
+      // Agrupadas por su lista real (Trabajo, Estudios...), en el orden en que
+      // aparecieron. El nombre de la lista va UNA vez, en el grupo, no por fila.
+      const grupos: { nombre: string; tareas: { titulo: string; vence: string | null; nota: string | null }[] }[] = [];
+      for (const f of filas) {
+        let g = grupos.find((x) => x.nombre === f.lista);
+        if (!g) { g = { nombre: f.lista, tareas: [] }; grupos.push(g); }
+        g.tareas.push({ titulo: f.titulo, vence: f.vence, nota: f.nota });
+      }
 
       const nombres = tareas.slice(0, 3).map((t) => `"${t.titulo}"`).join(", ");
       const deVencidas = vencidas ? ` (${vencidas} vencida${vencidas === 1 ? "" : "s"})` : "";
@@ -263,10 +288,7 @@ const tareasVer: Tool = {
             `${tareas.length > 3 ? " y más" : ""}.`
           : "No tenés ninguna tarea pendiente.",
         // El contrato con la cara WPF; run.ts lo saca antes de que cueste tokens.
-        panel: {
-          tipo: "tareas",
-          listas: [{ nombre: await tituloLista(sb), tareas: filas }],
-        },
+        panel: { tipo: "tareas", listas: grupos },
       };
     } catch (e) {
       return errorTasks(e);
@@ -365,7 +387,7 @@ const tareasCambiar: Tool = {
         return {
           ok: false,
           motivo: `Hay ${candidatas.length} tareas que coinciden con "${titulo}".`,
-          opciones: candidatas.map((t) => t.titulo),
+          opciones: candidatas.map((t) => `${t.titulo} (${t.lista})`),
           que_hacer: "Preguntale cuál es y volvé a llamar con un título menos ambiguo.",
         };
       }
@@ -376,7 +398,7 @@ const tareasCambiar: Tool = {
       if (accion === "completar") {
         const p = guardar({
           dominio: "tarea", tipo: "editar",
-          tarea: { accion: "completar", taskId: t.id, titulo: t.titulo },
+          tarea: { accion: "completar", taskId: t.id, listaId: t.listaId, titulo: t.titulo },
         });
         return {
           ok: true,
@@ -393,7 +415,7 @@ const tareasCambiar: Tool = {
       if (accion === "borrar") {
         const p = guardar({
           dominio: "tarea", tipo: "borrar",
-          tarea: { accion: "borrar", taskId: t.id, titulo: t.titulo },
+          tarea: { accion: "borrar", taskId: t.id, listaId: t.listaId, titulo: t.titulo },
         });
         return {
           ok: true,
@@ -411,7 +433,7 @@ const tareasCambiar: Tool = {
       }
       const p = guardar({
         dominio: "tarea", tipo: "editar",
-        tarea: { accion: "editar", taskId: t.id, titulo: t.titulo, tituloNuevo, notas: nota, vence },
+        tarea: { accion: "editar", taskId: t.id, listaId: t.listaId, titulo: t.titulo, tituloNuevo, notas: nota, vence },
       });
       return {
         ok: true,

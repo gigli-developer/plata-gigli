@@ -1005,14 +1005,14 @@ const confirmar: Tool = {
           return hecho({ ok: true, que: "tarea creada", para_decir: `Listo, anoté "${creada.titulo}".` });
         }
         if (t.accion === "completar") {
-          await completarTarea(sb, t.taskId!);
+          await completarTarea(sb, t.listaId ?? "@default", t.taskId!);
           return hecho({ ok: true, que: "tarea completada", para_decir: `Listo, "${t.titulo}" quedó como hecha.` });
         }
         if (t.accion === "editar") {
-          await editarTarea(sb, t.taskId!, { titulo: t.tituloNuevo, notas: t.notas, vence: t.vence });
+          await editarTarea(sb, t.listaId ?? "@default", t.taskId!, { titulo: t.tituloNuevo, notas: t.notas, vence: t.vence });
           return hecho({ ok: true, que: "tarea editada", para_decir: `Listo, cambié "${t.titulo}".` });
         }
-        await borrarTarea(sb, t.taskId!);
+        await borrarTarea(sb, t.listaId ?? "@default", t.taskId!);
         return hecho({ ok: true, que: "tarea borrada", para_decir: `Listo, borré "${t.titulo}".` });
       }
 

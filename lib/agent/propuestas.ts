@@ -72,6 +72,8 @@ export type Pendiente = {
   tarea?: {
     accion: "crear" | "completar" | "editar" | "borrar";
     taskId?: string;
+    /** La lista donde vive: sin esto, tocar una tarea de "Trabajo" iria a @default. */
+    listaId?: string;
     titulo: string;
     notas?: string;
     /** YYYY-MM-DD. Google Tasks guarda el día pelado, sin hora. */
