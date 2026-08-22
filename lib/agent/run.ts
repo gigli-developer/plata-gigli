@@ -112,6 +112,25 @@ export type Panel =
       }[];
       alertas: string[];
       agenda: { hoy: string[]; manana: string[] };
+    }
+  | {
+      // El clima con horas. `horas` son las próximas 8 (hora como "17"),
+      // `dias` hasta 3 (dia como "jue"). Lo arma `clima` en mundo.ts.
+      tipo: "clima";
+      lugar: string;
+      ahora: { temperatura: number; sensacion: number; humedad_pct: number; cielo: string };
+      horas: { hora: string; temp: number; lluvia_pct: number }[];
+      dias: { dia: string; min: number; max: number; lluvia_pct: number; cielo: string }[];
+      /** "llueve de 20 a 22 · 70%" si alguna hora próxima pasa el 50%; si no, null. */
+      aviso_lluvia: string | null;
+    }
+  | {
+      // Las tareas de Google Tasks, vencidas primero. Lo arma `tareas_ver` en tasks.ts.
+      tipo: "tareas";
+      listas: {
+        nombre: string;
+        tareas: { titulo: string; vence: string | null; nota: string | null }[];
+      }[];
     };
 
 /** Previsualización de un cambio pendiente. `antes`/`despues` son null según el tipo. */
@@ -122,7 +141,7 @@ export type Propuesta = {
    * **"¿lo agendo?"** también cuando lo que se iba a hacer era cargar un gasto,
    * porque el rótulo se elegía sólo por el tipo y la agenda fue el primer dominio.
    */
-  dominio?: "agenda" | "plata" | "codigo";
+  dominio?: "agenda" | "plata" | "codigo" | "tarea";
   tipo: "crear" | "editar" | "borrar";
   antes: { titulo: string; cuando: string; lugar?: string; nota?: string } | null;
   despues: { titulo: string; cuando: string; lugar?: string; nota?: string } | null;
@@ -288,6 +307,8 @@ const PROPONEN = new Set([
   "deuda_pagar", "cuotas_convertir", "divisas_registrar",
   // Escribe un archivo en el disco de la PC: mismas redes que las de plata.
   "cerebro_anotar",
+  // Escribe en Google Tasks: propone igual que la agenda.
+  "tareas_cambiar",
 ]);
 
 /**

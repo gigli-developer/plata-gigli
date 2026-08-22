@@ -1,0 +1,437 @@
+import type { SupabaseClient } from "@supabase/supabase-js";
+import type { Tool } from "./tools";
+import { guardar } from "./propuestas";
+import { hoy as hoyAr, sumarDias, esFecha } from "../fechas";
+
+/**
+ * Cliente de Google Tasks para el agente + las dos herramientas de tareas.
+ *
+ * Mismo molde que `google.ts` (Calendar): las credenciales `GCAL_CLIENT_ID` /
+ * `GCAL_CLIENT_SECRET` / `GCAL_REFRESH_TOKEN` viven en `app_secrets` y el access
+ * token se cachea en memoria del proceso. Es EL MISMO refresh token que el de la
+ * agenda — un solo OAuth con los dos scopes —, pero el flujo está duplicado acá
+ * a propósito: `google.ts` no lo exporta, y este archivo necesita traducir el
+ * 403 a "falta el scope de Tasks" sin meterle casos ajenos al de la agenda.
+ *
+ * ⚠️ Mientras el refresh token vigente tenga solo `calendar.events`, TODO lo de
+ * acá devuelve 403 (insufficientPermissions). No es un bug de este código: hay
+ * que re-autorizar con `node scripts/tasks-auth.mjs`, que pide los dos scopes
+ * juntos (si se pide solo Tasks, el token nuevo pierde Calendar).
+ *
+ * Todo va contra la lista por defecto (`@default`): Lucas usa una sola, y el
+ * scope de Tasks tampoco da para mucho más protagonismo por voz.
+ */
+
+const API = "https://tasks.googleapis.com/tasks/v1";
+
+/** Falta autorizar (no hay token, o el que hay no tiene el scope de Tasks). */
+export class SinTasks extends Error {
+  constructor() {
+    super(
+      "Falta autorizar Google Tasks: corré `node scripts/tasks-auth.mjs` y pegá el " +
+        "refresh token nuevo en app_secrets (GCAL_REFRESH_TOKEN).",
+    );
+  }
+}
+
+// El access token dura una hora. Caché propio, separado del de Calendar: los dos
+// salen del mismo refresh token, pero compartirlo acoplaría los archivos.
+let cache: { token: string; vence: number } | null = null;
+
+async function tokenDeAcceso(sb: SupabaseClient): Promise<string> {
+  if (cache && Date.now() < cache.vence) return cache.token;
+
+  const { data, error } = await sb
+    .from("app_secrets")
+    .select("key,value")
+    .in("key", ["GCAL_CLIENT_ID", "GCAL_CLIENT_SECRET", "GCAL_REFRESH_TOKEN"]);
+  if (error) throw new Error(`No pude leer los secrets de Google: ${error.message}`);
+
+  const s = Object.fromEntries((data ?? []).map((f) => [f.key, f.value])) as Record<string, string>;
+  if (!s.GCAL_REFRESH_TOKEN) throw new SinTasks();
+
+  const r = await fetch("https://oauth2.googleapis.com/token", {
+    method: "POST",
+    headers: { "content-type": "application/x-www-form-urlencoded" },
+    body: new URLSearchParams({
+      client_id: s.GCAL_CLIENT_ID,
+      client_secret: s.GCAL_CLIENT_SECRET,
+      refresh_token: s.GCAL_REFRESH_TOKEN,
+      grant_type: "refresh_token",
+    }),
+  });
+  const t = await r.json();
+  if (!r.ok || !t.access_token) {
+    // `invalid_grant` acá significa que el refresh token se revocó o caducó.
+    throw new Error(`Google rechazó el refresh token: ${JSON.stringify(t).slice(0, 200)}`);
+  }
+
+  // 60s de colchón para no usar un token que vence a mitad de la request.
+  cache = { token: t.access_token, vence: Date.now() + (t.expires_in - 60) * 1000 };
+  return cache.token;
+}
+
+async function api(sb: SupabaseClient, ruta: string, init: RequestInit = {}) {
+  const token = await tokenDeAcceso(sb);
+  const r = await fetch(`${API}${ruta}`, {
+    ...init,
+    headers: {
+      authorization: `Bearer ${token}`,
+      "content-type": "application/json",
+      ...(init.headers ?? {}),
+    },
+  });
+  if (r.status === 204) return null;
+  // Con un solo usuario, un 403 acá quiere decir UNA cosa: el refresh token no
+  // tiene el scope de Tasks (insufficientPermissions / PERMISSION_DENIED). En
+  // teoría también podría ser cuota, pero a este volumen esa lectura sería paranoia.
+  if (r.status === 403) throw new SinTasks();
+  const data = await r.json();
+  if (!r.ok) {
+    const msg = data?.error?.message ?? JSON.stringify(data).slice(0, 200);
+    throw new Error(`Google Tasks (${r.status}): ${msg}`);
+  }
+  return data;
+}
+
+/** Traduce los errores a algo que el modelo pueda decir sin inventar. */
+function errorTasks(e: unknown) {
+  if (e instanceof SinTasks) return { ok: false, motivo: e.message };
+  return { ok: false, motivo: e instanceof Error ? e.message : "Error desconocido" };
+}
+
+// ---------------------------------------------------------------------------
+// El cliente: lo que usa `confirmar` en tools.ts y las herramientas de acá
+// ---------------------------------------------------------------------------
+
+export type Tarea = {
+  id: string;
+  titulo: string;
+  nota?: string;
+  /** YYYY-MM-DD, sin hora: es lo único que Google Tasks guarda. */
+  vence?: string;
+};
+
+/** La parte de la respuesta de Google que nos interesa. */
+type TareaGoogle = { id?: string; title?: string; notes?: string; due?: string };
+
+function aTarea(t: TareaGoogle): Tarea {
+  return {
+    id: String(t.id),
+    titulo: String(t.title ?? "(sin título)"),
+    nota: t.notes ? String(t.notes).slice(0, 300) : undefined,
+    // ⚠️ `due` llega como medianoche UTC ("...T00:00:00.000Z") pero es una FECHA
+    // disfrazada: la API descarta la hora. Va `slice` y NO `dia()` de fechas.ts,
+    // porque convertirla a día argentino la correría al día ANTERIOR (UTC-3).
+    // Es la excepción documentada a la regla de "todo por fechas.ts".
+    vence: t.due ? String(t.due).slice(0, 10) : undefined,
+  };
+}
+
+export async function listarTareas(sb: SupabaseClient): Promise<Tarea[]> {
+  const q = new URLSearchParams({ showCompleted: "false", maxResults: "100" });
+  const d = await api(sb, `/lists/@default/tasks?${q}`);
+  return ((d?.items ?? []) as TareaGoogle[]).map(aTarea);
+}
+
+export type CamposTarea = { titulo?: string; notas?: string; vence?: string };
+
+/** Arma el body de Google a partir de nuestros campos. */
+function aBody(c: CamposTarea): Record<string, unknown> {
+  const body: Record<string, unknown> = {};
+  if (c.titulo !== undefined) body.title = c.titulo;
+  if (c.notas !== undefined) body.notes = c.notas;
+  // El RFC3339 completo es obligatorio aunque la hora se tire a la basura.
+  if (c.vence !== undefined) body.due = `${c.vence}T00:00:00.000Z`;
+  return body;
+}
+
+export async function crearTarea(sb: SupabaseClient, c: CamposTarea): Promise<Tarea> {
+  return aTarea(await api(sb, "/lists/@default/tasks", { method: "POST", body: JSON.stringify(aBody(c)) }));
+}
+
+export async function editarTarea(sb: SupabaseClient, id: string, c: CamposTarea): Promise<Tarea> {
+  // PATCH y no update completo: solo se pisa lo que se tocó, igual que la agenda.
+  return aTarea(
+    await api(sb, `/lists/@default/tasks/${encodeURIComponent(id)}`, {
+      method: "PATCH",
+      body: JSON.stringify(aBody(c)),
+    }),
+  );
+}
+
+export async function completarTarea(sb: SupabaseClient, id: string): Promise<void> {
+  // Completar es un PATCH de estado; Google le pone el timestamp solo.
+  await api(sb, `/lists/@default/tasks/${encodeURIComponent(id)}`, {
+    method: "PATCH",
+    body: JSON.stringify({ status: "completed" }),
+  });
+}
+
+export async function borrarTarea(sb: SupabaseClient, id: string): Promise<void> {
+  await api(sb, `/lists/@default/tasks/${encodeURIComponent(id)}`, { method: "DELETE" });
+}
+
+// El título de la lista por defecto ("Mis tareas" o como la haya llamado). Se
+// cachea para siempre: renombrarla es un evento de una vez por década, y el
+// panel no amerita una request extra por consulta.
+let nombreLista: string | null = null;
+async function tituloLista(sb: SupabaseClient): Promise<string> {
+  if (nombreLista) return nombreLista;
+  try {
+    const d = await api(sb, "/users/@me/lists/@default");
+    nombreLista = String(d?.title ?? "Tareas");
+  } catch {
+    // El nombre es cosmético: no puede voltear una consulta que ya salió bien.
+    return "Tareas";
+  }
+  return nombreLista;
+}
+
+// ---------------------------------------------------------------------------
+// Humanizar
+// ---------------------------------------------------------------------------
+
+/** "hoy", "mañana", "vencida hace 3 días", "22 ago". Null si no tiene fecha. */
+function humanizarVence(vence?: string): string | null {
+  if (!vence) return null;
+  const h = hoyAr();
+  if (vence === h) return "hoy";
+  if (vence === sumarDias(h, 1)) return "mañana";
+  // La cuenta de días va en milisegundos al mediodía de cada punta, la misma
+  // jugada anti-off-by-one que los feriados de mundo.ts.
+  const dif = Math.round((Date.parse(`${h}T12:00:00Z`) - Date.parse(`${vence}T12:00:00Z`)) / 864e5);
+  if (dif > 0) return `vencida hace ${dif} día${dif === 1 ? "" : "s"}`;
+  return new Date(`${vence}T12:00:00Z`)
+    .toLocaleDateString("es-AR", { day: "numeric", month: "short", timeZone: "UTC" })
+    .replace(/\./g, "");
+}
+
+/** El `cuando` de la tarjeta de previsualización: "vence mañana", "vencida hace 3 días". */
+function cuandoTarjeta(vence?: string): string | undefined {
+  const h = humanizarVence(vence);
+  if (!h) return undefined;
+  return h.startsWith("vencida") ? h : `vence ${h}`;
+}
+
+/**
+ * Vencidas primero (la más vieja arriba), después por fecha, y las sin fecha al
+ * final en su orden original — que es el orden manual de la lista, y el sort de
+ * JS es estable, así que se conserva solo. Las fechas se comparan como texto:
+ * YYYY-MM-DD ordena igual alfabética que cronológicamente.
+ */
+function ordenar(tareas: Tarea[]): Tarea[] {
+  const h = hoyAr();
+  const peso = (t: Tarea) => (!t.vence ? 2 : t.vence < h ? 0 : 1);
+  return [...tareas].sort(
+    (a, b) => peso(a) - peso(b) || (a.vence ?? "").localeCompare(b.vence ?? ""),
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Las herramientas
+// ---------------------------------------------------------------------------
+
+const tareasVer: Tool = {
+  name: "tareas_ver",
+  description:
+    "Las tareas pendientes de su lista de Google Tasks. Usar para '¿qué tengo " +
+    "pendiente?', '¿qué me falta hacer?', '¿tengo algo para hoy?', 'leeme la lista'. " +
+    "Devuelve las vencidas primero. ⚠️ Las tareas de CÓDIGO (tocar un repo, lanzar " +
+    "un agente) van por `tarea_codigo_dictar` y `tareas_codigo_ver`, no por acá.",
+  input_schema: { type: "object", properties: {}, required: [] },
+  canales: ["telegram", "pc"],
+  async handler(sb: SupabaseClient) {
+    try {
+      const tareas = ordenar(await listarTareas(sb));
+      const filas = tareas.map((t) => ({
+        titulo: t.titulo,
+        vence: humanizarVence(t.vence),
+        nota: t.nota ?? null,
+      }));
+      const vencidas = filas.filter((f) => f.vence?.startsWith("vencida")).length;
+
+      const nombres = tareas.slice(0, 3).map((t) => `"${t.titulo}"`).join(", ");
+      const deVencidas = vencidas ? ` (${vencidas} vencida${vencidas === 1 ? "" : "s"})` : "";
+      return {
+        ok: true,
+        cuantas: tareas.length,
+        tareas: filas,
+        para_decir: tareas.length
+          ? `Tenés ${tareas.length} tarea${tareas.length === 1 ? "" : "s"} pendiente` +
+            `${tareas.length === 1 ? "" : "s"}${deVencidas}: ${nombres}` +
+            `${tareas.length > 3 ? " y más" : ""}.`
+          : "No tenés ninguna tarea pendiente.",
+        // El contrato con la cara WPF; run.ts lo saca antes de que cueste tokens.
+        panel: {
+          tipo: "tareas",
+          listas: [{ nombre: await tituloLista(sb), tareas: filas }],
+        },
+      };
+    } catch (e) {
+      return errorTasks(e);
+    }
+  },
+};
+
+const tareasCambiar: Tool = {
+  name: "tareas_cambiar",
+  description:
+    "PROPONE crear, completar, editar o borrar una tarea de Google Tasks. NO ejecuta " +
+    "nada: devuelve una previsualización y hay que confirmarla con `confirmar`. Usar " +
+    "para 'anotá que tengo que comprar pilas', 'acordame de llamar al contador el " +
+    "viernes', 'listo lo de la farmacia' (→ completar), 'sacá lo del service' (→ " +
+    "borrar). Para completar, editar o borrar pasá el título TAL COMO lo dijo, aunque " +
+    "sea aproximado: la herramienta la busca sola. ⚠️ Las tareas de CÓDIGO van por " +
+    "`tarea_codigo_dictar`, no por acá.",
+  input_schema: {
+    type: "object",
+    properties: {
+      accion: {
+        type: "string",
+        enum: ["crear", "completar", "editar", "borrar"],
+        description: "Qué se quiere hacer.",
+      },
+      titulo: {
+        type: "string",
+        description:
+          "Para crear: el título de la tarea nueva. Para el resto: el título tal como " +
+          "lo dijo — se busca por coincidencia, no hace falta que sea exacto.",
+      },
+      titulo_nuevo: { type: "string", description: "Solo para editar: el título nuevo, si cambia." },
+      nota: { type: "string", description: "Detalle o aclaración de la tarea." },
+      vence: {
+        type: "string",
+        description:
+          "Fecha límite YYYY-MM-DD, solo si dijo una ('para el viernes'). " +
+          "Google Tasks guarda el día pelado, sin hora.",
+      },
+    },
+    required: ["accion", "titulo"],
+  },
+  canales: ["telegram", "pc"],
+  async handler(sb: SupabaseClient, input: Record<string, unknown>) {
+    try {
+      const accion = String(input?.accion ?? "");
+      if (!["crear", "completar", "editar", "borrar"].includes(accion)) {
+        return { ok: false, motivo: `Acción desconocida: ${accion}` };
+      }
+      const titulo = String(input?.titulo ?? "").trim();
+      if (!titulo) return { ok: false, motivo: "Falta el título de la tarea." };
+      const nota = input?.nota !== undefined ? String(input.nota).trim() : undefined;
+      const vence = input?.vence !== undefined ? String(input.vence).trim() : undefined;
+      const tituloNuevo =
+        input?.titulo_nuevo !== undefined ? String(input.titulo_nuevo).trim() : undefined;
+      if (vence && !esFecha(vence)) {
+        return { ok: false, motivo: `"${vence}" no es una fecha válida (va YYYY-MM-DD).` };
+      }
+
+      if (accion === "crear") {
+        const p = guardar({
+          dominio: "tarea", tipo: "crear",
+          tarea: { accion: "crear", titulo, notas: nota, vence },
+        });
+        return {
+          ok: true,
+          propuesta: {
+            id: p.id, dominio: "tarea", tipo: "crear", antes: null,
+            despues: { titulo, cuando: cuandoTarjeta(vence), nota },
+          },
+          para_decir: `Anotar "${titulo}"${vence ? `, vence ${humanizarVence(vence)}` : ""}.`,
+          que_hacer: `Mostrale esto y preguntale si confirma. Si dice que sí, llamá confirmar con id "${p.id}".`,
+        };
+      }
+
+      // Para tocar una existente primero hay que saber CUÁL. Se resuelve ACÁ, al
+      // proponer, y no al confirmar: lo que se muestra en la tarjeta tiene que ser
+      // exactamente lo que después se ejecuta. Búsqueda por subcadena sin tildes,
+      // que es lo que uno espera al nombrarla en voz alta.
+      const tareas = await listarTareas(sb);
+      const plano = (s: string) => s.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
+      const aguja = plano(titulo);
+      const candidatas = tareas.filter((t) => plano(t.titulo).includes(aguja));
+
+      if (!candidatas.length) {
+        return {
+          ok: false,
+          motivo: `No encontré ninguna tarea pendiente que diga "${titulo}".`,
+          opciones: tareas.map((t) => t.titulo),
+          que_hacer:
+            "Leele las que tiene y preguntale a cuál se refería. NO propongas nada " +
+            "todavía: puede estar anotada con otras palabras.",
+        };
+      }
+      if (candidatas.length > 1) {
+        return {
+          ok: false,
+          motivo: `Hay ${candidatas.length} tareas que coinciden con "${titulo}".`,
+          opciones: candidatas.map((t) => t.titulo),
+          que_hacer: "Preguntale cuál es y volvé a llamar con un título menos ambiguo.",
+        };
+      }
+
+      const t = candidatas[0];
+      const antes = { titulo: t.titulo, cuando: cuandoTarjeta(t.vence), nota: t.nota };
+
+      if (accion === "completar") {
+        const p = guardar({
+          dominio: "tarea", tipo: "editar",
+          tarea: { accion: "completar", taskId: t.id, titulo: t.titulo },
+        });
+        return {
+          ok: true,
+          // Completar se dibuja como una edición: el mismo título con el tilde adelante.
+          propuesta: {
+            id: p.id, dominio: "tarea", tipo: "editar", antes,
+            despues: { titulo: `✓ ${t.titulo}` },
+          },
+          para_decir: `Marcar "${t.titulo}" como hecha.`,
+          que_hacer: `Mostrale y preguntale. Si confirma, llamá confirmar con id "${p.id}".`,
+        };
+      }
+
+      if (accion === "borrar") {
+        const p = guardar({
+          dominio: "tarea", tipo: "borrar",
+          tarea: { accion: "borrar", taskId: t.id, titulo: t.titulo },
+        });
+        return {
+          ok: true,
+          propuesta: { id: p.id, dominio: "tarea", tipo: "borrar", antes, despues: null },
+          para_decir: `Borrar la tarea "${t.titulo}".`,
+          que_hacer:
+            `Es destructivo: confirmá con el usuario ANTES de llamar confirmar con id "${p.id}". ` +
+            "Si en realidad la HIZO, lo que va es completar, no borrar.",
+        };
+      }
+
+      // Editar.
+      if (tituloNuevo === undefined && nota === undefined && vence === undefined) {
+        return { ok: false, motivo: "No me dijiste qué cambiarle a la tarea." };
+      }
+      const p = guardar({
+        dominio: "tarea", tipo: "editar",
+        tarea: { accion: "editar", taskId: t.id, titulo: t.titulo, tituloNuevo, notas: nota, vence },
+      });
+      return {
+        ok: true,
+        propuesta: {
+          id: p.id, dominio: "tarea", tipo: "editar", antes,
+          despues: {
+            titulo: tituloNuevo ?? t.titulo,
+            cuando: cuandoTarjeta(vence ?? t.vence),
+            nota: nota ?? t.nota,
+          },
+        },
+        para_decir:
+          `Cambiar "${t.titulo}": queda "${tituloNuevo ?? t.titulo}"` +
+          `${vence ? `, vence ${humanizarVence(vence)}` : ""}.`,
+        que_hacer: `Mostrale el antes y el después y preguntale. Si confirma, llamá confirmar con id "${p.id}".`,
+      };
+    } catch (e) {
+      return errorTasks(e);
+    }
+  },
+};
+
+export const TOOLS_TAREAS: Tool[] = [tareasVer, tareasCambiar];

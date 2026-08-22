@@ -22,6 +22,7 @@ import { TOOLS_CODIGO } from "./codigo";
 import { TOOLS_MUNDO } from "./mundo";
 import { TOOLS_ACCIONES_PLATA } from "./acciones-plata";
 import { TOOLS_CEREBRO } from "./cerebro";
+import { TOOLS_TAREAS, crearTarea, editarTarea, completarTarea, borrarTarea } from "./tasks";
 // ⚠️ TODO lo de fechas sale de acá. No agregues helpers de fecha en este archivo:
 // `lib/fechas.ts` existe porque tenerlos desperdigados produjo siete bugs del
 // mismo tipo, todos por el UTC del servidor contra el UTC-3 del usuario.
@@ -900,7 +901,7 @@ const confirmar: Tool = {
   description:
     "Ejecuta un cambio que ya se propuso y que el usuario ACEPTÓ. Sirve para TODAS las " +
     "que proponen: `agenda_cambiar`, `plata_registrar`, `deuda_pagar`, `cuotas_convertir`, " +
-    "`divisas_registrar` y `cerebro_anotar`. " +
+    "`divisas_registrar`, `tareas_cambiar` y `cerebro_anotar`. " +
     "Nunca la llames sin que haya dicho explícitamente que sí. Si dijo que no, usá cancelar=true.",
   input_schema: {
     type: "object",
@@ -968,8 +969,8 @@ const confirmar: Tool = {
           : `"${id}" no tiene forma de id de propuesta (son cuatro letras o números).`,
         que_hacer:
           "Volvé a proponerlo con la herramienta que corresponda (`plata_registrar`, " +
-          "`agenda_cambiar`, `deuda_pagar`, `cuotas_convertir` o `divisas_registrar`) y " +
-          "esperá que confirme de nuevo. NO inventes que se hizo.",
+          "`agenda_cambiar`, `deuda_pagar`, `cuotas_convertir`, `divisas_registrar` o " +
+          "`tareas_cambiar`) y esperá que confirme de nuevo. NO inventes que se hizo.",
       };
     }
 
@@ -992,6 +993,27 @@ const confirmar: Tool = {
           para_decir: `Listo, anoto ${n.tipo === "decision" ? "la decisión" : "la corrección"} "${n.titulo}".`,
           accion: { tipo: "cerebro", valor: JSON.stringify({ accion: "anotar", ...n }) },
         });
+      }
+
+      // --- tareas de Google ---
+      // El `taskId` ya viene resuelto de la propuesta: acá no se vuelve a buscar
+      // por título. Lo que se ejecuta es exactamente la tarea que se mostró.
+      if (p.dominio === "tarea" && p.tarea) {
+        const t = p.tarea;
+        if (t.accion === "crear") {
+          const creada = await crearTarea(sb, { titulo: t.titulo, notas: t.notas, vence: t.vence });
+          return hecho({ ok: true, que: "tarea creada", para_decir: `Listo, anoté "${creada.titulo}".` });
+        }
+        if (t.accion === "completar") {
+          await completarTarea(sb, t.taskId!);
+          return hecho({ ok: true, que: "tarea completada", para_decir: `Listo, "${t.titulo}" quedó como hecha.` });
+        }
+        if (t.accion === "editar") {
+          await editarTarea(sb, t.taskId!, { titulo: t.tituloNuevo, notas: t.notas, vence: t.vence });
+          return hecho({ ok: true, que: "tarea editada", para_decir: `Listo, cambié "${t.titulo}".` });
+        }
+        await borrarTarea(sb, t.taskId!);
+        return hecho({ ok: true, que: "tarea borrada", para_decir: `Listo, borré "${t.titulo}".` });
       }
 
       // --- movimientos de Plata ---
@@ -2385,6 +2407,9 @@ export const TOOLS: Tool[] = [
   // Las notas de Lucas. El servidor solo devuelve la acción: el contenido lo
   // lee la PC de su propio disco y nunca pasa por acá. Ver `cerebro.ts`.
   ...TOOLS_CEREBRO,
+  // Google Tasks: ver pendientes y proponer crear/completar/editar/borrar (las
+  // ejecuta `confirmar`). Mismo refresh token que la agenda. Ver `tasks.ts`.
+  ...TOOLS_TAREAS,
   desplegarSetup,
   cerrarse,
 ];

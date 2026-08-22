@@ -20,8 +20,8 @@ import type { EditTx, NewTx, TxView } from "../db";
 
 export type TipoCambio = "crear" | "editar" | "borrar";
 
-/** Sobre qué se propone el cambio. Una sola herramienta confirma los dos. */
-export type Dominio = "agenda" | "plata" | "cerebro";
+/** Sobre qué se propone el cambio. Una sola herramienta (`confirmar`) los ejecuta todos. */
+export type Dominio = "agenda" | "plata" | "cerebro" | "tarea";
 
 export type Pendiente = {
   id: string;
@@ -60,6 +60,23 @@ export type Pendiente = {
     resumen: string;
     detalle: string;
     verificar?: string;
+  };
+
+  /*
+   * --- una tarea de Google Tasks ---
+   *
+   * Para completar/editar/borrar, el `taskId` ya viene resuelto: la búsqueda por
+   * título aproximado pasó al PROPONER, así que lo que se confirma es esa tarea
+   * puntual y no "la que matchee" al momento de ejecutar.
+   */
+  tarea?: {
+    accion: "crear" | "completar" | "editar" | "borrar";
+    taskId?: string;
+    titulo: string;
+    notas?: string;
+    /** YYYY-MM-DD. Google Tasks guarda el día pelado, sin hora. */
+    vence?: string;
+    tituloNuevo?: string;
   };
 
   /*

@@ -102,6 +102,15 @@ async function ubicar(lugar: string) {
 
 const redondo = (n: unknown) => Math.round(Number(n));
 
+// El día corto para el panel ("jue"). Anclado al mediodía UTC a propósito: el día
+// de la semana de un YYYY-MM-DD no depende de ninguna zona horaria si el parseo
+// no puede correrlo de día — la misma jugada que hacen los feriados más abajo
+// con sus milisegundos.
+const diaChico = (f: string) =>
+  new Date(`${f}T12:00:00Z`)
+    .toLocaleDateString("es-AR", { weekday: "short", timeZone: "UTC" })
+    .replace(/\./g, "");
+
 const clima: Tool = {
   name: "clima",
   description:
@@ -148,6 +157,11 @@ const clima: Tool = {
         `https://api.open-meteo.com/v1/forecast?latitude=${donde.lat}&longitude=${donde.lon}` +
           `&current=temperature_2m,apparent_temperature,relative_humidity_2m,weather_code` +
           `&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_max,weather_code` +
+          // `forecast_hours` corta el hourly a partir de la HORA ACTUAL del lugar
+          // (verificado en la doc de Open-Meteo), así que el [0] ya es esta hora.
+          // Sin ese parámetro el array arranca a las 00:00 del día y habría que
+          // indexar contra el timezone a mano — de ahí saldría el próximo bug UTC.
+          `&hourly=temperature_2m,precipitation_probability&forecast_hours=12` +
           `&timezone=${encodeURIComponent(donde.tz || ZONA_AR)}&forecast_days=${dias}`,
       );
 
@@ -174,6 +188,25 @@ const clima: Tool = {
         : "";
       const maxmin = hoyP ? ` Hoy va de ${hoyP.min} a ${hoyP.max} grados.` : "";
 
+      // Las próximas horas, hora a hora. Se piden 12 y el panel dibuja 8.
+      const horas: { hora: string; temp: number; lluvia_pct: number }[] =
+        (d.hourly?.time ?? []).map((t: string, i: number) => ({
+          // "17", sin cero adelante ni minutos: es una columna del HUD, no un log.
+          hora: String(Number(String(t).slice(11, 13))),
+          temp: redondo(d.hourly.temperature_2m[i]),
+          lluvia_pct: redondo(d.hourly.precipitation_probability[i]),
+        }));
+
+      // El aviso mira las 12 horas pedidas, no solo las 8 que se dibujan: una
+      // tormenta a la hora 9 merece la advertencia aunque no tenga columna.
+      const conLluvia = horas.filter((h) => h.lluvia_pct > 50);
+      const avisoLluvia = conLluvia.length
+        ? conLluvia.length === 1
+          ? `llueve a las ${conLluvia[0].hora} · ${conLluvia[0].lluvia_pct}%`
+          : `llueve de ${conLluvia[0].hora} a ${conLluvia[conLluvia.length - 1].hora} · ` +
+            `${Math.max(...conLluvia.map((h) => h.lluvia_pct))}%`
+        : null;
+
       return {
         ok: true,
         lugar: donde.nombre_largo,
@@ -181,6 +214,18 @@ const clima: Tool = {
         pronostico,
         para_decir:
           `En ${donde.nombre} hay ${temp} grados${sensacion}, ${cielo}.${maxmin}${lluvia}`,
+        // El contrato con la cara WPF — no cambiarle la forma. Al modelo no le
+        // llega: run.ts lo saca antes, igual que el panel de la agenda.
+        panel: {
+          tipo: "clima",
+          lugar: donde.nombre,
+          ahora: { temperatura: temp, sensacion: sens, humedad_pct: redondo(ahora.relative_humidity_2m), cielo },
+          horas: horas.slice(0, 8),
+          dias: pronostico.slice(0, 3).map((p: { fecha: string; min: number; max: number; prob_lluvia_pct: number; cielo: string }) => ({
+            dia: diaChico(p.fecha), min: p.min, max: p.max, lluvia_pct: p.prob_lluvia_pct, cielo: p.cielo,
+          })),
+          aviso_lluvia: avisoLluvia,
+        },
       };
     } catch (e) {
       return { ok: false, motivo: `No pude consultar el clima: ${motivoDe(e)}` };
