@@ -297,6 +297,20 @@ const plataInterpretar: Tool = {
     // --- gasto compartido: lo calcula la herramienta que sabe, no este modelo ---
     if (r.accion === "division") {
       const d = r.division ?? {};
+      // Cinturón además del prompt: el modelo a veces emite division con la
+      // lista vacía y el «faltan los nombres» escondido en el porqué (pasó en
+      // la primera batería). Sin nombres no hay deudas: se convierte en
+      // pregunta ACÁ, determinista, y no se deriva nada roto.
+      const sinNombre = (d.personas ?? []).filter((x) => String(x?.nombre ?? "").trim());
+      if (!sinNombre.length || !(Number(d.total) > 0) || !(Number(d.puse) > 0)) {
+        return {
+          ok: false,
+          motivo: "Para dividirlo me faltan los nombres: ¿con quiénes fue?",
+          que_hacer:
+            "Preguntale los nombres y volvé a llamar plata_interpretar con el dicho " +
+            "original MÁS los nombres. Sin nombres no se puede: cada uno queda debiendo.",
+        };
+      }
       return {
         ok: true,
         derivar: "plata_dividir",
