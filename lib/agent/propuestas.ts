@@ -53,6 +53,29 @@ export type Pendiente = {
    * nunca ve la bitácora — solo transporta lo que el modelo redactó y Lucas
    * aprobó mirando la tarjeta.
    */
+  /*
+   * --- dividir un gasto compartido ---
+   *
+   * «Fuimos a comer 5, la cuenta fue 80, yo puse 50»: la herramienta ya calculó
+   * las partes; acá viaja el resultado EXACTO que se previsualizó, y confirmar
+   * lo manda a la RPC `dividir_gasto` (atómica: dos transacciones + N deudas +
+   * el renglón del deshacer, o nada).
+   */
+  division?: {
+    total: number;
+    puse: number;
+    parte: number;
+    descripcion: string;
+    categoriaId?: number;
+    metodoId?: number;
+    /** ISO con hora; la RPC lo toma como occurred_at. */
+    fecha: string;
+    moneda: string;
+    personas: { nombre: string; debe: number }[];
+    /** Las que no existían y la RPC va a crear (la tarjeta ya lo avisó). */
+    nuevas: string[];
+  };
+
   notaCerebro?: {
     tipo: "decision" | "correccion";
     titulo: string;

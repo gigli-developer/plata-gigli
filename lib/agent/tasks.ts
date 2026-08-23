@@ -162,6 +162,28 @@ export async function listarTareas(sb: SupabaseClient): Promise<Tarea[]> {
   return porLista.flat();
 }
 
+/**
+ * Lo que se COMPLETO hoy (dia argentino), para el repaso de la noche. Google
+ * guarda `completed` en UTC; el corte va con el offset -03:00 explicito para
+ * que el «hoy» sea el de aca y no el de Greenwich.
+ */
+export async function listarCompletadasHoy(sb: SupabaseClient): Promise<{ titulo: string; lista: string }[]> {
+  const q = new URLSearchParams({
+    showCompleted: "true", showHidden: "true", maxResults: "100",
+    completedMin: new Date(`${hoyAr()}T00:00:00-03:00`).toISOString(),
+  });
+  const ls = await listas(sb);
+  const porLista = await Promise.all(
+    ls.map(async (l) => {
+      const d = await api(sb, `/lists/${encodeURIComponent(l.id)}/tasks?${q}`);
+      return ((d?.items ?? []) as (TareaGoogle & { status?: string })[])
+        .filter((x) => x.status === "completed")
+        .map((x) => ({ titulo: String(x.title ?? "(sin titulo)"), lista: l.titulo }));
+    }),
+  );
+  return porLista.flat();
+}
+
 export type CamposTarea = { titulo?: string; notas?: string; vence?: string };
 
 /** Arma el body de Google a partir de nuestros campos. */
@@ -258,9 +280,43 @@ const tareasVer: Tool = {
     "pendiente?', '¿qué me falta hacer?', '¿tengo algo para hoy?', 'leeme la lista'. " +
     "Devuelve las vencidas primero. ⚠️ Las tareas de CÓDIGO (tocar un repo, lanzar " +
     "un agente) van por `tarea_codigo_dictar` y `tareas_codigo_ver`, no por acá.",
-  input_schema: { type: "object", properties: {}, required: [] },
+  input_schema: {
+    type: "object",
+    properties: {
+      completadas: {
+        type: "boolean",
+        description:
+          "true para ver las tareas que COMPLETO HOY (para el repaso del dia: " +
+          "'que termine hoy?'). Sin esto, las pendientes de siempre.",
+      },
+    },
+    required: [],
+  },
   canales: ["telegram", "pc"],
-  async handler(sb: SupabaseClient) {
+  async handler(sb: SupabaseClient, input: Record<string, unknown>) {
+    // El repaso de la noche pregunta al reves: no que falta, sino que se hizo.
+    if (input?.completadas === true) {
+      try {
+        const hechas = await listarCompletadasHoy(sb);
+        return {
+          ok: true,
+          cuantas: hechas.length,
+          tareas: hechas.map((h) => ({ titulo: h.titulo, lista: h.lista })),
+          para_decir: hechas.length
+            ? `Hoy completaste ${hechas.length}: ${hechas.map((h) => `"${h.titulo}"`).join(", ")}.`
+            : "Hoy no completaste ninguna tarea todavia.",
+          panel: {
+            tipo: "tareas",
+            listas: [{
+              nombre: "hechas hoy",
+              tareas: hechas.map((h) => ({ titulo: `\u2713 ${h.titulo}`, vence: null, nota: h.lista })),
+            }],
+          },
+        };
+      } catch (e) {
+        return errorTasks(e);
+      }
+    }
     try {
       const tareas = ordenar(await listarTareas(sb));
       const filas = tareas.map((t) => ({

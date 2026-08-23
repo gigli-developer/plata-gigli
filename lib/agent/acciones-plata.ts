@@ -2,8 +2,8 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 // Solo el tipo: se borra al compilar, así que no hay ciclo en runtime aunque
 // `tools.ts` importe este archivo. Mismo truco que en `targets.ts`.
 import type { Tool } from "./tools";
-import { fetchDebts, fetchFxBoard, fetchTransactionsRange, type DebtView, type TxView } from "../db";
-import { guardar } from "./propuestas";
+import { fetchCategories, fetchDebts, fetchFxBoard, fetchPaymentMethods, fetchPersons, fetchTransactionsRange, type DebtView, type TxView } from "../db";
+import { guardar, VENCE_MIN } from "./propuestas";
 import { dia as diaAr, esFecha, sumarMeses, mesLargo } from "../fechas";
 
 /**
@@ -640,7 +640,197 @@ const divisasRegistrar: Tool = {
   },
 };
 
-export const TOOLS_ACCIONES_PLATA: Tool[] = [deudaPagar, cuotasConvertir, divisasRegistrar];
+
+/**
+ * «Fuimos a comer con amigos, la cuenta fue X y yo puse Y» — la división que
+ * Jarvis no podía razonar, convertida en calculadora con oídos.
+ *
+ * El reparto del trabajo es la regla de la casa: el MODELO interpreta la escena
+ * (cuántos eran, cuánto puso cada uno) y ESTA herramienta hace la aritmética.
+ * Sin esto, el modelo tiene prohibido calcular (numeros.py le dispara a toda
+ * cifra sin respaldo) y degradaba a «registro lo que pusiste» — las deudas de
+ * los demás se perdían. Pasó de verdad, y motivó la herramienta.
+ *
+ * La cuenta, para leerla una vez y no rederivarla:
+ *   n        = personas.length + 1 (los otros + Lucas)
+ *   tu parte = mi_parte, o total / n si no la dijo
+ *   resto    = total − puse   → lo que pusieron los otros EN CONJUNTO
+ *   cada otro debe: su parte − lo que puso (si no se sabe quién puso qué, el
+ *   resto se reparte parejo entre los que no tienen `puso` explícito)
+ *
+ * v1 solo cobra: si vos pusiste menos que tu parte, o alguien puso de más, se
+ * contesta con el motivo y qué anotar en su lugar — nunca una deuda negativa.
+ */
+const plataDividir: Tool = {
+  name: "plata_dividir",
+  description:
+    "Divide un gasto compartido que TODAVÍA no está cargado: calcula la parte de cada " +
+    "uno, propone cargar TU parte como gasto real y el resto como préstamos, y deja " +
+    "UNA deuda por persona. Usar para 'fuimos a comer y puse yo', 'pagué la cena de " +
+    "todos', 'dividí la cuenta con...'.\n" +
+    "Vos solo pasás la escena: total de la cuenta, cuánto puso él, y quiénes más " +
+    "estaban (con lo que puso cada uno SI lo dijo). La herramienta calcula todo y " +
+    "devuelve las cifras: repetilas de ahí, no las calcules vos.\n" +
+    "⚠️ Para dividir un gasto YA cargado está el botón de la app, no esto. Y si él " +
+    "puso MENOS que su parte, la herramienta te va a decir qué proponer en su lugar.",
+  input_schema: {
+    type: "object",
+    properties: {
+      total: { type: "number", description: "La cuenta completa, lo que salió todo." },
+      puse: { type: "number", description: "Lo que puso él de su bolsillo." },
+      personas: {
+        type: "array",
+        description:
+          "Los OTROS comensales (él no va acá). Si dijo cuánto puso alguno, va en `puso`.",
+        items: {
+          type: "object",
+          properties: {
+            nombre: { type: "string" },
+            puso: { type: "number", description: "Solo si lo dijo; si no, se reparte parejo." },
+          },
+          required: ["nombre"],
+        },
+      },
+      mi_parte: {
+        type: "number",
+        description: "Solo si dijo cuánto le tocaba a él; si no, total dividido cabezas.",
+      },
+      descripcion: { type: "string", description: "Qué fue: 'Cena en lo de Rafa', 'Asado'." },
+      categoria: { type: "string", description: "Categoría de SU parte (Comida, Ocio...)." },
+      metodo: { type: "string", description: "Con qué pagó, si lo dijo." },
+      fecha: { type: "string", description: "YYYY-MM-DD solo si NO fue hoy." },
+    },
+    required: ["total", "puse", "personas", "descripcion"],
+  },
+  canales: ["telegram", "pc"],
+  async handler(sb: SupabaseClient, input: Record<string, unknown>) {
+    const total = Number(input?.total ?? 0);
+    const puse = Number(input?.puse ?? 0);
+    const descripcion = String(input?.descripcion ?? "").trim();
+    const crudas = Array.isArray(input?.personas) ? (input.personas as { nombre?: unknown; puso?: unknown }[]) : [];
+    if (!(total > 0) || !(puse > 0)) return { ok: false, motivo: "Falta el total o lo que puso." };
+    if (!descripcion) return { ok: false, motivo: "Falta qué fue (la descripción)." };
+    if (!crudas.length) return { ok: false, motivo: "Falta con quiénes lo dividió." };
+    if (puse > total + 0.5) {
+      return { ok: false, motivo: `Puso ${numero(puse)} y la cuenta fue ${numero(total)}: revisá los montos con él.` };
+    }
+    const fecha = input?.fecha !== undefined ? String(input.fecha).trim() : "";
+    if (fecha && !esFecha(fecha)) return { ok: false, motivo: `"${fecha}" no es una fecha válida.` };
+
+    const redondo2 = (x: number) => Math.round(x * 100) / 100;
+    const n = crudas.length + 1;
+    const parte = redondo2(input?.mi_parte !== undefined ? Number(input.mi_parte) : total / n);
+    if (!(parte > 0) || parte > total) return { ok: false, motivo: "Su parte no puede ser eso." };
+    if (puse < parte - 0.5) {
+      return {
+        ok: false,
+        motivo:
+          `Puso ${numero(puse)} pero su parte es ${numero(parte)}: acá no hay nada que cobrar. ` +
+          "Lo que corresponde es cargar lo que puso como gasto suyo (`plata_registrar`), y si " +
+          "le quedó debiendo a alguien, que lo diga y se anota como deuda aparte.",
+      };
+    }
+
+    // Lo que pusieron los otros en conjunto, repartido entre los que no
+    // declararon cuánto. La parte de cada OTRO sale de lo que no es de Lucas.
+    const parteOtro = redondo2((total - parte) / crudas.length);
+    const restoAjeno = total - puse;
+    const declarados = crudas.filter((c) => c.puso !== undefined);
+    const sumaDeclarada = declarados.reduce((a, c) => a + Number(c.puso), 0);
+    if (sumaDeclarada > restoAjeno + 0.5) {
+      return { ok: false, motivo: "Lo que pusieron los demás supera lo que faltaba de la cuenta: revisá los montos." };
+    }
+    const sinDeclarar = crudas.length - declarados.length;
+    const parejo = sinDeclarar > 0 ? redondo2(Math.max(0, restoAjeno - sumaDeclarada) / sinDeclarar) : 0;
+
+    const partes: { nombre: string; debe: number }[] = [];
+    for (const c of crudas) {
+      const nombre = String(c.nombre ?? "").trim();
+      if (!nombre) return { ok: false, motivo: "Hay una persona sin nombre en la lista." };
+      const puso = c.puso !== undefined ? Number(c.puso) : parejo;
+      const debe = redondo2(parteOtro - puso);
+      if (debe <= 0) {
+        return {
+          ok: false,
+          motivo:
+            `${nombre} puso su parte o más (${numero(puso)} contra ${numero(parteOtro)}): dejalo ` +
+            "afuera de la lista y volvé a proponer con los demás.",
+        };
+      }
+      partes.push({ nombre, debe });
+    }
+    // Los centavos del redondeo se absorben en la deuda más grande, para que la
+    // suma cierre EXACTA contra lo que puso (la RPC valida con 0,5 de tolerancia,
+    // pero acá se puede cerrar a cero y se cierra).
+    const diff = redondo2(puse - parte - partes.reduce((a, x) => a + x.debe, 0));
+    if (Math.abs(diff) > 0.5) return { ok: false, motivo: "Las partes no cierran contra lo que puso: revisá los montos." };
+    if (diff !== 0) {
+      const mayor = partes.reduce((a, b) => (b.debe > a.debe ? b : a));
+      mayor.debe = redondo2(mayor.debe + diff);
+    }
+    const ajeno = redondo2(puse - parte);
+
+    // Personas: existentes por nombre (sin tildes ni mayúsculas); las que no
+    // están se marcan como nuevas y las crea la RPC — la tarjeta lo avisa.
+    const plano = (s: string) => s.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+    const existentes = await fetchPersons(sb);
+    const nuevas: string[] = [];
+    for (const pa of partes) {
+      const hit = existentes.find((e) => plano(e.name) === plano(pa.nombre));
+      if (hit) pa.nombre = hit.name;         // el nombre canónico de la base
+      else nuevas.push(pa.nombre);
+    }
+
+    const [cats, mets] = await Promise.all([fetchCategories(sb), fetchPaymentMethods(sb)]);
+    const cat = input?.categoria
+      ? cats.find((c) => plano(c.name) === plano(String(input.categoria))) ?? null : null;
+    const met = input?.metodo
+      ? mets.find((m) => plano(m.name) === plano(String(input.metodo))) ?? null : null;
+
+    const iso = fecha ? `${fecha}T12:00:00-03:00` : new Date().toISOString();
+    const pdte = guardar({
+      dominio: "plata", tipo: "crear",
+      division: {
+        total, puse, parte, descripcion,
+        categoriaId: cat?.id, metodoId: met?.id,
+        fecha: iso, moneda: "ARS",
+        personas: partes, nuevas,
+      },
+    });
+
+    const porCabeza = partes.every((x) => x.debe === partes[0].debe)
+      ? ` (${numero(partes[0].debe)} cada uno)` : "";
+    return {
+      ok: true,
+      propuesta: {
+        id: pdte.id, dominio: "plata", tipo: "crear", antes: null,
+        monto: `-${numero(parte)}`,
+        sub: `${descripcion}${cat ? ` · ${cat.name}` : ""}${met ? ` · ${met.name}` : ""}`,
+        campos: [
+          { k: "la cuenta", v: `${numero(total)} entre ${n}` },
+          { k: "pusiste", v: numero(puse) },
+          { k: "te tocaba", v: numero(parte) },
+        ],
+        lista_rica: partes.map((x) => ({
+          monto: numero(x.debe), titulo: x.nombre, detalle: "te debe",
+        })),
+        aviso:
+          `Tu parte queda como gasto real; los ${numero(ajeno)} prestados van a Préstamos, ` +
+          "no cuentan como gasto y el patrimonio no cambia: se vuelven «te deben»." +
+          (nuevas.length ? ` Se agregan como personas nuevas: ${nuevas.join(", ")}.` : ""),
+        aviso_tono: "azul",
+        vence_min: VENCE_MIN,
+      },
+      para_decir:
+        `Dividir ${descripcion}: tu parte ${numero(parte)}, y te deben ${numero(ajeno)} en total${porCabeza}.`,
+      que_hacer:
+        `Contale la división y ESPERÁ el sí. Si confirma, llamá confirmar con id "${pdte.id}". ` +
+        "Si corrige un monto o una persona, volvé a proponer con los datos nuevos.",
+    };
+  },
+};
+
+export const TOOLS_ACCIONES_PLATA: Tool[] = [deudaPagar, cuotasConvertir, divisasRegistrar, plataDividir];
 
 /** Las que arman propuesta: `run.ts` las necesita para su red de seguridad. */
 export const NOMBRES_PROPONEN = TOOLS_ACCIONES_PLATA.map((t) => t.name);

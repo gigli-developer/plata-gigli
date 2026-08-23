@@ -993,7 +993,7 @@ const confirmar: Tool = {
   description:
     "Ejecuta un cambio que ya se propuso y que el usuario ACEPTÓ. Sirve para TODAS las " +
     "que proponen: `agenda_cambiar`, `plata_registrar`, `deuda_pagar`, `cuotas_convertir`, " +
-    "`divisas_registrar`, `tareas_cambiar` y `cerebro_anotar`. " +
+    "`divisas_registrar`, `plata_dividir`, `tareas_cambiar` y `cerebro_anotar`. " +
     "Nunca la llames sin que haya dicho explícitamente que sí. Si dijo que no, usá cancelar=true.",
   input_schema: {
     type: "object",
@@ -1139,6 +1139,49 @@ const confirmar: Tool = {
          * arman acá con varias escrituras sueltas, que es exactamente lo que un
          * 18/08 borró un consumo de $457.500 sin crear sus cuotas.
          */
+        if (p.division) {
+          const d = p.division;
+          // El user va explícito: esto corre con service role y los defaults
+          // auth.uid() dan NULL (la trampa de activity_log del 19/08). App
+          // mono-usuario: el dueño es el de cualquier fila.
+          const { data: fila } = await sb.from("transactions").select("user_id").limit(1).single();
+          const { data, error } = await sb.rpc("dividir_gasto", {
+            p_user_id: (fila as { user_id?: string } | null)?.user_id,
+            p_total: d.total, p_puse: d.puse, p_parte: d.parte,
+            p_personas: d.personas.map((x) => ({ nombre: x.nombre, debe: x.debe })),
+            p_descripcion: d.descripcion,
+            p_categoria_id: d.categoriaId ?? null,
+            p_metodo_id: d.metodoId ?? null,
+            p_fecha: d.fecha, p_moneda: d.moneda,
+          });
+          if (error) throw error;
+          const r = (data ?? {}) as { ajeno?: number };
+          const ajeno = Number(r.ajeno ?? d.puse - d.parte);
+          const cabezas = d.personas.length;
+          return hecho({
+            ok: true,
+            que: "gasto dividido",
+            para_decir:
+              `Listo: tu parte ${importe(d.parte, d.moneda)} quedó como gasto, y ` +
+              `${d.personas.map((x) => x.nombre).join(", ")} te ${cabezas === 1 ? "debe" : "deben"} ` +
+              `${importe(ajeno, d.moneda)} en total.`,
+            panel: {
+              tipo: "hecho",
+              monto: `-${numero(d.parte)}`,
+              sub: d.descripcion,
+              filas: [
+                { k: "pusiste", v: numero(d.puse) },
+                { k: "tu parte", v: numero(d.parte), d: "quedó como gasto real" },
+                {
+                  k: "te deben", v: numero(ajeno),
+                  d: d.personas.map((x) => `${x.nombre} ${numero(x.debe)}`).join(" · "),
+                },
+              ],
+              deshacer: "desde la app, con el botón Deshacer",
+            },
+          });
+        }
+
         if (p.pagoDeuda) {
           const d = p.pagoDeuda;
           const { data, error } = await sb.rpc("pagar_deuda", {
@@ -2012,6 +2055,13 @@ const plataRegistrar: Tool = {
 // Tarjetas, cotizaciones y patrimonio
 // ---------------------------------------------------------------------------
 
+/** Días entre hoy (ART) y una fecha ISO, al mediodía de cada punta (anti off-by-one). */
+function diasHasta(iso: string | null | undefined): number | null {
+  if (!iso) return null;
+  const hoy = hoyAr();
+  return Math.round((Date.parse(`${String(iso).slice(0, 10)}T12:00:00Z`) - Date.parse(`${hoy}T12:00:00Z`)) / 864e5);
+}
+
 const tarjetasVer: Tool = {
   name: "tarjetas_ver",
   description:
@@ -2093,6 +2143,8 @@ const tarjetasVer: Tool = {
         cuota_ars: redondear(toArs(c.monthly, c.currency, fx)),
         va_por: `${c.current} de ${c.total}`,
         le_quedan: c.total - c.current,
+        va: c.current,
+        total: c.total,
       }));
 
     return {
@@ -2123,9 +2175,14 @@ const tarjetasVer: Tool = {
         tipo: "tarjetas",
         resumenes: abiertos.map((s) => ({
           tarjeta: s.tarjeta, periodo: s.periodo, vence: s.vence, total: s.total_ars,
+          // Para la pastilla que se pone roja cuando quema (diseño M2).
+          en_dias: diasHasta(s.venceRaw),
         })),
         cuotas: terminan.map((c) => ({
           que: c.que, monto: c.cuota_ars, va_por: c.va_por, quedan: c.le_quedan,
+          // El va/total numérico para la barrita de progreso (M2): el string
+          // "3 de 6" está bien para leer, no para dibujar.
+          va: c.va, total: c.total,
         })),
       },
     };
