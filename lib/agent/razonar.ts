@@ -402,13 +402,84 @@ const plataInterpretar: Tool = {
  * que el prefijo del sub-agente cachee igual que el del canal principal.
  */
 const TOOLS_PENSAR = [
-  "estado_financiero", "gastos_por_categoria", "transacciones_ver", "tarjetas_ver",
-  "deudas_con_personas", "compromisos_futuros", "proyeccion_fin_de_mes",
-  "cotizaciones", "patrimonio_evolucion",
+  "estado_financiero", "resumen_diario", "gastos_por_categoria", "transacciones_ver",
+  "tarjetas_ver", "deudas_con_personas", "compromisos_futuros", "proyeccion_fin_de_mes",
+  "cotizaciones", "patrimonio_evolucion", "flujo_de_caja",
 ] as const;
 
-const MAX_LLAMADAS = 4;   // el equivalente del tope de 2 búsquedas de web.ts
-const MAX_VUELTAS = 7;    // llamadas a la API: 4 de tools + la de cierre + margen
+// Subido de 4 a 8 (pedido de Lucas, 22/08): «entendeme el flujo» necesita mirar
+// compromisos, cuotas, patrimonio y cotizaciones en una misma consulta.
+const MAX_LLAMADAS = 8;
+const MAX_VUELTAS = 12;
+
+/**
+ * La conversación del analista vive en `pensar_sesiones` (Supabase) con TTL:
+ * «¿y si lo pago en marzo?» continúa el hilo en vez de arrancar de cero. El
+ * costo ACUMULADO de la conversación queda en la fila — que es el número que
+ * importa para saber si esto es sostenible, no el de una pregunta suelta.
+ */
+const TTL_SESION_MIN = 45;
+
+type Sesion = { id: number | null; mensajes: unknown[]; turnos: number; llamadas: number; costo_usd: number };
+
+async function cargarSesion(sb: SupabaseClient, nueva: boolean): Promise<Sesion> {
+  if (!nueva) {
+    const desde = new Date(Date.now() - TTL_SESION_MIN * 60_000).toISOString();
+    const { data } = await sb
+      .from("pensar_sesiones")
+      .select("id,mensajes,turnos,llamadas,costo_usd")
+      .gte("ultimo_uso", desde)
+      .order("ultimo_uso", { ascending: false })
+      .limit(1);
+    const fila = data?.[0];
+    // Una conversación desbordada arranca de nuevo: mejor perder el hilo que
+    // pagar un historial gigante en cada turno.
+    if (fila && JSON.stringify(fila.mensajes).length < 150_000) {
+      return {
+        id: fila.id, mensajes: (fila.mensajes as unknown[]) ?? [],
+        turnos: fila.turnos ?? 0, llamadas: fila.llamadas ?? 0,
+        costo_usd: Number(fila.costo_usd ?? 0),
+      };
+    }
+  }
+  return { id: null, mensajes: [], turnos: 0, llamadas: 0, costo_usd: 0 };
+}
+
+async function guardarSesion(sb: SupabaseClient, s: Sesion): Promise<number | null> {
+  const fila = {
+    mensajes: s.mensajes, turnos: s.turnos, llamadas: s.llamadas,
+    costo_usd: s.costo_usd, modelo: MODELO_PENSAR, ultimo_uso: new Date().toISOString(),
+  };
+  try {
+    if (s.id != null) {
+      await sb.from("pensar_sesiones").update(fila).eq("id", s.id);
+      return s.id;
+    }
+    const { data } = await sb.from("pensar_sesiones").insert(fila).select("id").single();
+    return (data?.id as number) ?? null;
+  } catch {
+    // Perder la persistencia degrada a «pensar de una pregunta»: molesto, no fatal.
+    return s.id;
+  }
+}
+
+/**
+ * El caché incremental de la conversación: se marca el FINAL del historial
+ * previo, así cada turno lee cacheado todo lo anterior (prefijo del turno N =
+ * prefijo del turno N-1 más lo nuevo) y paga entero solo lo que se agregó.
+ */
+function conCacheEnHistorial(msgs: unknown[]): unknown[] {
+  if (msgs.length < 2) return msgs;
+  const copia = msgs.map((m) => JSON.parse(JSON.stringify(m)));
+  const previo = copia[copia.length - 2] as { content?: unknown };
+  if (Array.isArray(previo?.content) && previo.content.length) {
+    const ultimo = previo.content[previo.content.length - 1];
+    if (ultimo && typeof ultimo === "object") {
+      (ultimo as Record<string, unknown>).cache_control = { type: "ephemeral" };
+    }
+  }
+  return copia;
+}
 
 let esquemasPensar: { name: string; description: string; input_schema: unknown; cache_control?: unknown }[] | null = null;
 
@@ -424,6 +495,10 @@ Cómo trabajás:
   visible entre dos de ellos («la diferencia son…»). Nunca estimes de memoria.
 - No propongas registrar nada ni digas que hiciste cambios: sos solo lectura.
 - Si los datos no alcanzan para responder, decilo y qué faltaría.
+
+Estás en una CONVERSACIÓN: las repreguntas continúan este mismo hilo. Lo que ya
+consultaste sigue valiendo — no repitas una herramienta que ya llamaste salvo que la
+repregunta pida datos nuevos o actualizados.
 
 El formato de salida es para un PARLANTE: DOS O TRES FRASES, español argentino, voseo,
 sin viñetas ni markdown ni símbolos. Los números como se pronuncian. Primero la
@@ -443,15 +518,24 @@ const pensar: Tool = {
     "ningún número.\n" +
     "⚠️ NO es para consultas simples ('¿cuánto gasté?' va directo a la herramienta) ni " +
     "para cosas del mundo (eso es investigar_en_la_web). Es para cuando hay que RAZONAR " +
-    "sobre sus números.",
+    "sobre sus números.\n" +
+    "ES UNA CONVERSACIÓN: una repregunta sobre lo mismo ('¿y si lo pago en marzo?', " +
+    "'sacá el alquiler de esa cuenta') va DE NUEVO a pensar tal cual, y continúa el " +
+    "hilo solo. Cuando cambia de tema, pasá nueva=true.",
   input_schema: {
     type: "object",
     properties: {
       pregunta: {
         type: "string",
         description:
-          "La pregunta completa y autocontenida, con todo el contexto que dio " +
-          "('¿me conviene pagar el resumen de 300 lucas de una o en 3 cuotas al 12%?').",
+          "La pregunta o repregunta, completa ('¿me conviene pagar el resumen de una o " +
+          "en cuotas?'). Las repreguntas pueden ser cortas: el hilo ya tiene el contexto.",
+      },
+      nueva: {
+        type: "boolean",
+        description:
+          "true SOLO si cambia de tema y el hilo anterior ya no viene al caso. " +
+          "Sin esto, continúa la conversación activa.",
       },
     },
     required: ["pregunta"],
@@ -476,8 +560,9 @@ const pensar: Tool = {
       esquemasPensar[esquemasPensar.length - 1].cache_control = { type: "ephemeral" };
     }
 
+    const sesion = await cargarSesion(sb, input?.nueva === true);
     const costo = { usd: 0, entrada: 0, salida: 0, llamadas: 0 };
-    const mensajes: unknown[] = [{ role: "user", content: pregunta }];
+    const mensajes: unknown[] = [...sesion.mensajes, { role: "user", content: pregunta }];
     let texto = "";
 
     try {
@@ -487,7 +572,7 @@ const pensar: Tool = {
           max_tokens: 700,
           system: [{ type: "text", text: promptPensar(), cache_control: { type: "ephemeral" } }],
           tools: esquemasPensar,
-          messages: mensajes,
+          messages: conCacheEnHistorial(mensajes),
         });
         sumarCosto(costo, data.usage, MODELO_PENSAR);
         if (!data.ok) return { ok: false, motivo: `el analista contestó ${data.status}` };
@@ -526,16 +611,28 @@ const pensar: Tool = {
       return { ok: false, motivo: abortado ? "tardó demasiado" : (e instanceof Error ? e.message : String(e)) };
     } finally {
       costoPensar = costo;
-      console.log(
-        `[pensar] ${costo.llamadas} consulta(s) · ${costo.entrada} in / ${costo.salida} out · ` +
-          `US$ ${costo.usd.toFixed(4)} · ${MODELO_PENSAR}`,
-      );
     }
 
     const dicho = paraDecir(texto);
     if (!dicho) return { ok: false, motivo: "no llegué a una conclusión" };
+
+    // La respuesta final entra al hilo, y el hilo a Supabase: la próxima
+    // repregunta continúa exactamente acá.
+    mensajes.push({ role: "assistant", content: [{ type: "text", text: texto }] });
+    sesion.mensajes = mensajes;
+    sesion.turnos += 1;
+    sesion.llamadas += costo.llamadas;
+    sesion.costo_usd += costo.usd;
+    const idSesion = await guardarSesion(sb, sesion);
+    console.log(
+      `[pensar] sesion #${idSesion ?? "?"} · turno ${sesion.turnos} · ${costo.llamadas} consulta(s) · ` +
+        `${costo.entrada} in / ${costo.salida} out · US$ ${costo.usd.toFixed(4)} este turno · ` +
+        `US$ ${sesion.costo_usd.toFixed(4)} la conversacion · ${MODELO_PENSAR}`,
+    );
+
     return {
       ok: true,
+      turno: sesion.turnos,
       respuesta: dicho,
       nota:
         "Ya está pensado sobre sus datos reales y redactado para voz. Repetilo tal cual " +

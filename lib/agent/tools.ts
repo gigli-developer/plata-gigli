@@ -494,6 +494,58 @@ const deudasPersonas: Tool = {
 
 // ---------------------------------------------------------------------------
 
+/**
+ * La serie del flujo de caja, calculada POR POSTGRES (`flujo_de_caja`). El
+ * modelo recibe una tabla chica de meses y la interpreta — nunca hace la
+ * cuenta. Es la pieza que le faltaba a «entendeme el flujo»: sin ella, el
+ * analista no tenia de donde sacar la proyeccion (plan de razonamiento, paso 5).
+ *
+ * ⚠️ Es la serie DEVENGADA del analista, con supuestos explicitos en la
+ * respuesta; la pagina Cash Flow sigue siendo la vista canonica del usuario.
+ */
+const flujoDeCaja: Tool = {
+  name: "flujo_de_caja",
+  description:
+    "La proyección del flujo de los próximos meses, mes a mes: ingresos previstos, " +
+    "cuotas que caen, gastos fijos y el promedio variable, con el neto. Usar para " +
+    "'¿cómo viene el flujo?', '¿qué se viene en los próximos meses?', 'proyectame " +
+    "septiembre y octubre'. Trae `supuestos`: nombralos si pesan en la respuesta.",
+  input_schema: {
+    type: "object",
+    properties: {
+      meses: { type: "number", description: "Cuántos meses proyectar, 1 a 6. Default 3." },
+    },
+    required: [],
+  },
+  canales: ["telegram", "pc"],
+  async handler(sb, input) {
+    const meses = Math.min(Math.max(Number(input?.meses ?? 3) || 3, 1), 6);
+    const { data, error } = await sb.rpc("flujo_de_caja", { p_meses: meses });
+    if (error) return { ok: false, motivo: `No pude proyectar: ${mensajeDeError(error)}` };
+    const d = (data ?? {}) as {
+      meses?: { mes: string; neto_ars: number; ingresos_previstos_ars: number;
+                cuotas_ars: number; fijos_ars: number; variables_promedio_ars: number;
+                egresos_previstos_ars: number }[];
+      supuestos?: string[];
+    };
+    const filas = d.meses ?? [];
+    if (!filas.length) return { ok: false, motivo: "La proyección volvió vacía." };
+    const primero = filas[0];
+    return {
+      ok: true,
+      ...d,
+      para_decir:
+        `Este mes proyecta un neto de ${importe(primero.neto_ars, "ARS")} ` +
+        `(${importe(primero.ingresos_previstos_ars, "ARS")} de ingresos contra ` +
+        `${importe(primero.egresos_previstos_ars, "ARS")} previstos de egresos)` +
+        (filas.length > 1 ? `; los ${filas.length} meses vienen parecidos salvo lo que digan las cuotas.` : "."),
+      que_hacer:
+        "Es una proyección con supuestos (vienen en `supuestos`): si alguno pesa en lo " +
+        "que contestás — como que las suscripciones no están — decilo en una frase.",
+    };
+  },
+};
+
 const proyeccionFinDeMes: Tool = {
   name: "proyeccion_fin_de_mes",
   description:
@@ -2828,6 +2880,7 @@ export const TOOLS: Tool[] = [
   gastosPorCategoria,
   deudasPersonas,
   proyeccionFinDeMes,
+  flujoDeCaja,
   abrirEnLaPc,
   musica,
   agendaVer,
