@@ -173,6 +173,10 @@ ${CRITERIOS}
 
 Reglas:
 - El monto que dijo ES el monto. No lo corrijas porque te parezca raro.
+- En una división, \`personas\` son SOLO los otros — Lucas jamás va en la lista. Y los
+  nombres son OBLIGATORIOS (cada uno queda debiendo plata): si no los dijo, emití
+  \`pregunta\` pidiéndolos. JAMÁS inventes nombres tipo "Chico 1" — un nombre inventado
+  se convierte en una persona fantasma con una deuda real.
 - La aritmética simple del reparto la podés hacer (mitades, "menos las 5 lucas que puso");
   la división de un gasto compartido NO: eso se emite como \`division\` y la calcula la
   herramienta plata_dividir, que es la que sabe.
@@ -298,11 +302,13 @@ const plataInterpretar: Tool = {
         derivar: "plata_dividir",
         parametros: {
           total: d.total, puse: d.puse,
-          ...(d.mi_parte !== undefined ? { mi_parte: d.mi_parte } : {}),
+          // `!= null` y no `!== undefined`: el modelo emite null para "no lo dijo",
+          // y un mi_parte null llegaba a plata_dividir como 0 y la volteaba.
+          ...(d.mi_parte != null ? { mi_parte: d.mi_parte } : {}),
           descripcion: d.descripcion,
           ...(d.categoria ? { categoria: d.categoria } : {}),
           personas: (d.personas ?? []).map((p) => ({
-            nombre: p.nombre, ...(p.puso !== undefined ? { puso: p.puso } : {}),
+            nombre: p.nombre, ...(p.puso != null ? { puso: p.puso } : {}),
           })),
         },
         para_decir: porque,
