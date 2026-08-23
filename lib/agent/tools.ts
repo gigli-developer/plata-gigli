@@ -23,6 +23,7 @@ import { TOOLS_MUNDO } from "./mundo";
 import { TOOLS_ACCIONES_PLATA } from "./acciones-plata";
 import { TOOLS_CEREBRO } from "./cerebro";
 import { TOOLS_RAZONAR } from "./razonar";
+import { TOOLS_COSTOS } from "./costos";
 import {
   TOOLS_TAREAS, crearTarea, editarTarea, completarTarea, borrarTarea, enumerar,
 } from "./tasks";
@@ -2916,6 +2917,8 @@ export const TOOLS: Tool[] = [
   // propio ciclo de tools, tope 4). El molde de `investigar_en_la_web`, contra
   // las herramientas de Plata. Ver `razonar.ts`.
   ...TOOLS_RAZONAR,
+  // Cuánto salió todo lo de arriba: `costos_ver` agrupa `costos_llamadas` por período. Ver `costos.ts`.
+  ...TOOLS_COSTOS,
   // Google Tasks: ver pendientes y proponer crear/completar/editar/borrar (las
   // ejecuta `confirmar`). Mismo refresh token que la agenda. Ver `tasks.ts`.
   ...TOOLS_TAREAS,

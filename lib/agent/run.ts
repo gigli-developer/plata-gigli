@@ -175,6 +175,16 @@ export type Panel =
       sub?: string;
       pregunta: string;
       opciones: { v: string; tag?: string }[];
+    }
+  | {
+      // Lo que Jarvis gasta en modelos. Lo arma `costos_ver` (costos.ts). Los
+      // montos van en es-AR con coma y dos decimales; filas por usd descendente.
+      tipo: "costos";
+      periodo: "hoy" | "esta semana" | "este mes";
+      total_usd: string;
+      filas: { herramienta: string; usd: string; llamadas: number; detalle: string | null }[];
+      /** La salvedad fija: el motor de voz de Gemini se factura aparte. */
+      nota: string;
     };
 
 /** Previsualización de un cambio pendiente. `antes`/`despues` son null según el tipo. */

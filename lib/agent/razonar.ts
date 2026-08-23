@@ -3,7 +3,7 @@ import { fetchCategories, fetchPaymentMethods, fetchTransactionsRange, type NewT
 import { hoy as hoyAr, sumarDias } from "../fechas";
 import { CRITERIOS } from "./criterios";
 import { guardar, VENCE_MIN } from "./propuestas";
-import { PRECIOS, claveAnthropic, paraDecir } from "./web";
+import { PRECIOS, claveAnthropic, paraDecir, registrarCosto } from "./web";
 import type { Tool } from "./tools";
 
 /**
@@ -261,6 +261,8 @@ const plataInterpretar: Tool = {
     }
     sumarCosto(costo, data.usage, MODELO_INTERPRETAR);
     costoInterpretar = costo;
+    // Sin await: registrar el costo jamás demora ni voltea la interpretación.
+    void registrarCosto(sb, "interpretar", MODELO_INTERPRETAR, costo.usd, costo.entrada, costo.salida);
     console.log(`[interpretar] ${costo.entrada} in / ${costo.salida} out · US$ ${costo.usd.toFixed(4)} · ${MODELO_INTERPRETAR}`);
 
     if (!data.ok) return { ok: false, motivo: `El intérprete contestó ${data.status}.` };
@@ -624,6 +626,9 @@ const pensar: Tool = {
     sesion.llamadas += costo.llamadas;
     sesion.costo_usd += costo.usd;
     const idSesion = await guardarSesion(sb, sesion);
+    // El costo DEL TURNO, no el acumulado: el de la conversación entera ya vive
+    // en `pensar_sesiones`; sumarlo de nuevo acá lo contaría doble en costos_ver.
+    void registrarCosto(sb, "pensar", MODELO_PENSAR, costo.usd, costo.entrada, costo.salida);
     console.log(
       `[pensar] sesion #${idSesion ?? "?"} · turno ${sesion.turnos} · ${costo.llamadas} consulta(s) · ` +
         `${costo.entrada} in / ${costo.salida} out · US$ ${costo.usd.toFixed(4)} este turno · ` +

@@ -119,6 +119,38 @@ export type CostoWeb = { usd: number; busquedas: number; entrada: number; salida
 let ultimo: CostoWeb = { usd: 0, busquedas: 0, entrada: 0, salida: 0 };
 export const costoDeLaUltimaBusqueda = (): CostoWeb => ultimo;
 
+/**
+ * La fila de `costos_llamadas`: una por sub-llamada, de la herramienta que sea.
+ *
+ * Existe porque los costos de `web` e `interpretar` morían en el console.log de
+ * Railway: para contestar "¿cuánto gasté en consultas?" por voz (`costos_ver`),
+ * tienen que estar en una tabla. Vive acá y no en un helper nuevo porque
+ * razonar.ts ya importa de este archivo: cero imports nuevos que cuidar.
+ *
+ * Fuego y olvido, mismo espíritu que `logActivity` en db.ts: registrar un costo
+ * JAMÁS puede voltear la consulta que lo generó. Los llamadores hacen
+ * `void registrarCosto(...)` sin await, y si el insert falla se pierde una fila
+ * de la contabilidad y nada más.
+ */
+export async function registrarCosto(
+  sb: SupabaseClient,
+  herramienta: "pensar" | "interpretar" | "web",
+  modelo: string,
+  usd: number,
+  entrada: number,
+  salida: number,
+): Promise<void> {
+  try {
+    await sb.from("costos_llamadas").insert({
+      herramienta,
+      modelo,
+      usd,
+      tokens_entrada: Math.round(entrada),
+      tokens_salida: Math.round(salida),
+    });
+  } catch { /* noop: mejor una fila menos en la cuenta que una consulta caída */ }
+}
+
 // ---------------------------------------------------------------------------
 // El prompt de la sub-llamada
 // ---------------------------------------------------------------------------
@@ -278,6 +310,8 @@ async function investigar(sb: SupabaseClient, pregunta: string): Promise<
     // llamada haya fallado después: una búsqueda que se cortó a la mitad igual se pagó.
     costo.usd += costo.busquedas * USD_POR_BUSQUEDA;
     ultimo = costo;
+    // Sin await: la contabilidad no demora la respuesta (ver registrarCosto).
+    void registrarCosto(sb, "web", MODELO_WEB, costo.usd, costo.entrada, costo.salida);
     console.log(
       `[web] ${costo.busquedas} búsqueda(s) · ${costo.entrada} in / ${costo.salida} out · ` +
         `US$ ${costo.usd.toFixed(4)} · ${MODELO_WEB}`,
