@@ -39,7 +39,7 @@ import { ZONA } from "../fechas";
 export const MODELO_WEB = process.env.AGENT_MODEL_WEB ?? "claude-sonnet-5";
 
 /** USD por millón de tokens. Si un modelo no está, se cobra como Opus: sobreestimar es el lado seguro. */
-const PRECIOS: Record<string, { in: number; out: number; cacheRead: number }> = {
+export const PRECIOS: Record<string, { in: number; out: number; cacheRead: number }> = {
   "claude-opus-5": { in: 15, out: 75, cacheRead: 1.5 },
   "claude-sonnet-5": { in: 3, out: 15, cacheRead: 0.3 },
   "claude-haiku-4-5-20251001": { in: 1, out: 5, cacheRead: 0.1 },
@@ -87,7 +87,8 @@ const TIMEOUT_MS = 20_000;
  */
 let claveCacheada: string | null = null;
 
-async function clave(sb: SupabaseClient): Promise<string> {
+/** Exportada para los otros sub-agentes (razonar.ts): misma clave, mismo caché. */
+export async function claveAnthropic(sb: SupabaseClient): Promise<string> {
   if (claveCacheada) return claveCacheada;
   const { data, error } = await sb
     .from("app_secrets")
@@ -152,7 +153,7 @@ dirías a alguien de al lado. Tu texto lo va a leer un sintetizador de voz.
  * tiene dos partes — pasa lo mismo en `run.ts`, que limpia el markdown a mano por esto.
  * Es determinístico, así que se arregla acá en vez de volver a pedírselo y pagar otra vuelta.
  */
-function paraDecir(t: string): string {
+export function paraDecir(t: string): string {
   const limpio = t
     .replace(/\[([^\]]*)\]\([^)]*\)/g, "$1")   // [texto](link) → texto
     .replace(/https?:\/\/\S+/g, "")            // URLs sueltas
@@ -181,7 +182,7 @@ type Bloque = { type: string; text?: string };
 async function investigar(sb: SupabaseClient, pregunta: string): Promise<
   { ok: true; texto: string } | { ok: false; motivo: string }
 > {
-  const apiKey = await clave(sb);
+  const apiKey = await claveAnthropic(sb);
   const hoy = new Date().toLocaleDateString("es-AR", {
     weekday: "long", year: "numeric", month: "long", day: "numeric", timeZone: ZONA,
   });

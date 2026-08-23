@@ -22,6 +22,7 @@ import { TOOLS_CODIGO } from "./codigo";
 import { TOOLS_MUNDO } from "./mundo";
 import { TOOLS_ACCIONES_PLATA } from "./acciones-plata";
 import { TOOLS_CEREBRO } from "./cerebro";
+import { TOOLS_RAZONAR } from "./razonar";
 import {
   TOOLS_TAREAS, crearTarea, editarTarea, completarTarea, borrarTarea, enumerar,
 } from "./tasks";
@@ -993,7 +994,8 @@ const confirmar: Tool = {
   description:
     "Ejecuta un cambio que ya se propuso y que el usuario ACEPTÓ. Sirve para TODAS las " +
     "que proponen: `agenda_cambiar`, `plata_registrar`, `deuda_pagar`, `cuotas_convertir`, " +
-    "`divisas_registrar`, `plata_dividir`, `tareas_cambiar` y `cerebro_anotar`. " +
+    "`divisas_registrar`, `plata_dividir`, `plata_interpretar`, `tareas_cambiar` y " +
+    "`cerebro_anotar`. " +
     "Nunca la llames sin que haya dicho explícitamente que sí. Si dijo que no, usá cancelar=true.",
   input_schema: {
     type: "object",
@@ -2856,6 +2858,11 @@ export const TOOLS: Tool[] = [
   // Las notas de Lucas. El servidor solo devuelve la acción: el contenido lo
   // lee la PC de su propio disco y nunca pasa por acá. Ver `cerebro.ts`.
   ...TOOLS_CEREBRO,
+  // La capa de razonamiento: `plata_interpretar` (lo dicho crudo → una propuesta,
+  // con el porqué a la vista) y `pensar` (conclusión de solo lectura con su
+  // propio ciclo de tools, tope 4). El molde de `investigar_en_la_web`, contra
+  // las herramientas de Plata. Ver `razonar.ts`.
+  ...TOOLS_RAZONAR,
   // Google Tasks: ver pendientes y proponer crear/completar/editar/borrar (las
   // ejecuta `confirmar`). Mismo refresh token que la agenda. Ver `tasks.ts`.
   ...TOOLS_TAREAS,
