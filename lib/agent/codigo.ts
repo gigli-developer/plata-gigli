@@ -82,7 +82,27 @@ export type TareaCodigo = {
   estado: EstadoTarea;
   session_id: string | null;
   creado_en: string;
+  /** La PC lo refresca cada ~2 min mientras ejecuta. Viejo = zombi. */
+  ultimo_latido: string | null;
+  /** Cómo terminó. NULL mientras no terminó; el estado `hecha` es para los dos. */
+  exito: boolean | null;
+  resumen: string | null;
+  costo_usd: number | null;
 };
+
+/**
+ * Un `ejecutando` sin latido hace 10 minutos es un zombi: la PC late cada ~2,
+ * así que 10 son cinco latidos seguidos perdidos — eso no es red lenta, es una
+ * máquina apagada o un Jarvis muerto. El zombi se puede relanzar.
+ */
+export const LATIDO_VENCIDO_MS = 10 * 60 * 1000;
+
+export function latidoVencido(t: Pick<TareaCodigo, "ultimo_latido">): boolean {
+  // Sin latido no hubo reclamo sano (el reclamo lo setea siempre): también zombi.
+  if (!t.ultimo_latido) return true;
+  const ts = Date.parse(t.ultimo_latido);
+  return !Number.isFinite(ts) || Date.now() - ts > LATIDO_VENCIDO_MS;
+}
 
 /**
  * Lo que viaja adentro de `valor`, serializado como JSON.
@@ -350,7 +370,8 @@ function armarPrompt(repo: string, consigna: string, archivos: string[]): string
 // Acceso a la tabla
 // ---------------------------------------------------------------------------
 
-const COLUMNAS = "id,repo,archivos,prompt,estado,session_id,creado_en";
+const COLUMNAS =
+  "id,repo,archivos,prompt,estado,session_id,creado_en,ultimo_latido,exito,resumen,costo_usd";
 
 type Fila = {
   id: string;
@@ -360,6 +381,10 @@ type Fila = {
   estado: string;
   session_id: string | null;
   creado_en: string;
+  ultimo_latido: string | null;
+  exito: boolean | null;
+  resumen: string | null;
+  costo_usd: number | string | null;
 };
 
 const aTarea = (f: Fila): TareaCodigo => ({
@@ -370,6 +395,11 @@ const aTarea = (f: Fila): TareaCodigo => ({
   estado: (ESTADOS as string[]).includes(f.estado) ? (f.estado as EstadoTarea) : "borrador",
   session_id: f.session_id,
   creado_en: f.creado_en,
+  ultimo_latido: f.ultimo_latido,
+  exito: f.exito,
+  resumen: f.resumen,
+  // numeric de Postgres llega como string por PostgREST.
+  costo_usd: f.costo_usd == null ? null : Number(f.costo_usd),
 });
 
 async function buscarTarea(sb: SupabaseClient, id: string): Promise<TareaCodigo | null> {
@@ -384,26 +414,46 @@ async function buscarTarea(sb: SupabaseClient, id: string): Promise<TareaCodigo 
 }
 
 /**
- * Mueve una tarea de estado. Exportada porque el ciclo `lista → ejecutando →
- * hecha` lo cierra el cliente local, y hoy no hay endpoint que lo reciba: lo va
- * a wirear la otra mitad. Ver el informe.
+ * Mueve una tarea de estado, PERO solo si está en uno de los estados `desde`.
+ *
+ * El condicionamiento no es prolijidad: es el reclamo atómico del ciclo. La PC
+ * reclama con `lista → ejecutando`; si dos lanzamientos de la misma tarea llegan
+ * casi juntos (el caso real: "no arrancó, mandala de nuevo" cuando SÍ había
+ * arrancado), el primero se la lleva y el segundo encuentra el WHERE vacío y
+ * devuelve null. Un UPDATE con WHERE es una sola sentencia: no hay ventana entre
+ * leer el estado y escribirlo.
+ *
+ * La usa `/api/codigo` (reclamar / latido / soltar / terminar) y el propio
+ * `tarea_codigo_lanzar` (confirmar y resucitar zombis).
  */
-export async function marcarEstadoTarea(
+export async function transicionarTarea(
   sb: SupabaseClient,
   id: string,
-  estado: EstadoTarea,
-  sessionId?: string | null,
+  desde: EstadoTarea[],
+  hacia: EstadoTarea,
+  campos?: {
+    session_id?: string | null;
+    ultimo_latido?: string | null;
+    exito?: boolean | null;
+    resumen?: string | null;
+    costo_usd?: number | null;
+  },
 ): Promise<TareaCodigo | null> {
-  const parche: Record<string, unknown> = { estado };
-  if (sessionId !== undefined) parche.session_id = sessionId;
+  const parche: Record<string, unknown> = { estado: hacia, ...(campos ?? {}) };
   const { data, error } = await sb
     .from("tareas_codigo")
     .update(parche)
     .eq("id", normalizarId(id))
+    .in("estado", desde)
     .select(COLUMNAS);
   if (error) throw error;
   const fila = (data as Fila[] | null)?.[0];
   return fila ? aTarea(fila) : null;
+}
+
+/** Para que /api/codigo distinga "no estaba en ese estado" de "no existe". */
+export async function leerTarea(sb: SupabaseClient, id: string): Promise<TareaCodigo | null> {
+  return buscarTarea(sb, normalizarId(id));
 }
 
 /** Inserta reintentando si el id corto ya estaba tomado (colisión de PK). */
@@ -607,7 +657,12 @@ const tareaCodigoLanzar: Tool = {
       };
     }
 
-    if (tarea.estado === "ejecutando") {
+    // Un `ejecutando` que late está corriendo de verdad; uno que dejó de latir
+    // hace >10 min es un zombi (la PC se apagó a mitad de la tarea) y lo único
+    // sensato es dejar relanzarlo — si no, queda clavado en "ya está corriendo"
+    // para siempre.
+    const zombi = tarea.estado === "ejecutando" && latidoVencido(tarea);
+    if (tarea.estado === "ejecutando" && !zombi) {
       return {
         ok: false,
         motivo: `Esa tarea ya está corriendo en ${tarea.repo}.`,
@@ -615,6 +670,17 @@ const tareaCodigoLanzar: Tool = {
       };
     }
     if (tarea.estado === "hecha") {
+      if (tarea.exito === false) {
+        return {
+          ok: false,
+          motivo:
+            `Esa tarea ya se corrió en ${tarea.repo} y FALLÓ` +
+            (tarea.resumen ? `: ${recortarParaVoz(tarea.resumen)}` : "."),
+          que_hacer:
+            "Decíselo, con el motivo. Para reintentar hay que dictarla de nuevo con " +
+            "`tarea_codigo_dictar` (el repo puede haber quedado a medio tocar: avisale eso también).",
+        };
+      }
       return {
         ok: false,
         motivo: `Esa tarea ya se hizo (${tarea.repo}).`,
@@ -622,14 +688,30 @@ const tareaCodigoLanzar: Tool = {
       };
     }
 
-    // `lista` y ya lanzada: se permite reenviar (el cliente deduplica por
-    // tarea_id) porque el caso real es "no arrancó, mandala de nuevo". Se avisa
-    // igual para que la respuesta no suene a que es la primera vez.
-    const reenvio = tarea.estado === "lista";
+    // `lista` y ya lanzada: se permite reenviar, porque el caso real es "no
+    // arrancó, mandala de nuevo". La deduplicación no es una promesa del
+    // cliente: es el reclamo atómico — si SÍ había arrancado, la tarea está
+    // `ejecutando` y el reclamo del segundo envío encuentra el WHERE vacío.
+    const reenvio = tarea.estado === "lista" || zombi;
 
     try {
-      const actualizada = await marcarEstadoTarea(sb, id, "lista");
-      if (actualizada) tarea = actualizada;
+      // La transición es condicionada también acá: si entre el SELECT de arriba
+      // y este UPDATE la PC reclamó la tarea (o la terminó), el WHERE queda
+      // vacío y NO se le pisa el estado.
+      const actualizada = await transicionarTarea(
+        sb, id,
+        zombi ? ["ejecutando"] : ["borrador", "lista"],
+        "lista",
+        zombi ? { ultimo_latido: null } : undefined,
+      );
+      if (!actualizada) {
+        return {
+          ok: false,
+          motivo: "La tarea cambió de estado justo mientras la lanzaba (la PC la agarró o la terminó).",
+          que_hacer: "Fijate con `tareas_codigo_ver` cómo quedó antes de contestar.",
+        };
+      }
+      tarea = actualizada;
     } catch (e) {
       return { ok: false, motivo: `No pude marcarla como lista: ${mensajeDeError(e)}` };
     }
@@ -651,7 +733,11 @@ const tareaCodigoLanzar: Tool = {
       tarea_id: tarea.id,
       reenvio,
       abriendo: `la tarea en ${tarea.repo}`,
-      frase: reenvio ? `Dale, la mando de nuevo a ${tarea.repo}.` : `Dale, la largo en ${tarea.repo}.`,
+      frase: zombi
+        ? `Esa tarea había quedado colgada (la PC dejó de reportar a mitad de camino). La relanzo en ${tarea.repo}.`
+        : reenvio
+          ? `Dale, la mando de nuevo a ${tarea.repo}.`
+          : `Dale, la largo en ${tarea.repo}.`,
       accion,
     };
   },
@@ -708,6 +794,14 @@ const tareasCodigoVer: Tool = {
       cuando: diaCorto(diaAr(t.creado_en)),
       archivos: t.archivos.length,
       consigna: consignaCorta(t.prompt),
+      // Una `ejecutando` que dejó de latir está colgada: la PC murió a mitad de
+      // camino. Se dice tal cual — relanzarla es `tarea_codigo_lanzar`, que ya
+      // sabe resucitar zombis.
+      ...(t.estado === "ejecutando" && latidoVencido(t) ? { colgada: true } : {}),
+      // Las terminadas cuentan cómo salieron (aparecen al filtrar estado=hecha).
+      ...(t.estado === "hecha"
+        ? { exito: t.exito, ...(t.resumen ? { resumen: recortarParaVoz(t.resumen) } : {}) }
+        : {}),
     }));
 
     const porEstado = tareas.reduce<Record<string, number>>((acc, t) => {
@@ -722,13 +816,24 @@ const tareasCodigoVer: Tool = {
       tareas: lista,
       para_decir:
         `${tareas.length} tarea${tareas.length === 1 ? "" : "s"} de código: ` +
-        lista.map((t) => `${t.repo} (${t.estado})`).join(", ") + ".",
+        lista
+          .map((t) => `${t.repo} (${"colgada" in t && t.colgada ? "colgada" : t.estado})`)
+          .join(", ") + ".",
       que_hacer:
         "Si quiere lanzar una, usá `tarea_codigo_lanzar` con su id. Si quiere cambiarla, " +
         "hay que dictarla de nuevo con `tarea_codigo_dictar`.",
     };
   },
 };
+
+/**
+ * El resumen final de una sesión de Claude Code puede tener 2000 caracteres;
+ * para el canal de voz alcanzan las primeras frases.
+ */
+function recortarParaVoz(texto: string): string {
+  const limpio = texto.replace(/\s+/g, " ").trim();
+  return limpio.length > 220 ? limpio.slice(0, 220) + "…" : limpio;
+}
 
 /**
  * La consigna sin el contexto ni las reglas fijas que agrega `armarPrompt`.
