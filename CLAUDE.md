@@ -137,6 +137,7 @@ finanzas-app/
 | `2026-08-18_convertir_a_cuotas.sql` | ✅ SÍ — RPC atómica probada; sin caller en UI/asistente todavía. |
 | `2026-08-18_papelera_divisas.sql` | ✅ SÍ (18/08 noche) — probada en vivo con un cambio de juguete. |
 | `migrations/2026-08-18_pagar_deuda.sql` | ✅ SÍ (18/08 noche, vía MCP `apply_migration`) — RPC atómica de pago/saldado de deudas, probada. La app AÚN llama su camino viejo (payDebt/settleDebt); cablear a la RPC está pendiente. |
+| `migrations/2026-08-23_tareas_codigo_ciclo.sql` | ✅ SÍ (23/08, vía MCP) — columnas `ultimo_latido`/`exito`/`resumen`/`costo_usd` para el ciclo lista→ejecutando→hecha. Batería: `scripts/probar-codigo-ciclo.mjs` (16 casos, borra sus filas). |
 
 **Módulos (10):** Resumen `/` · Métricas `/metricas` · **Gastos hormiga `/hormiga`** · Cash Flow `/cashflow` · Transacciones · Tarjetas · Deudas · Recurrentes (vacía) · Divisas (mock) · Reglas. Login `/login` y recuperación `/auth/reset` van sin shell.
 
