@@ -77,6 +77,167 @@ const CIELO: Record<number, string> = {
 
 const ZONA_AR = "America/Argentina/Buenos_Aires";
 
+/*
+ * ── EL RESPALDO DEL CLIMA ────────────────────────────────────────────────────
+ *
+ * Open-Meteo empezó a contestar 429 a TODA consulta desde producción el
+ * 23/08/2026. No es culpa nuestra ni se arregla llamando menos: su cuota
+ * gratuita es por IP, y la IP de salida de Railway es compartida entre muchos
+ * proyectos, así que la queman terceros. Medido ese día: 4 de 4 intentos con
+ * 429 desde Railway, y HTTP 200 desde la máquina de Lucas contra la misma URL.
+ *
+ * MET Norway (el servicio meteorológico noruego, el de yr.no) es gratis, no
+ * pide clave y solo exige un User-Agent que identifique la app. Se usa como
+ * SEGUNDA opción, no como primera: Open-Meteo da probabilidad de lluvia en
+ * porcentaje y met.no no, así que mientras Open-Meteo funcione conviene.
+ *
+ * ⚠️ Lo que met.no NO da, y por lo tanto acá no se inventa:
+ *   · probabilidad de lluvia en % — da MILÍMETROS. Las horas van con
+ *     `lluvia_pct: 0` (el campo no aplica) y el aviso se redacta con los mm
+ *     reales, que es el dato que sí existe. Poner un porcentaje derivado de
+ *     los mm sería exactamente la cifra inventada que `numeros.ts` persigue.
+ *   · sensación térmica — se repite la temperatura, y la frase la omite sola
+ *     porque solo se menciona cuando difiere en 2 grados o más.
+ */
+const CIELO_MET: Record<string, string> = {
+  clearsky: "despejado", fair: "mayormente despejado", partlycloudy: "parcialmente nublado",
+  cloudy: "nublado", fog: "con niebla",
+  lightrain: "con lluvia leve", rain: "con lluvia", heavyrain: "con lluvia fuerte",
+  lightrainshowers: "con chaparrones leves", rainshowers: "con chaparrones",
+  heavyrainshowers: "con chaparrones fuertes",
+  lightsleet: "con aguanieve leve", sleet: "con aguanieve", heavysleet: "con aguanieve fuerte",
+  lightsnow: "con nevada leve", snow: "nevando", heavysnow: "con nevada fuerte",
+  rainandthunder: "con tormenta", heavyrainandthunder: "con tormenta fuerte",
+  rainshowersandthunder: "con tormenta",
+};
+
+/** `partlycloudy_night` → "parcialmente nublado". El sufijo día/noche no se dice. */
+function cieloDeMet(codigo: string | undefined): string {
+  if (!codigo) return "sin datos de cielo";
+  const base = String(codigo).replace(/_(day|night|polartwilight)$/, "");
+  return CIELO_MET[base] ?? "sin datos de cielo";
+}
+
+type Donde = { lat: number; lon: number; nombre: string; nombre_largo: string; tz?: string };
+
+/** El pronóstico de Open-Meteo, la fuente preferida (da probabilidad de lluvia). */
+function traerDeOpenMeteo(donde: Donde, dias: number) {
+  return traer(
+    `https://api.open-meteo.com/v1/forecast?latitude=${donde.lat}&longitude=${donde.lon}` +
+      `&current=temperature_2m,apparent_temperature,relative_humidity_2m,weather_code` +
+      `&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_max,weather_code` +
+      // `forecast_hours` corta el hourly a partir de la HORA ACTUAL del lugar
+      // (verificado en la doc de Open-Meteo), así que el [0] ya es esta hora.
+      // Sin ese parámetro el array arranca a las 00:00 del día y habría que
+      // indexar contra el timezone a mano — de ahí saldría el próximo bug UTC.
+      `&hourly=temperature_2m,precipitation_probability&forecast_hours=12` +
+      `&timezone=${encodeURIComponent(donde.tz || ZONA_AR)}&forecast_days=${dias}`,
+  );
+}
+
+/** El día local (YYYY-MM-DD) de un instante ISO, en la zona del lugar. */
+function diaLocal(iso: string, tz: string): string {
+  return new Date(iso).toLocaleDateString("sv-SE", { timeZone: tz });
+}
+
+/** La hora local (0-23, sin cero adelante) de un instante ISO. */
+function horaLocal(iso: string, tz: string): string {
+  return String(Number(new Date(iso).toLocaleString("en-GB", { timeZone: tz, hour: "2-digit", hour12: false })));
+}
+
+/**
+ * El clima según MET Norway, con la MISMA forma que devuelve el camino de
+ * Open-Meteo — la cara WPF no se entera de cuál contestó.
+ */
+async function climaDeMetNo(donde: Donde, dias: number) {
+  const tz = donde.tz || ZONA_AR;
+  const d = await traer(
+    `https://api.met.no/weatherapi/locationforecast/2.0/compact` +
+      `?lat=${donde.lat.toFixed(4)}&lon=${donde.lon.toFixed(4)}`,
+  );
+  const serie: { time: string; data: Record<string, unknown> }[] = d?.properties?.timeseries ?? [];
+  if (!serie.length) throw new Error("met.no no devolvió pronóstico");
+
+  const det = (p: { data: Record<string, unknown> }, k: string) =>
+    ((p.data as { instant?: { details?: Record<string, number> } }).instant?.details ?? {})[k];
+  const prox = (p: { data: Record<string, unknown> }) =>
+    (p.data as { next_1_hours?: { summary?: { symbol_code?: string }; details?: { precipitation_amount?: number } };
+                 next_6_hours?: { summary?: { symbol_code?: string }; details?: { precipitation_amount?: number } } });
+
+  const ahora = serie[0];
+  const temp = redondo(det(ahora, "air_temperature") ?? 0);
+  const humedad = redondo(det(ahora, "relative_humidity") ?? 0);
+  const cielo = cieloDeMet(prox(ahora).next_1_hours?.summary?.symbol_code
+    ?? prox(ahora).next_6_hours?.summary?.symbol_code);
+
+  // Los días: met.no no los agrega, así que se agrupan por fecha local.
+  const porDia = new Map<string, { temps: number[]; mm: number; codigos: string[] }>();
+  for (const p of serie) {
+    const f = diaLocal(p.time, tz);
+    if (!porDia.has(f)) porDia.set(f, { temps: [], mm: 0, codigos: [] });
+    const g = porDia.get(f)!;
+    const t = det(p, "air_temperature");
+    if (typeof t === "number") g.temps.push(t);
+    g.mm += prox(p).next_1_hours?.details?.precipitation_amount ?? 0;
+    const c = prox(p).next_6_hours?.summary?.symbol_code ?? prox(p).next_1_hours?.summary?.symbol_code;
+    if (c) g.codigos.push(c);
+  }
+
+  const fechas = [...porDia.keys()].sort().slice(0, dias);
+  const pronostico = fechas.map((f, i) => {
+    const g = porDia.get(f)!;
+    return {
+      fecha: f,
+      cuando: i === 0 ? "hoy" : i === 1 ? "mañana" : diaLargo(f),
+      min: redondo(Math.min(...g.temps)),
+      max: redondo(Math.max(...g.temps)),
+      // No hay probabilidad: 0 significa «no aplica», y los mm van en `lluvia_mm`.
+      prob_lluvia_pct: 0,
+      lluvia_mm: Math.round(g.mm * 10) / 10,
+      cielo: cieloDeMet(g.codigos[Math.floor(g.codigos.length / 2)]),
+    };
+  });
+
+  const horas = serie.slice(0, 12).map((p) => ({
+    hora: horaLocal(p.time, tz),
+    temp: redondo(det(p, "air_temperature") ?? 0),
+    lluvia_pct: 0,
+    lluvia_mm: prox(p).next_1_hours?.details?.precipitation_amount ?? 0,
+  }));
+
+  // El aviso se arma con MILÍMETROS, que es lo que met.no sí sabe.
+  const mojadas = horas.filter((h) => h.lluvia_mm > 0);
+  const totalMm = Math.round(mojadas.reduce((s, h) => s + h.lluvia_mm, 0) * 10) / 10;
+  const avisoLluvia = mojadas.length
+    ? mojadas.length === 1
+      ? `llueve a las ${mojadas[0].hora} · ${totalMm} mm`
+      : `llueve de ${mojadas[0].hora} a ${mojadas[mojadas.length - 1].hora} · ${totalMm} mm`
+    : null;
+
+  const hoyP = pronostico[0];
+  const maxmin = hoyP ? ` Hoy va de ${hoyP.min} a ${hoyP.max} grados.` : "";
+  const lluvia = avisoLluvia ? ` Se esperan ${totalMm} milímetros de lluvia.` : "";
+
+  return {
+    ok: true,
+    lugar: donde.nombre_largo,
+    fuente: "met.no",
+    ahora: { temperatura: temp, sensacion: temp, humedad_pct: humedad, cielo },
+    pronostico,
+    para_decir: `En ${donde.nombre} hay ${temp} grados, ${cielo}.${maxmin}${lluvia}`,
+    panel: {
+      tipo: "clima",
+      lugar: donde.nombre,
+      ahora: { temperatura: temp, sensacion: temp, humedad_pct: humedad, cielo },
+      horas: horas.slice(0, 8).map((h) => ({ hora: h.hora, temp: h.temp, lluvia_pct: h.lluvia_pct })),
+      dias: pronostico.slice(0, 3).map((p) => ({
+        dia: diaChico(p.fecha), min: p.min, max: p.max, lluvia_pct: p.prob_lluvia_pct, cielo: p.cielo,
+      })),
+      aviso_lluvia: avisoLluvia,
+    },
+  };
+}
+
 /** Ciudad → coordenadas. Open-Meteo tiene su propio geocodificador, sin clave. */
 async function ubicar(lugar: string) {
   const q = encodeURIComponent(lugar);
@@ -153,17 +314,16 @@ const clima: Tool = {
         };
       }
 
-      const d = await traer(
-        `https://api.open-meteo.com/v1/forecast?latitude=${donde.lat}&longitude=${donde.lon}` +
-          `&current=temperature_2m,apparent_temperature,relative_humidity_2m,weather_code` +
-          `&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_max,weather_code` +
-          // `forecast_hours` corta el hourly a partir de la HORA ACTUAL del lugar
-          // (verificado en la doc de Open-Meteo), así que el [0] ya es esta hora.
-          // Sin ese parámetro el array arranca a las 00:00 del día y habría que
-          // indexar contra el timezone a mano — de ahí saldría el próximo bug UTC.
-          `&hourly=temperature_2m,precipitation_probability&forecast_hours=12` +
-          `&timezone=${encodeURIComponent(donde.tz || ZONA_AR)}&forecast_days=${dias}`,
-      );
+      // Si Open-Meteo no contesta —hoy, 429 sostenido por la IP compartida de
+      // Railway— se cae a met.no en vez de devolver «no pude». El usuario
+      // pregunta por el clima, no por qué proveedor lo sirve.
+      let d;
+      try {
+        d = await traerDeOpenMeteo(donde, dias);
+      } catch (e) {
+        console.warn(`[clima] open-meteo falló (${motivoDe(e)}), voy a met.no`);
+        return await climaDeMetNo(donde, dias);
+      }
 
       const ahora = d.current;
       const temp = redondo(ahora.temperature_2m);
