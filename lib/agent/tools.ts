@@ -10,7 +10,8 @@ import {
 import { fetchCardCharges, detectarSubs } from "../subs";
 import {
   SinAutorizar, listarEventos, obtenerEvento, crearEvento, editarEvento, borrarEvento,
-  type CamposEvento, type Evento,
+  normalizarRecordatorios, aRRule, pideNoRepetir,
+  type CamposEvento, type Evento, type Recordatorio, type PedidoRecordatorio, type MetodoAviso,
 } from "./google";
 import {
   guardar, tomar, descartar, marcarEjecutada, yaEjecutada, VENCE_MIN, type TipoCambio,
@@ -24,6 +25,7 @@ import { TOOLS_ACCIONES_PLATA } from "./acciones-plata";
 import { TOOLS_CEREBRO } from "./cerebro";
 import { TOOLS_RAZONAR } from "./razonar";
 import { TOOLS_COSTOS } from "./costos";
+import { TOOLS_AVISOS } from "./avisos";
 import {
   TOOLS_TAREAS, crearTarea, editarTarea, completarTarea, borrarTarea, enumerar,
 } from "./tasks";
@@ -881,6 +883,24 @@ const agendaVer: Tool = {
   },
 };
 
+/**
+ * Los avisos, dichos como se dicen. Va en la tarjeta Y en la frase: el
+ * recordatorio es invisible hasta que suena, así que si la previsualización no
+ * lo nombra, Lucas confirma a ciegas y se entera recién cuando NO le llegó.
+ */
+function avisosEnCriollo(avisos: Recordatorio[] | undefined): string | null {
+  if (!avisos || avisos.length === 0) return null;
+  const uno = (m: number) =>
+    m === 0 ? "en el momento"
+    : m % 1440 === 0 ? (m === 1440 ? "un día antes" : `${m / 1440} días antes`)
+    : m % 60 === 0 ? (m === 60 ? "una hora antes" : `${m / 60} horas antes`)
+    : `${m} minutos antes`;
+  const partes = avisos.map((a) => uno(a.minutos) + (a.metodo === "email" ? " por mail" : ""));
+  return partes.length === 1
+    ? `avisa ${partes[0]}`
+    : `avisa ${partes.slice(0, -1).join(", ")} y ${partes[partes.length - 1]}`;
+}
+
 const agendaCambiar: Tool = {
   name: "agenda_cambiar",
   description:
@@ -906,6 +926,28 @@ const agendaCambiar: Tool = {
       todo_el_dia: { type: "boolean", description: "true si ocupa el día entero." },
       lugar: { type: "string", description: "Dónde." },
       nota: { type: "string", description: "Descripción o detalle." },
+      recordatorios: {
+        type: "array",
+        items: { type: "integer", minimum: 0, maximum: 40320 },
+        maxItems: 5,
+        description:
+          "Avisos, en MINUTOS ANTES del inicio: [15] = quince minutos antes, [1440] = un día " +
+          "antes, [15, 1440] = los dos. Hasta 5. Si NO lo mandás, los avisos que ya tenga " +
+          "quedan como están; mandá [] para sacárselos todos. Esto es lo que hace SONAR el " +
+          "teléfono: si pidió que le avisen, va acá.",
+      },
+      recordatorios_metodo: {
+        type: "string",
+        enum: ["popup", "email"],
+        description: "Por dónde avisa. Default popup (cartel en el celular). Email solo si pidió un mail.",
+      },
+      repetir: {
+        type: "string",
+        description:
+          "Cada cuánto se repite, dicho como se dice: \"todos los martes\", \"días hábiles\", " +
+          "\"cada dos semanas\", \"mensual\", \"todos los años\", \"fines de semana\". Si no lo " +
+          "mandás no se toca la repetición; mandá \"no\" para que deje de repetirse.",
+      },
     },
     required: ["accion"],
   },
@@ -922,6 +964,41 @@ const agendaCambiar: Tool = {
         if (input?.[k] !== undefined) campos[k] = String(input[k]);
       }
       if (input?.todo_el_dia !== undefined) campos.todo_el_dia = Boolean(input.todo_el_dia);
+
+      // Los avisos y la repetición no entran en el loop de arriba: uno es una
+      // lista y el otro se traduce. Se VALIDAN acá, al armar la propuesta, y no
+      // en `confirmar`: si el modelo pidió seis recordatorios o un "cada tanto"
+      // que nadie entiende, tiene que enterarse ANTES de leerle la tarjeta al
+      // usuario — pedirle el sí a algo que después va a fallar es la peor
+      // secuencia posible en una conversación hablada.
+      if (input?.recordatorios !== undefined) {
+        if (!Array.isArray(input.recordatorios)) {
+          return { ok: false, motivo: "Los recordatorios tienen que ser una lista de minutos." };
+        }
+        campos.recordatorios = input.recordatorios as PedidoRecordatorio[];
+      }
+      if (input?.recordatorios_metodo !== undefined) {
+        campos.recordatorios_metodo = String(input.recordatorios_metodo) as MetodoAviso;
+      }
+      if (input?.repetir !== undefined) campos.repetir = String(input.repetir);
+
+      let avisos: Recordatorio[] | undefined;
+      try {
+        if (campos.recordatorios !== undefined) {
+          avisos = normalizarRecordatorios(campos.recordatorios, campos.recordatorios_metodo);
+        }
+      } catch (e) {
+        return { ok: false, motivo: mensajeDeError(e) };
+      }
+      if (campos.repetir !== undefined && !pideNoRepetir(campos.repetir) && !aRRule(campos.repetir)) {
+        return {
+          ok: false,
+          motivo: `No entendí cada cuánto se repite ("${campos.repetir}").`,
+          que_hacer:
+            "Preguntale cómo se repite con palabras simples: «todos los martes», «cada dos " +
+            "semanas», «una vez por mes». NO inventes la repetición ni lo crees sin ella.",
+        };
+      }
 
       if (accion === "crear") {
         if (!campos.titulo || !campos.inicio) {
@@ -948,10 +1025,16 @@ const agendaCambiar: Tool = {
           todo_el_dia: Boolean(campos.todo_el_dia),
         }), lugar: campos.lugar, nota: campos.nota };
 
+        // El aviso y la repetición se agregan a la NOTA de la tarjeta: son el
+        // detalle que hay que poder chequear de un vistazo antes de decir que sí.
+        const detalle = [avisosEnCriollo(avisos), campos.repetir && !pideNoRepetir(campos.repetir)
+          ? `se repite ${campos.repetir}` : null].filter(Boolean).join(" · ");
+        if (detalle) previa.nota = previa.nota ? `${previa.nota} · ${detalle}` : detalle;
+
         return {
           ok: true,
           propuesta: { id: p.id, dominio: "agenda", tipo: "crear", antes: null, despues: previa },
-          para_decir: `Crear "${previa.titulo}" el ${previa.cuando}.`,
+          para_decir: `Crear "${previa.titulo}" el ${previa.cuando}${detalle ? `, ${detalle}` : ""}.`,
           que_hacer: `Mostrale esto y preguntale si confirma. Si dice que sí, llamá confirmar con id "${p.id}".`,
         };
       }
@@ -2922,6 +3005,10 @@ export const TOOLS: Tool[] = [
   // Google Tasks: ver pendientes y proponer crear/completar/editar/borrar (las
   // ejecuta `confirmar`). Mismo refresh token que la agenda. Ver `tasks.ts`.
   ...TOOLS_TAREAS,
+  // El push al celular: `avisar_al_celular` manda una notificación por ntfy AHORA.
+  // Lo PROGRAMADO no va por acá — un «avisame a las 3» es un evento de agenda con
+  // recordatorio, que es quien sabe esperar. Ver `avisos.ts`.
+  ...TOOLS_AVISOS,
   desplegarSetup,
   cerrarse,
 ];

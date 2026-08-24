@@ -22,8 +22,41 @@ import { hoy as hoyAr, sumarDias, esFecha } from "../fechas";
  * Trabajo, Desarrollo Personal, Generales, Estudios — verificado el 21/08 con
  * datos vivos; leer solo `@default` escondia la mayoria). Las nuevas van a la
  * lista por defecto: decidir lista por voz es mas friccion que moverla despues.
- * El
- * scope de Tasks tampoco da para mucho más protagonismo por voz.
+ * El scope de Tasks tampoco da para mucho más protagonismo por voz.
+ *
+ * ---------------------------------------------------------------------------
+ * ⚠️ EL TECHO: UNA TAREA NO TIENE HORA Y NO AVISA NADA
+ * ---------------------------------------------------------------------------
+ *
+ * Lo que Google Tasks SÍ guarda — y es TODO lo que guarda:
+ *   · `title`   el título.
+ *   · `notes`   una nota libre (acá se corta a 300 al leer).
+ *   · `due`     el día de vencimiento… y nada más que el DÍA.
+ *   · `status`  pendiente / completada (con su timestamp, que lo pone Google).
+ *   · la lista donde vive (las cinco de arriba).
+ *
+ * Lo que NO existe, y no se arregla agregando un campo:
+ *   · hora del día,
+ *   · recordatorios,
+ *   · alertas o notificaciones al celular.
+ *
+ * El POR QUÉ es la API, no este código. El único campo de tiempo del recurso
+ * `Task` es `due`, y la doc de Google es explícita: la porción de HORA se
+ * DESCARTA al escribir y no se puede ni leer ni escribir por la API. Los avisos
+ * que uno ve en el teléfono son una función de las apps de Google (Tasks de
+ * Android, Calendar, Assistant): viven del lado del cliente y la API pública no
+ * los expone. Por eso una tarea creada desde acá NUNCA va a sonar, aunque la
+ * misma tarea creada a mano en el celular sí suene. No hay flag, scope ni
+ * endpoint que lo destrabe: pedir otro scope solo cambia el 403, no el techo.
+ *
+ * La consecuencia práctica —que es la que gobierna el ruteo del modelo—: todo lo
+ * que lleve HORA o pida que le AVISEN no es una tarea, es un EVENTO de Calendar
+ * (`agenda_cambiar`, en `google.ts`), que sí tiene recordatorio y sí notifica.
+ * "comprar pan" es tarea; "llamarlo a las 3" es evento. Eso está dicho tres
+ * veces a propósito, porque una sola no alcanza: en la `description` de
+ * `tareas_cambiar` con ejemplos de frases (es lo ÚNICO que el modelo lee para
+ * decidir), en el campo `vence` del schema, y en `desvioAAgenda()`, que rebota
+ * lo que igual cae acá en vez de anotar una tarea a medias y decir "listo".
  */
 
 const API = "https://tasks.googleapis.com/tasks/v1";
@@ -192,6 +225,22 @@ function aBody(c: CamposTarea): Record<string, unknown> {
   if (c.titulo !== undefined) body.title = c.titulo;
   if (c.notas !== undefined) body.notes = c.notas;
   // El RFC3339 completo es obligatorio aunque la hora se tire a la basura.
+  //
+  // ⚠️ La `Z` es a propósito y NO es el bug de UTC de siempre: acá NO se está
+  // convirtiendo un instante, se está empaquetando una FECHA en el formato que
+  // la API exige. Google se queda con la parte de fecha del timestamp, así que
+  // mandando medianoche UTC el día que queda guardado es exactamente el
+  // YYYY-MM-DD que dictó el usuario. Verificado de ida y vuelta:
+  //   "2026-08-25" → due "2026-08-25T00:00:00.000Z" → Google devuelve ese mismo
+  //   string → `aTarea` lo lee con slice(0,10) → "2026-08-25". Cierra.
+  // Las dos maneras de romperlo, para que nadie las "arregle" de nuevo:
+  //   · leer con `dia()` en vez de `slice` → medianoche UTC en ART es el día
+  //     ANTERIOR a las 21:00, y toda tarea aparecería corrida un día atrás;
+  //   · mandar el offset argentino (`T00:00:00-03:00`) → Google lo normaliza a
+  //     las 03:00Z del MISMO día y hoy da bien, pero queda dependiendo de su
+  //     normalización en vez de ser la fecha literal que mandamos.
+  // La combinación actual (escribir con Z, leer con slice) es la única que no
+  // depende de la hora del servidor ni de nada del otro lado.
   if (c.vence !== undefined) body.due = `${c.vence}T00:00:00.000Z`;
   return body;
 }
@@ -267,6 +316,79 @@ function ordenar(tareas: Tarea[]): Tarea[] {
   return [...tareas].sort(
     (a, b) => peso(a) - peso(b) || (a.vence ?? "").localeCompare(b.vence ?? ""),
   );
+}
+
+// ---------------------------------------------------------------------------
+// El techo: detectar lo que pide hora o aviso (ver la cabecera)
+// ---------------------------------------------------------------------------
+
+/*
+ * La `description` le dice al modelo que lo que lleva hora va por `agenda_cambiar`,
+ * pero una description es una sugerencia: igual va a caer acá "llamar al contador
+ * a las 3". Estos patrones son la red, y son deliberadamente ESTRECHOS — un falso
+ * positivo manda a la agenda algo que era una tarea legítima, que es peor que
+ * dejarla pasar:
+ *
+ *   · el reloj va con dos puntos y nada más. Con punto ("3.45") pescaba precios
+ *     y cantidades, que en un título de tarea son mucho más comunes que un horario.
+ *   · "a las 3" solo cuenta si CIERRA la frase o si viene con su marca ("hs",
+ *     "de la tarde", "y media"). Si no, "llamar a las 3 personas" terminaba en
+ *     la agenda.
+ *   · "acordame" / "recordame" / "avisame" a secas NO disparan: así se dicta una
+ *     tarea normal en criollo ("acordame de llamar al plomero") y es exactamente
+ *     el caso que Tasks resuelve bien. Lo que dispara es pedir el ARTEFACTO —
+ *     una alarma, un recordatorio, una notificación — o un aviso relativo
+ *     ("media hora antes"), que sin hora base no significa nada.
+ */
+const RELOJ = /\b(?:[01]?\d|2[0-3]):[0-5]\d\b/;
+const A_LAS_CON_MARCA =
+  /\ba\s+las?\s+(?:[01]?\d|2[0-3])\s*(?:y\s+(?:media|cuarto)|hs?\b|horas?\b|a\.?m\.?\b|p\.?m\.?\b|de\s+la\s+(?:ma(?:ñ|n)ana|tarde|noche)\b|del\s+mediod(?:í|i)a\b)/i;
+const A_LAS_SOLA = /\ba\s+las?\s+(?:[01]?\d|2[0-3])\s*(?=$|[,;.])/i;
+const AVISO_RELATIVO =
+  /\b(?:\d+\s*(?:minutos?|min\b|horas?|hs?\b)|media\s+hora|un\s+rato)\s+antes\b/i;
+const ARTEFACTO_DE_AVISO =
+  /\b(?:alarma|recordatorio|notificaci(?:ó|o)n|notific(?:á|a)me|alert(?:á|a)me|despert(?:á|a)me)\b/i;
+
+/** Qué señal encontró, en criollo y ya lista para meter en el `motivo`. Null si no hay ninguna. */
+function senalDeHora(...textos: (string | undefined)[]): string | null {
+  const t = textos.filter(Boolean).join(" · ");
+  if (RELOJ.test(t) || A_LAS_CON_MARCA.test(t) || A_LAS_SOLA.test(t)) return "una hora";
+  if (AVISO_RELATIVO.test(t)) return "un aviso con anticipación";
+  if (ARTEFACTO_DE_AVISO.test(t)) return "un recordatorio";
+  return null;
+}
+
+/** `2026-08-25T09:00` o `2026-08-25 09:00`: una fecha CON hora metida en `vence`. */
+const FECHA_CON_HORA = /^\d{4}-\d{2}-\d{2}[T ]\s*\d{1,2}[:.]\d{2}/;
+
+/**
+ * La respuesta cuando lo dictado lleva hora o pide aviso.
+ *
+ * NO se propone nada a medias. La tarea se podría crear igual —Google la acepta
+ * y tira la hora sola—, pero entonces el usuario escucha "listo, lo anoté" y se
+ * entera de que nadie le avisó cuando ya pasó. Eso es peor que no hacer nada:
+ * es fingir una capacidad que no existe. Se devuelve el techo en criollo, con el
+ * desvío a la agenda, y que el modelo lo ofrezca.
+ *
+ * ⚠️ Si algún día el aviso deja de ser un evento de Calendar (otra herramienta,
+ * otro nombre), este es el ÚNICO lugar del archivo que nombra `agenda_cambiar`
+ * fuera de la `description`: se cambia acá y listo.
+ */
+function desvioAAgenda(que: string, senal: string) {
+  return {
+    ok: false,
+    motivo:
+      `"${que}" lleva ${senal}, y una tarea de Google Tasks no puede tener eso: guarda ` +
+      "el DÍA de vencimiento y nada más. Sin hora, sin recordatorio y sin alerta — no " +
+      "suena, no notifica, no aparece nada en el celular. Es la API de Google, no algo " +
+      "que se pueda destrabar de este lado.",
+    que_hacer:
+      "Eso no es una tarea, es un EVENTO: proponelo con `agenda_cambiar` (accion " +
+      '"crear", con la fecha y la hora que dijo), que sí lleva recordatorio y sí le ' +
+      "suena el teléfono. Decíselo tal cual, sin vueltas: que como tarea no le iba a " +
+      "avisar nadie, así que se lo agendás para esa hora. Si igual la quiere como tarea " +
+      "suelta, sin aviso, volvé a llamarme con el título SIN la hora.",
+  };
 }
 
 // ---------------------------------------------------------------------------
@@ -360,13 +482,27 @@ const tareasCambiar: Tool = {
   name: "tareas_cambiar",
   description:
     "PROPONE crear, completar, editar o borrar una tarea de Google Tasks. NO ejecuta " +
-    "nada: devuelve una previsualización y hay que confirmarla con `confirmar`. Usar " +
-    "para 'anotá que tengo que comprar pilas', 'acordame de llamar al contador el " +
-    "viernes', 'listo lo de la farmacia' (→ completar), 'sacá lo del service' (→ " +
-    "borrar). Para completar, editar o borrar pasá el título TAL COMO lo dijo, aunque " +
-    "sea aproximado: la herramienta la busca sola. Si dicta VARIAS tareas de una, van " +
-    "todas juntas en `varias`: una sola propuesta y una sola confirmación. ⚠️ Las " +
-    "tareas de CÓDIGO van por `tarea_codigo_dictar`, no por acá.",
+    "nada: devuelve una previsualización y hay que confirmarla con `confirmar`. " +
+    "⚠️ UNA TAREA NO TIENE HORA Y NO AVISA NADA. Google Tasks solo guarda título, nota " +
+    "y DÍA de vencimiento (sin hora), y no dispara ninguna alerta: no suena, no notifica, " +
+    "no llega nada al celular. Es la API de Google, no una limitación que se pueda " +
+    "destrabar. De ahí sale el criterio para elegir herramienta, y es el único que " +
+    "importa: ¿la frase tiene HORA o pide que le AVISEN? " +
+    "NO tiene hora → es una tarea y va ACÁ: 'anotá que tengo que comprar pilas', " +
+    "'acordame de llamar al plomero', 'tengo que mandar la factura', 'pagar el seguro " +
+    "antes del viernes', 'listo lo de la farmacia' (→ completar), 'sacá lo del service' " +
+    "(→ borrar). " +
+    "SÍ tiene hora o pide aviso → NO es una tarea, es un EVENTO, y va por " +
+    "`agenda_cambiar`: 'llamar al contador a las 3', 'recordame mañana a las 9', " +
+    "'avisame media hora antes de la reunión', 'ponéme una alarma para las 8', " +
+    "'turno con el dentista el jueves 16:30'. Un evento de Calendar SÍ tiene " +
+    "recordatorio y SÍ le suena el teléfono; una tarea con esa hora escrita en el " +
+    "título se la come el silencio. Ante la duda, si en la frase hay un horario, es " +
+    "agenda. Si igual mandás una hora acá, te la rebota. " +
+    "Para completar, editar o borrar pasá el título TAL COMO lo dijo, aunque sea " +
+    "aproximado: la herramienta la busca sola. Si dicta VARIAS tareas de una, van todas " +
+    "juntas en `varias`: una sola propuesta y una sola confirmación. ⚠️ Las tareas de " +
+    "CÓDIGO van por `tarea_codigo_dictar`, no por acá.",
   input_schema: {
     type: "object",
     properties: {
@@ -388,7 +524,7 @@ const tareasCambiar: Tool = {
           properties: {
             titulo: { type: "string" },
             nota: { type: "string" },
-            vence: { type: "string" },
+            vence: { type: "string", description: "YYYY-MM-DD, el día pelado. Sin hora: no existe." },
           },
           required: ["titulo"],
         },
@@ -402,8 +538,11 @@ const tareasCambiar: Tool = {
       vence: {
         type: "string",
         description:
-          "Fecha límite YYYY-MM-DD, solo si dijo una ('para el viernes'). " +
-          "Google Tasks guarda el día pelado, sin hora.",
+          "Fecha límite YYYY-MM-DD, solo si dijo una ('para el viernes'). Calculala " +
+          "contra el 'Hoy es…' del prompt, no de memoria. ⚠️ El día PELADO y nada más: " +
+          "acá NO entra una hora ni un ISO con hora — Google Tasks la descarta y el " +
+          "usuario se queda esperando un aviso que no existe. Si dijo una hora, la " +
+          "herramienta correcta es `agenda_cambiar`.",
       },
     },
     required: ["accion", "titulo"],
@@ -430,6 +569,23 @@ const tareasCambiar: Tool = {
           const tit = String(t?.titulo ?? "").trim();
           if (!tit) return { ok: false, motivo: `La tarea ${i + 1} de la lista viene sin título.` };
           const v = t?.vence !== undefined ? String(t.vence).trim() : undefined;
+          // Una sola con hora tumba el lote entero, y está bien: si de tres cosas
+          // dictadas una era "llamarlo a las 3", esa hay que agendarla, y anotar
+          // las otras dos por separado sin decir nada de la tercera es la mentira
+          // por omisión que este archivo trata de no cometer.
+          const senalLote = senalDeHora(tit, String(t?.nota ?? "")) ??
+            (v && FECHA_CON_HORA.test(v) ? "una hora" : null);
+          if (senalLote) {
+            const d = desvioAAgenda(tit, senalLote);
+            if (varias.length === 1) return d;
+            return {
+              ...d,
+              que_hacer:
+                `${d.que_hacer} Ojo que venían ${varias.length} cosas dictadas y NO se ` +
+                `anotó ninguna: agendá esa y volvé a mandarme las otras ${varias.length - 1} ` +
+                "juntas en `varias`.",
+            };
+          }
           if (v && !esFecha(v)) {
             return {
               ok: false,
@@ -465,6 +621,23 @@ const tareasCambiar: Tool = {
       const vence = input?.vence !== undefined ? String(input.vence).trim() : undefined;
       const tituloNuevo =
         input?.titulo_nuevo !== undefined ? String(input.titulo_nuevo).trim() : undefined;
+
+      // El techo, antes que cualquier otra validación: si lo que pidió lleva hora
+      // o aviso, el problema NO es el formato de la fecha, y decirle "va YYYY-MM-DD"
+      // lo manda a reintentar tirando la hora en silencio — que es exactamente el
+      // final que hay que evitar.
+      //
+      // Solo se mira lo que el usuario está ESCRIBIENDO: al crear, el título y la
+      // nota; al editar, el título nuevo y la nota. En completar y borrar, `titulo`
+      // es la aguja para buscar una tarea que ya existe, y esa bien puede llamarse
+      // "llamar al contador a las 3" — rebotar ahí sería no dejarlo tacharla nunca.
+      if (accion === "crear" || accion === "editar") {
+        const escrito = accion === "crear" ? titulo : tituloNuevo;
+        const senal = senalDeHora(escrito, nota) ??
+          (vence && FECHA_CON_HORA.test(vence) ? "una hora" : null);
+        if (senal) return desvioAAgenda(escrito || titulo, senal);
+      }
+
       if (vence && !esFecha(vence)) {
         return { ok: false, motivo: `"${vence}" no es una fecha válida (va YYYY-MM-DD).` };
       }
