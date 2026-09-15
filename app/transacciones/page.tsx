@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   db, fetchTransactions, fetchCategories, fetchPaymentMethods, insertTransaction,
   type TxView, type Category, type PaymentMethod,
@@ -33,6 +33,8 @@ export default function TransaccionesPage() {
   const [err, setErr] = useState<string | null>(null);
   const [editing, setEditing] = useState<TxView | null>(null);
   const [nuevoOpen, setNuevoOpen] = useState(false);
+  // Movimiento a resaltar al entrar con `?tx=<id>` (el link "viene de …" de /deudas).
+  const [focusId, setFocusId] = useState<number | null>(null);
 
   const [q, setQ] = useState("");
   const [type, setType] = useState<TypeFilter>("todos");
@@ -52,6 +54,9 @@ export default function TransaccionesPage() {
     // Pintar al instante el último snapshot; lo fresco llega por atrás.
     const s = readCache<{ tx: TxView[]; c: Category[]; m: PaymentMethod[] }>("transacciones");
     if (s) { setItems(s.tx); setCats(s.c); setMethods(s.m); setLoading(false); }
+    // Se lee de window y no de useSearchParams para no tener que envolver la página en Suspense.
+    const tx = Number(new URLSearchParams(window.location.search).get("tx"));
+    if (tx) setFocusId(tx);
     loadFx().then(() => setFx(fxSync()));
     reload().catch((e) => setErr(e.message)).finally(() => setLoading(false));
   }, []);
@@ -146,7 +151,7 @@ export default function TransaccionesPage() {
                       <span className="text-xs uppercase tracking-wider text-faint">{day}</span>
                       <span className={`tnum text-xs ${dayTotal >= 0 ? "text-emerald" : "text-faint"}`}>{dayTotal >= 0 ? "+" : "−"}{compact(Math.abs(dayTotal))}</span>
                     </div>
-                    <ul className="divide-y divide-line">{rows.map((t) => <Row key={t.id} t={t} onEdit={() => setEditing(t)} />)}</ul>
+                    <ul className="divide-y divide-line">{rows.map((t) => <Row key={t.id} t={t} onEdit={() => setEditing(t)} focus={t.id === focusId} />)}</ul>
                   </div>
                 );
               })
@@ -198,7 +203,9 @@ function Select({ value, onChange, children }: { value: string; onChange: (v: st
   );
 }
 
-function Row({ t, onEdit }: { t: TxView; onEdit: () => void }) {
+function Row({ t, onEdit, focus }: { t: TxView; onEdit: () => void; focus?: boolean }) {
+  const ref = useRef<HTMLLIElement>(null);
+  useEffect(() => { if (focus) ref.current?.scrollIntoView({ block: "center" }); }, [focus]);
   const sources: Record<string, { label: string; Icon: typeof Camera; cls: string }> = {
     ocr: { label: "OCR", Icon: Camera, cls: "text-sky" },
     email: { label: "Email", Icon: Mail, cls: "text-amber" },
@@ -214,7 +221,7 @@ function Row({ t, onEdit }: { t: TxView; onEdit: () => void }) {
     : t.category === "Cambio Divisas" ? { label: "Cambio", cls: "text-gold border-gold/30 bg-gold/10" }
     : null;
   return (
-    <li onClick={onEdit} className="group flex cursor-pointer items-center gap-3 rounded-lg px-2 py-3 transition-colors hover:bg-white/[0.05]">
+    <li ref={ref} onClick={onEdit} className={`group flex cursor-pointer items-center gap-3 rounded-lg px-2 py-3 transition-colors hover:bg-white/[0.05] ${focus ? "ring-1 ring-accent/60 bg-accent/[0.06]" : ""}`}>
       <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl border border-line bg-white/[0.06] text-lg">{t.emoji}</span>
       <div className="min-w-0">
         <p className="truncate text-[0.95rem] text-fg">{t.desc}</p>
@@ -222,6 +229,12 @@ function Row({ t, onEdit }: { t: TxView; onEdit: () => void }) {
           {t.category} · {t.method}{t.card ? ` · ${t.card}` : ""}{time ? ` · ${time}` : ""}
           {origen && <span className="text-sky"> · no cuenta como gasto del mes</span>}
         </p>
+        {/* Con quién se dividió este gasto y quién ya pagó. Sale de debts.linked_transaction_id. */}
+        {t.dividido && t.dividido.length > 0 && (
+          <p className="truncate text-xs text-sky">
+            dividido con {t.dividido.map((d) => `${d.person}${d.status === "settled" ? " ✓" : ""}`).join(", ")}
+          </p>
+        )}
       </div>
       <div className="ml-auto flex items-center gap-3">
         {origen && (

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
+import Link from "next/link";
 import { db, fetchDebts, fetchPersons, insertDebt, insertPerson, settleDebt, payDebt, deleteDebtPayment, type DebtView, type DebtPayment } from "@/lib/db";
 import { readCache, writeCache } from "@/lib/cache";
 import { fxSync, loadFx, toArs } from "@/lib/fx";
@@ -316,6 +317,14 @@ function PersonDetail({ person, items, onBack, onSettle, onPay, onDeletePayment 
                     {collectDir ? "te debe" : "le debés"} · {d.date}
                     {d.status === "settled" && d.settledAt ? ` · ${collectDir ? "te pagó" : "le pagaste"} el ${d.settledAt}` : ""}
                   </p>
+                  {/* De qué gasto nació la deuda (linked_transaction_id). Solo las creadas desde el
+                      14/09/2026 lo tienen: las anteriores nunca guardaron el vínculo. */}
+                  {d.origen && (
+                    <Link href={`/transacciones?tx=${d.origen.txId}`} onClick={(e) => e.stopPropagation()} className="mt-0.5 flex items-center gap-1 text-[0.7rem] text-sky transition-colors hover:text-fg">
+                      <Swap className="h-3 w-3 shrink-0" />
+                      <span className="truncate">viene de {d.origen.desc} · {money(d.origen.amount, d.origen.currency)} · {d.origen.date}{d.origen.card ? ` · ${d.origen.card}` : ""}</span>
+                    </Link>
+                  )}
                 </div>
                 <div className="ml-auto flex items-center gap-2">
                   <div className="text-right">

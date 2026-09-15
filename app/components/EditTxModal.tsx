@@ -86,7 +86,7 @@ export default function EditTxModal({ tx, cats, methods, onClose, onSaved }: {
         </Field>
 
         {/* Solo tiene sentido dividir un EGRESO, y solo si no está ya dividido. */}
-        {type === "egreso" && tx.category !== "Préstamos" && !tx.desc.startsWith("Parte de otros ·") && (
+        {type === "egreso" && tx.category !== "Préstamos" && !tx.desc.startsWith("Parte de otros ·") && !tx.dividido?.length && (
           <button
             onClick={() => setSplitting(true)}
             disabled={busy}

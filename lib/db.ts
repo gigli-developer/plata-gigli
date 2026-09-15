@@ -26,6 +26,9 @@ export type TxView = {
   occurredAt: string;
   card?: string;
   source: "manual" | "ocr" | "email" | "chat";
+  /** Deudas que nacieron de ESTE movimiento al dividirlo (debts.linked_transaction_id).
+   *  Las trae fetchTransactions; ausente si nunca se dividió. */
+  dividido?: { debtId: number; person: string; amount: number; status: "pending" | "settled" }[];
 };
 
 const MESES = ["ene", "feb", "mar", "abr", "may", "jun", "jul", "ago", "sep", "oct", "nov", "dic"];
@@ -94,7 +97,7 @@ export async function fetchCards(sb: SupabaseClient): Promise<CardRow[]> {
 export async function fetchTransactions(sb: SupabaseClient, limit = 500): Promise<TxView[]> {
   const { data, error } = await sb
     .from("transactions")
-    .select("id,type,amount,currency,fx_rate_ars,description,occurred_at,source,category_id,payment_method_id,categories(name,emoji),payment_methods(name),cards(name)")
+    .select("id,type,amount,currency,fx_rate_ars,description,occurred_at,source,category_id,payment_method_id,categories(name,emoji),payment_methods(name),cards(name),debts(id,amount,status,persons(name))")
     .order("occurred_at", { ascending: false })
     .limit(limit);
   if (error) throw error;
@@ -112,6 +115,9 @@ export async function fetchTransactions(sb: SupabaseClient, limit = 500): Promis
     paymentMethodId: r.payment_method_id,
     card: r.cards?.name ?? undefined,
     source: r.source,
+    dividido: (r.debts ?? []).length
+      ? (r.debts as any[]).map((d) => ({ debtId: d.id, person: d.persons?.name ?? "—", amount: Number(d.amount), status: d.status }))
+      : undefined,
     occurredAt: r.occurred_at,
     date: formatDate(r.occurred_at),
   }));
@@ -484,10 +490,14 @@ export async function fetchStatementMovements(sb: SupabaseClient, statementId: n
 
 // ---- Deudas ----
 export type DebtPayment = { id: number; amount: number; date: string; at: string; transactionId: number | null };
-export type DebtView = { id: number; person: string; emoji: string; kind: "cash" | "in_kind" | "split"; direction: "to_collect" | "to_pay"; status: "pending" | "settled"; amount: number; paid: number; outstanding: number; payments: DebtPayment[]; currency: string; description: string; date: string; occurredAt: string; settledAt: string | null; splitTotal?: number; yourShare?: number; participants?: number };
+export type DebtView = { id: number; person: string; emoji: string; kind: "cash" | "in_kind" | "split"; direction: "to_collect" | "to_pay"; status: "pending" | "settled"; amount: number; paid: number; outstanding: number; payments: DebtPayment[]; currency: string; description: string; date: string; occurredAt: string; settledAt: string | null; splitTotal?: number; yourShare?: number; participants?: number;
+  /** El movimiento del que nació la deuda (debts.linked_transaction_id). Lo escriben splitTransaction e
+   *  insertDebt desde el 14/09/2026; las deudas anteriores no lo tienen. `amount` es el TOTAL del gasto
+   *  (split_total), no lo que quedó como tu parte. */
+  origen?: { txId: number; desc: string; amount: number; currency: string; date: string; card?: string } };
 export async function fetchDebts(sb: SupabaseClient): Promise<DebtView[]> {
   const [{ data, error }, { data: pays }] = await Promise.all([
-    sb.from("debts").select("id,kind,direction,status,amount,currency,description,occurred_at,settled_at,split_total,your_share,participants,persons(name)").order("occurred_at", { ascending: false }),
+    sb.from("debts").select("id,kind,direction,status,amount,currency,description,occurred_at,settled_at,split_total,your_share,participants,persons(name),linked_transaction_id,transactions(id,description,amount,currency,occurred_at,cards(name))").order("occurred_at", { ascending: false }),
     sb.from("debt_payments").select("id,debt_id,amount,occurred_at,transaction_id").order("occurred_at", { ascending: true }),
   ]);
   if (error) throw error;
@@ -502,6 +512,11 @@ export async function fetchDebts(sb: SupabaseClient): Promise<DebtView[]> {
       amount, paid, outstanding: Math.max(amount - paid, 0), payments,
       currency: d.currency, description: d.description ?? "", date: formatShort(d.occurred_at), occurredAt: d.occurred_at, settledAt: d.settled_at ? formatShort(d.settled_at) : null,
       splitTotal: d.split_total != null ? Number(d.split_total) : undefined, yourShare: d.your_share != null ? Number(d.your_share) : undefined, participants: d.participants ?? undefined,
+      origen: d.transactions
+        ? { txId: d.transactions.id, desc: d.transactions.description || "Movimiento",
+            amount: d.split_total != null ? Number(d.split_total) : Number(d.transactions.amount),
+            currency: d.transactions.currency, date: formatShort(d.transactions.occurred_at), card: d.transactions.cards?.name ?? undefined }
+        : undefined,
     };
   });
 }
@@ -620,7 +635,7 @@ async function loanTransaction(sb: SupabaseClient, type: "ingreso" | "egreso", a
 }
 
 export async function insertDebt(sb: SupabaseClient, d: NewDebt) {
-  const { error } = await sb.from("debts").insert({
+  const { data: creada, error } = await sb.from("debts").insert({
     person_id: d.personId,
     kind: d.kind,
     direction: d.direction,
@@ -630,14 +645,18 @@ export async function insertDebt(sb: SupabaseClient, d: NewDebt) {
     split_total: d.splitTotal ?? null,
     your_share: d.yourShare ?? null,
     participants: d.participants ?? null,
-  });
+  }).select("id").single();
   if (error) throw error;
-  // Si es efectivo (movimiento real de plata), reflejarlo en Transacciones.
+  // Si es efectivo (movimiento real de plata), reflejarlo en Transacciones y dejar la
+  // deuda apuntando a ese movimiento: así en /deudas se ve de dónde salió.
   if (d.kind === "cash") {
     let pname = "alguien";
     if (d.personId) { const { data: p } = await sb.from("persons").select("name").eq("id", d.personId).maybeSingle(); pname = p?.name ?? pname; }
-    if (d.direction === "to_collect") await loanTransaction(sb, "egreso", d.amount, d.currency, `Préstamo a ${pname}`);
-    else await loanTransaction(sb, "ingreso", d.amount, d.currency, `Préstamo de ${pname}`);
+    const txId = d.direction === "to_collect"
+      ? await loanTransaction(sb, "egreso", d.amount, d.currency, `Préstamo a ${pname}`)
+      : await loanTransaction(sb, "ingreso", d.amount, d.currency, `Préstamo de ${pname}`);
+    const { error: eLink } = await sb.from("debts").update({ linked_transaction_id: txId }).eq("id", creada.id);
+    if (eLink) throw eLink;
   }
 }
 // ---- Registro de operaciones (botón "Deshacer") ----
@@ -784,6 +803,7 @@ export async function splitTransaction(sb: SupabaseClient, txId: number, yourSha
         split_total: total,
         your_share: yourShare,
         participants: partes.length + 1,   // los otros + vos
+        linked_transaction_id: txId,       // la deuda sabe de qué gasto nació: se ve en /deudas
       }).select("id").single();
       if (error) throw error;
       deudas.push(data.id as number);
