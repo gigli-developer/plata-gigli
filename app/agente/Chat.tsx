@@ -35,8 +35,11 @@ const AGENTE = "plata";
 
 const numero = (n: number) => n.toLocaleString("es-AR");
 // Copias de `central/app/components/ui.tsx`. Acá no se usa el `usd` de
-// `@/lib/format`: ese redondea a 2 decimales y el costo de una llamada son
-// centavos, que redondeados se leen todos como US$ 0,00.
+// `@/lib/format` porque ese no fija decimales: deja los que le salgan a
+// `toLocaleString`, o sea hasta tres. El costo de una llamada son fracciones de
+// centavo, así que dos llamadas seguidas se leerían con distinta cantidad de
+// dígitos, y una de US$ 0,0004 saldría como "US$ 0". Estos cuatro decimales son
+// fijos, y la columna queda alineada.
 const usd = (n: number, decimales: 2 | 4 = 2) =>
   "US$ " + n.toLocaleString("es-AR", { minimumFractionDigits: decimales, maximumFractionDigits: decimales });
 
@@ -139,7 +142,10 @@ export default function Chat() {
     <div className="mx-auto flex max-w-3xl flex-col gap-4">
       <PageHeader title="Agente" subtitle="Contale y te propone qué registrar">
         <div className="flex flex-wrap items-center gap-2 text-xs">
-          {salud.estado === "listo" && <span className="chip px-2.5 py-1 text-violet">{salud.modelo}</span>}
+          {/* En el panel este chip es violeta. Acá no: `--color-violet` está marcado
+              como legacy en el `globals.css` de Plata («se va migrando») y no lo usa
+              ninguna otra pantalla. Sumar un uso nuevo empujaría para el otro lado. */}
+          {salud.estado === "listo" && <span className="chip px-2.5 py-1 text-subtle">{salud.modelo}</span>}
           <span className="chip px-2.5 py-1 text-subtle" title={sesion}>sesión {sesion.slice(0, 8)}</span>
           {usos.length > 0 && (
             <span className="chip tnum px-2.5 py-1 text-fg">{usd(costoSesion, 4)}{sinPrecio && <span className="text-amber"> + sin precio</span>}</span>
