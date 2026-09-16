@@ -3,13 +3,14 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
-import { Grid, Swap, Card as CardIcon, Handshake, Repeat, Coins, Gear, Bell, Chart, Flow, Tag, Dots, Bug } from "../icons";
+import { Grid, Swap, Card as CardIcon, Handshake, Repeat, Coins, Gear, Bell, Chart, Flow, Tag, Dots, Bug, Sparkle } from "../icons";
 import MoreSheet from "./MoreSheet";
 import { createClient } from "@/lib/supabase/client";
 import PrivacyToggle, { usePrivacy } from "./PrivacyToggle";
 
 export const nav = [
   { label: "Resumen", Icon: Grid, href: "/" },
+  { label: "Agente", Icon: Sparkle, href: "/agente" },
   { label: "Métricas", Icon: Chart, href: "/metricas" },
   { label: "Gastos hormiga", Icon: Bug, href: "/hormiga" },
   { label: "Cash Flow", Icon: Flow, href: "/cashflow" },
