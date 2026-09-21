@@ -255,6 +255,60 @@ export async function updateStatementDates(sb: SupabaseClient, id: number, closi
   }
 }
 
+// Reacomodar los consumos entre resúmenes según las fechas de cierre.
+//
+// Por qué existe: el corte REAL de Galicia cae días antes del día nominal. El mail de
+// alerta llega en el momento de la compra, pero el consumo entra al resumen cuando el
+// comercio lo presenta, y eso tarda. Agosto 2026: el cierre nominal era el 25 y el
+// banco cortó el 20, así que Plata metió tres consumos (dos peajes y un Apple) que el
+// banco factura al mes siguiente. Corregís el cierre contra el PDF y esto reubica los
+// consumos, que si no quedan pegados al resumen equivocado (statement_id está guardado
+// en cada transacción: cambiar closing_date no los mueve solo).
+//
+// Solo toca resúmenes NO pagados, y en los dos sentidos. Un resumen pagado tiene el
+// total CONGELADO y ya reconciliado contra el PDF (decisión 7): sacarle o meterle un
+// consumo lo descuadraría contra su propio total. Las cuotas tampoco se tocan: viven
+// en installment_plans y se imputan por período, no por statement_id.
+export type Reasignacion = { movidos: number; detalle: { desc: string; de: string; a: string }[] };
+type StmtWindow = { id: number; period_label: string | null; closing_date: string; is_paid: boolean };
+type TxToPlace = { id: number; description: string | null; occurred_at: string; statement_id: number; installment_total: number | null };
+export async function reassignStatementConsumos(sb: SupabaseClient, cardId: number): Promise<Reasignacion> {
+  const [{ data: sts, error: e1 }, { data: txs, error: e2 }] = await Promise.all([
+    sb.from("card_statements").select("id,period_label,closing_date,is_paid").eq("card_id", cardId).order("closing_date", { ascending: true }),
+    sb.from("transactions").select("id,description,occurred_at,statement_id,installment_total").eq("card_id", cardId).not("statement_id", "is", null),
+  ]);
+  if (e1) throw e1;
+  if (e2) throw e2;
+  const abiertos = ((sts ?? []) as StmtWindow[]).filter((s) => !s.is_paid && s.closing_date);
+  if (!abiertos.length) return { movidos: 0, detalle: [] };
+  const porId = new Map(abiertos.map((s) => [s.id, s]));
+  // Día del consumo en ART, no en UTC: occurred_at viene con offset y un consumo de las
+  // 21:00 del 19 es "el 20" en UTC. Ese corrimiento es justo el que decide de qué lado
+  // del cierre cae. 'en-CA' formatea YYYY-MM-DD.
+  const diaArt = (iso: string) => new Date(iso).toLocaleDateString("en-CA", { timeZone: "America/Argentina/Buenos_Aires" });
+
+  const porDestino = new Map<number, number[]>();
+  const detalle: Reasignacion["detalle"] = [];
+  for (const t of (txs ?? []) as TxToPlace[]) {
+    if (t.installment_total && t.installment_total > 1) continue; // cuota vieja: no se reimputa
+    const origen = porId.get(t.statement_id);
+    if (!origen) continue; // está en un resumen pagado: intocable
+    const dia = diaArt(t.occurred_at);
+    // Primer resumen abierto cuyo cierre no deja afuera al consumo.
+    const destino = abiertos.find((s) => s.closing_date >= dia);
+    // Sin destino (consumo posterior al último cierre) se deja donde está: el próximo
+    // resumen lo crea ensureNextStatements y una corrida siguiente lo acomoda.
+    if (!destino || destino.id === t.statement_id) continue;
+    porDestino.set(destino.id, [...(porDestino.get(destino.id) ?? []), t.id]);
+    detalle.push({ desc: t.description ?? "—", de: origen.period_label ?? "—", a: destino.period_label ?? "—" });
+  }
+  for (const [statementId, ids] of porDestino) {
+    const { error } = await sb.from("transactions").update({ statement_id: statementId }).in("id", ids);
+    if (error) throw error;
+  }
+  return { movidos: detalle.length, detalle };
+}
+
 // Auto-generación del próximo resumen: si una tarjeta de crédito no tiene ningún resumen con
 // cierre >= hoy, crea el del próximo período (cierre = closing_day de este mes o del siguiente;
 // vence al mes siguiente si due_day < closing_day). El poller de Gmail hace lo mismo del lado

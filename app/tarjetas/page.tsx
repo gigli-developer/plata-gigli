@@ -59,12 +59,15 @@ export default function TarjetasPage() {
   const reloadStatements = async () => {
     const sb = db();
     await ensureNextStatements(sb).catch(() => {}); // una tarjeta nueva estrena su primer resumen acá
-    const [s, c] = await Promise.all([fetchStatements(sb), fetchCardsFull(sb)]);
+    // `co`: reacomodar consumos cambia los totales por resumen, y el desplegable de
+    // movimientos queda viejo. Sin refrescar los dos, la pantalla sigue mostrando el
+    // reparto anterior hasta recargar a mano.
+    const [s, c, co] = await Promise.all([fetchStatements(sb), fetchCardsFull(sb), fetchStatementConsumos(sb)]);
     const vis = c.filter(esCredito).map((card, idx) => ({ ...card, ...palette[idx % palette.length] }));
-    setStatements(s); setCards(vis);
+    setStatements(s); setCards(vis); setConsumos(co); setMovements({});
     setSelectedId((prev) => (prev && vis.some((v) => v.id === prev) ? prev : vis[0]?.id ?? null));
     // Sin esto el snapshot queda viejo y al volver a entrar la tarjeta nueva no está.
-    writeCache("tarjetas", { cards: vis, statements: s, installments, consumos, plans, subs });
+    writeCache("tarjetas", { cards: vis, statements: s, installments, consumos: co, plans, subs });
   };
 
   const toggleMovements = async (id: number) => {
