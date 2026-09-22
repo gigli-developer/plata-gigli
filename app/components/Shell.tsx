@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
-import { Grid, Swap, Card as CardIcon, Handshake, Repeat, Coins, Gear, Bell, Chart, Flow, Tag, Dots, Bug } from "../icons";
+import { Grid, Swap, Card as CardIcon, Handshake, Repeat, Coins, Chart, Flow, Tag, Dots, Bug } from "../icons";
 import MoreSheet from "./MoreSheet";
 import { createClient } from "@/lib/supabase/client";
 import PrivacyToggle, { usePrivacy } from "./PrivacyToggle";
@@ -102,9 +102,6 @@ export default function Shell({ children }: { children: React.ReactNode }) {
           </div>
           <div className="flex flex-col items-center gap-2.5 px-0 pb-[18px] pt-2">
             <div className="mb-1 h-px w-[38px] bg-white/10" />
-            <button title="Configuración" aria-label="Configuración" className="grid h-[46px] w-[46px] place-items-center rounded-[15px] text-subtle transition-colors hover:bg-white/[0.07] hover:text-fg">
-              <Gear className="h-5 w-5" />
-            </button>
             <button onClick={logout} title="Salir" aria-label="Cerrar sesión" className="grid h-[46px] w-[46px] place-items-center rounded-[15px] text-subtle transition-colors hover:bg-coral/[0.12] hover:text-coral">
               <Swap className="h-5 w-5 rotate-90" />
             </button>
@@ -119,10 +116,6 @@ export default function Shell({ children }: { children: React.ReactNode }) {
           <Brand compact />
           <div className="ml-auto flex items-center gap-2">
             <PrivacyToggle />
-            <button aria-label="Notificaciones" className="relative grid h-9 w-9 place-items-center rounded-[10px] border border-white/[0.06] bg-white/[0.06] text-subtle">
-              <Bell className="h-[18px] w-[18px]" />
-              <span className="absolute right-2 top-2 h-[7px] w-[7px] rounded-full bg-coral pulse-dot" />
-            </button>
             <span className="grid h-9 w-9 place-items-center rounded-[10px] bg-gradient-to-br from-accent to-sky text-sm font-bold text-bg">G</span>
           </div>
         </header>

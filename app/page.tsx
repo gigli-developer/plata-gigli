@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import {
   db, fetchTransactions, fetchCardsFull, fetchDebts, fetchCategories, fetchMetrics, updateTxCategory,
@@ -10,7 +11,7 @@ import {
 import { arsDe } from "@/lib/fx";
 import { readCache, writeCache } from "@/lib/cache";
 import { ars, compact } from "@/lib/format";
-import { Card as CardIcon, Sparkle, Bell, Search, Plus, ArrowUpRight, ArrowDownRight, Camera, Mail, Mic, Send, Coins, X } from "./icons";
+import { Card as CardIcon, Sparkle, Search, Plus, ArrowUpRight, ArrowDownRight, Camera, Mail, Mic, Send, Coins, X } from "./icons";
 import { useAssistantChat, MessageList } from "./components/assistantChat";
 import { useDictation } from "./components/useDictation";
 import PrivacyToggle from "./components/PrivacyToggle";
@@ -89,11 +90,9 @@ export default function Dashboard() {
         </div>
         <div className="flex items-center gap-2.5">
           <PrivacyToggle />
-          <button className="grid h-10 w-10 place-items-center rounded-[11px] border border-white/[0.06] bg-white/[0.06] text-subtle transition-colors hover:border-white/[0.14] hover:text-fg"><Search className="h-[18px] w-[18px]" /></button>
-          <button className="relative grid h-10 w-10 place-items-center rounded-[11px] border border-white/[0.06] bg-white/[0.06] text-subtle transition-colors hover:border-white/[0.14] hover:text-fg">
-            <Bell className="h-[18px] w-[18px]" />
-            <span className="absolute right-[9px] top-[9px] h-[7px] w-[7px] rounded-full bg-coral pulse-dot" />
-          </button>
+          {/* Buscar = el buscador real de /transacciones. Antes era un <button> sin
+              onClick que no hacía nada. */}
+          <Link href="/transacciones" title="Buscar movimientos" aria-label="Buscar movimientos" className="grid h-10 w-10 place-items-center rounded-[11px] border border-white/[0.06] bg-white/[0.06] text-subtle transition-colors hover:border-white/[0.14] hover:text-fg"><Search className="h-[18px] w-[18px]" /></Link>
         </div>
       </header>
 
@@ -116,7 +115,7 @@ export default function Dashboard() {
           <div className="mt-3 flex items-center gap-3">
             <input value={chat.input} onChange={(e) => chat.setInput(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); submitChat(); } }} placeholder={dictation.listening ? "Escuchando… (envío a los 3s de silencio)" : chatActive ? "Seguí contándome…" : "Escribí o dictá un gasto… ej: «gasté 5.600 en café»"} className="w-full bg-transparent text-[1.05rem] text-fg outline-none placeholder:text-faint" />
             <div className="flex items-center gap-1.5">
-              {!chatActive && <IconBtn title="Subir ticket (OCR)"><Camera className="h-[18px] w-[18px]" /></IconBtn>}
+              {!chatActive && <IconBtn title="Subir ticket (OCR) — todavía no disponible" disabled><Camera className="h-[18px] w-[18px]" /></IconBtn>}
               <button onClick={dictation.toggle} title={dictation.supported ? (dictation.listening ? "Detener" : "Dictar por voz") : "Tu navegador no soporta dictado"} className={`grid h-10 w-10 place-items-center rounded-xl transition-colors ${dictation.listening ? "bg-coral/20 text-coral" : "text-faint hover:bg-white/[0.07] hover:text-accent"} ${dictation.supported ? "" : "opacity-40"}`}>
                 <Mic className={`h-[18px] w-[18px] ${dictation.listening ? "pulse-dot" : ""}`} />
               </button>
@@ -216,8 +215,11 @@ function compute(txs: TxView[], cards: CardFull[], debts: DebtView[], installmen
   return { monthLabel: SHORT[refM], cashflow, categories, recent: txs.slice(0, 6), cardSummaries, toCollect, toPay, people };
 }
 
-function IconBtn({ children, title }: { children: React.ReactNode; title: string }) {
-  return <button title={title} className="grid h-10 w-10 place-items-center rounded-xl border border-white/10 bg-white/[0.06] text-subtle transition-colors hover:text-fg">{children}</button>;
+// `disabled`: mismo criterio que el botón de dictado de la barra, que se atenúa
+// cuando el navegador no lo soporta. Un control que existe pero todavía no anda se
+// muestra apagado y lo dice en el title, en vez de no responder sin explicación.
+function IconBtn({ children, title, disabled }: { children: React.ReactNode; title: string; disabled?: boolean }) {
+  return <button type="button" title={title} disabled={disabled} aria-disabled={disabled} className={`grid h-10 w-10 place-items-center rounded-xl border border-white/10 bg-white/[0.06] text-subtle transition-colors ${disabled ? "cursor-not-allowed opacity-40" : "hover:text-fg"}`}>{children}</button>;
 }
 
 const SALDO_TABS = [

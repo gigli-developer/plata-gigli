@@ -96,7 +96,8 @@ finanzas-app/
    - Arriba del gráfico se descompone la variación del mes en **"tuyo" vs "por el dólar"**: el efecto cambiario se mide sobre las tenencias con las que arrancó el mes (`usd_prev * Δusd_ars + usdt_prev * Δusdt_ars`) y el resto es flujo.
    - **Toggle $ / US$** (default pesos). En dólares se divide cada punto por el blue **de su propio corte** (no por el de hoy): así cada mes queda medido con la vara de su momento. La descomposición se invierte y pasa a ser "lo que te costó tener PESOS": `ars_prev * (1/usd_ars_cur − 1/usd_ars_prev)`, que da negativo cuando el dólar sube. Julio 2026: +13% en pesos pero +10% en dólares, y US$ 85 perdidos por estar en pesos.
 
-6. **`get_metrics`:** `ars_liquido = ingresos_ARS − egresos_ARS_no_credito − resúmenes_pagados`. `te_deben`/`debes` usan el saldo pendiente, valuados en ARS. `usd_ars` fijo 1455, `usdt_ars` = último cambio.
+6. **`get_metrics`:** `ars_liquido = ingresos_ARS − egresos_ARS_no_credito − resúmenes_pagados`. `te_deben`/`debes` usan el saldo pendiente, valuados en ARS. `usd_ars` y `usdt_ars` salen de `fx_rate_at('blue'|'cripto', current_date, 'compra')` — el 1455/1462 que queda en el `coalesce` es solo fallback si `fx_rates` viniera vacía, no la cotización de trabajo (dec. 5).
+   - **`st_mes` arreglado (2026-09-22)**, dos bugs latentes que daban cero impacto hoy pero eran minas: (a) el lateral de consumos no filtraba `coalesce(installment_total,0) <= 1`, así que una cuota-transacción linkeada a un resumen se contaba dos veces (por `con` y otra vez por `cuo`); (b) `cuo` sumaba `monthly_amount` crudo sin convertir por moneda, así que un plan en USD entraba a `resumen_ars` como si fueran pesos. `vencido` e `inst` ya lo hacían bien: `st_mes` era el único inconsistente. Verificado: `get_metrics()` devuelve lo mismo campo por campo antes y después, y el invariante de 5c sigue en 0 ($20.412.406).
 
 7. **Resúmenes de tarjeta.** Total **PAGADO = fijo** (se congela al pagar, reconciliable contra el PDF del banco); **NO pagado = en vivo** (consumos linkeados + cuotas del período) — nunca usar el guardado de un resumen sin pagar (queda stale, a veces $0). El importador de mails es en tiempo real → la app puede ir **adelantada** al banco. Cierre/vencimiento editables; los nuevos heredan el día por defecto de la tarjeta. Galicia Visa 2811: cierre 25, vence 6. **Auto-generación del próximo resumen**: `ensureNextStatements` (db.ts, corre al cargar/recargar Tarjetas) y el `email-poller` (si no hay resumen abierto al importar) crean la fila siguiente; índice único `(card_id, period_label)` evita duplicados.
 
@@ -126,7 +127,7 @@ finanzas-app/
 ## Estado actual
 ✅ **En producción y funcionando.** Todas las pantallas principales operativas con datos reales.
 
-**Módulos (10):** Resumen `/` · Métricas `/metricas` · **Gastos hormiga `/hormiga`** · Cash Flow `/cashflow` · Transacciones · Tarjetas · Deudas · Recurrentes (vacía) · Divisas (mock) · Reglas. Login `/login` y recuperación `/auth/reset` van sin shell.
+**Módulos (10):** Resumen `/` · Métricas `/metricas` · **Gastos hormiga `/hormiga`** · Cash Flow `/cashflow` · Transacciones · Tarjetas · Deudas · Recurrentes (vacía) · Divisas · Reglas. Login `/login` y recuperación `/auth/reset` van sin shell.
 
 **Gastos hormiga** (`/hormiga`, `lib/hormiga.ts`): mide el gasto **evitable**, no el chico. Entra todo Delivery/Comida/Ocio/Transporte/Compras **sin filtrar por monto** (una cena de $30.000 es más recortable que un café de $4.000). El umbral (percentil 70 auto-calibrado) NO excluye: solo separa "goteo" de "consumos grandes". Quedan afuera cuotas y suscripciones. Las suscripciones se detectan por comercio+monto repetido en 3 meses (o 2 si el nombre lo delata) y desde ahí se marcan como `nature='fijo'`.
 
@@ -149,13 +150,14 @@ Los 4 primeros items del backlog original YA ESTÁN HECHOS: alta/edición de tar
 
 **Planteado por el usuario el 2026-07-27 (sin resolver):**
 - **Gastos hormiga perdió el foco.** Le entra nafta y consumos grandes porque el criterio es "evitable, sin filtrar por monto". Al usuario le servía más cuando analizaba **microgastos**. Hay que repensar la pantalla — probablemente volver a poner el ticket chico en el centro, con los consumos grandes como contexto y no como parte del total.
-- **Completar acciones que faltan**: "Nueva regla" en `/reglas` no funciona (y el usuario prefiere un **desplegable** antes que el formulario al costado). Repasar botones sin acción en el resto de las pantallas.
+- ✅ **"Nueva regla" en `/reglas` — HECHO.** Ya es un modal (`NewRuleForm` dentro de `Modal`) disparado por el botón del header, no el formulario al costado. `rules.user_id` tiene default `auth.uid()` y la policy `owner_all` deja insertar: el alta funciona de punta a punta.
+- ✅ **Botones sin acción — HECHO (2026-09-22).** Estaban cuatro: campana de notificaciones (x2, en `Shell.tsx` mobile y en el header de `/`), engranaje de Configuración (`Shell.tsx`) y lupa de búsqueda (`/`). Las dos campanas tenían además un **punto rojo pulsante fijo** que anunciaba avisos que no existían — se fueron, junto con el engranaje (no hay pantalla de configuración a la que ir). La lupa ahora es un `<Link>` a `/transacciones`, que tiene el buscador real. El botón de OCR quedó, pero `disabled` y diciéndolo en el `title`, el mismo criterio que ya usaba el de dictado cuando el navegador no lo soporta.
 - Tarjetas: revisar el resto de la pantalla (bloques de abajo) contra lo que la app tiene hoy.
 
 **Otros pendientes menores:**
 - **Pago de resumen como transacción visible**: el botón "Pagar resumen" funciona (fija el total + `is_paid`, baja el saldo), pero el movimiento no aparece en Transacciones.
-- **`insertExchange` no mueve saldos**: registrar un cambio en /divisas solo escribe `currency_exchanges`, no genera las transacciones "Cambio Divisas". Por eso una compra de dólares no impacta el balance.
-- **Divisas sigue con datos mock** (`lib/mock.ts`: liveQuotes, fxHoldings, fxTrend) aunque `fx_rates` ya tiene todo lo necesario para reemplazarlos.
+- ✅ **`insertExchange` — HECHO.** Llama a la RPC `register_exchange`, que escribe `currency_exchanges` **y** las dos transacciones "Cambio Divisas" (egreso de la moneda que sale, ingreso de la que entra), así que el cambio sí mueve el balance. Valida montos > 0 y monedas distintas, y corre con la sesión del usuario (no es SECURITY DEFINER): RLS aplica.
+- ✅ **Divisas ya no usa mock.** `lib/mock.ts` no existe más; la pantalla lee `fetchFxBoard` + `fetchMetrics`.
 - **El asistente no sabe de deudas**: si le decís "X me pagó", lo registra como ingreso suelto.
 - **OCR de tickets** (botón cámara es placeholder), **Recurrentes** (pantalla `ComingSoon` vacía).
 - El importador **no puede detectar cuotas**: la alerta de Galicia no trae ese dato (verificado). Toda compra en cuotas entra como pago único y hay que convertirla a mano (borrar la transaction + crear el `installment_plan`). Mejora posible: un botón "convertir a cuotas" en la UI.
