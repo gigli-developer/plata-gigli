@@ -3,12 +3,17 @@
 import { useEffect, useMemo, useState } from "react";
 import { ars } from "@/lib/format";
 import { aplicarPropuesta, rechazarPropuesta, traerPropuesta, type FilaPropuesta } from "./propuestas";
-import { armarFraccionamiento } from "./fraccionamiento";
+import { armarFraccionamiento, type LineaResultado } from "./fraccionamiento";
 import TablaFraccionamiento from "./TablaFraccionamiento";
 
 /**
  * La propuesta, tal como la ve Lucas. Una sola card para el chat y para
  * `/propuestas`: CONTEXTO_PANEL.md §2.3, §2.3.1 y §2.5.1.
+ *
+ * **Versión A (23/09), la que eligió Lucas.** El orden es: resumen → resultado del
+ * pedido **grande** → por qué pide un sí → tabla por hecho y capa → cómo queda cada
+ * uno, en fichas → vencimiento y botones. Antes el resultado era una línea al final,
+ * debajo de la tabla: la conclusión leída como nota al pie.
  *
  * - En el chat llega con los siete campos del evento (`vivo`): la card lee la fila
  *   entera por `id` y la vuelve a leer mientras siga abierta, porque aprobarla o
@@ -58,6 +63,37 @@ export const ABIERTOS = new Set(["pendiente", "aprobada"]);
 
 const hora = (iso: string) =>
   new Intl.DateTimeFormat("es-AR", { timeZone: "America/Argentina/Buenos_Aires", hour: "2-digit", minute: "2-digit" }).format(new Date(iso));
+
+/** `ars()` solo sabe de pesos, y el control viene por moneda, sin convertir. */
+function plata(monto: number, moneda: string) {
+  if (moneda === "ARS") return ars(monto);
+  if (moneda === "USD") return `US$ ${monto.toLocaleString("es-AR")}`;
+  return `${monto.toLocaleString("es-AR")} ${moneda}`;
+}
+
+/**
+ * La frase del número grande. Las cuatro salidas las decide
+ * `lib/fraccionamiento.ts`, probado contra las recetas:
+ *
+ * - `corrige` va **sin número**: en una división de algo ya registrado, el +36.000
+ *   que devuelve la cuenta se leería como una ganancia (§2.3.1).
+ * - `oculto` (variación cero) no lleva frase: la tabla ya lo dice todo.
+ *
+ * Nunca dice "tu patrimonio baja": con tarjeta de crédito eso no coincide con lo
+ * que muestra Plata, y Lucas vería subir el patrimonio después de aprobar.
+ */
+function frase(r: LineaResultado): string | null {
+  switch (r.como) {
+    case "corrige":
+      return "Corrige lo registrado";
+    case "cuesta":
+      return `Te cuesta ${plata(r.monto, r.moneda)}`;
+    case "deja":
+      return `Te deja ${plata(r.monto, r.moneda)}`;
+    default:
+      return null;
+  }
+}
 
 export default function TarjetaPropuesta({
   inicial,
@@ -153,6 +189,11 @@ export default function TarjetaPropuesta({
     }
   }
 
+  /** Una línea por moneda, sin las que no llevan frase (`oculto`). */
+  const lineas = (fraccionamiento?.resultado ?? [])
+    .map((r) => ({ r, texto: frase(r) }))
+    .filter((x): x is { r: LineaResultado; texto: string } => x.texto !== null);
+
   const vencida = ABIERTOS.has(fila.estado) && new Date(fila.expira_en).getTime() <= ahora;
   const e = ESTADO[fila.estado] ?? { texto: fila.estado, clase: "text-subtle" };
   const monto = fila.monto_ars == null ? null : Number(fila.monto_ars);
@@ -168,14 +209,66 @@ export default function TarjetaPropuesta({
 
       <p className="mt-2 font-display text-fg">{fila.resumen}</p>
 
-      {monto != null && Number.isFinite(monto) && <p className="tnum mt-1 text-sm text-fg">{ars(monto)}</p>}
-      {monto == null && motivo === "sin_monto" && <p className="mt-1 text-sm text-muted">Monto a calcular al aplicar</p>}
+      {/* El resultado del pedido, grande y arriba: es lo que se mira para decidir.
+          Sale de `control`, calculado por la tool — el panel no lo suma (§2.3.1).
+          Cuando no hay ninguno se cae al `monto_ars` de la fila: es menos útil
+          (es el tamaño de la operación, no lo que te cuesta) pero es un dato real,
+          y las propuestas viejas, anteriores a `0aa6e55`, no tienen control. */}
+      {lineas.length > 0 ? (
+        lineas.map(({ r, texto }) => (
+          <div key={r.moneda} className="mt-2">
+            <p className={`font-display leading-none ${r.como === "corrige" ? "text-lg text-muted" : "text-[1.75rem] font-bold"} ${r.como === "deja" ? "text-emerald" : "text-fg"}`}>
+              <span className={r.como === "corrige" ? "" : "tnum"}>{texto}</span>
+            </p>
+            <p className="mt-1 text-xs text-subtle">
+              {r.como === "corrige"
+                ? "El antes y el después están en la columna Hecho."
+                : fraccionamiento?.compuesta
+                  ? `la suma de la capa 1 de los ${fraccionamiento.filas.length} hechos`
+                  : "lo que te tocó a vos"}
+            </p>
+          </div>
+        ))
+      ) : (
+        <>
+          {monto != null && Number.isFinite(monto) && <p className="tnum mt-1 text-sm text-fg">{ars(monto)}</p>}
+          {monto == null && motivo === "sin_monto" && <p className="mt-1 text-sm text-muted">Monto a calcular al aplicar</p>}
+        </>
+      )}
 
-      <p className="mt-2 text-xs text-muted">
+      <p className="mt-3 text-xs text-muted">
         {motivo == null ? SIN_MOTIVO : TEXTO_MOTIVO[motivo] ?? `Pide confirmación (motivo «${motivo}»).`}
       </p>
 
       {fraccionamiento && <TablaFraccionamiento f={fraccionamiento} />}
+
+      {fraccionamiento && fraccionamiento.neto.length > 0 && (
+        <div className="mt-3 flex flex-wrap items-center gap-1.5">
+          <span className="text-xs text-subtle">Cómo queda cada uno:</span>
+          {fraccionamiento.neto.map((n, i) => {
+            const teDebe = n.neto >= 0;
+            return (
+              <span
+                key={`${n.nombre}-${n.moneda}-${i}`}
+                className={`inline-flex items-center gap-1.5 rounded-full border py-0.5 pl-0.5 pr-2.5 text-xs ${teDebe ? "border-emerald/35" : "border-coral/35"}`}
+              >
+                <span className="grid h-5 w-5 place-items-center rounded-full bg-white/[0.08] font-display text-[0.6rem] font-bold text-muted">
+                  {n.nombre.slice(0, 2).toUpperCase()}
+                </span>
+                {n.nombre}{" "}
+                <span className={teDebe ? "text-emerald" : "text-coral"}>
+                  {teDebe ? "te debe " : "le debés "}
+                  <span className="tnum">{plata(Math.abs(n.neto), n.moneda)}</span>
+                </span>
+              </span>
+            );
+          })}
+        </div>
+      )}
+
+      {fraccionamiento?.resultado.some((r) => r.creditoAbierto) && (
+        <p className="mt-2 text-xs text-amber">Con tarjeta: en Plata el patrimonio no se mueve igual hasta que pagues el resumen.</p>
+      )}
 
       {ABIERTOS.has(fila.estado) && !vencida && <p className="mt-2 text-[0.7rem] text-faint">Vence a las {hora(fila.expira_en)}.</p>}
       {fila.resuelta_por && (

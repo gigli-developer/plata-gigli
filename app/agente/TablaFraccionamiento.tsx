@@ -1,60 +1,59 @@
-import { ars } from "@/lib/format";
-import type { Celda, Fraccionamiento, LineaResultado } from "./fraccionamiento";
+import type { Celda, Fraccionamiento, ItemCelda } from "./fraccionamiento";
 
 /**
  * La tabla del fraccionamiento: por hecho y por capa. CONTEXTO_PANEL.md §2.3.1.
  *
- * Solo dibuja. Qué va en cada celda y qué frase lleva el resultado lo decide
- * `armarFraccionamiento` (`lib/fraccionamiento.ts`), que está probado con las
- * recetas de FRACCIONAMIENTO.md. Acá no se agrupa ni se calcula nada.
+ * Solo dibuja. Qué va en cada celda lo decide `armarFraccionamiento`
+ * (`lib/fraccionamiento.ts`), que está probado con las recetas de
+ * FRACCIONAMIENTO.md. Acá no se agrupa ni se calcula nada.
+ *
+ * **Versión A (23/09):** cada capa tiene su color, en una barra de 2px a la
+ * izquierda del renglón. Es lo que reemplaza al título de columna cuando la tabla
+ * se apila en mobile, donde las tres columnas no entran.
+ *
+ * El resultado del pedido y el neto por persona **ya no viven acá**: van arriba,
+ * antes de la tabla, en `TarjetaPropuesta`. Abajo quedaba como una nota al pie de
+ * algo que es la conclusión.
  */
 
 const CAPAS = [
-  { n: 1, titulo: "Hecho", pregunta: "¿qué pasó y cuánto te toca?" },
-  { n: 2, titulo: "Plata", pregunta: "¿quién puso la plata?" },
-  { n: 3, titulo: "Deuda", pregunta: "¿quién le debe a quién?" },
+  { n: 1, titulo: "Hecho", pregunta: "¿qué pasó y cuánto te toca?", barra: "border-l-accent" },
+  { n: 2, titulo: "Plata", pregunta: "¿quién puso la plata?", barra: "border-l-sky" },
+  { n: 3, titulo: "Deuda", pregunta: "¿quién le debe a quién?", barra: "border-l-emerald" },
 ] as const;
 
-function plata(monto: number, moneda: string) {
-  if (moneda === "ARS") return ars(monto);
-  if (moneda === "USD") return `US$ ${monto.toLocaleString("es-AR")}`;
-  return `${monto.toLocaleString("es-AR")} ${moneda}`;
+/**
+ * El color del renglón. La capa 3 es la única que cambia según el dato: coral
+ * cuando la deuda es tuya. Ese coral **no significa error** (§1.3.8): el rojo de
+ * "falló" es el borde entero de la card, no una barra adentro de una celda.
+ */
+function barra(capa: 1 | 2 | 3, i: ItemCelda) {
+  if (i.tipo !== "operacion") return "border-l-line";
+  if (capa === 3 && i.deuda === "pagar") return "border-l-coral";
+  if (capa === 3 && i.deuda === null) return "border-l-line";
+  return CAPAS[capa - 1].barra;
 }
 
 function VistaCelda({ c }: { c: Celda }) {
   // Vacía es "Nada", a propósito: en la receta 3.1 que la capa 2 esté vacía es una
   // decisión ("pusiste lo que te tocaba"), no un dato que falta.
-  if (c.items.length === 0) return <span className="text-faint">Nada</span>;
+  if (c.items.length === 0) return <span className="text-faint italic">Nada</span>;
   return (
-    <ul className="space-y-1">
-      {c.items.map((i, k) =>
-        i.tipo === "operacion" ? (
-          <li key={k} className="text-fg">{i.texto}</li>
-        ) : (
-          <li key={k} className="text-faint" title={i.texto}>Lo hace la operación de la capa {i.desdeCapa}</li>
-        ),
-      )}
+    <ul className="space-y-1.5">
+      {c.items.map((i, k) => (
+        <li key={k} className={`border-l-2 pl-2.5 ${barra(c.capa, i)}`}>
+          {i.tipo === "operacion" ? (
+            <span className="text-fg">{i.texto}</span>
+          ) : (
+            <span className="text-faint" title={i.texto}>Lo hace la operación de la capa {i.desdeCapa}</span>
+          )}
+        </li>
+      ))}
     </ul>
   );
 }
 
-function frase(r: LineaResultado) {
-  switch (r.como) {
-    case "corrige":
-      return "Corrige lo registrado: el antes y el después están en la columna Hecho.";
-    case "cuesta":
-      return `Te cuesta ${plata(r.monto, r.moneda)}`;
-    case "deja":
-      return `Te deja ${plata(r.monto, r.moneda)}`;
-    default:
-      return null;
-  }
-}
-
 export default function TablaFraccionamiento({ f }: { f: Fraccionamiento }) {
-  const lineas = f.resultado.map((r) => ({ r, texto: frase(r) })).filter((x) => x.texto);
-  const creditoAbierto = f.resultado.some((r) => r.creditoAbierto);
-
   return (
     <div className="mt-3 space-y-3 text-sm">
       {f.antes.length > 0 && (
@@ -84,7 +83,9 @@ export default function TablaFraccionamiento({ f }: { f: Fraccionamiento }) {
               <div key={c.capa} className="flex gap-2 py-0.5 lg:block">
                 {/* En mobile la columna no se ve: cada celda lleva su capa escrita. */}
                 <span className="label-micro w-14 shrink-0 pt-0.5 lg:hidden">{CAPAS[k].titulo}</span>
-                <VistaCelda c={c} />
+                <div className="min-w-0 flex-1">
+                  <VistaCelda c={c} />
+                </div>
               </div>
             ))}
           </div>
@@ -98,24 +99,6 @@ export default function TablaFraccionamiento({ f }: { f: Fraccionamiento }) {
         </div>
       )}
 
-      {/* El resultado y el neto van abajo de TODA la tabla, no adentro del último
-          hecho, para que no se lean como parte del truco. */}
-      {lineas.map(({ r, texto }) => (
-        <p key={r.moneda} className={`font-display ${r.como === "corrige" ? "text-sm text-muted" : "text-fg"}`}>
-          {r.como === "corrige" ? texto : <>Resultado del pedido: <span className="tnum">{texto}</span></>}
-        </p>
-      ))}
-      {creditoAbierto && (
-        <p className="text-xs text-amber">Con tarjeta: en Plata el patrimonio no se mueve igual hasta que pagues el resumen.</p>
-      )}
-      {f.neto.length > 0 && (
-        <p className="text-xs text-muted">
-          <span className="text-fg">Cómo queda cada uno:</span>{" "}
-          {f.neto
-            .map((n) => (n.neto < 0 ? `${n.nombre}, le debés ${plata(-n.neto, n.moneda)}` : `${n.nombre} te debe ${plata(n.neto, n.moneda)}`))
-            .join(" · ")}
-        </p>
-      )}
       {f.supuestos.length > 0 && (
         <p className="text-[0.7rem] text-faint" title={f.supuestos.join("\n")}>Hay columnas que la tabla supuso por falta de un dato. Pasá el mouse para ver cuáles.</p>
       )}

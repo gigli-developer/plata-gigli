@@ -28,6 +28,13 @@ export type OperacionPropuesta = {
   capas?: number[];
   /** Id del hecho en `hechos`. Solo puede faltar en capa 0. */
   hecho?: string | null;
+  /**
+   * Los datos de la fila que se va a escribir. Acá se mira **una sola cosa**:
+   * `direction` de una fila de `debts`, que dice de qué lado está la deuda. Es el
+   * único dato que permite pintar la capa 3 sin leerle el texto a la operación,
+   * que está escrito para una persona y no es un campo.
+   */
+  datos?: { direction?: string | null } | null;
 };
 
 export type HechoPropuesta = { id: string; titulo: string };
@@ -39,13 +46,27 @@ export type ControlMoneda = {
   corrige_registros?: boolean;
 };
 
+/**
+ * `persona` es `unknown` a propósito y no se usa nunca: en una propuesta simple
+ * puede venir como `{"$ref":"p1"}`, porque la persona recién se crea al aprobar
+ * (Back, `0aa6e55`). Lo que se muestra es `nombre`, que viene siempre.
+ */
 export type NetoPersona = { persona: unknown; nombre: string; moneda: string; neto: number };
 
 export type EntradaFraccionamiento = {
   tipo: string;
   operaciones: OperacionPropuesta[];
-  /** Llegan con la 015. Antes, `undefined`. */
+  /** Solo en una compuesta: el CHECK `propuestas_compuesta_tiene_hechos` lo ata al tipo. */
   hechos?: HechoPropuesta[] | null;
+  /**
+   * Desde `0aa6e55` los trae **toda** propuesta nueva, simple o compuesta. Antes
+   * eran solo de las compuestas, y por eso la card no tenía qué poner arriba en el
+   * caso más frecuente. Siguen siendo opcionales porque las propuestas viejas
+   * (#2 y #3) nacieron sin ellos.
+   *
+   * `control: []` no es "no se calculó": es **"no mueve plata"**, y entonces no va
+   * ningún número arriba. Se distingue de `null`, que es "no se sabe".
+   */
   control?: ControlMoneda[] | null;
   neto_por_persona?: NetoPersona[] | null;
 };
@@ -53,7 +74,8 @@ export type EntradaFraccionamiento = {
 // ── Lo que dibuja la pantalla ────────────────────────────────────────────────
 
 export type ItemCelda =
-  | { tipo: "operacion"; texto: string }
+  /** `deuda` solo lo trae una fila de `debts`; en todo lo demás es `null`. */
+  | { tipo: "operacion"; texto: string; deuda: "cobrar" | "pagar" | null }
   /** La capa la hace una operación anotada en una capa más baja: no es "Nada". */
   | { tipo: "incluida"; desdeCapa: number; texto: string };
 
@@ -92,6 +114,21 @@ export type Fraccionamiento = {
 
 const textoDe = (o: OperacionPropuesta) =>
   o.texto?.trim() || `${o.op} ${o.tabla ?? o.fn ?? ""}`.trim();
+
+/**
+ * De qué lado está una deuda, para que la capa 3 se pinte sola: verde lo que te
+ * deben, coral lo que debés (CONTEXTO_PANEL.md §1.3.8 y §2.3.1, versión A).
+ *
+ * Los dos valores son los que escribe `plata/tools/escritura-fraccion.ts` y los
+ * mismos que lee para contestar «te debe» o «le debés». La base no tiene CHECK
+ * sobre la columna, así que un valor nuevo devuelve `null` y la celda queda
+ * neutra: un color de más diría algo que nadie verificó.
+ */
+function ladoDeLaDeuda(o: OperacionPropuesta): "cobrar" | "pagar" | null {
+  if (o.tabla !== "debts") return null;
+  const d = o.datos?.direction;
+  return d === "to_collect" ? "cobrar" : d === "to_pay" ? "pagar" : null;
+}
 
 /**
  * Qué capas cubre una operación.
@@ -168,7 +205,7 @@ export function armarFraccionamiento(p: EntradaFraccionamiento): Fraccionamiento
       continue;
     }
     const [primera, ...resto] = capas;
-    fila.celdas[primera - 1].items.push({ tipo: "operacion", texto });
+    fila.celdas[primera - 1].items.push({ tipo: "operacion", texto, deuda: ladoDeLaDeuda(o) });
     for (const c of resto) fila.celdas[c - 1].items.push({ tipo: "incluida", desdeCapa: primera, texto });
     if (supuesto) {
       supuestos.add(
