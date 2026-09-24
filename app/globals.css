@@ -44,8 +44,16 @@
 .pb-nav { padding-bottom: calc(var(--nav-safe) + 1.5rem); }
 .bottom-safe { padding-bottom: env(safe-area-inset-bottom, 0px); }
 
-* {
-  border-color: var(--color-line);
+/* ⚠️ Capas. Tailwind v4 pone sus utilidades en `@layer utilities`, y el CSS escrito
+   FUERA de toda capa gana siempre sobre cualquier capa, sin importar la
+   especificidad. Esta regla estuvo suelta hasta el 24/09/2026 y anulaba en silencio
+   los ~120 `border-accent/40`, `border-coral/30`, `border-emerald/25`… de la app:
+   todos salían grises. En `base`, sigue siendo el borde por defecto y cualquier
+   utilidad de color le gana. Lo mismo vale para las clases de componente de abajo. */
+@layer base {
+  * {
+    border-color: var(--color-line);
+  }
 }
 
 /* El desplegable de un <select> nativo lo pinta el SISTEMA OPERATIVO, no la página:
@@ -156,6 +164,10 @@ body {
  * través), el borde claro y las sombras. Lo único que se pierde es el desenfoque.
  * Beneficio colateral: `backdrop-filter` era lo más caro de renderizar de la app.
  */
+/* En `components` y no sueltas: si no, una utilidad sobre el mismo elemento
+   (`panel-inner border-emerald/25 bg-emerald/10`, `chip border-accent/40`)
+   pierde contra la clase. Ver el comentario de capas arriba. */
+@layer components {
 .panel {
   background: rgba(255, 255, 255, 0.07);
   border: 1px solid rgba(255, 255, 255, 0.32);
@@ -273,6 +285,7 @@ body {
 @media (hover: hover) {
   .icon-btn:hover { background: rgba(255, 255, 255, 0.07); color: var(--color-fg); }
 }
+} /* fin @layer components */
 
 /* `:hover` matchea igual sobre un <button disabled> — sin esto, 12 botones
    seguían agrandándose con hover:scale mientras decían "Guardando…". */
@@ -300,10 +313,10 @@ button:disabled, a[aria-disabled="true"] {
   background: #141618;
 }
 
-/* utilidades de texto */
-.text-muted { color: var(--color-muted); }
-.text-subtle { color: var(--color-subtle); }
-.text-faint { color: var(--color-faint); }
+/* `text-muted`, `text-subtle` y `text-faint` las genera Tailwind desde los tokens de
+   @theme. Hasta el 24/09/2026 estaban repetidas acá, fuera de capa, y por eso le
+   ganaban a cualquier `hover:text-fg` del mismo elemento: ~60 hovers no cambiaban
+   de color. Ver el comentario de capas arriba. */
 /* micro-label en mayúsculas, el patrón de labels del diseño */
 .label-micro {
   font-size: 10.5px;
