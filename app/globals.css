@@ -313,10 +313,10 @@ button:disabled, a[aria-disabled="true"] {
   background: #141618;
 }
 
-/* utilidades de texto */
-.text-muted { color: var(--color-muted); }
-.text-subtle { color: var(--color-subtle); }
-.text-faint { color: var(--color-faint); }
+/* `text-muted`, `text-subtle` y `text-faint` las genera Tailwind desde los tokens de
+   @theme. Hasta el 24/09/2026 estaban repetidas acá, fuera de capa, y por eso le
+   ganaban a cualquier `hover:text-fg` del mismo elemento: ~60 hovers no cambiaban
+   de color. Ver el comentario de capas arriba. */
 /* micro-label en mayúsculas, el patrón de labels del diseño */
 .label-micro {
   font-size: 10.5px;
