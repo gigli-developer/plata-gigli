@@ -73,6 +73,9 @@ La pestaña de la moneda abre un chat con el agente de Plata del repo `agentes`:
 
 - **Requisito:** el agente tiene que estar corriendo (`npm run servir` en la carpeta `agentes`, escucha en `127.0.0.1:8787`). Si está apagado, la isla lo dice y ofrece **Prenderlo**: corre ese mismo comando sin ventana y deja la salida en `%LOCALAPPDATA%\Coucou\plata-agent.log`. La carpeta se busca en `Desktop\Claudegentes` (con o sin OneDrive) o en `%USERPROFILE%gentes`.
 - **Qué se ve:** el texto del agente, qué herramientas está usando, cada propuesta como tarjeta y, al final de cada turno, cuánto costó.
+- **Tarjetas de datos:** cuando el agente consulta `saldos`, `resumen_mensual` o `serie_patrimonio`, la isla dibuja una tarjeta con lo que devolvió (líquido en ARS, USD y USDT; gastos del mes por categoría; patrimonio mes a mes). Llegan con el evento `resultado` del agente, que la isla pide con `resultados: true` (CONTRATOS §9 en `agentes`). Las tarjetas no suman ni convierten nada: muestran el dato tal cual.
+- **Cambios en la app (botón de la terminal):** escribís el pedido ("agregá un filtro por tarjeta en Movimientos") y tocás el botón de la terminal en vez de enviar. No va al agente: se abre una terminal en el repo de Plata con Claude Code (el que trae la app de escritorio, `%APPDATA%\Claude\claude-code\<versión>\claude.exe`) trabajando en ese pedido, con la instrucción de hacerlo en una rama nueva y no pushear ni deployar sin preguntar. Sus pedidos de permiso aparecen en la isla por los hooks. El pedido queda guardado en `%LOCALAPPDATA%\Coucou\pedidos\`.
+- **Voz (micrófono):** activa el dictado de Windows (Win+H) sobre el campo del chat. Dictás, y el texto queda escrito para enviarlo. Usa el idioma de dictado de Windows.
 - **Propuestas:** la tarjeta trae **Aprobar** y **Rechazar**. La respuesta viaja como el mensaje siguiente ("Sí, aprobá la propuesta 42."), que es lo único que la base acepta: rechaza una confirmación hecha en el mismo turno que la propuso. La isla nunca escribe en Supabase.
 - **Nueva** arranca otra conversación. Cada una vive en el agente hasta 30 minutos sin mensajes.
 - Mientras el chat está abierto, la ventana de la isla crece de 720×320 a 720×480. Es transparente y deja pasar los clics fuera de la isla, pero toma el mouse mientras hay un botón apretado encima (para poder soltar archivos), así que vuelve a su tamaño apenas se cierra el chat.
@@ -96,12 +99,12 @@ poll_railway ── cada 30 s ────────────────�
 - Fuentes versionadas en este repo:
   - `supabase/functions/coucou-health/index.ts`: se deploya con el MCP de Supabase, `verify_jwt=false`.
   - `supabase/sql/coucou_health.sql`: se aplica con `execute_sql`.
-- Del lado de Coucou, todo lo propio está en `plata.patch` (dos commits):
+- Del lado de Coucou, todo lo propio está en `plata.patch` (tres commits):
   - `windows/src-tauri/src/integrations.rs`: `poll_plata` y `poll_railway`.
   - `windows/src/views/integrations.ts`: las tarjetas.
   - `state.ts`, `settings/main.ts`, `secrets.rs`, `settings.rs`, `island.ts`: el registro de las dos pills.
   - `windows/src-tauri/src/island.rs` (`drag_loop`, `apply_geometry`) y `layout.ts` (`islandX`, `islandRadius`): mover y anclar la isla.
-  - `windows/src-tauri/src/plata_agent.rs` y `windows/src/views/plata.ts`: el chat con el agente.
+  - `windows/src-tauri/src/plata_agent.rs` y `windows/src/views/plata.ts`: el chat con el agente, las tarjetas y el pase a Claude Code. `island.rs` (`start_dictation`): la voz.
 
 ## Actualizar Coucou
 

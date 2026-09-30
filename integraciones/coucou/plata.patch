@@ -1,7 +1,7 @@
 From 680c133ae9c577ce390172fe712e22debc666756 Mon Sep 17 00:00:00 2001
 From: Lucas Gigli <giglilangonelucas@gmail.com>
 Date: Wed, 30 Sep 2026 20:56:49 +0000
-Subject: [PATCH 1/2] Pills de Plata y Railway
+Subject: [PATCH 1/3] Pills de Plata y Railway
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -688,7 +688,7 @@ index b8ad73c..1e394d3 100644
 From 300ffc9f910104c945e4bac87f07652ff76cdef8 Mon Sep 17 00:00:00 2001
 From: Lucas <lucasgigli3@gmail.com>
 Date: Wed, 30 Sep 2026 19:26:42 -0300
-Subject: [PATCH 2/2] Isla movible y chat con el agente de Plata
+Subject: [PATCH 2/3] Isla movible y chat con el agente de Plata
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -2043,6 +2043,604 @@ index ac0ac7b..b0aea0d 100644
    map.set("upload", buildUpload());
    map.set("uploading", buildUploading());
    map.set("choose", buildChoose(actions));
+-- 
+2.53.0.windows.2
+
+
+From bc47f21c9aebad91c668224113e757e8621898c3 Mon Sep 17 00:00:00 2001
+From: Lucas <lucasgigli3@gmail.com>
+Date: Wed, 30 Sep 2026 19:41:15 -0300
+Subject: [PATCH 3/3] Plata en la isla: tarjetas, pedidos a Claude Code y voz
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+- Tarjetas de saldos, gastos del mes y patrimonio, dibujadas con el evento
+  `resultado` del agente (se pide con `resultados: true`). Muestran lo que
+  devolvió la tool, sin sumar ni convertir nada.
+- Botón de terminal: un cambio en la app no va al agente, se abre Claude
+  Code (el que trae la app de escritorio) en el repo de Plata con el pedido,
+  en una terminal. Sus permisos llegan a la isla por los hooks.
+- Micrófono: activa el dictado de Windows (Win+H) sobre el campo del chat.
+- El botón "Prenderlo" desaparece cuando el agente ya arrancó.
+
+Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+---
+ windows/src-tauri/src/island.rs      |  32 +++++
+ windows/src-tauri/src/lib.rs         |  14 +++
+ windows/src-tauri/src/plata_agent.rs |  78 +++++++++++-
+ windows/src/core/bridge.ts           |   5 +
+ windows/src/style.css                | 135 +++++++++++++++++++++
+ windows/src/views/icons.ts           |   4 +
+ windows/src/views/plata.ts           | 171 ++++++++++++++++++++++++++-
+ 7 files changed, 434 insertions(+), 5 deletions(-)
+
+diff --git a/windows/src-tauri/src/island.rs b/windows/src-tauri/src/island.rs
+index feb67b0..26fa63a 100644
+--- a/windows/src-tauri/src/island.rs
++++ b/windows/src-tauri/src/island.rs
+@@ -490,3 +490,35 @@ pub fn set_ignore_cursor(app: &AppHandle, ignore: bool) {
+         let _ = win.set_ignore_cursor_events(ignore);
+     }
+ }
++
++/// Windows voice typing (Win+H) into the island's focused text field. The page
++/// focuses the field first; this lets the window take focus and presses the keys.
++pub fn start_dictation(app: &AppHandle) {
++    use windows::Win32::UI::Input::KeyboardAndMouse::{
++        SendInput, INPUT, INPUT_0, INPUT_KEYBOARD, KEYBDINPUT, KEYBD_EVENT_FLAGS, KEYEVENTF_KEYUP, VIRTUAL_KEY, VK_LWIN,
++    };
++    let Some(win) = window(app) else { return };
++    set_activating(&win, true);
++    let _ = win.set_focus();
++    std::thread::spawn(|| {
++        // Let the focus land before the shortcut, or voice typing opens with no field.
++        std::thread::sleep(Duration::from_millis(180));
++        let key = |vk: VIRTUAL_KEY, up: bool| INPUT {
++            r#type: INPUT_KEYBOARD,
++            Anonymous: INPUT_0 {
++                ki: KEYBDINPUT {
++                    wVk: vk,
++                    wScan: 0,
++                    dwFlags: if up { KEYEVENTF_KEYUP } else { KEYBD_EVENT_FLAGS(0) },
++                    time: 0,
++                    dwExtraInfo: 0,
++                },
++            },
++        };
++        let h = VIRTUAL_KEY(0x48);
++        let inputs = [key(VK_LWIN, false), key(h, false), key(h, true), key(VK_LWIN, true)];
++        unsafe {
++            SendInput(&inputs, std::mem::size_of::<INPUT>() as i32);
++        }
++    });
++}
+diff --git a/windows/src-tauri/src/lib.rs b/windows/src-tauri/src/lib.rs
+index f7ce165..552b42d 100644
+--- a/windows/src-tauri/src/lib.rs
++++ b/windows/src-tauri/src/lib.rs
+@@ -289,6 +289,18 @@ async fn plata_send(app: AppHandle, texto: String, sesion_id: String) -> Result<
+     plata_agent::send(app, texto, sesion_id).await
+ }
+ 
++/// A change to the app: Claude Code in a terminal, in the Plata repo.
++#[tauri::command]
++fn open_claude_code(pedido: String) -> Result<String, String> {
++    plata_agent::open_claude_code(&pedido)
++}
++
++/// Windows voice typing into the focused chat field.
++#[tauri::command]
++fn start_dictation(app: AppHandle) {
++    island::start_dictation(&app);
++}
++
+ #[tauri::command]
+ fn chat_reset(chat: State<Chat>) {
+     chat.reset();
+@@ -449,6 +461,8 @@ pub fn run() {
+             plata_status,
+             plata_start,
+             plata_send,
++            open_claude_code,
++            start_dictation,
+         ])
+         .setup(move |app| {
+             let handle = app.handle().clone();
+diff --git a/windows/src-tauri/src/plata_agent.rs b/windows/src-tauri/src/plata_agent.rs
+index cd7eee4..d075b0a 100644
+--- a/windows/src-tauri/src/plata_agent.rs
++++ b/windows/src-tauri/src/plata_agent.rs
+@@ -98,7 +98,9 @@ pub async fn send(app: AppHandle, texto: String, sesion_id: String) -> Result<()
+ 
+     let mut response = client
+         .post(format!("{BASE}/agentes/plata/mensaje"))
+-        .json(&json!({ "texto": texto, "sesion_id": sesion_id }))
++        // `resultados`: the data behind saldos / resumen_mensual / serie_patrimonio
++        // comes as its own event, so the island draws cards from it.
++        .json(&json!({ "texto": texto, "sesion_id": sesion_id, "resultados": true }))
+         .send()
+         .await
+         .map_err(|e| {
+@@ -140,3 +142,77 @@ pub async fn send(app: AppHandle, texto: String, sesion_id: String) -> Result<()
+ fn find_frame_end(buf: &[u8]) -> Option<usize> {
+     buf.windows(2).position(|w| w == b"\n\n")
+ }
++
++// ── Changes to the app go to Claude Code, not to the agent ──────────────────
++
++/// The Plata checkout: a folder whose git remote is plata-gigli.
++fn plata_repo_dir() -> Option<PathBuf> {
++    let home = PathBuf::from(std::env::var_os("USERPROFILE")?);
++    [
++        home.join("OneDrive").join("Desktop").join("Claude").join("finanzas-app"),
++        home.join("Desktop").join("Claude").join("finanzas-app"),
++        home.join("plata-gigli"),
++    ]
++    .into_iter()
++    .find(|p| {
++        std::fs::read_to_string(p.join(".git").join("config"))
++            .map(|c| c.contains("plata-gigli"))
++            .unwrap_or(false)
++    })
++}
++
++/// The newest Claude Code the desktop app ships (%APPDATA%\Claude\claude-code\<version>\claude.exe).
++fn claude_exe() -> Option<PathBuf> {
++    let base = PathBuf::from(std::env::var_os("APPDATA")?).join("Claude").join("claude-code");
++    std::fs::read_dir(base)
++        .ok()?
++        .flatten()
++        .filter_map(|e| {
++            let exe = e.path().join("claude.exe");
++            let version: Vec<u64> = e.file_name().to_string_lossy().split('.').map(|n| n.parse().unwrap_or(0)).collect();
++            exe.is_file().then_some((version, exe))
++        })
++        .max_by(|a, b| a.0.cmp(&b.0))
++        .map(|(_, exe)| exe)
++}
++
++/// Opens a terminal in the Plata repo with Claude Code working on `pedido`.
++/// The session shows up in the island through the hooks, and its permission
++/// requests are answered there. Returns the folder it opened in.
++pub fn open_claude_code(pedido: &str) -> Result<String, String> {
++    let repo = plata_repo_dir().ok_or_else(|| "No encuentro el repo de Plata (finanzas-app).".to_string())?;
++    let exe = claude_exe().ok_or_else(|| "No encuentro Claude Code (viene con la app de escritorio de Claude).".to_string())?;
++
++    // The request travels in a file: a prompt on the command line would have to
++    // survive the quoting of wt, PowerShell and the shell, and `;` splits wt tabs.
++    let dir = crate::settings::local_dir().join("pedidos");
++    std::fs::create_dir_all(&dir).map_err(|e| e.to_string())?;
++    let stamp = std::time::SystemTime::now()
++        .duration_since(std::time::UNIX_EPOCH)
++        .map(|d| d.as_secs())
++        .unwrap_or(0);
++    let file = dir.join(format!("pedido-{stamp}.txt"));
++    let prompt = format!(
++        "Pedido que Lucas mandó desde la isla de Coucou, para la app Plata:\n\n{pedido}\n\n\
++         Antes de cambiar nada, creá una rama nueva desde la rama actual. \
++         No hagas push, merge ni deploy sin preguntarme."
++    );
++    std::fs::write(&file, prompt).map_err(|e| e.to_string())?;
++
++    let q = |p: &PathBuf| p.to_string_lossy().replace('\'', "''");
++    let ps = format!("& '{}' (Get-Content -Raw -Encoding UTF8 '{}')", q(&exe), q(&file));
++    let opened = Command::new("wt")
++        .args(["-d", &repo.to_string_lossy(), "--title", "Plata · Claude Code", "powershell", "-NoExit", "-Command", &ps])
++        .spawn();
++    if opened.is_err() {
++        // No Windows Terminal: a plain console window.
++        Command::new("cmd")
++            .args(["/C", "start", "Plata · Claude Code", "powershell", "-NoExit", "-Command", &ps])
++            .current_dir(&repo)
++            .creation_flags(CREATE_NO_WINDOW)
++            .spawn()
++            .map_err(|e| format!("No pude abrir la terminal: {e}"))?;
++    }
++    crate::log::line(format!("claude code opened in {} ({})", repo.display(), file.display()));
++    Ok(repo.file_name().map(|n| n.to_string_lossy().to_string()).unwrap_or_default())
++}
+diff --git a/windows/src/core/bridge.ts b/windows/src/core/bridge.ts
+index c23ca18..92a1211 100644
+--- a/windows/src/core/bridge.ts
++++ b/windows/src/core/bridge.ts
+@@ -56,6 +56,11 @@ export const Bridge = {
+   beginIslandDrag: (offsetX: number, offsetY: number) =>
+     call<void>("begin_island_drag", { offsetX, offsetY }),
+ 
++  /** A change to the app: opens Claude Code in the Plata repo with the request. */
++  openClaudeCode: (pedido: string) => callOrThrow<string>("open_claude_code", { pedido }),
++  /** Windows voice typing (Win+H) into the focused field. */
++  startDictation: () => call<void>("start_dictation"),
++
+   /** Grow the window for the Plata chat, or back to the usual size. */
+   setTall: (tall: boolean) => call<void>("set_tall", { tall }),
+ 
+diff --git a/windows/src/style.css b/windows/src/style.css
+index a7abf4f..1433092 100644
+--- a/windows/src/style.css
++++ b/windows/src/style.css
+@@ -1497,3 +1497,138 @@ input[type="range"]::-webkit-slider-thumb {
+ .plata-send {
+   background: #ff9e1b;
+ }
++
++.plata-icon-btn {
++  width: 26px;
++  height: 26px;
++  flex: 0 0 26px;
++  border: 0;
++  border-radius: 50%;
++  background: transparent;
++  color: var(--dim-2, #9a9fa8);
++  display: grid;
++  place-items: center;
++  cursor: default;
++}
++
++.plata-icon-btn:hover {
++  background: rgba(255, 255, 255, 0.08);
++  color: var(--ink);
++}
++
++.plata-data {
++  display: flex;
++  flex-direction: column;
++  gap: 6px;
++  width: 100%;
++  padding: 10px 12px;
++  border-radius: 12px;
++  background: rgba(255, 255, 255, 0.05);
++  border: 1px solid rgba(255, 255, 255, 0.12);
++}
++
++.plata-data-kind {
++  color: var(--dim-2, #9a9fa8);
++}
++
++.plata-big {
++  font: 500 20px var(--font);
++  font-variant-numeric: tabular-nums;
++  color: var(--ink);
++}
++
++.plata-row3 {
++  display: flex;
++  gap: 14px;
++  font: 400 12.5px var(--font);
++  font-variant-numeric: tabular-nums;
++  color: #ffbf47;
++}
++
++.plata-row3 span:last-child {
++  color: #5ec8ff;
++}
++
++.plata-kv {
++  display: flex;
++  justify-content: space-between;
++  gap: 10px;
++  padding-top: 5px;
++  border-top: 1px solid rgba(255, 255, 255, 0.08);
++  font: 400 12px var(--font);
++  color: #b0b5be;
++}
++
++.plata-kv-v {
++  font-variant-numeric: tabular-nums;
++  color: var(--ink-2);
++}
++
++.plata-kv-v.pos {
++  color: #35e08a;
++}
++
++.plata-kv-v.neg {
++  color: #ff6b63;
++}
++
++.plata-bars {
++  display: flex;
++  flex-direction: column;
++  gap: 6px;
++}
++
++.plata-bar {
++  display: grid;
++  grid-template-columns: minmax(0, 1fr) auto;
++  gap: 2px 8px;
++  font: 400 12px var(--font);
++  color: var(--ink-2);
++}
++
++.plata-bar-name {
++  min-width: 0;
++  overflow: hidden;
++  white-space: nowrap;
++  text-overflow: ellipsis;
++}
++
++.plata-bar-v {
++  font-variant-numeric: tabular-nums;
++}
++
++.plata-bar-track {
++  grid-column: 1 / -1;
++  height: 5px;
++  border-radius: 99px;
++  background: rgba(255, 255, 255, 0.07);
++  overflow: hidden;
++}
++
++.plata-bar-fill {
++  display: block;
++  height: 100%;
++  border-radius: 99px;
++  background: #ff9e1b;
++}
++
++.plata-cols {
++  display: flex;
++  align-items: flex-end;
++  gap: 3px;
++  height: 44px;
++}
++
++.plata-cols span {
++  flex: 1 1 0;
++  border-radius: 3px 3px 0 0;
++  background: rgba(255, 158, 27, 0.55);
++}
++
++.plata-cols span:last-child {
++  background: #ff9e1b;
++}
++
++.plata-cols span.neg {
++  background: rgba(255, 67, 61, 0.7);
++}
+diff --git a/windows/src/views/icons.ts b/windows/src/views/icons.ts
+index 0dd0c57..9dab524 100644
+--- a/windows/src/views/icons.ts
++++ b/windows/src/views/icons.ts
+@@ -2,6 +2,10 @@
+ // Drawn on a 24×24 grid so they read at the same optical size.
+ 
+ export const ICONS = {
++  // microphone (voice typing), stroke
++  mic: "M12 3.5a2.8 2.8 0 0 0-2.8 2.8v5.4a2.8 2.8 0 0 0 5.6 0V6.3A2.8 2.8 0 0 0 12 3.5zM6.5 11.2a5.5 5.5 0 0 0 11 0M12 16.8v3.7",
++  // terminal prompt (hand a change to Claude Code), stroke
++  terminal: "M4 6.5 9.5 12 4 17.5M12 18h8",
+   // Plata: a coin with a peso sign, drawn as a stroke (see the Plata tab)
+   coin: "M12 3.5a8.5 8.5 0 1 0 0 17 8.5 8.5 0 0 0 0-17zM14.8 9.3c-.3-1-1.3-1.7-2.8-1.7-1.6 0-2.7.8-2.7 2 0 2.6 5.6 1.4 5.6 4.3 0 1.2-1.2 2.1-2.9 2.1-1.6 0-2.7-.7-3-1.8M12 5.9v1.7M12 16v1.9",
+   // house.fill
+diff --git a/windows/src/views/plata.ts b/windows/src/views/plata.ts
+index 6c6bb30..668ec54 100644
+--- a/windows/src/views/plata.ts
++++ b/windows/src/views/plata.ts
+@@ -29,9 +29,11 @@ type Evento =
+   | { tipo: "aviso"; texto: string }
+   | { tipo: "propuesta"; propuesta: Propuesta }
+   | { tipo: "error"; texto: string }
++  | { tipo: "resultado"; nombre: string; datos: unknown }
+   | { tipo: "fin"; usos: Array<{ usd: number; precio_conocido: boolean }>; duracionMs: number };
+ 
+ const ars = new Intl.NumberFormat("es-AR", { maximumFractionDigits: 2 });
++const ars0 = new Intl.NumberFormat("es-AR", { maximumFractionDigits: 0 });
+ const usd = new Intl.NumberFormat("es-AR", { minimumFractionDigits: 2, maximumFractionDigits: 3 });
+ 
+ function newSession(): string {
+@@ -52,6 +54,127 @@ function plain(text: string): string {
+     .trim();
+ }
+ 
++// ── Cards for the agent's read results ─────────────────────────────────────
++// They draw exactly what the tool returned (the `resultado` event, CONTRATOS §9
++// in agentes): no sums, no conversions. Plata's numbers come from its SQL.
++
++type Obj = Record<string, unknown>;
++const obj = (v: unknown): Obj => (v && typeof v === "object" && !Array.isArray(v) ? (v as Obj) : {});
++const arr = (v: unknown): Obj[] => (Array.isArray(v) ? v.map(obj) : []);
++const num = (v: unknown): number | null =>
++  v === null || v === undefined || v === "" || !Number.isFinite(Number(v)) ? null : Number(v);
++const money = (n: number | null, moneda = "ARS") =>
++  n === null ? "—" : moneda === "ARS" ? `$ ${ars0.format(n)}` : moneda === "USD" ? `US$ ${ars.format(n)}` : `${ars.format(n)} ${moneda}`;
++
++const MESES = ["enero", "febrero", "marzo", "abril", "mayo", "junio", "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre"];
++function mesLargo(ym: string): string {
++  const [y, m] = ym.split("-").map(Number);
++  return m ? `${MESES[m - 1]} ${y}` : ym;
++}
++
++function dataCard(title: string, stamp: string, ...body: (Node | null)[]): HTMLElement {
++  return h(
++    "div",
++    { class: "plata-data" },
++    h(
++      "div",
++      { class: "plata-prop-head" },
++      h("span", { class: "plata-data-kind", text: title }),
++      stamp ? h("span", { class: "plata-prop-exp", text: stamp }) : null,
++    ),
++    ...body,
++  );
++}
++
++function kv(label: string, value: string, cls = ""): HTMLElement {
++  return h("div", { class: "plata-kv" }, h("span", { text: label }), h("span", { class: `plata-kv-v ${cls}`, text: value }));
++}
++
++function cardSaldos(d: Obj): HTMLElement | null {
++  const liquido = arr(d.liquido);
++  if (!liquido.length) return null;
++  const en = (m: string) => num(liquido.find((l) => l.moneda === m)?.monto);
++  const cot = arr(d.cotizaciones_de_valuacion)
++    .map((c) => `${c.moneda === "USD" ? "blue" : "cripto"} ${money(num(c.ars_por_unidad))}`)
++    .join(" · ");
++  const vencida = num(obj(d.deuda_vencida_tarjeta).monto);
++  return dataCard(
++    "Saldos · líquido",
++    cot,
++    h("div", { class: "plata-big", text: money(en("ARS")) }),
++    h("div", { class: "plata-row3" }, h("span", { text: money(en("USD"), "USD") }), h("span", { text: money(en("USDT"), "USDT") })),
++    kv("Te deben", money(num(obj(d.te_deben_personas).monto)), "pos"),
++    kv("Debés a personas", money(num(obj(d.debes_a_personas).monto))),
++    kv("Cuotas de tarjeta", money(num(obj(d.deuda_cuotas_tarjeta).monto))),
++    kv("Vencido de tarjeta", money(vencida), vencida ? "neg" : ""),
++  );
++}
++
++function cardResumen(d: Obj): HTMLElement | null {
++  const egresos = arr(d.por_categoria).filter((c) => c.tipo === "egreso" && typeof c.mes === "string");
++  if (!egresos.length) return null;
++  const mes = egresos.map((c) => String(c.mes)).sort().at(-1)!;
++  const delMes = egresos
++    .filter((c) => c.mes === mes)
++    .sort((a, b) => (num(b.total_ars) ?? 0) - (num(a.total_ars) ?? 0));
++  const top = delMes.slice(0, 6);
++  const max = Math.max(...top.map((c) => num(c.total_ars) ?? 0), 1);
++  // por_mes is keyed by month: { "2026-09": { egreso_ars, ingreso_ars, ... } }.
++  const total = num(obj(obj(d.por_mes)[mes]).egreso_ars);
++  return dataCard(
++    `Gastos de ${mesLargo(mes)}`,
++    "incluye cuotas",
++    total !== null ? h("div", { class: "plata-big", text: money(total) }) : null,
++    h(
++      "div",
++      { class: "plata-bars" },
++      ...top.map((c) => {
++        const v = num(c.total_ars) ?? 0;
++        const bar = h("span", { class: "plata-bar-fill" });
++        bar.style.width = `${Math.max(2, (v / max) * 100)}%`;
++        return h(
++          "div",
++          { class: "plata-bar" },
++          h("span", { class: "plata-bar-name", text: `${c.emoji ?? ""} ${c.categoria ?? ""}`.trim() }),
++          h("span", { class: "plata-bar-v", text: money(v) }),
++          h("span", { class: "plata-bar-track" }, bar),
++        );
++      }),
++    ),
++    delMes.length > top.length ? h("div", { class: "plata-note", text: `y ${delMes.length - top.length} categorías más` }) : null,
++  );
++}
++
++function cardPatrimonio(d: unknown): HTMLElement | null {
++  const serie = arr(d).filter((p) => num(p.patrimonio) !== null);
++  if (!serie.length) return null;
++  const ultimo = serie.at(-1)!;
++  const max = Math.max(...serie.map((p) => Math.abs(num(p.patrimonio) ?? 0)), 1);
++  const cols = h("div", { class: "plata-cols" });
++  for (const p of serie) {
++    const v = num(p.patrimonio) ?? 0;
++    const c = h("span", { class: v < 0 ? "neg" : "" });
++    c.style.height = `${Math.max(3, (Math.abs(v) / max) * 100)}%`;
++    c.title = `${mesLargo(String(p.month ?? ""))}: ${money(v)}`;
++    cols.append(c);
++  }
++  return dataCard(
++    "Patrimonio neto",
++    `hoy · ${serie.length} meses`,
++    h("div", { class: "plata-big", text: money(num(ultimo.patrimonio)) }),
++    cols,
++    kv("Activos", money(num(ultimo.activos))),
++    kv("Pasivos", money(num(ultimo.pasivos))),
++  );
++}
++
++function cardFor(nombre: string, datos: unknown): HTMLElement | null {
++  if (nombre === "saldos") return cardSaldos(obj(datos));
++  if (nombre === "resumen_mensual") return cardResumen(obj(datos));
++  if (nombre === "serie_patrimonio") return cardPatrimonio(datos);
++  return null;
++}
++
+ function hhmm(iso: string | null): string {
+   if (!iso) return "";
+   const d = new Date(iso);
+@@ -81,8 +204,14 @@ export function buildPlata(): ViewHost {
+     placeholder: "Preguntale o pedile algo a Plata…",
+     spellcheck: "false",
+   }) as HTMLInputElement;
+-  const send = h("button", { class: "send-btn plata-send", title: "Enviar" }, svg(ICONS.arrowUp, 11));
+-  const bar = h("div", { class: "chat-bar" }, input, send);
++  const send = h("button", { class: "send-btn plata-send", title: "Enviar a Plata" }, svg(ICONS.arrowUp, 11));
++  const mic = h("button", { class: "plata-icon-btn", title: "Dictar (voz de Windows, Win+H)" }, svg(ICONS.mic, 15, { stroke: 1.7 }));
++  const toCode = h(
++    "button",
++    { class: "plata-icon-btn", title: "Es un cambio en la app: mandárselo a Claude Code" },
++    svg(ICONS.terminal, 15, { stroke: 1.9 }),
++  );
++  const bar = h("div", { class: "chat-bar" }, mic, input, toCode, send);
+ 
+   const el = h(
+     "div",
+@@ -195,6 +324,16 @@ export function buildPlata(): ViewHost {
+         typing(false);
+         note(plain(ev.texto), "plata-error");
+         break;
++      case "resultado": {
++        const card = cardFor(ev.nombre, ev.datos);
++        if (!card) break;
++        typing(false);
++        replyEl = null;
++        toolsEl = null;
++        row(card, "chat-row plata-prop-row");
++        typing(sending);
++        break;
++      }
+       case "fin": {
+         const total = (ev.usos ?? []).reduce((a, u) => a + (u.usd ?? 0), 0);
+         const known = (ev.usos ?? []).every((u) => u.precio_conocido !== false);
+@@ -224,7 +363,8 @@ export function buildPlata(): ViewHost {
+         for (let i = 0; i < 40; i++) {
+           await new Promise((r) => setTimeout(r, 1500));
+           if ((await refreshStatus()).up) {
+-            note("Listo, el agente está prendido.");
++            btn.remove();
++            note("Listo, el agente está prendido. La primera respuesta tarda un poco más: está arrancando.");
+             void submit(retryText, true);
+             return;
+           }
+@@ -292,6 +432,29 @@ export function buildPlata(): ViewHost {
+     }
+     e.stopPropagation(); // Escape closes the island, not the chat
+   });
++  mic.addEventListener("click", () => {
++    input.focus();
++    void Bridge.startDictation();
++  });
++  toCode.addEventListener("click", async () => {
++    const pedido = input.value.trim();
++    if (!pedido) {
++      note("Escribí qué querés cambiar en la app y tocá este botón: se lo paso a Claude Code.");
++      return;
++    }
++    input.value = "";
++    row(h("div", { class: "bubble", text: `→ Claude Code: ${pedido}` }), "chat-row user");
++    try {
++      const repo = await Bridge.openClaudeCode(pedido);
++      note(
++        `Se lo pasé a Claude Code en ${repo || "el repo de Plata"}: se abrió una terminal. ` +
++          "Los permisos te los pide acá, en la isla, y el deploy lo ves en la pill de Railway.",
++      );
++      Sound.play("send");
++    } catch (e) {
++      note(String(e).replace(/^Error:\s*/, ""), "plata-error");
++    }
++  });
+   resetBtn.addEventListener("click", () => {
+     if (sending) return;
+     sesionId = newSession();
+@@ -300,7 +463,7 @@ export function buildPlata(): ViewHost {
+     note("Conversación nueva.");
+   });
+ 
+-  note("Preguntale por tus saldos, gastos o deudas, o pedile que registre algo. Lo que cambie datos te lo muestra antes, para que lo apruebes.");
++  note("Preguntale por tus saldos, gastos o deudas, o pedile que registre algo. Lo que cambie datos te lo muestra antes, para que lo apruebes. Para cambios en la app, escribilos y tocá el botón de la terminal.");
+ 
+   return {
+     el,
 -- 
 2.53.0.windows.2
 
