@@ -1,0 +1,686 @@
+From d09255b43f3d075a81c282582ecd664c16ddb97d Mon Sep 17 00:00:00 2001
+From: Lucas Gigli <giglilangonelucas@gmail.com>
+Date: Wed, 30 Sep 2026 20:56:49 +0000
+Subject: [PATCH] Pills de Plata y Railway
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+- Plata: consulta la Edge Function coucou-health (header x-coucou-secret).
+  Avisa cuando el importador de Gmail tiene problemas (token vencido, cron
+  parado, cotizaciones viejas) y cuando entra un consumo nuevo de la tarjeta.
+  Muestra además el dólar blue y el cripto del día.
+- Railway: deploys del proyecto "plata" por la API GraphQL pública. Avisa
+  cuando termina un deploy o se cae el servicio; mientras deploya, Mochi
+  trabaja.
+- Las dos pills vienen activas por defecto, junto con GitHub.
+
+Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+Claude-Session: https://claude.ai/code/session_01HnkfGVMfD265YXRg3NJPRy
+---
+ windows/src-tauri/src/integrations.rs | 287 +++++++++++++++++++++++++-
+ windows/src-tauri/src/secrets.rs      |   4 +
+ windows/src-tauri/src/settings.rs     |   5 +-
+ windows/src/core/state.ts             |   9 +-
+ windows/src/island/integrations.ts    |  16 ++
+ windows/src/island/island.ts          |   2 +
+ windows/src/settings/main.ts          |  11 +
+ windows/src/views/integrations.ts     | 166 +++++++++++++++
+ 8 files changed, 491 insertions(+), 9 deletions(-)
+
+diff --git a/windows/src-tauri/src/integrations.rs b/windows/src-tauri/src/integrations.rs
+index d666b99..b301797 100644
+--- a/windows/src-tauri/src/integrations.rs
++++ b/windows/src-tauri/src/integrations.rs
+@@ -1,5 +1,6 @@
+ // Integration pollers — the Rust side of StripePoller / GithubPoller /
+-// VercelPoller / N8nPoller / ResendPoller / NotionPoller / CalcomPoller.
++// VercelPoller / N8nPoller / ResendPoller / NotionPoller / CalcomPoller, plus
++// two Windows-only ones with no Swift twin: Plata and Railway (bottom of file).
+ //
+ // Same endpoints, same first-run delays and intervals as the Swift pollers. Each
+ // one emits an `integration` event; the island owns the badge, the sound and the
+@@ -68,7 +69,9 @@ pub fn start(app: AppHandle) {
+     spawn(app.clone(), "integration_resend", 6, 60, poll_resend);
+     spawn(app.clone(), "integration_github", 7, 300, poll_github);
+     spawn(app.clone(), "integration_calcom", 8, 300, poll_calcom);
+-    spawn(app, "integration_notion", 9, 300, poll_notion);
++    spawn(app.clone(), "integration_notion", 9, 300, poll_notion);
++    spawn(app.clone(), "integration_plata", 4, 180, poll_plata);
++    spawn(app, "integration_railway", 5, 30, poll_railway);
+ }
+ 
+ /// True when the user has this integration switched on in settings.
+@@ -113,6 +116,8 @@ pub async fn poll_once(app: AppHandle, id: &str) {
+         "integration_resend" => poll_resend(app).await,
+         "integration_notion" => poll_notion(app).await,
+         "integration_calcom" => poll_calcom(app).await,
++        "integration_plata" => poll_plata(app).await,
++        "integration_railway" => poll_railway(app).await,
+         _ => {}
+     }
+ }
+@@ -763,3 +768,281 @@ fn fmt_value(v: &Value) -> String {
+         other => other.to_string(),
+     }
+ }
++
++// ── Plata ─────────────────────────────────────────────────────────────────────
++//
++// The Plata finance app (Supabase). One call to its `coucou-health` Edge
++// Function, which answers with the card-charge importer's health (the Gmail
++// token that expires every 7 days, the cron), the newest imported charge and the
++// day's dollar rates. The function is read-only and guarded by a shared secret.
++
++const PLATA_DEFAULT_URL: &str =
++    "https://dsocdpxlvcufitvovydr.supabase.co/functions/v1/coucou-health";
++
++async fn poll_plata(app: AppHandle) {
++    let Some(secret) = secrets::get("plata-secret") else { return };
++    let url = secrets::get("plata-url").unwrap_or_else(|| PLATA_DEFAULT_URL.to_string());
++    let response = client()
++        .post(&url)
++        .header("x-coucou-secret", secret)
++        .header("Content-Type", "application/json")
++        .body("{}")
++        .send()
++        .await;
++    let Ok(response) = response else { return };
++    if !response.status().is_success() {
++        let code = response.status().as_u16();
++        log::line(format!("plata HTTP {code}"));
++        emit(&app, IntegrationUpdate {
++            id: "integration_plata",
++            data: json!({}),
++            error: Some(match code {
++                401 => "Wrong secret (401)".into(),
++                _ => format!("API error {code}"),
++            }),
++            event: None,
++        });
++        return;
++    }
++    let json: Value = response.json().await.unwrap_or(json!({}));
++    let problems: Vec<String> = json
++        .get("problems")
++        .and_then(Value::as_array)
++        .map(|list| list.iter().filter_map(|p| p.as_str().map(str::to_string)).collect())
++        .unwrap_or_default();
++
++    // Health first: a dead importer matters more than a new charge. Unlike the
++    // other pollers, a problem already present on the first poll is announced —
++    // an expired token found at launch is exactly what this pill is for.
++    let signature = if problems.is_empty() { "ok".to_string() } else { problems.join("\n") };
++    let previous = SEEN.0.lock().unwrap().insert("plata_health", signature.clone());
++    let health_event = match previous {
++        Some(prev) if prev == signature => None,
++        None if problems.is_empty() => None,
++        _ if problems.is_empty() => Some(IntegrationEvent {
++            success: true,
++            label: "Plata en orden".into(),
++            detail: None,
++        }),
++        _ => {
++            log::line(format!("plata problems: {}", problems.join(" | ")));
++            Some(IntegrationEvent {
++                success: false,
++                label: problems[0].clone(),
++                detail: (problems.len() > 1).then(|| problems[1..].join("\n")),
++            })
++        }
++    };
++
++    let event = health_event.or_else(|| {
++        let tx = json.get("lastTx")?;
++        let id = tx.get("id")?.to_string();
++        if !is_new("plata_tx", &id) {
++            return None;
++        }
++        let amount = tx.get("amount").and_then(Value::as_f64).unwrap_or(0.0);
++        let currency = tx.get("currency").and_then(Value::as_str).unwrap_or("ARS");
++        Some(IntegrationEvent {
++            success: true,
++            label: tx.get("description").and_then(Value::as_str).unwrap_or("Consumo").to_string(),
++            detail: Some(fmt_money(amount, currency)),
++        })
++    });
++
++    emit(&app, IntegrationUpdate { id: "integration_plata", data: json, error: None, event });
++}
++
++/// `$ 6.791,50` / `US$ 4,11` — the Argentine format Plata itself uses.
++fn fmt_money(amount: f64, currency: &str) -> String {
++    let cents = (amount.abs() * 100.0).round() as u64;
++    let int = (cents / 100).to_string();
++    let mut grouped = String::new();
++    for (i, c) in int.chars().enumerate() {
++        if i > 0 && (int.len() - i) % 3 == 0 {
++            grouped.push('.');
++        }
++        grouped.push(c);
++    }
++    let frac = cents % 100;
++    let number = if frac == 0 { grouped } else { format!("{grouped},{frac:02}") };
++    let sign = if amount < 0.0 { "-" } else { "" };
++    let symbol = match currency {
++        "ARS" => "$",
++        "USD" => "US$",
++        other => other,
++    };
++    format!("{sign}{symbol} {number}")
++}
++
++// ── Railway ───────────────────────────────────────────────────────────────────
++//
++// Deployments of one Railway project, through the public GraphQL API with an
++// account token. The project ID is optional: without it the project named
++// "plata" is used (or the only one, if there is just one).
++
++const RAILWAY_API: &str = "https://backboard.railway.com/graphql/v2";
++
++/// None = network trouble (stay quiet, like the other pollers); Some(Err) = an
++/// answer worth showing on the card.
++async fn railway_query(
++    http: &reqwest::Client,
++    token: &str,
++    query: &str,
++    variables: Value,
++) -> Option<Result<Value, String>> {
++    let response = http
++        .post(RAILWAY_API)
++        .header("Authorization", format!("Bearer {token}"))
++        .header("Content-Type", "application/json")
++        .header("User-Agent", "Coucou")
++        .json(&json!({ "query": query, "variables": variables }))
++        .send()
++        .await
++        .ok()?;
++    if !response.status().is_success() {
++        return Some(Err(status_error(response.status().as_u16(), "Token lacks access")));
++    }
++    let json: Value = response.json().await.ok()?;
++    // GraphQL reports a bad token as 200 + errors.
++    if let Some(message) = json
++        .get("errors")
++        .and_then(|e| e.get(0))
++        .and_then(|e| e.get("message"))
++        .and_then(Value::as_str)
++    {
++        return Some(Err(format!("Railway: {message}")));
++    }
++    Some(Ok(json.get("data").cloned().unwrap_or(json!({}))))
++}
++
++async fn railway_project_id(http: &reqwest::Client, token: &str) -> Option<Result<String, String>> {
++    if let Some(id) = secrets::get("railway-project-id") {
++        return Some(Ok(id.trim().to_string()));
++    }
++    let data = match railway_query(http, token, "{ projects(first: 50) { edges { node { id name } } } }", json!({})).await? {
++        Ok(data) => data,
++        Err(_) => return Some(Err("Can't list projects: set the Project ID in Settings".into())),
++    };
++    let projects: Vec<(String, String)> = data
++        .pointer("/projects/edges")
++        .and_then(Value::as_array)
++        .map(|edges| {
++            edges
++                .iter()
++                .filter_map(|e| {
++                    let node = e.get("node")?;
++                    Some((node.get("id")?.as_str()?.to_string(), node.get("name")?.as_str()?.to_string()))
++                })
++                .collect()
++        })
++        .unwrap_or_default();
++    let found = projects
++        .iter()
++        .find(|(_, name)| name.eq_ignore_ascii_case("plata"))
++        .or(if projects.len() == 1 { projects.first() } else { None });
++    Some(match found {
++        Some((id, _)) => Ok(id.clone()),
++        None => Err("No \"plata\" project: set the Project ID in Settings".into()),
++    })
++}
++
++const RAILWAY_DEPLOYMENTS: &str = "query($input: DeploymentListInput!) {
++  deployments(input: $input, first: 5) {
++    edges { node { id status createdAt staticUrl meta service { name } } }
++  }
++}";
++
++async fn poll_railway(app: AppHandle) {
++    let Some(token) = secrets::get("railway-token") else { return };
++    let http = client();
++    let fail = |app: &AppHandle, message: String| {
++        emit(app, IntegrationUpdate {
++            id: "integration_railway",
++            data: json!({}),
++            error: Some(message),
++            event: None,
++        });
++    };
++
++    let project = match railway_project_id(&http, &token).await {
++        None => return,
++        Some(Err(message)) => return fail(&app, message),
++        Some(Ok(id)) => id,
++    };
++    let data = match railway_query(&http, &token, RAILWAY_DEPLOYMENTS, json!({ "input": { "projectId": project } })).await {
++        None => return,
++        Some(Err(message)) => return fail(&app, message),
++        Some(Ok(data)) => data,
++    };
++
++    let deployments: Vec<Value> = data
++        .pointer("/deployments/edges")
++        .and_then(Value::as_array)
++        .map(|edges| {
++            edges
++                .iter()
++                .filter_map(|e| {
++                    let d = e.get("node")?;
++                    let meta = d.get("meta");
++                    let pick = |key: &str| meta.and_then(|m| m.get(key)).and_then(Value::as_str).map(str::to_string);
++                    Some(json!({
++                        "id": d.get("id")?.as_str()?,
++                        "service": d.pointer("/service/name").and_then(Value::as_str).unwrap_or("service"),
++                        "status": d.get("status")?.as_str()?,
++                        "createdAt": d.get("createdAt").and_then(Value::as_str).unwrap_or(""),
++                        "url": d.get("staticUrl").and_then(Value::as_str).unwrap_or(""),
++                        "commitMessage": pick("commitMessage"),
++                        "branch": pick("branch"),
++                    }))
++                })
++                .collect()
++        })
++        .unwrap_or_default();
++
++    let status_of = |d: &Value| d.get("status").and_then(Value::as_str).unwrap_or("").to_string();
++    let busy = ["QUEUED", "INITIALIZING", "BUILDING", "DEPLOYING", "WAITING"];
++    let deploying = deployments.first().map(|d| busy.contains(&status_of(d).as_str())).unwrap_or(false);
++
++    // Newest finished deployment; keyed on id + status so a SUCCESS that later
++    // CRASHES is announced too.
++    let terminal = ["SUCCESS", "FAILED", "CRASHED"];
++    let event = deployments
++        .iter()
++        .find(|d| terminal.contains(&status_of(d).as_str()))
++        .and_then(|latest| {
++            let status = status_of(latest);
++            let id = latest.get("id")?.as_str()?;
++            if !is_new("railway", &format!("{id}:{status}")) {
++                return None;
++            }
++            let service = latest.get("service")?.as_str()?.to_string();
++            log::line(format!("railway {service} {status}"));
++            Some(IntegrationEvent {
++                success: status == "SUCCESS",
++                label: service,
++                detail: (status != "SUCCESS").then(|| status.to_lowercase()),
++            })
++        });
++
++    emit(&app, IntegrationUpdate {
++        id: "integration_railway",
++        data: json!({ "deployments": deployments, "busy": deploying }),
++        error: None,
++        event,
++    });
++}
++
++#[cfg(test)]
++mod tests {
++    use super::fmt_money;
++
++    #[test]
++    fn money_is_formatted_like_plata() {
++        assert_eq!(fmt_money(6791.5, "ARS"), "$ 6.791,50");
++        assert_eq!(fmt_money(700.0, "ARS"), "$ 700");
++        assert_eq!(fmt_money(1234567.0, "ARS"), "$ 1.234.567");
++        assert_eq!(fmt_money(4.11, "USD"), "US$ 4,11");
++        assert_eq!(fmt_money(10.0, "USDT"), "USDT 10");
++        assert_eq!(fmt_money(-15.0, "ARS"), "-$ 15");
++    }
++}
+diff --git a/windows/src-tauri/src/secrets.rs b/windows/src-tauri/src/secrets.rs
+index 06296d1..14406f7 100644
+--- a/windows/src-tauri/src/secrets.rs
++++ b/windows/src-tauri/src/secrets.rs
+@@ -16,6 +16,10 @@ pub const KNOWN_KEYS: &[&str] = &[
+     "resend-api-key",
+     "notion-api-key",
+     "calcom-api-key",
++    "plata-url",
++    "plata-secret",
++    "railway-token",
++    "railway-project-id",
+ ];
+ 
+ fn entry(key: &str) -> Option<Entry> {
+diff --git a/windows/src-tauri/src/settings.rs b/windows/src-tauri/src/settings.rs
+index 2707179..ccded17 100644
+--- a/windows/src-tauri/src/settings.rs
++++ b/windows/src-tauri/src/settings.rs
+@@ -34,9 +34,8 @@ impl Default for Settings {
+             auto_close_interval: 15.0,
+             absence_interval: 180.0,
+             active_integrations: vec![
+-                "integration_resend".into(),
+-                "integration_n8n".into(),
+-                "integration_vercel".into(),
++                "integration_plata".into(),
++                "integration_railway".into(),
+                 "integration_github".into(),
+             ],
+             screen: "primary".into(),
+diff --git a/windows/src/core/state.ts b/windows/src/core/state.ts
+index e4988b8..34ca007 100644
+--- a/windows/src/core/state.ts
++++ b/windows/src/core/state.ts
+@@ -59,6 +59,9 @@ const task = (
+ /** AgentTask.integrationAgents — same ids, names and colours as macOS. */
+ export const INTEGRATION_AGENTS: AgentTask[] = [
+   task("integration_claude", "VS Code", "#F5F6F8", "claudeCode"),
++  // Windows-only: the Plata finance app and its Railway host.
++  task("integration_plata", "Plata", "#FF9E1B", "n8n"),
++  task("integration_railway", "Railway", "#B57BFF", "n8n"),
+   task("integration_resend", "Resend", "#22C55E", "n8n"),
+   task("integration_n8n", "n8n", "#F29B38", "n8n"),
+   task("integration_vercel", "Vercel", "#7C5CFF", "n8n"),
+@@ -69,7 +72,7 @@ export const INTEGRATION_AGENTS: AgentTask[] = [
+ ];
+ 
+ export const TOGGLEABLE_INTEGRATION_IDS = [
+-  "integration_resend", "integration_n8n", "integration_vercel", "integration_github",
++  "integration_plata", "integration_railway", "integration_resend", "integration_n8n", "integration_vercel", "integration_github",
+   "integration_notion", "integration_calcom", "integration_stripe",
+ ];
+ 
+@@ -99,9 +102,7 @@ export const DEFAULT_SETTINGS: Settings = {
+   soundVolume: 0.12,
+   autoCloseInterval: 15,
+   absenceInterval: 180,
+-  activeIntegrations: [
+-    "integration_resend", "integration_n8n", "integration_vercel", "integration_github",
+-  ],
++  activeIntegrations: ["integration_plata", "integration_railway", "integration_github"],
+   screen: "primary",
+   autostart: false,
+   hooksInstalled: false,
+diff --git a/windows/src/island/integrations.ts b/windows/src/island/integrations.ts
+index 862ffb1..4fd89c8 100644
+--- a/windows/src/island/integrations.ts
++++ b/windows/src/island/integrations.ts
+@@ -16,6 +16,8 @@ const KEY_FOR: Record<string, string> = {
+   integration_resend: "resend-api-key",
+   integration_notion: "notion-api-key",
+   integration_calcom: "calcom-api-key",
++  integration_plata: "plata-secret",
++  integration_railway: "railway-token",
+ };
+ 
+ const clearTimers = new Map<string, number>();
+@@ -51,6 +53,20 @@ function handle(island: Island, update: IntegrationUpdate) {
+     configured: previous?.configured ?? true,
+   };
+ 
++  // A Railway deploy in flight: Mochi's pill works until the poller sees it end.
++  if (update.id === "integration_railway" && !update.error) {
++    const task = State.tasks.find((t) => t.id === update.id);
++    const busy = update.data.busy === true;
++    if (task && busy && task.state === "idle") {
++      task.state = "working";
++      task.steps = ["Deploying"];
++      task.stepIndex = 0;
++    } else if (task && !busy && task.state === "working") {
++      task.state = "idle";
++      task.steps = [];
++    }
++  }
++
+   const event = update.event;
+   if (event) {
+     const task = State.tasks.find((t) => t.id === update.id);
+diff --git a/windows/src/island/island.ts b/windows/src/island/island.ts
+index 4a6cc6d..9e45ba9 100644
+--- a/windows/src/island/island.ts
++++ b/windows/src/island/island.ts
+@@ -126,6 +126,8 @@ export class Island {
+           integration_stripe: "https://dashboard.stripe.com/payments",
+           integration_notion: "https://notion.so",
+           integration_calcom: "https://app.cal.com/bookings",
++          integration_plata: "https://plata-production.up.railway.app",
++          integration_railway: "https://railway.com/dashboard",
+         };
+         if (task.id === "integration_claude") void Bridge.openInVSCode(task.sessionCwd ?? null);
+         else if (task.id === "integration_n8n") void Bridge.openN8n();
+diff --git a/windows/src/settings/main.ts b/windows/src/settings/main.ts
+index 3ab9ab9..d28f611 100644
+--- a/windows/src/settings/main.ts
++++ b/windows/src/settings/main.ts
+@@ -265,6 +265,16 @@ interface IntegrationDef {
+ }
+ 
+ const INTEGRATIONS: IntegrationDef[] = [
++  { id: "integration_plata", name: "Plata", color: "#FF9E1B",
++    fields: [
++      { key: "plata-secret", label: "Secret", placeholder: "app_secrets.COUCOU_SECRET", secret: true },
++      { key: "plata-url", label: "Health URL", placeholder: "default: Plata's coucou-health function", secret: false },
++    ] },
++  { id: "integration_railway", name: "Railway", color: "#B57BFF",
++    fields: [
++      { key: "railway-token", label: "Account token", placeholder: "railway.com/account/tokens", secret: true },
++      { key: "railway-project-id", label: "Project ID", placeholder: "optional: defaults to \"plata\"", secret: false },
++    ] },
+   { id: "integration_stripe", name: "Stripe", color: "#0570DE",
+     fields: [{ key: "stripe-api-key", label: "Secret key", placeholder: "sk_live_…", secret: true }] },
+   { id: "integration_github", name: "GitHub", color: "#F4505E",
+@@ -434,6 +444,7 @@ async function main() {
+   const keys = [
+     "stripe-api-key", "github-token", "vercel-token",
+     "n8n-url", "n8n-api-key", "resend-api-key", "notion-api-key", "calcom-api-key",
++    "plata-secret", "plata-url", "railway-token", "railway-project-id",
+   ];
+   const present: Record<string, boolean> = {};
+   for (const k of keys) present[k] = (await Bridge.secretPresent(k)) ?? false;
+diff --git a/windows/src/views/integrations.ts b/windows/src/views/integrations.ts
+index b8ad73c..1e394d3 100644
+--- a/windows/src/views/integrations.ts
++++ b/windows/src/views/integrations.ts
+@@ -51,6 +51,8 @@ const OPEN_URLS: Record<string, string> = {
+   integration_stripe: "https://dashboard.stripe.com/payments",
+   integration_notion: "https://notion.so",
+   integration_calcom: "https://app.cal.com/bookings",
++  integration_plata: "https://plata-production.up.railway.app",
++  integration_railway: "https://railway.com/dashboard",
+ };
+ 
+ function idleCard(task: AgentTask, openSettings: () => void): HTMLElement {
+@@ -372,6 +374,160 @@ function n8nDetail(task: AgentTask, onBack: () => void): HTMLElement {
+   );
+ }
+ 
++// ── Plata ─────────────────────────────────────────────────────────────────────
++// Windows-only, no Swift twin. Spanish on purpose: it is the app's own language.
++
++const PLATA = "#FF9E1B";
++
++/** `$ 6.791,50`, `US$ 4,11` — how Plata writes money. */
++function money(amount: unknown, currency: unknown): string {
++  const n = Number(amount ?? 0);
++  const cur = String(currency ?? "ARS");
++  const symbol = cur === "ARS" ? "$" : cur === "USD" ? "US$" : cur;
++  const digits = Number.isInteger(n) ? 0 : 2;
++  const text = Math.abs(n).toLocaleString("es-AR", { minimumFractionDigits: digits, maximumFractionDigits: 2 });
++  return `${n < 0 ? "-" : ""}${symbol} ${text}`;
++}
++
++function plataCard(onDetail: () => void): HTMLElement {
++  const d = get("integration_plata");
++  const problems = Array.isArray(d.problems) ? (d.problems as string[]) : [];
++  const importer = (d.importer ?? {}) as Record<string, unknown>;
++  const fx = (d.fx ?? {}) as Record<string, unknown>;
++  const tx = (d.lastTx ?? null) as Record<string, unknown> | null;
++
++  const rows = h("div", { class: "int-rows" });
++  if (problems.length > 0) {
++    const more = h("button", { class: "int-more", title: "Detalle", onclick: onDetail }, svg(ICONS.ellipsis, 8));
++    rows.append(listRow("#F4505E", true, h("span", { class: "int-name", text: problems[0] }), more));
++  } else {
++    const ago = importer.lastRunAt ? timeAgo(importer.lastRunAt) : "";
++    rows.append(
++      listRow("#22C55E", true,
++        h("span", { class: "int-name", text: "Importador OK" }),
++        h("span", { class: "int-ago", text: ago })),
++    );
++  }
++  if (tx) {
++    rows.append(
++      listRow(PLATA, false,
++        h("span", { class: "int-name", text: String(tx.description ?? "Consumo") }),
++        h("span", { class: "int-amount", text: money(tx.amount, tx.currency) }),
++        h("span", { class: "int-ago", text: timeAgo(tx.at) })),
++    );
++  }
++  if (fx.blue != null) {
++    const cripto = fx.cripto != null ? ` · cripto ${money(fx.cripto, "ARS")}` : "";
++    rows.append(
++      listRow("#6B7079", false, h("span", { class: "int-name", text: `Blue ${money(fx.blue, "ARS")}${cripto}` })),
++    );
++  }
++  return h("div", { class: "int-card" }, header(PLATA, "Plata", "Finanzas"), rows);
++}
++
++function plataDetail(onBack: () => void): HTMLElement {
++  const d = get("integration_plata");
++  const problems = Array.isArray(d.problems) ? (d.problems as string[]) : [];
++  const accent = problems.length ? "#F4505E" : "#22C55E";
++  return h(
++    "div",
++    { class: "int-card detail" },
++    h(
++      "div",
++      { class: "int-detail-head" },
++      h("button", { class: "int-back", onclick: onBack }, svg(ICONS.chevronLeft, 10, { stroke: 2.4 })),
++      dot(accent, 6),
++      h("b", { text: "Plata" }),
++      h("span", {
++        class: "int-badge",
++        style: `color:${accent};background:${accent}24`,
++        text: problems.length ? `${problems.length} problema${problems.length > 1 ? "s" : ""}` : "OK",
++      }),
++    ),
++    problems.length
++      ? h("pre", { class: "int-detail-text", text: problems.map((p) => `• ${p}`).join("\n") })
++      : h("div", { class: "int-status", text: "Todo en orden." }),
++  );
++}
++
++// ── Railway ───────────────────────────────────────────────────────────────────
++
++const RAILWAY = "#B57BFF";
++
++function railwayAccent(status: unknown): string {
++  switch (status) {
++    case "SUCCESS":
++      return "#22C55E";
++    case "FAILED":
++    case "CRASHED":
++      return "#F4505E";
++    case "REMOVED":
++    case "SKIPPED":
++      return "#6B7079";
++    default:
++      return "#F5A524"; // queued / building / deploying
++  }
++}
++
++function railwayLabel(status: unknown): string {
++  const labels: Record<string, string> = {
++    SUCCESS: "Live", FAILED: "Failed", CRASHED: "Crashed", REMOVED: "Replaced", SKIPPED: "Skipped",
++    QUEUED: "Queued", INITIALIZING: "Starting", BUILDING: "Building", DEPLOYING: "Deploying",
++    WAITING: "Waiting", SLEEPING: "Sleeping",
++  };
++  return labels[String(status)] ?? String(status ?? "");
++}
++
++function railwayCard(onDetail: () => void): HTMLElement {
++  const rows = h("div", { class: "int-rows" });
++  arr("integration_railway", "deployments").slice(0, 3).forEach((d, i) => {
++    const accent = railwayAccent(d.status);
++    const name = h("span", { class: "int-name", text: String(d.service ?? "") });
++    const state = h("span", { class: "int-ago", style: `color:${accent}`, text: railwayLabel(d.status) });
++    const ago = h("span", { class: "int-ago", text: timeAgo(d.createdAt) });
++    if (i === 0) {
++      const more = h("button", { class: "int-more", title: "Details", onclick: onDetail }, svg(ICONS.ellipsis, 8));
++      rows.append(listRow(accent, true, name, state, ago, more));
++    } else {
++      rows.append(listRow(accent, false, name, state, ago));
++    }
++  });
++  return h("div", { class: "int-card" }, header(RAILWAY, "Railway", "Deployments"), rows);
++}
++
++function railwayDetail(onBack: () => void): HTMLElement {
++  const d = arr("integration_railway", "deployments")[0] ?? {};
++  const accent = railwayAccent(d.status);
++  const body = h("div", { class: "int-detail-body" });
++  if (d.commitMessage) body.append(h("div", { class: "int-commit", text: String(d.commitMessage) }));
++  const meta = h("div", { class: "int-meta" });
++  if (d.branch) meta.append(h("span", { text: String(d.branch) }));
++  meta.append(h("span", { text: `${timeAgo(d.createdAt)} ago` }));
++  body.append(meta);
++  if (d.url) {
++    body.append(
++      h("button", {
++        class: "int-link",
++        text: String(d.url),
++        onclick: () => void Bridge.openUrl(`https://${d.url}`),
++      }),
++    );
++  }
++  return h(
++    "div",
++    { class: "int-card detail" },
++    h(
++      "div",
++      { class: "int-detail-head" },
++      h("button", { class: "int-back", onclick: onBack }, svg(ICONS.chevronLeft, 10, { stroke: 2.4 })),
++      dot(accent, 6),
++      h("b", { text: String(d.service ?? "Deployment") }),
++      h("span", { class: "int-badge", style: `color:${accent};background:${accent}24`, text: railwayLabel(d.status) }),
++    ),
++    body,
++  );
++}
++
+ // ── Dispatch ──────────────────────────────────────────────────────────────────
+ 
+ export interface IntegrationCardHooks {
+@@ -398,6 +554,10 @@ export function hasIntegrationData(id: string): boolean {
+       return arr(id, "pages").length > 0;
+     case "integration_calcom":
+       return info.loaded;
++    case "integration_plata":
++      return info.loaded;
++    case "integration_railway":
++      return arr(id, "deployments").length > 0;
+     default:
+       return false;
+   }
+@@ -413,6 +573,12 @@ export function renderIntegrationCard(task: AgentTask, hooks: IntegrationCardHoo
+   if (task.id === "integration_vercel" && hasIntegrationData(task.id)) {
+     return hooks.detailOpen ? vercelDetail(hooks.closeDetail) : vercelCard(hooks.openDetail);
+   }
++  if (task.id === "integration_plata" && hasIntegrationData(task.id)) {
++    return hooks.detailOpen ? plataDetail(hooks.closeDetail) : plataCard(hooks.openDetail);
++  }
++  if (task.id === "integration_railway" && hasIntegrationData(task.id)) {
++    return hooks.detailOpen ? railwayDetail(hooks.closeDetail) : railwayCard(hooks.openDetail);
++  }
+   if (!hasIntegrationData(task.id)) return idleCard(task, hooks.openSettings);
+ 
+   switch (task.id) {
+-- 
+2.43.0
+

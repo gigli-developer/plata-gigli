@@ -53,8 +53,11 @@ finanzas-app/
 │  ├─ format.ts             ars(), usd(), compact()
 │  └─ supabase/             clientes browser/server (@supabase/ssr)
 ├─ supabase/functions/
-│  └─ assistant/index.ts    Edge Function del asistente IA (Claude tool-use)
-│     (email-poller NO está en el repo: se deployó vía MCP)
+│  ├─ assistant/index.ts    Edge Function del asistente IA (Claude tool-use)
+│  ├─ email-poller/         Copia versionada del importador (se deploya vía MCP)
+│  └─ coucou-health/        Estado de Plata para Coucou (se deploya vía MCP)
+├─ supabase/sql/            SQL versionado que se aplica con execute_sql (coucou_health.sql)
+├─ integraciones/coucou/    Parche + instalador de Coucou (isla de escritorio) con pills de Plata/Railway
 ├─ scripts/gmail-*.mjs      OAuth de Gmail + scripts del poller
 └─ .env.local              NEXT_PUBLIC_SUPABASE_*, GOOGLE_* (Gmail). Secrets server-side en app_secrets.
 ```
@@ -113,6 +116,11 @@ finanzas-app/
 9. **Estética.** Fintech oscuro. Bricolage Grotesque (display), Hanken Grotesk (texto), JetBrains Mono (números, clase `.tnum`). Acento lima ácido; **violeta reservado para la IA**.
 
 10. **Reglas de consumos** (`/reglas`, tabla `rules`, las aplica solo el `email-poller` a consumos nuevos). Condiciones combinables: texto (contiene/empieza/igual), horario (soporta rango nocturno 22→2), días, rango de monto. Acciones combinables: recategorizar (`category_id`, nullable), renombrar (`rename_to`), forzar moneda (`set_currency`: **convierte el monto** con USD_ARS=1455 — la alerta de Galicia SIEMPRE reporta el equivalente en pesos, ej. TACTIQ $6.000 → USD 4,11; re-etiquetar sin convertir sería un desastre). **Semántica de merge por campo**: se evalúan todas (prioridad desc, id asc) contra la descripción ORIGINAL; cada acción la define la primera regla que la tenga (pueden ser reglas distintas). El dup-check del poller NO filtra por moneda (una moneda forzada colaría duplicados).
+
+11. **Coucou (isla de escritorio en Windows, 2026-09-30).** [Coucou](https://github.com/Louis-CFM/coucou) es una app de escritorio de terceros (Tauri/Rust); no forma parte de Plata ni se deploya con ella. Le sumamos dos pills vía `integraciones/coucou/plata.patch` (se instala con `instalar.ps1`, ver el README de esa carpeta):
+   - **Plata**: llama cada 3 min a la Edge Function **`coucou-health`** (verify_jwt=false, header `x-coucou-secret` == `app_secrets.COUCOU_SECRET`; sin eso, 401). La función es **solo lectura** y no devuelve saldos: prueba en vivo el refresh token de Gmail (lo que el cron no ve, porque `pg_net` corta a los 5 s) y suma la RPC **`coucou_health()`** (SECURITY DEFINER, ejecutable **solo por service_role**): último cron por job, errores del importador en 24 h, último consumo importado y blue/cripto del día. Devuelve `problems[]`; si viene vacío, Mochi no dice nada salvo por los consumos nuevos.
+   - **Railway**: consulta directo la GraphQL de Railway desde la PC del usuario. No pasa por Supabase.
+   - Si cambiás `coucou_health()`, `email_process_logs` o los nombres de los cron jobs (`email-poller*`, `fx-sync*`), revisá la función: busca los jobs por prefijo.
 
 ---
 
