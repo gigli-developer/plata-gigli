@@ -1,7 +1,7 @@
-From d09255b43f3d075a81c282582ecd664c16ddb97d Mon Sep 17 00:00:00 2001
+From 680c133ae9c577ce390172fe712e22debc666756 Mon Sep 17 00:00:00 2001
 From: Lucas Gigli <giglilangonelucas@gmail.com>
 Date: Wed, 30 Sep 2026 20:56:49 +0000
-Subject: [PATCH] Pills de Plata y Railway
+Subject: [PATCH 1/2] Pills de Plata y Railway
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -682,5 +682,1367 @@ index b8ad73c..1e394d3 100644
  
    switch (task.id) {
 -- 
-2.43.0
+2.53.0.windows.2
+
+
+From 300ffc9f910104c945e4bac87f07652ff76cdef8 Mon Sep 17 00:00:00 2001
+From: Lucas <lucasgigli3@gmail.com>
+Date: Wed, 30 Sep 2026 19:26:42 -0300
+Subject: [PATCH 2/2] Isla movible y chat con el agente de Plata
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+- La isla se agarra de cualquier parte que no sea un control y se arrastra.
+  Rust sigue al mouse (island::drag_loop) y al soltar la ancla: cerca del
+  borde izquierdo o derecho queda pegada a ese costado, cerca de arriba vuelve
+  al centro, y en otro lado queda flotando. Se guarda en settings.json
+  (dock, dockX, dockY) y el lado pegado al borde queda recto.
+- Fuera de arriba no se esconde: queda como pastilla, porque solo el borde de
+  arriba tiene la franja que la vuelve a sacar. La pausa de la bandeja sí la
+  esconde.
+- Pestaña Plata: chat con el agente de Plata del repo agentes (npm run servir,
+  127.0.0.1:8787). Muestra el texto, las herramientas que usa, las propuestas
+  como tarjeta con Aprobar / Rechazar (la respuesta viaja como el mensaje
+  siguiente, que es lo único que la base acepta) y el costo del turno. Si el
+  agente está apagado, ofrece prenderlo.
+- La ventana crece a 720x480 solo mientras el chat de Plata está abierto.
+
+Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+---
+ windows/src-tauri/src/island.rs      | 130 ++++++++++-
+ windows/src-tauri/src/lib.rs         |  42 ++++
+ windows/src-tauri/src/plata_agent.rs | 142 ++++++++++++
+ windows/src-tauri/src/settings.rs    |  18 ++
+ windows/src/core/bridge.ts           |  23 ++
+ windows/src/core/layout.ts           |  36 ++-
+ windows/src/core/state.ts            |  10 +-
+ windows/src/island/fsm.ts            |  13 +-
+ windows/src/island/island.ts         |  83 ++++++-
+ windows/src/style.css                | 139 ++++++++++++
+ windows/src/views/icons.ts           |   2 +
+ windows/src/views/plata.ts           | 316 +++++++++++++++++++++++++++
+ windows/src/views/views.ts           |   6 +-
+ 13 files changed, 941 insertions(+), 19 deletions(-)
+ create mode 100644 windows/src-tauri/src/plata_agent.rs
+ create mode 100644 windows/src/views/plata.ts
+
+diff --git a/windows/src-tauri/src/island.rs b/windows/src-tauri/src/island.rs
+index 0a4fc87..feb67b0 100644
+--- a/windows/src-tauri/src/island.rs
++++ b/windows/src-tauri/src/island.rs
+@@ -26,6 +26,10 @@ use windows::Win32::UI::WindowsAndMessaging::{
+ /// Logical size of the full window — the largest island view, like the macOS panel.
+ pub const PANEL_W: f64 = 720.0;
+ pub const PANEL_H: f64 = 320.0;
++/// Taller window while the Plata chat is open, and only then: the window takes
++/// the mouse while a button is held over it (see the poll), so it stays as small
++/// as the view allows the rest of the time.
++pub const PANEL_H_TALL: f64 = 480.0;
+ /// Logical size of the invisible strip that wakes the island when it is hidden.
+ pub const STRIP_W: f64 = 240.0;
+ pub const STRIP_H: f64 = 6.0;
+@@ -67,6 +71,8 @@ pub struct PollGate {
+     active: Mutex<bool>,
+     cv: Condvar,
+     pub collapsed: AtomicBool,
++    /// The Plata chat is open: use PANEL_H_TALL.
++    pub tall: AtomicBool,
+     pub rect: Mutex<IslandRect>,
+     /// Mirrors the window flag so we only call into Win32 when it changes.
+     ignoring: AtomicBool,
+@@ -78,6 +84,7 @@ impl PollGate {
+             active: Mutex::new(false),
+             cv: Condvar::new(),
+             collapsed: AtomicBool::new(true),
++            tall: AtomicBool::new(false),
+             rect: Mutex::new(IslandRect::default()),
+             ignoring: AtomicBool::new(false),
+         }
+@@ -202,7 +209,22 @@ pub fn screen_info(app: &AppHandle, pref: &str) -> ScreenInfo {
+     }
+ }
+ 
++/// Where the island sits, as stored in the settings (see settings.rs).
++fn dock_of(app: &AppHandle) -> (String, f64, f64) {
++    app.try_state::<crate::Shared>()
++        .map(|s| {
++            let st = s.settings.lock().unwrap();
++            (st.dock.clone(), st.dock_x, st.dock_y)
++        })
++        .unwrap_or_else(|| ("top".into(), 0.0, 0.0))
++}
++
+ /// Places and sizes the window. `collapsed` picks the wake strip instead of the panel.
++///
++/// `top` glues the window to the top edge, centred, as it always was. `left` and
++/// `right` put it against that edge of the work area at the stored height, and
++/// `float` wherever it was dropped. The island inside the window follows: the
++/// front end aligns it to the same side (layout.ts, islandX).
+ pub fn apply_geometry(app: &AppHandle, pref: &str, collapsed: bool) {
+     let Some(win) = window(app) else { return };
+     let Some(m) = target_monitor(app, pref) else { return };
+@@ -210,12 +232,31 @@ pub fn apply_geometry(app: &AppHandle, pref: &str, collapsed: bool) {
+     let scale = m.scale_factor();
+     let mp = *m.position();
+     let ms = *m.size();
++    // The work area leaves the taskbar out, so a docked island never hides under it.
++    let wa = m.work_area();
++    let (wx, wy) = (wa.position.x, wa.position.y);
++    let (ww, wh) = (wa.size.width as i32, wa.size.height as i32);
+ 
+-    let (lw, lh) = if collapsed { (STRIP_W, STRIP_H) } else { (PANEL_W, PANEL_H) };
++    let tall = app
++        .try_state::<crate::Shared>()
++        .map(|s| s.gate.tall.load(Ordering::Relaxed))
++        .unwrap_or(false);
++    let panel_h = if tall { PANEL_H_TALL } else { PANEL_H };
++    let (lw, lh) = if collapsed { (STRIP_W, STRIP_H) } else { (PANEL_W, panel_h) };
+     let pw = (lw * scale).round().max(1.0) as u32;
+     let ph = (lh * scale).round().max(1.0) as u32;
+-    let x = mp.x + (ms.width as i32 - pw as i32) / 2;
+-    let y = mp.y;
++
++    let (dock, dx, dy) = dock_of(app);
++    let off_x = (dx * scale).round() as i32;
++    let off_y = (dy * scale).round() as i32;
++    let clamp_y = |y: i32| y.clamp(wy, (wy + wh - ph as i32).max(wy));
++    let clamp_x = |x: i32| x.clamp(wx, (wx + ww - pw as i32).max(wx));
++    let (x, y) = match dock.as_str() {
++        "left" => (wx, clamp_y(mp.y + off_y)),
++        "right" => (wx + ww - pw as i32, clamp_y(mp.y + off_y)),
++        "float" => (clamp_x(mp.x + off_x), clamp_y(mp.y + off_y)),
++        _ => (mp.x + (ms.width as i32 - pw as i32) / 2, mp.y),
++    };
+ 
+     let _ = win.set_size(PhysicalSize::new(pw, ph));
+     let _ = win.set_position(PhysicalPosition::new(x, y));
+@@ -224,6 +265,89 @@ pub fn apply_geometry(app: &AppHandle, pref: &str, collapsed: bool) {
+     let _ = win.set_always_on_top(true);
+ }
+ 
++static DRAGGING: AtomicBool = AtomicBool::new(false);
++
++/// How close to a screen edge, in logical px, a dropped island docks to it.
++const SNAP: f64 = 56.0;
++
++/// Moves the island's window with the mouse until the left button comes up, then
++/// docks it. Near the left or right edge of the work area → that side; near the
++/// top → back to the top centre; anywhere else → floating where it was dropped.
++///
++/// Rust owns the loop rather than the page: the window moves under the cursor, so
++/// window-relative mouse events would chase themselves. `offset_*` is where the
++/// cursor grabbed the window, in window-logical px.
++pub fn drag_loop(app: AppHandle, offset_x: f64, offset_y: f64) {
++    if DRAGGING.swap(true, Ordering::SeqCst) {
++        return;
++    }
++    let Some(win) = window(&app) else {
++        DRAGGING.store(false, Ordering::SeqCst);
++        return;
++    };
++    let scale = win.scale_factor().unwrap_or(1.0);
++    let (ox, oy) = ((offset_x * scale).round() as i32, (offset_y * scale).round() as i32);
++    let mut last = (i32::MIN, i32::MIN);
++    while left_button_down() {
++        if let Some((cx, cy)) = cursor_physical() {
++            let pos = (cx as i32 - ox, cy as i32 - oy);
++            if pos != last {
++                let _ = win.set_position(PhysicalPosition::new(pos.0, pos.1));
++                last = pos;
++            }
++        }
++        std::thread::sleep(Duration::from_millis(8));
++    }
++    if let Some(settings) = dock_after_drag(&app, &win) {
++        crate::log::line(format!("island docked: {} ({:.0}, {:.0})", settings.dock, settings.dock_x, settings.dock_y));
++        if let Err(err) = crate::settings::save(&settings) {
++            crate::log::line(format!("could not save the island position: {err}"));
++        }
++        apply_geometry(&app, &settings.screen, false);
++        // Both windows keep a copy of the settings: keep them in step.
++        let _ = app.emit("settings-changed", settings);
++    }
++    DRAGGING.store(false, Ordering::SeqCst);
++}
++
++/// Decides the dock from where the island was dropped and stores it.
++fn dock_after_drag(app: &AppHandle, win: &WebviewWindow) -> Option<crate::settings::Settings> {
++    let shared = app.try_state::<crate::Shared>()?;
++    let pref = shared.settings.lock().unwrap().screen.clone();
++    let m = target_monitor(app, &pref)?;
++    let scale = m.scale_factor();
++    let mp = *m.position();
++    let wa = m.work_area();
++    let origin = win.outer_position().ok()?;
++    let r = *shared.gate.rect.lock().unwrap();
++
++    // The island's edges on screen, in physical px.
++    let left = origin.x as f64 + r.x * scale;
++    let right = left + r.w * scale;
++    let top = origin.y as f64 + r.y * scale;
++    let from_left = (left - wa.position.x as f64) / scale;
++    let from_right = ((wa.position.x + wa.size.width as i32) as f64 - right) / scale;
++    let from_top = (top - mp.y as f64) / scale;
++
++    let dock = if from_left < SNAP {
++        "left"
++    } else if from_right < SNAP {
++        "right"
++    } else if from_top < SNAP {
++        "top"
++    } else {
++        "float"
++    };
++
++    let mut settings = shared.settings.lock().unwrap();
++    settings.dock = dock.to_string();
++    settings.dock_y = (origin.y - mp.y) as f64 / scale;
++    // Floating, the island is centred in its window: place the window so the
++    // island stays exactly where it was let go, whatever side it was aligned to.
++    settings.dock_x = (left - mp.x as f64) / scale - (PANEL_W - r.w) / 2.0;
++    Some(settings.clone())
++}
++
+ fn hwnd_of(win: &WebviewWindow) -> Option<HWND> {
+     let raw = win.hwnd().ok()?.0 as isize;
+     if raw == 0 {
+diff --git a/windows/src-tauri/src/lib.rs b/windows/src-tauri/src/lib.rs
+index 5d19db6..f7ce165 100644
+--- a/windows/src-tauri/src/lib.rs
++++ b/windows/src-tauri/src/lib.rs
+@@ -7,6 +7,7 @@ mod integrations;
+ mod island;
+ mod log;
+ mod pipe;
++mod plata_agent;
+ mod secrets;
+ mod settings;
+ mod tray;
+@@ -105,6 +106,25 @@ fn set_island_rect(shared: State<Shared>, x: f64, y: f64, width: f64, height: f6
+     shared.gate.set_rect(island::IslandRect { x, y, w: width, h: height });
+ }
+ 
++/// The Plata chat needs a taller window; everything else keeps the usual one.
++#[tauri::command]
++fn set_tall(app: AppHandle, shared: State<Shared>, tall: bool) {
++    if shared.gate.tall.swap(tall, Ordering::Relaxed) == tall {
++        return;
++    }
++    let pref = shared.settings.lock().unwrap().screen.clone();
++    let collapsed = shared.gate.collapsed.load(Ordering::Relaxed);
++    island::apply_geometry(&app, &pref, collapsed);
++    shared.gate.forget_ignore_state();
++}
++
++/// Start moving the island: Rust follows the mouse until the button comes up,
++/// then docks it (island::drag_loop). The offset is where the window was grabbed.
++#[tauri::command]
++fn begin_island_drag(app: AppHandle, offset_x: f64, offset_y: f64) {
++    std::thread::spawn(move || island::drag_loop(app, offset_x, offset_y));
++}
++
+ #[tauri::command]
+ fn focus_window(app: AppHandle, focused: bool) {
+     let Some(win) = island::window(&app) else { return };
+@@ -252,6 +272,23 @@ async fn chat_send(
+     claude::send(&chat, &model, query, context).await
+ }
+ 
++/// Is Plata's agent (`npm run servir` in the agentes repo) listening?
++#[tauri::command]
++async fn plata_status() -> plata_agent::AgentStatus {
++    plata_agent::status().await
++}
++
++#[tauri::command]
++fn plata_start() -> Result<(), String> {
++    plata_agent::start()
++}
++
++/// One message to Plata's agent; its events arrive as `plata-event`.
++#[tauri::command]
++async fn plata_send(app: AppHandle, texto: String, sesion_id: String) -> Result<(), String> {
++    plata_agent::send(app, texto, sesion_id).await
++}
++
+ #[tauri::command]
+ fn chat_reset(chat: State<Chat>) {
+     chat.reset();
+@@ -407,6 +444,11 @@ pub fn run() {
+             open_n8n,
+             open_settings_window,
+             set_paused,
++            begin_island_drag,
++            set_tall,
++            plata_status,
++            plata_start,
++            plata_send,
+         ])
+         .setup(move |app| {
+             let handle = app.handle().clone();
+diff --git a/windows/src-tauri/src/plata_agent.rs b/windows/src-tauri/src/plata_agent.rs
+new file mode 100644
+index 0000000..cd7eee4
+--- /dev/null
++++ b/windows/src-tauri/src/plata_agent.rs
+@@ -0,0 +1,142 @@
++// Plata's agent in the island. The agent itself lives in the `agentes` repo and
++// runs on this PC with `npm run servir`, on 127.0.0.1:8787, with Lucas's own
++// Supabase session (never the service role): see CONTRATOS.md §9 over there.
++//
++// The island only talks to it: one POST per message, answered as a stream of
++// server-sent events that are forwarded to the page unchanged as `plata-event`.
++// Writes are never applied from here. The agent turns them into proposals, and
++// Lucas approves them in a later message, which is what the base checks.
++
++use std::os::windows::process::CommandExt;
++use std::path::PathBuf;
++use std::process::{Command, Stdio};
++
++use serde::Serialize;
++use serde_json::{json, Value};
++use tauri::{AppHandle, Emitter};
++
++const BASE: &str = "http://127.0.0.1:8787";
++const CREATE_NO_WINDOW: u32 = 0x0800_0000;
++
++#[derive(Serialize, Clone)]
++#[serde(rename_all = "camelCase")]
++pub struct AgentStatus {
++    pub up: bool,
++    pub model: Option<String>,
++    /// The `agentes` folder found on disk, so the page can offer to start it.
++    pub dir: Option<String>,
++}
++
++#[derive(Serialize, Clone)]
++#[serde(rename_all = "camelCase")]
++struct PlataEvent {
++    sesion_id: String,
++    ev: Value,
++}
++
++/// Where the `agentes` repo is checked out. First match wins.
++fn agent_dir() -> Option<PathBuf> {
++    let home = PathBuf::from(std::env::var_os("USERPROFILE")?);
++    [
++        home.join("OneDrive").join("Desktop").join("Claude").join("agentes"),
++        home.join("Desktop").join("Claude").join("agentes"),
++        home.join("agentes"),
++    ]
++    .into_iter()
++    .find(|p| p.join("plata").join("servir.ts").is_file())
++}
++
++pub async fn status() -> AgentStatus {
++    let dir = agent_dir().map(|p| p.to_string_lossy().to_string());
++    let client = match reqwest::Client::builder().timeout(std::time::Duration::from_secs(2)).build() {
++        Ok(c) => c,
++        Err(_) => return AgentStatus { up: false, model: None, dir },
++    };
++    match client.get(format!("{BASE}/salud")).send().await {
++        Ok(r) if r.status().is_success() => {
++            let v: Value = r.json().await.unwrap_or(Value::Null);
++            AgentStatus {
++                up: true,
++                model: v.get("modelo").and_then(Value::as_str).map(str::to_string),
++                dir,
++            }
++        }
++        _ => AgentStatus { up: false, model: None, dir },
++    }
++}
++
++/// Starts `npm run servir` in the `agentes` folder, detached and without a
++/// console. Its output goes to %LOCALAPPDATA%\Coucou\plata-agent.log.
++pub fn start() -> Result<(), String> {
++    let dir = agent_dir().ok_or_else(|| "No encuentro la carpeta del agente (agentes\\plata\\servir.ts).".to_string())?;
++    let log_path = crate::settings::local_dir().join("plata-agent.log");
++    let log = std::fs::File::create(&log_path).map_err(|e| e.to_string())?;
++    let err = log.try_clone().map_err(|e| e.to_string())?;
++    Command::new("cmd")
++        .args(["/C", "npm", "run", "servir"])
++        .current_dir(&dir)
++        .stdin(Stdio::null())
++        .stdout(log)
++        .stderr(err)
++        .creation_flags(CREATE_NO_WINDOW)
++        .spawn()
++        .map_err(|e| format!("No se pudo arrancar el agente: {e}"))?;
++    crate::log::line(format!("plata agent started in {}", dir.display()));
++    Ok(())
++}
++
++/// One message. Every event of the stream reaches the page as it arrives; the
++/// call returns when the turn ends.
++pub async fn send(app: AppHandle, texto: String, sesion_id: String) -> Result<(), String> {
++    let client = reqwest::Client::builder()
++        .connect_timeout(std::time::Duration::from_secs(3))
++        // A turn with several tools and a proposal takes a while; this is only
++        // the backstop for a server that stops answering altogether.
++        .timeout(std::time::Duration::from_secs(600))
++        .build()
++        .map_err(|e| e.to_string())?;
++
++    let mut response = client
++        .post(format!("{BASE}/agentes/plata/mensaje"))
++        .json(&json!({ "texto": texto, "sesion_id": sesion_id }))
++        .send()
++        .await
++        .map_err(|e| {
++            if e.is_connect() {
++                "agent_down".to_string()
++            } else {
++                format!("No pude hablar con el agente: {e}")
++            }
++        })?;
++
++    if !response.status().is_success() {
++        let status = response.status();
++        let body: Value = response.json().await.unwrap_or(Value::Null);
++        let msg = body.get("error").and_then(Value::as_str).unwrap_or("sin detalle");
++        return Err(format!("El agente respondió {status}: {msg}"));
++    }
++
++    // Server-sent events: frames end in a blank line; we only care about `data:`.
++    let mut buf: Vec<u8> = Vec::new();
++    while let Some(chunk) = response.chunk().await.map_err(|e| format!("Se cortó la respuesta: {e}"))? {
++        buf.extend_from_slice(&chunk);
++        while let Some(end) = find_frame_end(&buf) {
++            let frame: Vec<u8> = buf.drain(..end + 2).collect();
++            let text = String::from_utf8_lossy(&frame);
++            for line in text.lines() {
++                let Some(data) = line.strip_prefix("data:") else { continue };
++                let Ok(ev) = serde_json::from_str::<Value>(data.trim_start()) else { continue };
++                let _ = app.emit_to(
++                    crate::island::WINDOW_LABEL,
++                    "plata-event",
++                    PlataEvent { sesion_id: sesion_id.clone(), ev },
++                );
++            }
++        }
++    }
++    Ok(())
++}
++
++fn find_frame_end(buf: &[u8]) -> Option<usize> {
++    buf.windows(2).position(|w| w == b"\n\n")
++}
+diff --git a/windows/src-tauri/src/settings.rs b/windows/src-tauri/src/settings.rs
+index ccded17..2c29357 100644
+--- a/windows/src-tauri/src/settings.rs
++++ b/windows/src-tauri/src/settings.rs
+@@ -20,6 +20,21 @@ pub struct Settings {
+     /// Defaulted explicitly so a settings.json written by an older build still loads.
+     #[serde(default = "default_model")]
+     pub model: String,
++    /// Where the island lives: "top" (hanging from the top edge, the default),
++    /// "left" / "right" (against that edge of the screen) or "float" (wherever
++    /// it was dropped). Set by dragging the island; see island::drag_loop.
++    #[serde(default = "default_dock")]
++    pub dock: String,
++    /// Window offset from the monitor's top-left, in logical px. `left`/`right`
++    /// use only `dock_y`; `float` uses both. Ignored for `top`.
++    #[serde(default)]
++    pub dock_x: f64,
++    #[serde(default)]
++    pub dock_y: f64,
++}
++
++fn default_dock() -> String {
++    "top".into()
+ }
+ 
+ fn default_model() -> String {
+@@ -42,6 +57,9 @@ impl Default for Settings {
+             autostart: false,
+             hooks_installed: false,
+             model: default_model(),
++            dock: default_dock(),
++            dock_x: 0.0,
++            dock_y: 0.0,
+         }
+     }
+ }
+diff --git a/windows/src/core/bridge.ts b/windows/src/core/bridge.ts
+index 2967337..c23ca18 100644
+--- a/windows/src/core/bridge.ts
++++ b/windows/src/core/bridge.ts
+@@ -28,6 +28,12 @@ export interface BootInfo {
+   hookPath: string;
+ }
+ 
++export interface PlataAgentStatus {
++  up: boolean;
++  model: string | null;
++  dir: string | null;
++}
++
+ export const Bridge = {
+   boot: () => call<BootInfo>("boot"),
+ 
+@@ -43,6 +49,23 @@ export const Bridge = {
+   setIslandRect: (x: number, y: number, width: number, height: number) =>
+     call<void>("set_island_rect", { x, y, width, height }),
+ 
++  /**
++   * Start moving the island. Rust follows the mouse until the button is released
++   * and then docks it; the result comes back as a `settings-changed` event.
++   */
++  beginIslandDrag: (offsetX: number, offsetY: number) =>
++    call<void>("begin_island_drag", { offsetX, offsetY }),
++
++  /** Grow the window for the Plata chat, or back to the usual size. */
++  setTall: (tall: boolean) => call<void>("set_tall", { tall }),
++
++  /** Is Plata's agent listening on 127.0.0.1:8787? */
++  plataStatus: () => call<PlataAgentStatus>("plata_status"),
++  /** Starts `npm run servir` in the agentes folder. */
++  plataStart: () => callOrThrow<void>("plata_start"),
++  /** One message; events come back as `plata-event` until the turn ends. */
++  plataSend: (texto: string, sesionId: string) => callOrThrow<void>("plata_send", { texto, sesionId }),
++
+   /** Give the window keyboard focus (chat field) and take it away again. */
+   focusWindow: (focused: boolean) => call<void>("focus_window", { focused }),
+ 
+diff --git a/windows/src/core/layout.ts b/windows/src/core/layout.ts
+index 6f70eea..000c892 100644
+--- a/windows/src/core/layout.ts
++++ b/windows/src/core/layout.ts
+@@ -20,6 +20,7 @@ export type IslandViewName =
+   | "searching"
+   | "result"
+   | "note"
++  | "plata"
+   | "settings"
+   | "greeting";
+ 
+@@ -48,10 +49,12 @@ export interface ViewLayout {
+   agentMode: AgentLayoutMode;
+ }
+ 
+-// The window is a fixed 720×320 (largest view) like the macOS panel; the island is
++// The window is a fixed 720×320 (720×480 while the Plata chat is open) like the macOS panel; the island is
+ // drawn inside it, glued to the top edge and horizontally centred.
+ export const PANEL_W = 720;
+ export const PANEL_H = 320;
++/** While the Plata chat is open the window grows to this (island.rs, PANEL_H_TALL). */
++export const PANEL_H_TALL = 480;
+ 
+ // No notch on a PC: these are the hidden/compact sizes from docs/SPEC.md.
+ export const NOTCH_W = 184;
+@@ -59,6 +62,35 @@ export const NOTCH_H = 32;
+ export const COMPACT_W = 288; // NOTCH_W + 104
+ export const EXPANDED_W = 640;
+ 
++/**
++ * Where the island lives. `top` hangs from the top edge like a notch; `left` and
++ * `right` press it against that edge of the screen; `float` leaves it wherever it
++ * was dropped. Rust places the window (island.rs, apply_geometry); inside the
++ * window the island is aligned to the same side.
++ */
++export type Dock = "top" | "left" | "right" | "float";
++
++/** Island x inside the 720-wide window. */
++export function islandX(w: number, dock: Dock): number {
++  if (dock === "left") return 0;
++  if (dock === "right") return PANEL_W - w;
++  return (PANEL_W - w) / 2;
++}
++
++/** Square the corners that touch the screen edge, round the rest. */
++export function islandRadius(r: number, dock: Dock): string {
++  switch (dock) {
++    case "top":
++      return `0 0 ${r}px ${r}px`;
++    case "left":
++      return `0 ${r}px ${r}px 0`;
++    case "right":
++      return `${r}px 0 0 ${r}px`;
++    default:
++      return `${r}px`;
++  }
++}
++
+ export const ROUNDED_CORNER = 14; // hidden / compact
+ export const EXPANDED_CORNER = 22;
+ 
+@@ -85,6 +117,8 @@ export const VIEW_LAYOUTS: Record<IslandViewName, ViewLayout> = {
+   result: { height: 160, botX: 52, botY: null, botDiameter: 44, agentMode: "column" },
+   note: { height: 160, botX: 60, botY: null, botDiameter: 50, agentMode: "column" },
+   settings: { height: 160, botX: 54, botY: null, botDiameter: 46, agentMode: "none" },
++  // Plata's agent: answers come with proposals to approve, so it gets room.
++  plata: { height: 440, botX: 52, botY: 70, botDiameter: 44, agentMode: "column" },
+   greeting: { height: 150, botX: 320, botY: 90, botDiameter: 0, agentMode: "none" },
+ };
+ 
+diff --git a/windows/src/core/state.ts b/windows/src/core/state.ts
+index 34ca007..96367bd 100644
+--- a/windows/src/core/state.ts
++++ b/windows/src/core/state.ts
+@@ -1,6 +1,6 @@
+ // App state — mirror of AppState.swift (the parts the island needs).
+ 
+-import type { BotEmoteName, BotStateName, IslandMode, IslandViewName } from "./layout";
++import type { BotEmoteName, BotStateName, Dock, IslandMode, IslandViewName } from "./layout";
+ import type { EyeShape } from "../mochi/engine";
+ 
+ export type AgentSource = "claudeCode" | "n8n";
+@@ -95,6 +95,11 @@ export interface Settings {
+   hooksInstalled: boolean;
+   /** Claude model used by the chat. */
+   model: string;
++  /** Where the island lives; changed by dragging it (see island::drag_loop). */
++  dock: Dock;
++  /** Window offset from the monitor's top-left, logical px (left/right: y; float: x and y). */
++  dockX: number;
++  dockY: number;
+ }
+ 
+ export const DEFAULT_SETTINGS: Settings = {
+@@ -107,6 +112,9 @@ export const DEFAULT_SETTINGS: Settings = {
+   autostart: false,
+   hooksInstalled: false,
+   model: "claude-opus-5",
++  dock: "top",
++  dockX: 0,
++  dockY: 0,
+ };
+ 
+ type Listener = () => void;
+diff --git a/windows/src/island/fsm.ts b/windows/src/island/fsm.ts
+index 8a24545..aaa5c5a 100644
+--- a/windows/src/island/fsm.ts
++++ b/windows/src/island/fsm.ts
+@@ -18,6 +18,12 @@ export class IslandStateMachine {
+   greetHoverCollapseDelay = 10;
+   /** An alert waiting for an answer stays open, even when the mouse leaves. */
+   pinned = false;
++  /**
++   * Hiding means retracting into the top edge, where the wake strip brings it
++   * back. Docked on a side or floating there is no such edge, so the island stops
++   * at the compact pill instead of vanishing where nothing can find it.
++   */
++  allowHidden = true;
+ 
+   private petitHide: number | null = null;
+   private homeCollapse: number | null = null;
+@@ -97,15 +103,17 @@ export class IslandStateMachine {
+     this.transition("petit");
+   }
+ 
++  /** Pause from the tray: hides wherever the island is docked. */
+   forceHidden() {
+     this.cancelTimers();
+-    this.transition("hidden");
++    this.transition("hidden", true);
+   }
+ 
+   // ── Timers ──────────────────────────────────────────────────────────────────
+ 
+   private schedulePetitHide() {
+     this.clear("petitHide");
++    if (!this.allowHidden) return;
+     this.petitHide = window.setTimeout(() => {
+       this.petitHide = null;
+       if (this.state === "petit") this.transition("hidden");
+@@ -141,7 +149,8 @@ export class IslandStateMachine {
+     this.clear("greetCollapse");
+   }
+ 
+-  private transition(next: FsmState) {
++  private transition(next: FsmState, forced = false) {
++    if (next === "hidden" && !this.allowHidden && !forced) next = "petit";
+     if (next === this.state) return;
+     const from = this.state;
+     this.state = next;
+diff --git a/windows/src/island/island.ts b/windows/src/island/island.ts
+index 9e45ba9..37e6e62 100644
+--- a/windows/src/island/island.ts
++++ b/windows/src/island/island.ts
+@@ -6,7 +6,7 @@ import { Bridge, IS_TAURI, onDragDrop } from "../core/bridge";
+ import {
+   EXPANDED_CORNER, EXPANDED_W, NOTCH_W, PANEL_H, PANEL_W,
+   ROUNDED_CORNER, VIEW_LAYOUTS, botGlowColor, botGlowOpacity, botPosition, chatPromptHeight,
+-  islandSize,
++  islandRadius, islandSize, islandX,
+   type IslandMode, type IslandViewName,
+ } from "../core/layout";
+ import { Sound } from "../core/sound";
+@@ -72,6 +72,10 @@ export class Island {
+   private wasInIsland = false;
+   /** Last shape handed to Rust for the click-through test. */
+   private pushedRect = { x: -1, y: -1, w: -1, h: -1 };
++  private tall = false;
++  private tallTimer: number | null = null;
++  /** A press on the island that may turn into a drag (see wireInput). */
++  private drag: { x: number; y: number; started: boolean; click: boolean } | null = null;
+   private homeCollapseAt: number | null = null;
+ 
+   // Bot hover → love (IslandWindowController.botHoverIn)
+@@ -475,10 +479,12 @@ export class Island {
+     const w = this.width.value;
+     const hh = this.height.value;
+     const r = this.radius.value;
++    const x = islandX(w, State.settings.dock);
+     this.islandEl.style.width = `${w}px`;
+     this.islandEl.style.height = `${hh}px`;
+-    this.islandEl.style.borderRadius = `0 0 ${r}px ${r}px`;
+-    this.islandEl.style.transform = `translateX(-50%)`;
++    this.islandEl.style.left = `${x}px`;
++    this.islandEl.style.borderRadius = islandRadius(r, State.settings.dock);
++    this.islandEl.style.transform = "none";
+     // These follow the island as it resizes, so they belong here rather than in
+     // the state-driven DOM sync.
+     this.miniGrid.style.left = `${w - 40 - 14.5}px`;
+@@ -486,7 +492,7 @@ export class Island {
+     this.greetingCanvas.style.left = `${(w - EXPANDED_W) / 2}px`;
+     this.uploadCanvas.el.style.left = `${(w - EXPANDED_W) / 2}px`;
+ 
+-    const rect = { x: (PANEL_W - w) / 2, y: 0, w, h: hh };
++    const rect = { x, y: 0, w, h: hh };
+     const p = this.pushedRect;
+     if (Math.abs(p.x - rect.x) > 0.5 || Math.abs(p.w - rect.w) > 0.5 || Math.abs(p.h - rect.h) > 0.5) {
+       this.pushedRect = rect;
+@@ -498,7 +504,7 @@ export class Island {
+   private islandRect(): { x: number; y: number; w: number; h: number } {
+     const w = this.width.value;
+     const hh = this.height.value;
+-    return { x: (PANEL_W - w) / 2, y: 0, w, h: hh };
++    return { x: islandX(w, State.settings.dock), y: 0, w, h: hh };
+   }
+ 
+   // ── Window collapse (hidden → tiny wake strip, zero polling) ────────────────
+@@ -536,14 +542,39 @@ export class Island {
+     this.islandEl.addEventListener("mousedown", (e) => {
+       Sound.resume();
+       State.lastActivity = performance.now();
++      const grabbable = e.button === 0 && !isInteractive(e.target);
+       if (State.mode !== "expanded") {
+-        this.fsm.click();
++        // The press may be the start of a drag: open on release instead.
++        if (grabbable) this.drag = { x: e.clientX, y: e.clientY, started: false, click: true };
++        else this.fsm.click();
+         return;
+       }
+       if (this.isBotHit(e.clientX, e.clientY)) {
+         this.cancelBotHover();
+         this.engine.slap();
++        return;
++      }
++      if (grabbable) this.drag = { x: e.clientX, y: e.clientY, started: false, click: false };
++    });
++
++    // Moving the island: a few pixels of travel with the button down hands the
++    // drag to Rust, which follows the mouse and docks the island on release.
++    window.addEventListener("mousemove", (e) => {
++      const d = this.drag;
++      if (!d || d.started) return;
++      if (!(e.buttons & 1)) {
++        this.drag = null;
++        return;
+       }
++      if (Math.hypot(e.clientX - d.x, e.clientY - d.y) < 5) return;
++      d.started = true;
++      this.cancelBotHover();
++      void Bridge.beginIslandDrag(d.x, d.y);
++    });
++    window.addEventListener("mouseup", () => {
++      const d = this.drag;
++      this.drag = null;
++      if (d && !d.started && d.click) this.fsm.click();
+     });
+ 
+     window.addEventListener("keydown", (e) => {
+@@ -838,14 +869,32 @@ export class Island {
+       if (on) view.sync();
+     }
+ 
+-    // The chat is the only view with a text field, so it is the only time the
+-    // island is allowed to take keyboard focus.
++    // The window grows before the Plata chat opens and shrinks once the island
++    // has finished closing it, so the island never draws outside the window.
++    const wantTall = State.mode === "expanded" && State.view === "plata";
++    if (wantTall !== this.tall) {
++      this.tall = wantTall;
++      if (this.tallTimer != null) window.clearTimeout(this.tallTimer);
++      this.tallTimer = null;
++      if (wantTall) void Bridge.setTall(true);
++      else
++        this.tallTimer = window.setTimeout(() => {
++          this.tallTimer = null;
++          if (!this.tall) void Bridge.setTall(false);
++        }, 450);
++    }
++
++    // The two chats (Claude and Plata) are the only views with a text field, so
++    // they are the only time the island is allowed to take keyboard focus.
+     if (this.lastSyncedView !== State.view) {
+-      const wasChat = this.lastSyncedView === "prompt";
++      const typed = (v: string | null) => v === "prompt" || v === "plata";
++      const wasChat = typed(this.lastSyncedView);
++
+       this.lastSyncedView = State.view;
+-      if (State.view === "prompt") {
++      if (typed(State.view)) {
+         void Bridge.focusWindow(true);
+-        window.setTimeout(() => this.views.get("prompt")?.focus?.(), 120);
++        const view = State.view;
++        window.setTimeout(() => this.views.get(view)?.focus?.(), 120);
+       } else if (wasChat) {
+         void Bridge.focusWindow(false);
+       }
+@@ -876,6 +925,10 @@ export class Island {
+     Sound.setEnabled(State.settings.soundEnabled);
+     Sound.setVolume(State.settings.soundVolume);
+     this.fsm.homeToPetitDelay = State.settings.autoCloseInterval;
++    // Only the top edge has a wake strip to come back from.
++    this.fsm.allowHidden = State.settings.dock === "top";
++    if (!this.fsm.allowHidden && State.mode === "hidden" && !State.paused) this.fsm.reveal();
++    this.applyGeometry();
+     State.notify();
+   }
+ 
+@@ -887,3 +940,11 @@ export class Island {
+     return chatPromptHeight(State.chatHistory.length);
+   }
+ }
++
++/** Controls keep their clicks; everything else on the island can be grabbed to move it. */
++function isInteractive(target: EventTarget | null): boolean {
++  return (
++    target instanceof Element &&
++    target.closest("button, input, textarea, select, a, [contenteditable], [role=button], .chat-log, .no-drag") !== null
++  );
++}
+diff --git a/windows/src/style.css b/windows/src/style.css
+index 1da05cf..a7abf4f 100644
+--- a/windows/src/style.css
++++ b/windows/src/style.css
+@@ -1358,3 +1358,142 @@ input[type="range"]::-webkit-slider-thumb {
+ .int-card.detail {
+   padding-top: 8px;
+ }
++
++/* ── Plata (chat with Plata's agent) ────────────────────────────────────── */
++
++.tab-plata.on {
++  color: #ff9e1b;
++}
++
++.plata-body {
++  padding-top: 10px;
++}
++
++.plata-head {
++  display: flex;
++  align-items: center;
++  gap: 7px;
++  font: 500 11.5px var(--font);
++  color: var(--dim-2, #9a9fa8);
++}
++
++.plata-dot {
++  width: 7px;
++  height: 7px;
++  border-radius: 50%;
++  background: #6b6b70;
++  flex: none;
++}
++
++.plata-dot.up {
++  background: #35e08a;
++  box-shadow: 0 0 6px #35e08a;
++}
++
++.plata-status-text {
++  flex: 1 1 auto;
++  min-width: 0;
++  white-space: nowrap;
++  overflow: hidden;
++  text-overflow: ellipsis;
++}
++
++.plata-link {
++  border: 0;
++  background: none;
++  padding: 0;
++  font: 500 11.5px var(--font);
++  color: #ffb84d;
++  cursor: default;
++}
++
++.plata-link:hover {
++  text-decoration: underline;
++}
++
++.plata-note,
++.plata-tools,
++.plata-cost {
++  font: 400 11.5px var(--font);
++  color: var(--dim-3, #6b6b70);
++  white-space: pre-wrap;
++}
++
++.plata-cost-row {
++  justify-content: flex-end;
++}
++
++.plata-error {
++  display: flex;
++  flex-wrap: wrap;
++  align-items: center;
++  gap: 8px;
++  font: 400 12px var(--font);
++  color: #ff8a84;
++  white-space: pre-wrap;
++}
++
++.plata-prop {
++  display: flex;
++  flex-direction: column;
++  gap: 6px;
++  width: 100%;
++  padding: 10px 12px;
++  border-radius: 12px;
++  background: rgba(255, 158, 27, 0.10);
++  border: 1px solid rgba(255, 158, 27, 0.45);
++}
++
++.plata-prop-head {
++  display: flex;
++  justify-content: space-between;
++  gap: 8px;
++  font: 500 10.5px var(--font);
++  letter-spacing: 0.06em;
++  text-transform: uppercase;
++  color: #ffb84d;
++}
++
++.plata-prop-exp {
++  color: var(--dim-3, #6b6b70);
++  text-transform: none;
++  letter-spacing: 0;
++}
++
++.plata-prop-body {
++  font: 400 12.5px var(--font);
++  color: var(--ink-2);
++  white-space: pre-wrap;
++  user-select: text;
++}
++
++.plata-prop-amount {
++  font: 500 17px var(--font);
++  font-variant-numeric: tabular-nums;
++  color: var(--ink);
++}
++
++.plata-prop-why {
++  font: 400 11.5px var(--font);
++  color: #b0b5be;
++}
++
++.plata-actions {
++  display: flex;
++  gap: 8px;
++  align-items: center;
++  margin-top: 2px;
++}
++
++.plata-btn {
++  height: 26px;
++}
++
++.plata-decided {
++  font: 500 12px var(--font);
++  color: #35e08a;
++}
++
++.plata-send {
++  background: #ff9e1b;
++}
+diff --git a/windows/src/views/icons.ts b/windows/src/views/icons.ts
+index d2ff824..0dd0c57 100644
+--- a/windows/src/views/icons.ts
++++ b/windows/src/views/icons.ts
+@@ -2,6 +2,8 @@
+ // Drawn on a 24×24 grid so they read at the same optical size.
+ 
+ export const ICONS = {
++  // Plata: a coin with a peso sign, drawn as a stroke (see the Plata tab)
++  coin: "M12 3.5a8.5 8.5 0 1 0 0 17 8.5 8.5 0 0 0 0-17zM14.8 9.3c-.3-1-1.3-1.7-2.8-1.7-1.6 0-2.7.8-2.7 2 0 2.6 5.6 1.4 5.6 4.3 0 1.2-1.2 2.1-2.9 2.1-1.6 0-2.7-.7-3-1.8M12 5.9v1.7M12 16v1.9",
+   // house.fill
+   house: "M12 3.2 2.8 10.6V21h6.6v-5.4h5.2V21h6.6V10.6L12 3.2z",
+   // bubble.left.fill
+diff --git a/windows/src/views/plata.ts b/windows/src/views/plata.ts
+new file mode 100644
+index 0000000..6c6bb30
+--- /dev/null
++++ b/windows/src/views/plata.ts
+@@ -0,0 +1,316 @@
++// Plata view — a chat with Plata's agent (the `agentes` repo, `npm run servir`).
++//
++// The agent answers with a stream of events (CONTRATOS.md §9 in that repo):
++// `texto`, `tool`, `aviso`, `propuesta`, `error` and `fin`. Each one is drawn as
++// it arrives. A proposal gets a card with Approve / Reject: the answer goes back
++// to the agent as the next message, which is the only way the base accepts a
++// write (it refuses a confirmation made in the same turn that proposed it).
++
++import { h, svg, clear } from "./dom";
++import { ICONS } from "./icons";
++import { Bridge, onEvent, type PlataAgentStatus } from "../core/bridge";
++import { Sound } from "../core/sound";
++import { State } from "../core/state";
++import type { ViewHost } from "./views";
++
++type Propuesta = {
++  id: number;
++  tipo: string;
++  estado: string;
++  motivo_confirmacion: string | null;
++  resumen: string | null;
++  monto_ars: number | null;
++  expira_en: string | null;
++};
++
++type Evento =
++  | { tipo: "texto"; texto: string }
++  | { tipo: "tool"; nombre: string; entrada: unknown }
++  | { tipo: "aviso"; texto: string }
++  | { tipo: "propuesta"; propuesta: Propuesta }
++  | { tipo: "error"; texto: string }
++  | { tipo: "fin"; usos: Array<{ usd: number; precio_conocido: boolean }>; duracionMs: number };
++
++const ars = new Intl.NumberFormat("es-AR", { maximumFractionDigits: 2 });
++const usd = new Intl.NumberFormat("es-AR", { minimumFractionDigits: 2, maximumFractionDigits: 3 });
++
++function newSession(): string {
++  return `isla-${crypto.randomUUID()}`;
++}
++
++/** `mcp__plata__gastos_por_categoria` → `gastos por categoria`. */
++function toolLabel(name: string): string {
++  return name.replace(/^mcp__[^_]+__/, "").replace(/_/g, " ");
++}
++
++/** The island draws plain text: drop Markdown's emphasis and heading marks. */
++function plain(text: string): string {
++  return text
++    .replace(/\*\*(.+?)\*\*/g, "$1")
++    .replace(/^#{1,6}\s+/gm, "")
++    .replace(/`([^`]+)`/g, "$1")
++    .trim();
++}
++
++function hhmm(iso: string | null): string {
++  if (!iso) return "";
++  const d = new Date(iso);
++  if (Number.isNaN(d.getTime())) return "";
++  return d.toLocaleTimeString("es-AR", { hour: "2-digit", minute: "2-digit" });
++}
++
++export function buildPlata(): ViewHost {
++  let sesionId = newSession();
++  let sending = false;
++  let lastText = "";
++  let status: PlataAgentStatus | null = null;
++  // Per turn: the reply paragraph being filled and the running tools line.
++  let replyEl: HTMLElement | null = null;
++  let toolsEl: HTMLElement | null = null;
++  let toolsSeen: string[] = [];
++
++  const dotEl = h("i", { class: "plata-dot" });
++  const statusText = h("span", { class: "plata-status-text", text: "Plata" });
++  const resetBtn = h("button", { class: "plata-link", text: "Nueva", title: "Empezar otra conversación" });
++  const head = h("div", { class: "plata-head" }, dotEl, statusText, resetBtn);
++
++  const log = h("div", { class: "chat-log plata-log" });
++  const input = h("input", {
++    type: "text",
++    class: "chat-input",
++    placeholder: "Preguntale o pedile algo a Plata…",
++    spellcheck: "false",
++  }) as HTMLInputElement;
++  const send = h("button", { class: "send-btn plata-send", title: "Enviar" }, svg(ICONS.arrowUp, 11));
++  const bar = h("div", { class: "chat-bar" }, input, send);
++
++  const el = h(
++    "div",
++    { class: "view" },
++    h("div", { class: "card wash chat-card plata-card" }, h("div", { class: "chat-body plata-body" }, head, log, bar)),
++  );
++  (el.querySelector(".card") as HTMLElement).style.setProperty("--wash", "rgba(255,158,27,0.30)");
++
++  function scroll() {
++    log.scrollTop = log.scrollHeight;
++  }
++
++  function row(child: HTMLElement, cls = "chat-row"): HTMLElement {
++    const r = h("div", { class: cls }, child);
++    log.append(r);
++    scroll();
++    return r;
++  }
++
++  function typing(on: boolean) {
++    log.querySelector(".plata-typing")?.remove();
++    if (on) row(h("div", { class: "typing" }, h("i"), h("i"), h("i")), "chat-row plata-typing");
++  }
++
++  function renderStatus() {
++    const up = status?.up ?? false;
++    dotEl.classList.toggle("up", up);
++    statusText.textContent = up ? `Plata · ${status?.model ?? "agente"}` : "Plata · agente apagado";
++  }
++
++  async function refreshStatus(): Promise<PlataAgentStatus> {
++    let s: PlataAgentStatus;
++    try {
++      s = (await Bridge.plataStatus()) ?? { up: false, model: null, dir: null };
++    } catch {
++      s = { up: false, model: null, dir: null };
++    }
++    status = s;
++    renderStatus();
++    return s;
++  }
++
++  function note(text: string, cls = "plata-note") {
++    row(h("div", { class: cls, text }));
++  }
++
++  /** Card for a proposal: what it does, and the two answers. */
++  function proposalCard(p: Propuesta) {
++    const amount = p.monto_ars != null ? `$ ${ars.format(Number(p.monto_ars))}` : "";
++    const actions = h("div", { class: "plata-actions" });
++    const decide = (ok: boolean) => {
++      clear(actions);
++      actions.append(h("span", { class: "plata-decided", text: ok ? "Aprobada, aplicando…" : "Rechazada" }));
++      void submit(ok ? `Sí, aprobá la propuesta ${p.id}.` : `No, rechazá la propuesta ${p.id}.`);
++    };
++    actions.append(
++      h("button", { class: "btn primary plata-btn", onclick: () => decide(true) }, h("span", { text: "Aprobar" })),
++      h("button", { class: "btn secondary plata-btn", onclick: () => decide(false) }, h("span", { text: "Rechazar" })),
++    );
++    const card = h(
++      "div",
++      { class: "plata-prop" },
++      h(
++        "div",
++        { class: "plata-prop-head" },
++        h("span", { class: "plata-prop-kind", text: `Propuesta #${p.id}` }),
++        p.expira_en ? h("span", { class: "plata-prop-exp", text: `vence ${hhmm(p.expira_en)}` }) : null,
++      ),
++      h("div", { class: "plata-prop-body", text: plain(p.resumen ?? p.tipo) }),
++      amount ? h("div", { class: "plata-prop-amount", text: amount }) : null,
++      p.motivo_confirmacion ? h("div", { class: "plata-prop-why", text: plain(p.motivo_confirmacion) }) : null,
++      actions,
++    );
++    row(card, "chat-row plata-prop-row");
++  }
++
++  function onEvento(ev: Evento) {
++    switch (ev.tipo) {
++      case "texto": {
++        typing(false);
++        toolsEl = null;
++        if (!replyEl) replyEl = row(h("div", { class: "reply" })).firstElementChild as HTMLElement;
++        replyEl.textContent = plain(`${replyEl.textContent ? replyEl.textContent + "\n\n" : ""}${ev.texto}`);
++        scroll();
++        typing(sending);
++        break;
++      }
++      case "tool": {
++        typing(false);
++        replyEl = null;
++        const label = toolLabel(ev.nombre);
++        if (!toolsSeen.includes(label)) toolsSeen.push(label);
++        if (!toolsEl) toolsEl = row(h("div", { class: "plata-tools" })).firstElementChild as HTMLElement;
++        toolsEl.textContent = `Consultando: ${toolsSeen.join(", ")}`;
++        typing(sending);
++        break;
++      }
++      case "aviso":
++        note(plain(ev.texto));
++        break;
++      case "propuesta":
++        typing(false);
++        replyEl = null;
++        toolsEl = null;
++        proposalCard(ev.propuesta);
++        Sound.play("finish");
++        typing(sending);
++        break;
++      case "error":
++        typing(false);
++        note(plain(ev.texto), "plata-error");
++        break;
++      case "fin": {
++        const total = (ev.usos ?? []).reduce((a, u) => a + (u.usd ?? 0), 0);
++        const known = (ev.usos ?? []).every((u) => u.precio_conocido !== false);
++        const secs = Math.round((ev.duracionMs ?? 0) / 1000);
++        const cost = known ? `US$ ${usd.format(total)}` : "costo sin precio";
++        row(h("div", { class: "plata-cost", text: `${cost} · ${secs} s` }), "chat-row plata-cost-row");
++        break;
++      }
++    }
++  }
++
++  /** The agent isn't listening: say so, and offer to start it. */
++  function agentDown(retryText: string) {
++    const box = h("div", { class: "plata-error" }, h("span", { text: "El agente de Plata está apagado." }));
++    if (status?.dir) {
++      const btn = h("button", { class: "btn primary plata-btn" }, h("span", { text: "Prenderlo" }));
++      btn.addEventListener("click", async () => {
++        btn.setAttribute("disabled", "");
++        (btn.firstElementChild as HTMLElement).textContent = "Prendiendo…";
++        try {
++          await Bridge.plataStart();
++        } catch (e) {
++          note(String(e).replace(/^Error:\s*/, ""), "plata-error");
++          return;
++        }
++        // `npm run servir` checks the session before listening: give it time.
++        for (let i = 0; i < 40; i++) {
++          await new Promise((r) => setTimeout(r, 1500));
++          if ((await refreshStatus()).up) {
++            note("Listo, el agente está prendido.");
++            void submit(retryText, true);
++            return;
++          }
++        }
++        note("No arrancó. Mirá %LOCALAPPDATA%\\Coucou\\plata-agent.log.", "plata-error");
++      });
++      box.append(btn);
++    } else {
++      box.append(h("span", { text: " Prendelo con `npm run servir` en la carpeta agentes." }));
++    }
++    row(box);
++  }
++
++  async function submit(text: string, retry = false) {
++    const query = text.trim();
++    if (!query || sending) return;
++    sending = true;
++    lastText = query;
++    replyEl = null;
++    toolsEl = null;
++    toolsSeen = [];
++    if (!retry) row(h("div", { class: "bubble", text: query }), "chat-row user");
++    Sound.play("send");
++    State.stateOverride = "thinking";
++    State.notify();
++    typing(true);
++    try {
++      await Bridge.plataSend(query, sesionId);
++      Sound.play("finish");
++    } catch (err) {
++      const msg = String(err).replace(/^Error:\s*/, "");
++      typing(false);
++      if (msg === "agent_down") {
++        await refreshStatus();
++        agentDown(query);
++      } else {
++        note(msg, "plata-error");
++      }
++      Sound.play("error");
++    } finally {
++      sending = false;
++      typing(false);
++      State.stateOverride = null;
++      State.notify();
++      input.disabled = false;
++      input.focus();
++    }
++  }
++
++  void onEvent<{ sesionId: string; ev: Evento }>("plata-event", (p) => {
++    if (p.sesionId === sesionId) onEvento(p.ev);
++  });
++
++  send.addEventListener("click", () => {
++    const text = input.value;
++    input.value = "";
++    void submit(text);
++  });
++  input.addEventListener("keydown", (e) => {
++    if ((e as KeyboardEvent).key === "Enter") {
++      e.preventDefault();
++      const text = input.value;
++      input.value = "";
++      void submit(text);
++    }
++    e.stopPropagation(); // Escape closes the island, not the chat
++  });
++  resetBtn.addEventListener("click", () => {
++    if (sending) return;
++    sesionId = newSession();
++    lastText = "";
++    clear(log);
++    note("Conversación nueva.");
++  });
++
++  note("Preguntale por tus saldos, gastos o deudas, o pedile que registre algo. Lo que cambie datos te lo muestra antes, para que lo apruebes.");
++
++  return {
++    el,
++    sync() {
++      input.disabled = sending;
++      input.placeholder = lastText ? "Seguí…" : "Preguntale o pedile algo a Plata…";
++    },
++    focus() {
++      void refreshStatus();
++      input.focus();
++    },
++  };
++}
+diff --git a/windows/src/views/views.ts b/windows/src/views/views.ts
+index ac0ac7b..b0aea0d 100644
+--- a/windows/src/views/views.ts
++++ b/windows/src/views/views.ts
+@@ -9,6 +9,7 @@ import { State, type AgentTask } from "../core/state";
+ import { washRGBA, type IslandViewName, type Wash } from "../core/layout";
+ import { createMiniBot, pruneMiniBots } from "../mochi/minibots";
+ import { buildPrompt } from "./chat";
++import { buildPlata } from "./plata";
+ import { buildChoose, buildUpload, buildUploading } from "./upload";
+ import { renderIntegrationCard, type IntegrationCardHooks } from "./integrations";
+ 
+@@ -81,6 +82,7 @@ export function buildHeader(actions: ViewActions): ViewHost {
+   const tabHome = h("button", { class: "tab", title: "Overview", onclick: () => go("overview") }, svg(ICONS.house, 13));
+   const tabChat = h("button", { class: "tab", title: "Ask", onclick: () => go("prompt") }, svg(ICONS.bubble, 13));
+   const tabDrop = h("button", { class: "tab", title: "Drop", onclick: () => go("upload") }, svg(ICONS.plus, 13));
++  const tabPlata = h("button", { class: "tab tab-plata", title: "Plata", onclick: () => go("plata") }, svg(ICONS.coin, 14, { stroke: 1.7 }));
+ 
+   const gearBtn = h("button", { title: "Settings", onclick: () => go("settings") }, svg(ICONS.gear, 14));
+   const soundBtn = h("button", { title: "Mute", onclick: () => actions.toggleSound() }, svg(ICONS.speakerOn, 14));
+@@ -93,7 +95,7 @@ export function buildHeader(actions: ViewActions): ViewHost {
+   const el = h(
+     "div",
+     { id: "header" },
+-    h("div", { class: "tabs" }, tabHome, tabChat, tabDrop),
++    h("div", { class: "tabs" }, tabHome, tabChat, tabPlata, tabDrop),
+     h("div", { class: "header-actions" }, gearBtn, soundBtn),
+   );
+ 
+@@ -104,6 +106,7 @@ export function buildHeader(actions: ViewActions): ViewHost {
+       tabHome.classList.toggle("on", v === "overview" || v === "empty");
+       tabChat.classList.toggle("on", v === "prompt");
+       tabDrop.classList.toggle("on", v === "upload");
++      tabPlata.classList.toggle("on", v === "plata");
+       gearBtn.classList.toggle("on", v === "settings");
+       clear(gearBtn);
+       gearBtn.append(svg(v === "settings" ? ICONS.gearFill : ICONS.gear, 14));
+@@ -498,6 +501,7 @@ export function buildViews(
+   map.set("note", buildNote());
+   map.set("settings", buildSettings(actions));
+   map.set("prompt", buildPrompt(onChatHeightChange));
++  map.set("plata", buildPlata());
+   map.set("upload", buildUpload());
+   map.set("uploading", buildUploading());
+   map.set("choose", buildChoose(actions));
+-- 
+2.53.0.windows.2
 

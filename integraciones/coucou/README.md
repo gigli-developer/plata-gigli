@@ -9,6 +9,11 @@
 
 La pill de **Claude Code** viene de fábrica. La de **GitHub** también, pero solo muestra la cantidad de repos y estrellas.
 
+Además, el parche suma dos cosas a la isla:
+
+- **Pestaña Plata** (la moneda, en el encabezado de la isla): un chat con el [agente de Plata](https://github.com/gigli-developer/agentes). Ver [Chat con Plata](#chat-con-plata).
+- **La isla se mueve.** Agarrala de cualquier parte que no sea un botón y arrastrala. Ver [Mover la isla](#mover-la-isla).
+
 ## Instalar (Windows 10/11)
 
 Requisitos, una sola vez:
@@ -28,7 +33,7 @@ El script hace esto:
 2. Aplica `plata.patch` en una rama `plata`.
 3. Compila y abre el instalador. Se instala solo para tu usuario, sin pedir administrador.
 
-Si lo corrés otra vez, solo recompila. Con `-Dev` abre la app con recarga en vivo (`npm run tauri dev`), en lugar de generar el instalador.
+Si lo corrés otra vez, solo recompila. **Ojo:** si ya tenías el clon de antes, la rama `plata` no recibe los commits nuevos del parche. Para actualizarla, desde `%USERPROFILE%\coucou`: `git checkout plata && git reset --hard 5ae7bd9 && git am --3way <repo-plata>\integraciones\coucou\plata.patch`, y después corré el instalador de nuevo. Con `-Dev` abre la app con recarga en vivo (`npm run tauri dev`), en lugar de generar el instalador.
 
 > ¿Por qué compilarlo? El instalador oficial está bajado porque Defender lo marcaba como troyano. El autor dice que es un falso positivo, pero hasta que lo firme, compilarlo vos es lo más seguro: el código se puede leer entero.
 
@@ -47,6 +52,30 @@ Si lo corrés otra vez, solo recompila. Con `-Dev` abre la app con recarga en vi
 5. Prendé las pills que quieras. Son hasta 4, más la de Claude Code, que siempre está.
 
 Todas las claves quedan en el **Administrador de credenciales de Windows**, no en disco.
+
+## Mover la isla
+
+Apretá sobre la isla (en cualquier lugar que no sea un botón, un campo de texto o la conversación) y arrastrá. Al soltar:
+
+| Dónde la soltás | Dónde queda |
+|---|---|
+| Cerca del borde izquierdo o derecho | Pegada a ese costado, a la altura donde la dejaste. El lado del borde queda recto |
+| Cerca de arriba | Arriba al centro, como siempre |
+| En cualquier otro lugar | Flotando ahí |
+
+La posición se guarda en `%APPDATA%\Coucou\settings.json` (`dock`, `dockX`, `dockY`). Fuera de arriba la isla no se esconde del todo: queda como pastilla, porque la franja invisible que la vuelve a sacar solo existe en el borde de arriba. La pausa de la bandeja sí la esconde en cualquier posición.
+
+Para volver a la posición original, arrastrala de nuevo arriba o borrá esas tres claves del `settings.json`.
+
+## Chat con Plata
+
+La pestaña de la moneda abre un chat con el agente de Plata del repo `agentes`: el mismo de `/agente`, con sus herramientas, sus propuestas y su registro de costos. La isla no tiene lógica de finanzas propia: le manda cada mensaje al servidor local del agente y dibuja lo que vuelve.
+
+- **Requisito:** el agente tiene que estar corriendo (`npm run servir` en la carpeta `agentes`, escucha en `127.0.0.1:8787`). Si está apagado, la isla lo dice y ofrece **Prenderlo**: corre ese mismo comando sin ventana y deja la salida en `%LOCALAPPDATA%\Coucou\plata-agent.log`. La carpeta se busca en `Desktop\Claudegentes` (con o sin OneDrive) o en `%USERPROFILE%gentes`.
+- **Qué se ve:** el texto del agente, qué herramientas está usando, cada propuesta como tarjeta y, al final de cada turno, cuánto costó.
+- **Propuestas:** la tarjeta trae **Aprobar** y **Rechazar**. La respuesta viaja como el mensaje siguiente ("Sí, aprobá la propuesta 42."), que es lo único que la base acepta: rechaza una confirmación hecha en el mismo turno que la propuso. La isla nunca escribe en Supabase.
+- **Nueva** arranca otra conversación. Cada una vive en el agente hasta 30 minutos sin mensajes.
+- Mientras el chat está abierto, la ventana de la isla crece de 720×320 a 720×480. Es transparente y deja pasar los clics fuera de la isla, pero toma el mouse mientras hay un botón apretado encima (para poder soltar archivos), así que vuelve a su tamaño apenas se cierra el chat.
 
 ## Cómo está armado
 
@@ -67,10 +96,12 @@ poll_railway ── cada 30 s ────────────────�
 - Fuentes versionadas en este repo:
   - `supabase/functions/coucou-health/index.ts`: se deploya con el MCP de Supabase, `verify_jwt=false`.
   - `supabase/sql/coucou_health.sql`: se aplica con `execute_sql`.
-- Del lado de Coucou, todo lo propio está en `plata.patch`:
+- Del lado de Coucou, todo lo propio está en `plata.patch` (dos commits):
   - `windows/src-tauri/src/integrations.rs`: `poll_plata` y `poll_railway`.
   - `windows/src/views/integrations.ts`: las tarjetas.
   - `state.ts`, `settings/main.ts`, `secrets.rs`, `settings.rs`, `island.ts`: el registro de las dos pills.
+  - `windows/src-tauri/src/island.rs` (`drag_loop`, `apply_geometry`) y `layout.ts` (`islandX`, `islandRadius`): mover y anclar la isla.
+  - `windows/src-tauri/src/plata_agent.rs` y `windows/src/views/plata.ts`: el chat con el agente.
 
 ## Actualizar Coucou
 
