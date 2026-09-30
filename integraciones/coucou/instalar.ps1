@@ -32,7 +32,10 @@ function Falla($texto) { Write-Host "`n$texto" -ForegroundColor Red; exit 1 }
 
 # Los comandos nativos no cortan el script solos: hay que mirar $LASTEXITCODE.
 function Correr {
-  & $args[0] @($args | Select-Object -Skip 1)
+  # Splatting con una variable: `@(...)` inline pasa UN solo argumento (un array),
+  # y si el comando es un .ps1 (npm.ps1 según cómo se instaló Node) lo recibe entero.
+  $resto = @($args | Select-Object -Skip 1)
+  & $args[0] @resto
   if ($LASTEXITCODE -ne 0) { Falla "Falló: $($args -join ' ')" }
 }
 
