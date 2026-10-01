@@ -63,7 +63,7 @@ Apretá sobre la isla (en cualquier lugar que no sea un botón, un campo de text
 | Cerca de arriba | Arriba al centro, como siempre |
 | En cualquier otro lugar | Flotando ahí |
 
-La posición se guarda en `%APPDATA%\Coucou\settings.json` (`dock`, `dockX`, `dockY`). Fuera de arriba la isla no se esconde del todo: queda como pastilla, porque la franja invisible que la vuelve a sacar solo existe en el borde de arriba. La pausa de la bandeja sí la esconde en cualquier posición.
+Funciona en cualquier monitor: se ancla en la pantalla donde la soltás y la recuerda (`dockMonitor`). Si esa pantalla se desconecta, vuelve a la que elijas en los ajustes. La posición se guarda en `%APPDATA%\Coucou\settings.json` (`dock`, `dockX`, `dockY`, `dockMonitor`). Fuera de arriba la isla no se esconde del todo: queda como pastilla, porque la franja invisible que la vuelve a sacar solo existe en el borde de arriba. La pausa de la bandeja sí la esconde en cualquier posición.
 
 Para volver a la posición original, arrastrala de nuevo arriba o borrá esas tres claves del `settings.json`.
 
@@ -75,6 +75,7 @@ La pestaña de la moneda abre un chat con el agente de Plata del repo `agentes`:
 - **Qué se ve:** el texto del agente, qué herramientas está usando, cada propuesta como tarjeta y, al final de cada turno, cuánto costó.
 - **Tarjetas de datos:** cuando el agente consulta `saldos`, `resumen_mensual` o `serie_patrimonio`, la isla dibuja una tarjeta con lo que devolvió (líquido en ARS, USD y USDT; gastos del mes por categoría; patrimonio mes a mes). Llegan con el evento `resultado` del agente, que la isla pide con `resultados: true` (CONTRATOS §9 en `agentes`). Las tarjetas no suman ni convierten nada: muestran el dato tal cual.
 - **Cambios en la app (botón de la terminal):** escribís el pedido ("agregá un filtro por tarjeta en Movimientos") y tocás el botón de la terminal en vez de enviar. No va al agente: se abre una terminal en el repo de Plata con Claude Code (el que trae la app de escritorio, `%APPDATA%\Claude\claude-code\<versión>\claude.exe`) trabajando en ese pedido, con la instrucción de hacerlo en una rama nueva y no pushear ni deployar sin preguntar. Sus pedidos de permiso aparecen en la isla por los hooks. El pedido queda guardado en `%LOCALAPPDATA%\Coucou\pedidos\`.
+- **Comparar un resumen de la tarjeta:** con la pestaña Plata abierta, soltá el PDF del resumen (o una captura) sobre la isla, o pegá el resumen que te pasaron por WhatsApp (más de 600 caracteres se convierte en un adjunto "Resumen pegado"). Si no escribís nada, el mensaje por defecto pide comparar contra Plata. El agente identifica la tarjeta y el período, compara línea por línea con el detalle del resumen y lista las diferencias. **Solo puede proponer los consumos que faltan**; montos distintos, duplicados o cuotas mal te los informa con el id para que los corrijas. Hasta 3 archivos y 8 MB.
 - **Voz (micrófono):** activa el dictado de Windows (Win+H) sobre el campo del chat. Dictás, y el texto queda escrito para enviarlo. Usa el idioma de dictado de Windows.
 - **Propuestas:** la tarjeta trae **Aprobar** y **Rechazar**. La respuesta viaja como el mensaje siguiente ("Sí, aprobá la propuesta 42."), que es lo único que la base acepta: rechaza una confirmación hecha en el mismo turno que la propuso. La isla nunca escribe en Supabase.
 - **Nueva** arranca otra conversación. Cada una vive en el agente hasta 30 minutos sin mensajes.
@@ -99,7 +100,7 @@ poll_railway ── cada 30 s ────────────────�
 - Fuentes versionadas en este repo:
   - `supabase/functions/coucou-health/index.ts`: se deploya con el MCP de Supabase, `verify_jwt=false`.
   - `supabase/sql/coucou_health.sql`: se aplica con `execute_sql`.
-- Del lado de Coucou, todo lo propio está en `plata.patch` (cuatro commits):
+- Del lado de Coucou, todo lo propio está en `plata.patch` (seis commits):
   - `windows/src-tauri/src/integrations.rs`: `poll_plata` y `poll_railway`.
   - `windows/src/views/integrations.ts`: las tarjetas.
   - `state.ts`, `settings/main.ts`, `secrets.rs`, `settings.rs`, `island.ts`: el registro de las dos pills.
