@@ -71,7 +71,7 @@ Para volver a la posición original, arrastrala de nuevo arriba o borrá esas tr
 
 La pestaña de la moneda abre un chat con el agente de Plata del repo `agentes`: el mismo de `/agente`, con sus herramientas, sus propuestas y su registro de costos. La isla no tiene lógica de finanzas propia: le manda cada mensaje al servidor local del agente y dibuja lo que vuelve.
 
-- **Requisito:** el agente tiene que estar corriendo (`npm run servir` en la carpeta `agentes`, escucha en `127.0.0.1:8787`). Si está apagado, la isla lo dice y ofrece **Prenderlo**: corre ese mismo comando sin ventana y deja la salida en `%LOCALAPPDATA%\Coucou\plata-agent.log`. La carpeta se busca en `Desktop\Claudegentes` (con o sin OneDrive) o en `%USERPROFILE%gentes`.
+- **El agente se prende solo.** Al arrancar Coucou, si el agente no está escuchando, corre `npm run servir` en la carpeta `agentes` (sin ventana, con la salida en `%LOCALAPPDATA%\Coucou\plata-agent.log`). Sigue corriendo aunque cierres Coucou, y el próximo arranque lo encuentra prendido. Si se cae mientras lo usás, la isla lo vuelve a prender y reenvía tu mensaje; solo si eso falla aparece **Reintentar**. La carpeta se busca en `Desktop\Claude\agentes` (con o sin OneDrive) o en `%USERPROFILE%\agentes`, y necesita la sesión de `npm run login` hecha una vez.
 - **Qué se ve:** el texto del agente, qué herramientas está usando, cada propuesta como tarjeta y, al final de cada turno, cuánto costó.
 - **Tarjetas de datos:** cuando el agente consulta `saldos`, `resumen_mensual` o `serie_patrimonio`, la isla dibuja una tarjeta con lo que devolvió (líquido en ARS, USD y USDT; gastos del mes por categoría; patrimonio mes a mes). Llegan con el evento `resultado` del agente, que la isla pide con `resultados: true` (CONTRATOS §9 en `agentes`). Las tarjetas no suman ni convierten nada: muestran el dato tal cual.
 - **Cambios en la app (botón de la terminal):** escribís el pedido ("agregá un filtro por tarjeta en Movimientos") y tocás el botón de la terminal en vez de enviar. No va al agente: se abre una terminal en el repo de Plata con Claude Code (el que trae la app de escritorio, `%APPDATA%\Claude\claude-code\<versión>\claude.exe`) trabajando en ese pedido, con la instrucción de hacerlo en una rama nueva y no pushear ni deployar sin preguntar. Sus pedidos de permiso aparecen en la isla por los hooks. El pedido queda guardado en `%LOCALAPPDATA%\Coucou\pedidos\`.
@@ -99,7 +99,7 @@ poll_railway ── cada 30 s ────────────────�
 - Fuentes versionadas en este repo:
   - `supabase/functions/coucou-health/index.ts`: se deploya con el MCP de Supabase, `verify_jwt=false`.
   - `supabase/sql/coucou_health.sql`: se aplica con `execute_sql`.
-- Del lado de Coucou, todo lo propio está en `plata.patch` (tres commits):
+- Del lado de Coucou, todo lo propio está en `plata.patch` (cuatro commits):
   - `windows/src-tauri/src/integrations.rs`: `poll_plata` y `poll_railway`.
   - `windows/src/views/integrations.ts`: las tarjetas.
   - `state.ts`, `settings/main.ts`, `secrets.rs`, `settings.rs`, `island.ts`: el registro de las dos pills.

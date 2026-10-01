@@ -1,7 +1,7 @@
 From 680c133ae9c577ce390172fe712e22debc666756 Mon Sep 17 00:00:00 2001
 From: Lucas Gigli <giglilangonelucas@gmail.com>
 Date: Wed, 30 Sep 2026 20:56:49 +0000
-Subject: [PATCH 1/3] Pills de Plata y Railway
+Subject: [PATCH 1/4] Pills de Plata y Railway
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -688,7 +688,7 @@ index b8ad73c..1e394d3 100644
 From 300ffc9f910104c945e4bac87f07652ff76cdef8 Mon Sep 17 00:00:00 2001
 From: Lucas <lucasgigli3@gmail.com>
 Date: Wed, 30 Sep 2026 19:26:42 -0300
-Subject: [PATCH 2/3] Isla movible y chat con el agente de Plata
+Subject: [PATCH 2/4] Isla movible y chat con el agente de Plata
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -2050,7 +2050,7 @@ index ac0ac7b..b0aea0d 100644
 From bc47f21c9aebad91c668224113e757e8621898c3 Mon Sep 17 00:00:00 2001
 From: Lucas <lucasgigli3@gmail.com>
 Date: Wed, 30 Sep 2026 19:41:15 -0300
-Subject: [PATCH 3/3] Plata en la isla: tarjetas, pedidos a Claude Code y voz
+Subject: [PATCH 3/4] Plata en la isla: tarjetas, pedidos a Claude Code y voz
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -2641,6 +2641,195 @@ index 6c6bb30..668ec54 100644
  
    return {
      el,
+-- 
+2.53.0.windows.2
+
+
+From a651a03795654c762b61b66dd6906f0a9d326a3b Mon Sep 17 00:00:00 2001
+From: Lucas <lucasgigli3@gmail.com>
+Date: Wed, 30 Sep 2026 20:58:44 -0300
+Subject: [PATCH 4/4] El agente de Plata se prende solo
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+- Al arrancar Coucou, si el agente está instalado y no escucha, se prende
+  (`npm run servir`). Sigue corriendo si Coucou se cierra, y el próximo
+  arranque lo encuentra prendido.
+- Si igual está apagado al mandar un mensaje (se cayó, o todavía está
+  arrancando), la isla lo prende sin preguntar y reenvía el mensaje. El
+  botón solo aparece si falla, como Reintentar.
+- Un segundo arranque dentro de 60 s no hace nada: esperaría el mismo puerto.
+
+Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+---
+ windows/src-tauri/src/lib.rs         |  1 +
+ windows/src-tauri/src/plata_agent.rs | 25 +++++++++
+ windows/src/views/plata.ts           | 81 ++++++++++++++++++----------
+ 3 files changed, 78 insertions(+), 29 deletions(-)
+
+diff --git a/windows/src-tauri/src/lib.rs b/windows/src-tauri/src/lib.rs
+index 552b42d..cdb0d80 100644
+--- a/windows/src-tauri/src/lib.rs
++++ b/windows/src-tauri/src/lib.rs
+@@ -483,6 +483,7 @@ pub fn run() {
+             hooks::ensure_hook_exe(&handle);
+             pipe::start(handle.clone());
+             integrations::start(handle.clone());
++            tauri::async_runtime::spawn(plata_agent::ensure_running());
+             Ok(())
+         })
+         .run(tauri::generate_context!())
+diff --git a/windows/src-tauri/src/plata_agent.rs b/windows/src-tauri/src/plata_agent.rs
+index d075b0a..0f3b0e8 100644
+--- a/windows/src-tauri/src/plata_agent.rs
++++ b/windows/src-tauri/src/plata_agent.rs
+@@ -16,6 +16,11 @@ use serde_json::{json, Value};
+ use tauri::{AppHandle, Emitter};
+ 
+ const BASE: &str = "http://127.0.0.1:8787";
++/// `npm run servir` takes a few seconds to listen (it checks the session first).
++/// Within this window a second start would only fight the first one for the port.
++const START_GRACE: std::time::Duration = std::time::Duration::from_secs(60);
++
++static LAST_START: std::sync::Mutex<Option<std::time::Instant>> = std::sync::Mutex::new(None);
+ const CREATE_NO_WINDOW: u32 = 0x0800_0000;
+ 
+ #[derive(Serialize, Clone)]
+@@ -68,6 +73,13 @@ pub async fn status() -> AgentStatus {
+ /// Starts `npm run servir` in the `agentes` folder, detached and without a
+ /// console. Its output goes to %LOCALAPPDATA%\Coucou\plata-agent.log.
+ pub fn start() -> Result<(), String> {
++    {
++        let mut last = LAST_START.lock().unwrap();
++        if last.is_some_and(|t| t.elapsed() < START_GRACE) {
++            return Ok(()); // already starting: the caller just waits for /salud
++        }
++        *last = Some(std::time::Instant::now());
++    }
+     let dir = agent_dir().ok_or_else(|| "No encuentro la carpeta del agente (agentes\\plata\\servir.ts).".to_string())?;
+     let log_path = crate::settings::local_dir().join("plata-agent.log");
+     let log = std::fs::File::create(&log_path).map_err(|e| e.to_string())?;
+@@ -216,3 +228,16 @@ pub fn open_claude_code(pedido: &str) -> Result<String, String> {
+     crate::log::line(format!("claude code opened in {} ({})", repo.display(), file.display()));
+     Ok(repo.file_name().map(|n| n.to_string_lossy().to_string()).unwrap_or_default())
+ }
++
++/// At launch: if the agent is installed and not listening, start it, so the
++/// Plata tab is ready without asking. It keeps running if Coucou quits, and the
++/// next launch finds it up.
++pub async fn ensure_running() {
++    let st = status().await;
++    if st.up || st.dir.is_none() {
++        return;
++    }
++    if let Err(err) = start() {
++        crate::log::line(format!("plata agent autostart failed: {err}"));
++    }
++}
+diff --git a/windows/src/views/plata.ts b/windows/src/views/plata.ts
+index 668ec54..6de96d2 100644
+--- a/windows/src/views/plata.ts
++++ b/windows/src/views/plata.ts
+@@ -346,38 +346,60 @@ export function buildPlata(): ViewHost {
+   }
+ 
+   /** The agent isn't listening: say so, and offer to start it. */
+-  function agentDown(retryText: string) {
+-    const box = h("div", { class: "plata-error" }, h("span", { text: "El agente de Plata está apagado." }));
+-    if (status?.dir) {
+-      const btn = h("button", { class: "btn primary plata-btn" }, h("span", { text: "Prenderlo" }));
+-      btn.addEventListener("click", async () => {
+-        btn.setAttribute("disabled", "");
+-        (btn.firstElementChild as HTMLElement).textContent = "Prendiendo…";
+-        try {
+-          await Bridge.plataStart();
+-        } catch (e) {
+-          note(String(e).replace(/^Error:\s*/, ""), "plata-error");
+-          return;
+-        }
+-        // `npm run servir` checks the session before listening: give it time.
+-        for (let i = 0; i < 40; i++) {
+-          await new Promise((r) => setTimeout(r, 1500));
+-          if ((await refreshStatus()).up) {
+-            btn.remove();
+-            note("Listo, el agente está prendido. La primera respuesta tarda un poco más: está arrancando.");
+-            void submit(retryText, true);
+-            return;
+-          }
+-        }
+-        note("No arrancó. Mirá %LOCALAPPDATA%\\Coucou\\plata-agent.log.", "plata-error");
+-      });
+-      box.append(btn);
+-    } else {
+-      box.append(h("span", { text: " Prendelo con `npm run servir` en la carpeta agentes." }));
++  /**
++   * The agent isn't listening. Coucou starts it at launch, so this is a crash or
++   * a launch that is still warming up: start it (a no-op if it's already
++   * starting), wait for it, and resend the message. The button only shows up
++   * if that fails.
++   */
++  async function agentDown(retryText: string) {
++    if (!status?.dir) {
++      note("El agente de Plata está apagado y no encuentro la carpeta agentes. Prendelo con `npm run servir`.", "plata-error");
++      return;
++    }
++    const line = h("div", { class: "plata-note", text: "El agente estaba apagado: lo estoy prendiendo…" });
++    row(line);
++    State.stateOverride = "thinking";
++    State.notify();
++    const up = await startAndWait();
++    State.stateOverride = null;
++    State.notify();
++    if (up) {
++      line.textContent = "Agente prendido. La primera respuesta tarda un poco más.";
++      void submit(retryText, true);
++      return;
+     }
++    line.remove();
++    const box = h(
++      "div",
++      { class: "plata-error" },
++      h("span", { text: "No pude prender el agente (mirá %LOCALAPPDATA%\\Coucou\\plata-agent.log)." }),
++    );
++    const btn = h("button", { class: "btn primary plata-btn" }, h("span", { text: "Reintentar" }));
++    btn.addEventListener("click", () => {
++      box.remove();
++      void agentDown(retryText);
++    });
++    box.append(btn);
+     row(box);
+   }
+ 
++  /** Starts `npm run servir` if needed and waits up to a minute for it to listen. */
++  async function startAndWait(): Promise<boolean> {
++    try {
++      await Bridge.plataStart();
++    } catch (e) {
++      note(String(e).replace(/^Error:\s*/, ""), "plata-error");
++      return false;
++    }
++    // `npm run servir` checks the session before listening: give it time.
++    for (let i = 0; i < 40; i++) {
++      await new Promise((r) => setTimeout(r, 1500));
++      if ((await refreshStatus()).up) return true;
++    }
++    return false;
++  }
++
+   async function submit(text: string, retry = false) {
+     const query = text.trim();
+     if (!query || sending) return;
+@@ -399,7 +421,8 @@ export function buildPlata(): ViewHost {
+       typing(false);
+       if (msg === "agent_down") {
+         await refreshStatus();
+-        agentDown(query);
++        // After `finally` has released the chat, so the resend can go through.
++        window.setTimeout(() => void agentDown(query), 0);
+       } else {
+         note(msg, "plata-error");
+       }
 -- 
 2.53.0.windows.2
 
