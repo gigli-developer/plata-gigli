@@ -1,7 +1,7 @@
 From 680c133ae9c577ce390172fe712e22debc666756 Mon Sep 17 00:00:00 2001
 From: Lucas Gigli <giglilangonelucas@gmail.com>
 Date: Wed, 30 Sep 2026 20:56:49 +0000
-Subject: [PATCH 1/7] Pills de Plata y Railway
+Subject: [PATCH 1/9] Pills de Plata y Railway
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -688,7 +688,7 @@ index b8ad73c..1e394d3 100644
 From 300ffc9f910104c945e4bac87f07652ff76cdef8 Mon Sep 17 00:00:00 2001
 From: Lucas <lucasgigli3@gmail.com>
 Date: Wed, 30 Sep 2026 19:26:42 -0300
-Subject: [PATCH 2/7] Isla movible y chat con el agente de Plata
+Subject: [PATCH 2/9] Isla movible y chat con el agente de Plata
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -2050,7 +2050,7 @@ index ac0ac7b..b0aea0d 100644
 From bc47f21c9aebad91c668224113e757e8621898c3 Mon Sep 17 00:00:00 2001
 From: Lucas <lucasgigli3@gmail.com>
 Date: Wed, 30 Sep 2026 19:41:15 -0300
-Subject: [PATCH 3/7] Plata en la isla: tarjetas, pedidos a Claude Code y voz
+Subject: [PATCH 3/9] Plata en la isla: tarjetas, pedidos a Claude Code y voz
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -2648,7 +2648,7 @@ index 6c6bb30..668ec54 100644
 From a651a03795654c762b61b66dd6906f0a9d326a3b Mon Sep 17 00:00:00 2001
 From: Lucas <lucasgigli3@gmail.com>
 Date: Wed, 30 Sep 2026 20:58:44 -0300
-Subject: [PATCH 4/7] El agente de Plata se prende solo
+Subject: [PATCH 4/9] El agente de Plata se prende solo
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -2837,7 +2837,7 @@ index 668ec54..6de96d2 100644
 From 6b35f453bdc19dd5a88bfaf5147cac5d4aadd88f Mon Sep 17 00:00:00 2001
 From: Lucas <lucasgigli3@gmail.com>
 Date: Wed, 30 Sep 2026 21:19:44 -0300
-Subject: [PATCH 5/7] La isla se ancla en cualquier monitor
+Subject: [PATCH 5/9] La isla se ancla en cualquier monitor
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -2995,7 +2995,7 @@ index 96367bd..4a31905 100644
 From 10df29a346632a6204e9d3e29485cd1ca4f1449d Mon Sep 17 00:00:00 2001
 From: Lucas <lucasgigli3@gmail.com>
 Date: Wed, 30 Sep 2026 22:32:46 -0300
-Subject: [PATCH 6/7] Plata tab: attach a card statement (drop a PDF/screenshot
+Subject: [PATCH 6/9] Plata tab: attach a card statement (drop a PDF/screenshot
  or paste it) to reconcile
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -3683,7 +3683,7 @@ index b0aea0d..791ea8a 100644
 From cc3b3a857b5ae6eb024de26bd9e1b2493dbc2e65 Mon Sep 17 00:00:00 2001
 From: Lucas <lucasgigli3@gmail.com>
 Date: Wed, 30 Sep 2026 22:56:17 -0300
-Subject: [PATCH 7/7] =?UTF-8?q?Pesta=C3=B1a=20Plata:=20agrandar=20el=20cha?=
+Subject: [PATCH 7/9] =?UTF-8?q?Pesta=C3=B1a=20Plata:=20agrandar=20el=20cha?=
  =?UTF-8?q?t=20e=20historial=20local=20de=20la=20conversaci=C3=B3n?=
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -4092,6 +4092,186 @@ index 791ea8a..2cee61f 100644
    map.set("upload", buildUpload());
    map.set("uploading", buildUploading());
    map.set("choose", buildChoose(actions));
+-- 
+2.53.0.windows.2
+
+
+From 05b9ad0894d7422a3123551b89b309777eda2aba Mon Sep 17 00:00:00 2001
+From: Lucas <lucasgigli3@gmail.com>
+Date: Wed, 30 Sep 2026 23:13:01 -0300
+Subject: [PATCH 8/9] =?UTF-8?q?Pesta=C3=B1a=20Plata:=20el=20bot=C3=B3n=20d?=
+ =?UTF-8?q?e=20agrandar=20con=20texto=20y=20en=20naranja?=
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+El ícono solo, gris y chiquito al lado de "Nueva", no se veía.
+
+Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+---
+ windows/src/style.css      | 20 ++++++++++++++++++++
+ windows/src/views/plata.ts | 11 ++++++++---
+ 2 files changed, 28 insertions(+), 3 deletions(-)
+
+diff --git a/windows/src/style.css b/windows/src/style.css
+index b8768f1..346fae6 100644
+--- a/windows/src/style.css
++++ b/windows/src/style.css
+@@ -1694,3 +1694,23 @@ input[type="range"]::-webkit-slider-thumb {
+ .plata-cols span.neg {
+   background: rgba(255, 67, 61, 0.7);
+ }
++
++/* The enlarge button: labelled and in Plata's orange, so it reads as a control. */
++.plata-big-btn {
++  display: inline-flex;
++  align-items: center;
++  gap: 5px;
++  height: 24px;
++  padding: 0 10px;
++  border-radius: 99px;
++  border: 1px solid rgba(255, 158, 27, 0.55);
++  background: rgba(255, 158, 27, 0.12);
++  color: #ffb84d;
++  font: 500 11.5px var(--font);
++  cursor: default;
++}
++
++.plata-big-btn:hover {
++  background: rgba(255, 158, 27, 0.22);
++  color: #ffd08a;
++}
+diff --git a/windows/src/views/plata.ts b/windows/src/views/plata.ts
+index b487a5e..e983567 100644
+--- a/windows/src/views/plata.ts
++++ b/windows/src/views/plata.ts
+@@ -227,7 +227,12 @@ export function buildPlata(onSizeChange: () => void = () => {}): ViewHost {
+   const dotEl = h("i", { class: "plata-dot" });
+   const statusText = h("span", { class: "plata-status-text", text: "Plata" });
+   const resetBtn = h("button", { class: "plata-link", text: "Nueva", title: "Empezar otra conversación" });
+-  const bigBtn = h("button", { class: "plata-icon-btn plata-big-btn", title: "Agrandar" }, svg(ICONS.expand, 14, { stroke: 1.8 }));
++  const bigBtn = h(
++    "button",
++    { class: "plata-big-btn", title: "Agrandar el chat" },
++    svg(ICONS.expand, 13, { stroke: 2 }),
++    h("span", { text: "Agrandar" }),
++  );
+   const head = h("div", { class: "plata-head" }, dotEl, statusText, resetBtn, bigBtn);
+ 
+   // ⤢: the chat takes most of the screen, and back. The size comes from the
+@@ -241,8 +246,8 @@ export function buildPlata(onSizeChange: () => void = () => {}): ViewHost {
+       setPlataBig(null);
+     }
+     clear(bigBtn);
+-    bigBtn.append(svg(on ? ICONS.collapse : ICONS.expand, 14, { stroke: 1.8 }));
+-    bigBtn.title = on ? "Achicar" : "Agrandar";
++    bigBtn.append(svg(on ? ICONS.collapse : ICONS.expand, 13, { stroke: 2 }), h("span", { text: on ? "Achicar" : "Agrandar" }));
++    bigBtn.title = on ? "Volver al tamaño normal" : "Agrandar el chat";
+     el.classList.toggle("plata-is-big", on);
+     try {
+       localStorage.setItem("plata-big", on ? "1" : "0");
+-- 
+2.53.0.windows.2
+
+
+From dc4ab4cf9f001e33e42b79fdfafc937da0cce072 Mon Sep 17 00:00:00 2001
+From: Lucas <lucasgigli3@gmail.com>
+Date: Wed, 30 Sep 2026 23:17:23 -0300
+Subject: [PATCH 9/9] =?UTF-8?q?Bot=C3=B3n=20en=20el=20encabezado=20de=20la?=
+ =?UTF-8?q?=20isla:=20abre=20el=20chat=20de=20Plata=20en=20grande?=
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Desde cualquier vista, al lado del engranaje. Lucas buscaba el agrandar
+en la vista de inicio y estaba solo adentro de la pestaña Plata.
+
+Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+---
+ windows/src/style.css      |  4 ++++
+ windows/src/views/plata.ts |  7 +++++++
+ windows/src/views/views.ts | 17 +++++++++++++++--
+ 3 files changed, 26 insertions(+), 2 deletions(-)
+
+diff --git a/windows/src/style.css b/windows/src/style.css
+index 346fae6..6cb9325 100644
+--- a/windows/src/style.css
++++ b/windows/src/style.css
+@@ -1714,3 +1714,7 @@ input[type="range"]::-webkit-slider-thumb {
+   background: rgba(255, 158, 27, 0.22);
+   color: #ffd08a;
+ }
++
++.header-plata-big {
++  color: #ffb84d !important;
++}
+diff --git a/windows/src/views/plata.ts b/windows/src/views/plata.ts
+index e983567..851e6da 100644
+--- a/windows/src/views/plata.ts
++++ b/windows/src/views/plata.ts
+@@ -214,6 +214,12 @@ function hhmm(iso: string | null): string {
+   return d.toLocaleTimeString("es-AR", { hour: "2-digit", minute: "2-digit" });
+ }
+ 
++/** Set by the Plata view once built: lets the island header open it enlarged. */
++let setBigFromOutside: ((on: boolean) => void) | null = null;
++export function plataSetBig(on: boolean): void {
++  setBigFromOutside?.(on);
++}
++
+ export function buildPlata(onSizeChange: () => void = () => {}): ViewHost {
+   let sesionId = newSession();
+   let sending = false;
+@@ -259,6 +265,7 @@ export function buildPlata(onSizeChange: () => void = () => {}): ViewHost {
+     scroll();
+   }
+   bigBtn.addEventListener("click", () => setBig(plataBigSize() === null));
++  setBigFromOutside = setBig;
+ 
+   const log = h("div", { class: "chat-log plata-log" });
+   const input = h("input", {
+diff --git a/windows/src/views/views.ts b/windows/src/views/views.ts
+index 2cee61f..416788e 100644
+--- a/windows/src/views/views.ts
++++ b/windows/src/views/views.ts
+@@ -9,7 +9,7 @@ import { State, type AgentTask } from "../core/state";
+ import { washRGBA, type IslandViewName, type Wash } from "../core/layout";
+ import { createMiniBot, pruneMiniBots } from "../mochi/minibots";
+ import { buildPrompt } from "./chat";
+-import { buildPlata } from "./plata";
++import { buildPlata, plataSetBig } from "./plata";
+ import { buildChoose, buildUpload, buildUploading } from "./upload";
+ import { renderIntegrationCard, type IntegrationCardHooks } from "./integrations";
+ 
+@@ -91,6 +91,19 @@ export function buildHeader(actions: ViewActions): ViewHost {
+   const tabPlata = h("button", { class: "tab tab-plata", title: "Plata", onclick: () => go("plata") }, svg(ICONS.coin, 14, { stroke: 1.7 }));
+ 
+   const gearBtn = h("button", { title: "Settings", onclick: () => go("settings") }, svg(ICONS.gear, 14));
++  // Straight to the Plata chat, enlarged, from any view.
++  const bigChatBtn = h(
++    "button",
++    {
++      class: "header-plata-big",
++      title: "Chat de Plata en grande",
++      onclick: () => {
++        go("plata");
++        plataSetBig(true);
++      },
++    },
++    svg(ICONS.expand, 14, { stroke: 1.9 }),
++  );
+   const soundBtn = h("button", { title: "Mute", onclick: () => actions.toggleSound() }, svg(ICONS.speakerOn, 14));
+ 
+   function go(v: IslandViewName) {
+@@ -102,7 +115,7 @@ export function buildHeader(actions: ViewActions): ViewHost {
+     "div",
+     { id: "header" },
+     h("div", { class: "tabs" }, tabHome, tabChat, tabPlata, tabDrop),
+-    h("div", { class: "header-actions" }, gearBtn, soundBtn),
++    h("div", { class: "header-actions" }, bigChatBtn, gearBtn, soundBtn),
+   );
+ 
+   return {
 -- 
 2.53.0.windows.2
 
