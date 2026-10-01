@@ -1,7 +1,7 @@
 From 680c133ae9c577ce390172fe712e22debc666756 Mon Sep 17 00:00:00 2001
 From: Lucas Gigli <giglilangonelucas@gmail.com>
 Date: Wed, 30 Sep 2026 20:56:49 +0000
-Subject: [PATCH 1/6] Pills de Plata y Railway
+Subject: [PATCH 1/7] Pills de Plata y Railway
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -688,7 +688,7 @@ index b8ad73c..1e394d3 100644
 From 300ffc9f910104c945e4bac87f07652ff76cdef8 Mon Sep 17 00:00:00 2001
 From: Lucas <lucasgigli3@gmail.com>
 Date: Wed, 30 Sep 2026 19:26:42 -0300
-Subject: [PATCH 2/6] Isla movible y chat con el agente de Plata
+Subject: [PATCH 2/7] Isla movible y chat con el agente de Plata
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -2050,7 +2050,7 @@ index ac0ac7b..b0aea0d 100644
 From bc47f21c9aebad91c668224113e757e8621898c3 Mon Sep 17 00:00:00 2001
 From: Lucas <lucasgigli3@gmail.com>
 Date: Wed, 30 Sep 2026 19:41:15 -0300
-Subject: [PATCH 3/6] Plata en la isla: tarjetas, pedidos a Claude Code y voz
+Subject: [PATCH 3/7] Plata en la isla: tarjetas, pedidos a Claude Code y voz
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -2648,7 +2648,7 @@ index 6c6bb30..668ec54 100644
 From a651a03795654c762b61b66dd6906f0a9d326a3b Mon Sep 17 00:00:00 2001
 From: Lucas <lucasgigli3@gmail.com>
 Date: Wed, 30 Sep 2026 20:58:44 -0300
-Subject: [PATCH 4/6] El agente de Plata se prende solo
+Subject: [PATCH 4/7] El agente de Plata se prende solo
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -2837,7 +2837,7 @@ index 668ec54..6de96d2 100644
 From 6b35f453bdc19dd5a88bfaf5147cac5d4aadd88f Mon Sep 17 00:00:00 2001
 From: Lucas <lucasgigli3@gmail.com>
 Date: Wed, 30 Sep 2026 21:19:44 -0300
-Subject: [PATCH 5/6] La isla se ancla en cualquier monitor
+Subject: [PATCH 5/7] La isla se ancla en cualquier monitor
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -2995,7 +2995,7 @@ index 96367bd..4a31905 100644
 From 10df29a346632a6204e9d3e29485cd1ca4f1449d Mon Sep 17 00:00:00 2001
 From: Lucas <lucasgigli3@gmail.com>
 Date: Wed, 30 Sep 2026 22:32:46 -0300
-Subject: [PATCH 6/6] Plata tab: attach a card statement (drop a PDF/screenshot
+Subject: [PATCH 6/7] Plata tab: attach a card statement (drop a PDF/screenshot
  or paste it) to reconcile
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -3676,6 +3676,422 @@ index b0aea0d..791ea8a 100644
  }
  
  // ── Shared pieces ─────────────────────────────────────────────────────────────
+-- 
+2.53.0.windows.2
+
+
+From cc3b3a857b5ae6eb024de26bd9e1b2493dbc2e65 Mon Sep 17 00:00:00 2001
+From: Lucas <lucasgigli3@gmail.com>
+Date: Wed, 30 Sep 2026 22:56:17 -0300
+Subject: [PATCH 7/7] =?UTF-8?q?Pesta=C3=B1a=20Plata:=20agrandar=20el=20cha?=
+ =?UTF-8?q?t=20e=20historial=20local=20de=20la=20conversaci=C3=B3n?=
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+- Botón ⤢ en el encabezado del chat de Plata: la isla ocupa casi toda la
+  pantalla (hasta 1100x900, según el monitor) y vuelve con el mismo botón.
+  Se recuerda entre aperturas. La ventana ya no tiene dos tamaños fijos: el
+  front pide el que necesita (set_panel) y Rust lo acota al área de trabajo.
+- %LOCALAPPDATA%\Coucou\plata-chat.log: cada mensaje y cada evento del
+  agente (los datos de las tarjetas, solo el nombre). El agente guarda las
+  conversaciones solo en memoria, y sin esto un turno que salió mal no se
+  podía revisar. Se reinicia al pasar 5 MB.
+
+Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+---
+ windows/src-tauri/src/island.rs      | 29 +++++++++++----------
+ windows/src-tauri/src/lib.rs         | 15 +++++++----
+ windows/src-tauri/src/plata_agent.rs | 39 ++++++++++++++++++++++++++++
+ windows/src/core/bridge.ts           |  4 +--
+ windows/src/core/layout.ts           | 22 +++++++++++++---
+ windows/src/island/island.ts         | 35 +++++++++++++++----------
+ windows/src/views/icons.ts           |  3 +++
+ windows/src/views/plata.ts           | 36 +++++++++++++++++++++++--
+ windows/src/views/views.ts           |  2 +-
+ 9 files changed, 146 insertions(+), 39 deletions(-)
+
+diff --git a/windows/src-tauri/src/island.rs b/windows/src-tauri/src/island.rs
+index e789eb6..117497a 100644
+--- a/windows/src-tauri/src/island.rs
++++ b/windows/src-tauri/src/island.rs
+@@ -26,10 +26,10 @@ use windows::Win32::UI::WindowsAndMessaging::{
+ /// Logical size of the full window — the largest island view, like the macOS panel.
+ pub const PANEL_W: f64 = 720.0;
+ pub const PANEL_H: f64 = 320.0;
+-/// Taller window while the Plata chat is open, and only then: the window takes
+-/// the mouse while a button is held over it (see the poll), so it stays as small
+-/// as the view allows the rest of the time.
+-pub const PANEL_H_TALL: f64 = 480.0;
++/// Bigger windows are asked for by the page (`set_panel`): taller while the
++/// Plata chat is open, and nearly the whole screen when it is enlarged. Only
++/// then: the window takes the mouse while a button is held over it (see the
++/// poll), so it stays as small as the view allows the rest of the time.
+ /// Logical size of the invisible strip that wakes the island when it is hidden.
+ pub const STRIP_W: f64 = 240.0;
+ pub const STRIP_H: f64 = 6.0;
+@@ -71,8 +71,8 @@ pub struct PollGate {
+     active: Mutex<bool>,
+     cv: Condvar,
+     pub collapsed: AtomicBool,
+-    /// The Plata chat is open: use PANEL_H_TALL.
+-    pub tall: AtomicBool,
++    /// Logical window size asked for by the page; None = PANEL_W x PANEL_H.
++    pub panel: Mutex<Option<(f64, f64)>>,
+     pub rect: Mutex<IslandRect>,
+     /// Mirrors the window flag so we only call into Win32 when it changes.
+     ignoring: AtomicBool,
+@@ -84,7 +84,7 @@ impl PollGate {
+             active: Mutex::new(false),
+             cv: Condvar::new(),
+             collapsed: AtomicBool::new(true),
+-            tall: AtomicBool::new(false),
++            panel: Mutex::new(None),
+             rect: Mutex::new(IslandRect::default()),
+             ignoring: AtomicBool::new(false),
+         }
+@@ -253,12 +253,14 @@ pub fn apply_geometry(app: &AppHandle, pref: &str, collapsed: bool) {
+     let (wx, wy) = (wa.position.x, wa.position.y);
+     let (ww, wh) = (wa.size.width as i32, wa.size.height as i32);
+ 
+-    let tall = app
++    let (panel_w, panel_h) = app
+         .try_state::<crate::Shared>()
+-        .map(|s| s.gate.tall.load(Ordering::Relaxed))
+-        .unwrap_or(false);
+-    let panel_h = if tall { PANEL_H_TALL } else { PANEL_H };
+-    let (lw, lh) = if collapsed { (STRIP_W, STRIP_H) } else { (PANEL_W, panel_h) };
++        .and_then(|s| *s.gate.panel.lock().unwrap())
++        .unwrap_or((PANEL_W, PANEL_H));
++    // Never bigger than the work area of this display.
++    let panel_w = panel_w.min(ww as f64 / scale);
++    let panel_h = panel_h.min(wh as f64 / scale);
++    let (lw, lh) = if collapsed { (STRIP_W, STRIP_H) } else { (panel_w, panel_h) };
+     let pw = (lw * scale).round().max(1.0) as u32;
+     let ph = (lh * scale).round().max(1.0) as u32;
+ 
+@@ -371,7 +373,8 @@ fn dock_after_drag(app: &AppHandle, win: &WebviewWindow) -> Option<crate::settin
+     settings.dock_y = (origin.y - mp.y) as f64 / scale;
+     // Floating, the island is centred in its window: place the window so the
+     // island stays exactly where it was let go, whatever side it was aligned to.
+-    settings.dock_x = (left - mp.x as f64) / scale - (PANEL_W - r.w) / 2.0;
++    let win_w = win.inner_size().map(|s| s.width as f64 / ws).unwrap_or(PANEL_W);
++    settings.dock_x = (left - mp.x as f64) / scale - (win_w - r.w) / 2.0;
+     Some(settings.clone())
+ }
+ 
+diff --git a/windows/src-tauri/src/lib.rs b/windows/src-tauri/src/lib.rs
+index 98394ec..c325e90 100644
+--- a/windows/src-tauri/src/lib.rs
++++ b/windows/src-tauri/src/lib.rs
+@@ -110,11 +110,16 @@ fn set_island_rect(shared: State<Shared>, x: f64, y: f64, width: f64, height: f6
+     shared.gate.set_rect(island::IslandRect { x, y, w: width, h: height });
+ }
+ 
+-/// The Plata chat needs a taller window; everything else keeps the usual one.
++/// The Plata chat needs a bigger window (tall, or enlarged); 0 x 0 = the usual one.
+ #[tauri::command]
+-fn set_tall(app: AppHandle, shared: State<Shared>, tall: bool) {
+-    if shared.gate.tall.swap(tall, Ordering::Relaxed) == tall {
+-        return;
++fn set_panel(app: AppHandle, shared: State<Shared>, width: f64, height: f64) {
++    let want = (width > 0.0 && height > 0.0).then_some((width, height));
++    {
++        let mut panel = shared.gate.panel.lock().unwrap();
++        if *panel == want {
++            return;
++        }
++        *panel = want;
+     }
+     let pref = shared.settings.lock().unwrap().screen.clone();
+     let collapsed = shared.gate.collapsed.load(Ordering::Relaxed);
+@@ -468,7 +473,7 @@ pub fn run() {
+             open_settings_window,
+             set_paused,
+             begin_island_drag,
+-            set_tall,
++            set_panel,
+             plata_status,
+             plata_start,
+             plata_send,
+diff --git a/windows/src-tauri/src/plata_agent.rs b/windows/src-tauri/src/plata_agent.rs
+index 6dc2dd8..01fa69c 100644
+--- a/windows/src-tauri/src/plata_agent.rs
++++ b/windows/src-tauri/src/plata_agent.rs
+@@ -185,6 +185,35 @@ fn read_attachments(paths: &[String]) -> Result<Vec<Value>, String> {
+     Ok(out)
+ }
+ 
++/// %LOCALAPPDATA%\Coucou\plata-chat.log: the Plata chat, one line per message
++/// and per event, so a turn that went wrong can be read afterwards (the agent
++/// keeps conversations in memory only). Local file; restarted past 5 MB.
++fn transcript(sesion_id: &str, kind: &str, body: &str) {
++    use std::io::Write;
++    let path = crate::settings::local_dir().join("plata-chat.log");
++    if std::fs::metadata(&path).map(|m| m.len() > 5_000_000).unwrap_or(false) {
++        let _ = std::fs::remove_file(&path);
++    }
++    let stamp = std::time::SystemTime::now()
++        .duration_since(std::time::UNIX_EPOCH)
++        .map(|d| d.as_secs())
++        .unwrap_or(0);
++    if let Ok(mut f) = std::fs::OpenOptions::new().create(true).append(true).open(path) {
++        let _ = writeln!(f, "{stamp} {sesion_id} {kind} {}", body.replace('\n', "\\n"));
++    }
++}
++
++/// What an event looks like in the transcript: text in full, data results
++/// reduced to the tool name (they can be large).
++fn transcript_event(sesion_id: &str, ev: &Value) {
++    let tipo = ev.get("tipo").and_then(Value::as_str).unwrap_or("?");
++    let body = match tipo {
++        "resultado" => ev.get("nombre").and_then(Value::as_str).unwrap_or("").to_string(),
++        _ => ev.to_string(),
++    };
++    transcript(sesion_id, tipo, &body);
++}
++
+ /// One message. Every event of the stream reaches the page as it arrives; the
+ /// call returns when the turn ends. `adjuntos` are file paths (see above).
+ pub async fn send(app: AppHandle, texto: String, sesion_id: String, adjuntos: Vec<String>) -> Result<(), String> {
+@@ -194,6 +223,15 @@ pub async fn send(app: AppHandle, texto: String, sesion_id: String, adjuntos: Ve
+         .map_err(|e| e.to_string())??;
+ 
+     let mut body = json!({ "texto": texto, "sesion_id": sesion_id, "resultados": true });
++    let nombres: Vec<String> = adjuntos
++        .iter()
++        .filter_map(|a| a.get("nombre").and_then(Value::as_str).map(str::to_string))
++        .collect();
++    transcript(
++        &sesion_id,
++        "lucas",
++        &if nombres.is_empty() { texto.clone() } else { format!("{texto} [adjuntos: {}]", nombres.join(", ")) },
++    );
+     if !adjuntos.is_empty() {
+         body["adjuntos"] = Value::Array(adjuntos);
+     }
+@@ -238,6 +276,7 @@ pub async fn send(app: AppHandle, texto: String, sesion_id: String, adjuntos: Ve
+             for line in text.lines() {
+                 let Some(data) = line.strip_prefix("data:") else { continue };
+                 let Ok(ev) = serde_json::from_str::<Value>(data.trim_start()) else { continue };
++                transcript_event(&sesion_id, &ev);
+                 let _ = app.emit_to(
+                     crate::island::WINDOW_LABEL,
+                     "plata-event",
+diff --git a/windows/src/core/bridge.ts b/windows/src/core/bridge.ts
+index 782d011..95c0ae4 100644
+--- a/windows/src/core/bridge.ts
++++ b/windows/src/core/bridge.ts
+@@ -67,8 +67,8 @@ export const Bridge = {
+   /** Windows voice typing (Win+H) into the focused field. */
+   startDictation: () => call<void>("start_dictation"),
+ 
+-  /** Grow the window for the Plata chat, or back to the usual size. */
+-  setTall: (tall: boolean) => call<void>("set_tall", { tall }),
++  /** Window size for the Plata chat (tall or enlarged); 0 x 0 = the usual size. */
++  setPanel: (width: number, height: number) => call<void>("set_panel", { width, height }),
+ 
+   /** Is Plata's agent listening on 127.0.0.1:8787? */
+   plataStatus: () => call<PlataAgentStatus>("plata_status"),
+diff --git a/windows/src/core/layout.ts b/windows/src/core/layout.ts
+index 000c892..d6c3635 100644
+--- a/windows/src/core/layout.ts
++++ b/windows/src/core/layout.ts
+@@ -70,11 +70,26 @@ export const EXPANDED_W = 640;
+  */
+ export type Dock = "top" | "left" | "right" | "float";
+ 
+-/** Island x inside the 720-wide window. */
++/** The window's current logical width: 720, or more while the Plata chat is enlarged. */
++let panelW = PANEL_W;
++export function setPanelWidth(w: number): void {
++  panelW = w;
++}
++
++/** Island x inside the window. */
+ export function islandX(w: number, dock: Dock): number {
+   if (dock === "left") return 0;
+-  if (dock === "right") return PANEL_W - w;
+-  return (PANEL_W - w) / 2;
++  if (dock === "right") return panelW - w;
++  return (panelW - w) / 2;
++}
++
++/** Size of the enlarged Plata chat (the ⤢ button), or null when it is normal. */
++let plataBig: { w: number; h: number } | null = null;
++export function setPlataBig(size: { w: number; h: number } | null): void {
++  plataBig = size;
++}
++export function plataBigSize(): { w: number; h: number } | null {
++  return plataBig;
+ }
+ 
+ /** Square the corners that touch the screen edge, round the rest. */
+@@ -144,6 +159,7 @@ export function islandSize(
+     case "compact":
+       return { w: COMPACT_W, h: NOTCH_H };
+     case "expanded": {
++      if (view === "plata" && plataBig) return { ...plataBig };
+       const h = view === "prompt" ? chatPromptHeight(chatCount) : VIEW_LAYOUTS[view].height;
+       return { w: EXPANDED_W, h };
+     }
+diff --git a/windows/src/island/island.ts b/windows/src/island/island.ts
+index a2ead63..61002ff 100644
+--- a/windows/src/island/island.ts
++++ b/windows/src/island/island.ts
+@@ -6,7 +6,7 @@ import { Bridge, IS_TAURI, onDragDrop } from "../core/bridge";
+ import {
+   EXPANDED_CORNER, EXPANDED_W, NOTCH_W, PANEL_H, PANEL_W,
+   ROUNDED_CORNER, VIEW_LAYOUTS, botGlowColor, botGlowOpacity, botPosition, chatPromptHeight,
+-  islandRadius, islandSize, islandX,
++  islandRadius, islandSize, islandX, plataBigSize, setPanelWidth, PANEL_H_TALL,
+   type IslandMode, type IslandViewName,
+ } from "../core/layout";
+ import { Sound } from "../core/sound";
+@@ -72,7 +72,7 @@ export class Island {
+   private wasInIsland = false;
+   /** Last shape handed to Rust for the click-through test. */
+   private pushedRect = { x: -1, y: -1, w: -1, h: -1 };
+-  private tall = false;
++  private panel = { w: PANEL_W, h: PANEL_H };
+   private tallTimer: number | null = null;
+   /** A press on the island that may turn into a drag (see wireInput). */
+   private drag: { x: number; y: number; started: boolean; click: boolean } | null = null;
+@@ -907,19 +907,28 @@ export class Island {
+       if (on) view.sync();
+     }
+ 
+-    // The window grows before the Plata chat opens and shrinks once the island
+-    // has finished closing it, so the island never draws outside the window.
+-    const wantTall = State.mode === "expanded" && State.view === "plata";
+-    if (wantTall !== this.tall) {
+-      this.tall = wantTall;
++    // The window grows before the Plata chat opens (or is enlarged) and shrinks
++    // once the island has finished shrinking, so it never draws outside it.
++    const big = plataBigSize();
++    const want =
++      State.mode === "expanded" && State.view === "plata"
++        ? big
++          ? { w: Math.max(PANEL_W, big.w + 40), h: big.h + 24 }
++          : { w: PANEL_W, h: PANEL_H_TALL }
++        : { w: PANEL_W, h: PANEL_H };
++    if (want.w !== this.panel.w || want.h !== this.panel.h) {
+       if (this.tallTimer != null) window.clearTimeout(this.tallTimer);
+       this.tallTimer = null;
+-      if (wantTall) void Bridge.setTall(true);
+-      else
+-        this.tallTimer = window.setTimeout(() => {
+-          this.tallTimer = null;
+-          if (!this.tall) void Bridge.setTall(false);
+-        }, 450);
++      const apply = () => {
++        this.panel = want;
++        setPanelWidth(want.w);
++        const usual = want.w === PANEL_W && want.h === PANEL_H;
++        void Bridge.setPanel(usual ? 0 : want.w, usual ? 0 : want.h);
++        this.applyGeometry();
++      };
++      const growing = want.w >= this.panel.w && want.h >= this.panel.h;
++      if (growing) apply();
++      else this.tallTimer = window.setTimeout(apply, 450);
+     }
+ 
+     // The two chats (Claude and Plata) are the only views with a text field, so
+diff --git a/windows/src/views/icons.ts b/windows/src/views/icons.ts
+index 9dab524..ce18a09 100644
+--- a/windows/src/views/icons.ts
++++ b/windows/src/views/icons.ts
+@@ -2,6 +2,9 @@
+ // Drawn on a 24×24 grid so they read at the same optical size.
+ 
+ export const ICONS = {
++  // enlarge / shrink the Plata chat, stroke
++  expand: "M14 4h6v6M10 20H4v-6M20 4l-7 7M4 20l7-7",
++  collapse: "M20 4l-6 6M14 4v6h6M4 20l6-6M10 20v-6H4",
+   // microphone (voice typing), stroke
+   mic: "M12 3.5a2.8 2.8 0 0 0-2.8 2.8v5.4a2.8 2.8 0 0 0 5.6 0V6.3A2.8 2.8 0 0 0 12 3.5zM6.5 11.2a5.5 5.5 0 0 0 11 0M12 16.8v3.7",
+   // terminal prompt (hand a change to Claude Code), stroke
+diff --git a/windows/src/views/plata.ts b/windows/src/views/plata.ts
+index 60e25ff..b487a5e 100644
+--- a/windows/src/views/plata.ts
++++ b/windows/src/views/plata.ts
+@@ -16,6 +16,7 @@ import { ICONS } from "./icons";
+ import { Bridge, onEvent, type PlataAgentStatus } from "../core/bridge";
+ import { Sound } from "../core/sound";
+ import { State } from "../core/state";
++import { plataBigSize, setPlataBig } from "../core/layout";
+ import type { ViewHost } from "./views";
+ 
+ type Propuesta = {
+@@ -213,7 +214,7 @@ function hhmm(iso: string | null): string {
+   return d.toLocaleTimeString("es-AR", { hour: "2-digit", minute: "2-digit" });
+ }
+ 
+-export function buildPlata(): ViewHost {
++export function buildPlata(onSizeChange: () => void = () => {}): ViewHost {
+   let sesionId = newSession();
+   let sending = false;
+   let lastText = "";
+@@ -226,7 +227,33 @@ export function buildPlata(): ViewHost {
+   const dotEl = h("i", { class: "plata-dot" });
+   const statusText = h("span", { class: "plata-status-text", text: "Plata" });
+   const resetBtn = h("button", { class: "plata-link", text: "Nueva", title: "Empezar otra conversación" });
+-  const head = h("div", { class: "plata-head" }, dotEl, statusText, resetBtn);
++  const bigBtn = h("button", { class: "plata-icon-btn plata-big-btn", title: "Agrandar" }, svg(ICONS.expand, 14, { stroke: 1.8 }));
++  const head = h("div", { class: "plata-head" }, dotEl, statusText, resetBtn, bigBtn);
++
++  // ⤢: the chat takes most of the screen, and back. The size comes from the
++  // display the island is on, so it fits on a laptop as well as on 1080p.
++  function setBig(on: boolean) {
++    if (on) {
++      const w = Math.min(1100, Math.max(640, window.screen.availWidth - 120));
++      const h = Math.min(900, Math.max(440, window.screen.availHeight - 120));
++      setPlataBig({ w, h });
++    } else {
++      setPlataBig(null);
++    }
++    clear(bigBtn);
++    bigBtn.append(svg(on ? ICONS.collapse : ICONS.expand, 14, { stroke: 1.8 }));
++    bigBtn.title = on ? "Achicar" : "Agrandar";
++    el.classList.toggle("plata-is-big", on);
++    try {
++      localStorage.setItem("plata-big", on ? "1" : "0");
++    } catch {
++      // A preference, not data: nothing to do if storage is unavailable.
++    }
++    onSizeChange();
++    State.notify();
++    scroll();
++  }
++  bigBtn.addEventListener("click", () => setBig(plataBigSize() === null));
+ 
+   const log = h("div", { class: "chat-log plata-log" });
+   const input = h("input", {
+@@ -254,6 +281,11 @@ export function buildPlata(): ViewHost {
+   );
+   const card = el.querySelector(".card") as HTMLElement;
+   card.style.setProperty("--wash", "rgba(255,158,27,0.30)");
++  try {
++    if (localStorage.getItem("plata-big") === "1") window.setTimeout(() => setBig(true), 0);
++  } catch {
++    // Starts normal.
++  }
+ 
+   function placeholder(): string {
+     return pending.length ? "Enter manda: compará con Plata…" : lastText ? "Seguí…" : "Preguntale o pedile algo a Plata…";
+diff --git a/windows/src/views/views.ts b/windows/src/views/views.ts
+index 791ea8a..2cee61f 100644
+--- a/windows/src/views/views.ts
++++ b/windows/src/views/views.ts
+@@ -507,7 +507,7 @@ export function buildViews(
+   map.set("note", buildNote());
+   map.set("settings", buildSettings(actions));
+   map.set("prompt", buildPrompt(onChatHeightChange));
+-  map.set("plata", buildPlata());
++  map.set("plata", buildPlata(onChatHeightChange));
+   map.set("upload", buildUpload());
+   map.set("uploading", buildUploading());
+   map.set("choose", buildChoose(actions));
 -- 
 2.53.0.windows.2
 
