@@ -1,7 +1,7 @@
 From 680c133ae9c577ce390172fe712e22debc666756 Mon Sep 17 00:00:00 2001
 From: Lucas Gigli <giglilangonelucas@gmail.com>
 Date: Wed, 30 Sep 2026 20:56:49 +0000
-Subject: [PATCH 01/11] Pills de Plata y Railway
+Subject: [PATCH 01/13] Pills de Plata y Railway
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -688,7 +688,7 @@ index b8ad73c..1e394d3 100644
 From 300ffc9f910104c945e4bac87f07652ff76cdef8 Mon Sep 17 00:00:00 2001
 From: Lucas <lucasgigli3@gmail.com>
 Date: Wed, 30 Sep 2026 19:26:42 -0300
-Subject: [PATCH 02/11] Isla movible y chat con el agente de Plata
+Subject: [PATCH 02/13] Isla movible y chat con el agente de Plata
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -2050,7 +2050,7 @@ index ac0ac7b..b0aea0d 100644
 From bc47f21c9aebad91c668224113e757e8621898c3 Mon Sep 17 00:00:00 2001
 From: Lucas <lucasgigli3@gmail.com>
 Date: Wed, 30 Sep 2026 19:41:15 -0300
-Subject: [PATCH 03/11] Plata en la isla: tarjetas, pedidos a Claude Code y voz
+Subject: [PATCH 03/13] Plata en la isla: tarjetas, pedidos a Claude Code y voz
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -2648,7 +2648,7 @@ index 6c6bb30..668ec54 100644
 From a651a03795654c762b61b66dd6906f0a9d326a3b Mon Sep 17 00:00:00 2001
 From: Lucas <lucasgigli3@gmail.com>
 Date: Wed, 30 Sep 2026 20:58:44 -0300
-Subject: [PATCH 04/11] El agente de Plata se prende solo
+Subject: [PATCH 04/13] El agente de Plata se prende solo
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -2837,7 +2837,7 @@ index 668ec54..6de96d2 100644
 From 6b35f453bdc19dd5a88bfaf5147cac5d4aadd88f Mon Sep 17 00:00:00 2001
 From: Lucas <lucasgigli3@gmail.com>
 Date: Wed, 30 Sep 2026 21:19:44 -0300
-Subject: [PATCH 05/11] La isla se ancla en cualquier monitor
+Subject: [PATCH 05/13] La isla se ancla en cualquier monitor
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -2995,7 +2995,7 @@ index 96367bd..4a31905 100644
 From 10df29a346632a6204e9d3e29485cd1ca4f1449d Mon Sep 17 00:00:00 2001
 From: Lucas <lucasgigli3@gmail.com>
 Date: Wed, 30 Sep 2026 22:32:46 -0300
-Subject: [PATCH 06/11] Plata tab: attach a card statement (drop a
+Subject: [PATCH 06/13] Plata tab: attach a card statement (drop a
  PDF/screenshot or paste it) to reconcile
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -3683,7 +3683,7 @@ index b0aea0d..791ea8a 100644
 From cc3b3a857b5ae6eb024de26bd9e1b2493dbc2e65 Mon Sep 17 00:00:00 2001
 From: Lucas <lucasgigli3@gmail.com>
 Date: Wed, 30 Sep 2026 22:56:17 -0300
-Subject: [PATCH 07/11] =?UTF-8?q?Pesta=C3=B1a=20Plata:=20agrandar=20el=20c?=
+Subject: [PATCH 07/13] =?UTF-8?q?Pesta=C3=B1a=20Plata:=20agrandar=20el=20c?=
  =?UTF-8?q?hat=20e=20historial=20local=20de=20la=20conversaci=C3=B3n?=
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -4099,7 +4099,7 @@ index 791ea8a..2cee61f 100644
 From 05b9ad0894d7422a3123551b89b309777eda2aba Mon Sep 17 00:00:00 2001
 From: Lucas <lucasgigli3@gmail.com>
 Date: Wed, 30 Sep 2026 23:13:01 -0300
-Subject: [PATCH 08/11] =?UTF-8?q?Pesta=C3=B1a=20Plata:=20el=20bot=C3=B3n?=
+Subject: [PATCH 08/13] =?UTF-8?q?Pesta=C3=B1a=20Plata:=20el=20bot=C3=B3n?=
  =?UTF-8?q?=20de=20agrandar=20con=20texto=20y=20en=20naranja?=
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -4177,7 +4177,7 @@ index b487a5e..e983567 100644
 From dc4ab4cf9f001e33e42b79fdfafc937da0cce072 Mon Sep 17 00:00:00 2001
 From: Lucas <lucasgigli3@gmail.com>
 Date: Wed, 30 Sep 2026 23:17:23 -0300
-Subject: [PATCH 09/11] =?UTF-8?q?Bot=C3=B3n=20en=20el=20encabezado=20de=20?=
+Subject: [PATCH 09/13] =?UTF-8?q?Bot=C3=B3n=20en=20el=20encabezado=20de=20?=
  =?UTF-8?q?la=20isla:=20abre=20el=20chat=20de=20Plata=20en=20grande?=
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -4279,7 +4279,7 @@ index 2cee61f..416788e 100644
 From d168c3b1df9f0d0e0a178a2bec6ddec99f877c28 Mon Sep 17 00:00:00 2001
 From: Lucas <lucasgigli3@gmail.com>
 Date: Thu, 1 Oct 2026 21:31:50 -0300
-Subject: [PATCH 10/11] =?UTF-8?q?Isla=20m=C3=A1s=20fluida:=20ventana=20de?=
+Subject: [PATCH 10/13] =?UTF-8?q?Isla=20m=C3=A1s=20fluida:=20ventana=20de?=
  =?UTF-8?q?=20tama=C3=B1o=20fijo,=20anclaje=20y=20deslizamiento=20al=20sol?=
  =?UTF-8?q?tar?=
 MIME-Version: 1.0
@@ -5586,7 +5586,7 @@ index 416788e..debb686 100644
 From 42a905cac32e14abd26643bf18e8ae15e8d46deb Mon Sep 17 00:00:00 2001
 From: Lucas <lucasgigli3@gmail.com>
 Date: Thu, 1 Oct 2026 21:32:36 -0300
-Subject: [PATCH 11/11] =?UTF-8?q?Pesta=C3=B1a=20Plata:=20conciliar=20un=20?=
+Subject: [PATCH 11/13] =?UTF-8?q?Pesta=C3=B1a=20Plata:=20conciliar=20un=20?=
  =?UTF-8?q?resumen=20con=20Claude=20Code,=20con=20el=20plan=20y=20no=20la?=
  =?UTF-8?q?=20API?=
 MIME-Version: 1.0
@@ -7221,6 +7221,472 @@ index 851e6da..53b99a0 100644
      dropFiles(paths: string[]) {
        void addFiles(paths);
      },
+-- 
+2.53.0.windows.2
+
+
+From 71fb67002d30c12e7808bbb1548cbe9eec850477 Mon Sep 17 00:00:00 2001
+From: Lucas <lucasgigli3@gmail.com>
+Date: Thu, 1 Oct 2026 22:01:26 -0300
+Subject: [PATCH 12/13] =?UTF-8?q?Pesta=C3=B1a=20Plata:=20sin=20sesi=C3=B3n?=
+ =?UTF-8?q?=20de=20Claude=20Code,=20Reintentar=20en=20vez=20de=20mand?=
+ =?UTF-8?q?=C3=A1rselo=20al=20agente?=
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Mandárselo al agente cerraba un ciclo: el agente lo delegaba de vuelta a
+Claude Code y caía en el mismo error (US$ 0,09 en la prueba de Lucas).
+Ahora: Iniciar sesión + Ya inicié sesión · Reintentar; la sugerencia del
+agente avisa que falta la sesión; y lo que sí va al agente lleva el aviso
+de no delegar.
+
+Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+---
+ windows/src/views/plata.ts | 23 +++++++++++++++++++++--
+ 1 file changed, 21 insertions(+), 2 deletions(-)
+
+diff --git a/windows/src/views/plata.ts b/windows/src/views/plata.ts
+index 53b99a0..fde7b29 100644
+--- a/windows/src/views/plata.ts
++++ b/windows/src/views/plata.ts
+@@ -409,9 +409,14 @@ export function plataSetBig(on: boolean): void {
+   setBigFromOutside?.(on);
+ }
+ 
++/** Prefix for a request Claude Code could not do: the agent does it itself. */
++const NO_DELEGAR = "Hacelo vos, sin delegar a Claude Code (no pudo).";
++
+ export function buildPlata(onSizeChange: () => void = () => {}): ViewHost {
+   let sesionId = newSession();
+   let sending = false;
++  /** The last Claude Code run failed for lack of a login. */
++  let ccNeedsLogin = false;
+   let lastText = "";
+   let status: PlataAgentStatus | null = null;
+   // Per turn: the reply paragraph being filled and the running tools line.
+@@ -696,13 +701,23 @@ export function buildPlata(onSizeChange: () => void = () => {}): ViewHost {
+ 
+   /** The error, and what can be done instead: the agent, or logging in. */
+   function ccFailed(texto: string, text: string, atts: Attachment[], login = false) {
++    ccNeedsLogin = login;
+     const box = h("div", { class: "plata-error plata-cc-error" }, h("span", { text: texto }));
+     if (login) {
++      // No "send it to the agent" here: the agent hands it back to Claude Code
++      // (delegar), so it would only spend API to land on this same error.
++      const retry = ccButton("Ya inicié sesión · Reintentar", false, () => {
++        retry.disabled = true;
++        void delegate(text, atts, { bubble: false });
++      });
+       box.append(
+         ccButton("Iniciar sesión en Claude Code", true, () => {
+           Bridge.plataClaudeLogin().catch((e) => note(errText(e), "plata-error"));
+         }),
++        retry,
+       );
++      row(box);
++      return;
+     }
+     const toAgent = ccButton(
+       "Mandárselo a Plata",
+@@ -804,6 +819,7 @@ export function buildPlata(onSizeChange: () => void = () => {}): ViewHost {
+       return;
+     }
+     // fin: the line stays, as the record of what ran and how long it took.
++    ccNeedsLogin = false;
+     clear(box);
+     box.classList.add("done");
+     box.append(
+@@ -878,7 +894,9 @@ export function buildPlata(onSizeChange: () => void = () => {}): ViewHost {
+           .catch((e) => note(errText(e), "plata-error"));
+         return;
+       }
+-      if (lastAtts?.atts.length) {
++      if (ccNeedsLogin) {
++        note("Primero iniciá sesión en Claude Code (botón de arriba) y después tocá Reintentar.", "plata-error");
++      } else if (lastAtts?.atts.length) {
+         void delegate(lastAtts.text, lastAtts.atts, { bubble: false });
+       } else {
+         note("Soltá el resumen o pegalo acá: lo hago con Claude Code.");
+@@ -970,7 +988,8 @@ export function buildPlata(onSizeChange: () => void = () => {}): ViewHost {
+     const query = text.trim() || (atts.length ? DEFAULT_ASK : "");
+     if (!query || sending) return;
+     if (atts.length) lastAtts = { text, atts };
+-    const texto = composeText(query, atts);
++    // Sent to the agent after Claude Code could not: it must not hand it back.
++    const texto = composeText(opts.toAgent ? `${NO_DELEGAR} ${query}` : query, atts);
+     if (texto.length > MAX_TEXT) {
+       note(
+         `Lo pegado es demasiado largo para el agente (${ars0.format(texto.length)} caracteres; hasta ${ars0.format(MAX_TEXT)}). ` +
+-- 
+2.53.0.windows.2
+
+
+From fcb9a85a1600172b861b74e8260577e1017d50dd Mon Sep 17 00:00:00 2001
+From: Lucas <lucasgigli3@gmail.com>
+Date: Thu, 1 Oct 2026 22:07:16 -0300
+Subject: [PATCH 13/13] =?UTF-8?q?Pesta=C3=B1a=20Plata:=20las=20respuestas?=
+ =?UTF-8?q?=20del=20agente=20con=20formato=20(tablas,=20negritas,=20listas?=
+ =?UTF-8?q?)?=
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+El agente contesta en Markdown y la isla lo mostraba como texto plano, con
+los | y ** a la vista. markdown.ts lo dibuja nodo por nodo (solo
+textContent: el texto viene del modelo y de resúmenes del banco): tablas con
+números alineados y fila de total, listas, títulos y la fuente como nota.
+
+Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+---
+ windows/src/style.css         | 124 ++++++++++++++++++++++++
+ windows/src/views/markdown.ts | 177 ++++++++++++++++++++++++++++++++++
+ windows/src/views/plata.ts    |   9 +-
+ 3 files changed, 308 insertions(+), 2 deletions(-)
+ create mode 100644 windows/src/views/markdown.ts
+
+diff --git a/windows/src/style.css b/windows/src/style.css
+index 8096f96..52e41ff 100644
+--- a/windows/src/style.css
++++ b/windows/src/style.css
+@@ -2021,3 +2021,127 @@ input[type="range"]::-webkit-slider-thumb {
+ .plata-cc-error {
+   row-gap: 6px;
+ }
++
++/* ── Plata: the agent's Markdown, drawn ─────────────────────────────────── */
++.reply.md {
++  white-space: normal;
++  line-height: 1.5;
++}
++
++.reply.md > * + * {
++  margin-top: 8px;
++}
++
++.reply.md p,
++.reply.md ul,
++.reply.md ol,
++.reply.md h3,
++.reply.md h4,
++.reply.md h5 {
++  margin: 0;
++}
++
++.reply.md > * + p,
++.reply.md > * + ul,
++.reply.md > * + ol {
++  margin-top: 8px;
++}
++
++.reply.md strong {
++  color: #eef0f3;
++  font-weight: 600;
++}
++
++.reply.md em {
++  color: #c9cdd4;
++}
++
++.reply.md code {
++  font: 11.5px "Cascadia Mono", Consolas, monospace;
++  background: rgba(255, 255, 255, 0.06);
++  padding: 1px 5px;
++  border-radius: 5px;
++}
++
++.reply.md h3,
++.reply.md h4,
++.reply.md h5 {
++  color: #eef0f3;
++  font: 600 13px var(--font);
++  margin-top: 12px;
++}
++
++.reply.md h3 {
++  font-size: 14px;
++}
++
++.reply.md ul,
++.reply.md ol {
++  padding-left: 18px;
++}
++
++.reply.md li + li {
++  margin-top: 3px;
++}
++
++.reply.md li::marker {
++  color: #ff9e1b;
++}
++
++.reply.md hr {
++  border: 0;
++  border-top: 1px solid rgba(255, 255, 255, 0.08);
++}
++
++.reply.md .md-table {
++  overflow-x: auto;
++  border: 1px solid rgba(255, 255, 255, 0.08);
++  border-radius: 12px;
++  background: rgba(255, 255, 255, 0.025);
++}
++
++.reply.md table {
++  width: 100%;
++  border-collapse: collapse;
++  font-size: 12.5px;
++}
++
++.reply.md th {
++  text-align: left;
++  font: 500 10.5px var(--font);
++  letter-spacing: 0.06em;
++  text-transform: uppercase;
++  color: #7d828c;
++  padding: 8px 12px 6px;
++  white-space: nowrap;
++}
++
++.reply.md td {
++  padding: 7px 12px;
++  border-top: 1px solid rgba(255, 255, 255, 0.06);
++  color: #c9cdd4;
++  vertical-align: top;
++}
++
++.reply.md .num {
++  text-align: right;
++  font-variant-numeric: tabular-nums;
++  white-space: nowrap;
++}
++
++.reply.md .mid {
++  text-align: center;
++}
++
++.reply.md tr.total td {
++  color: #eef0f3;
++  font-weight: 600;
++  border-top-color: rgba(255, 158, 27, 0.35);
++}
++
++.reply.md .md-source {
++  font-size: 11px;
++  color: #6f747d;
++  padding-top: 6px;
++  border-top: 1px solid rgba(255, 255, 255, 0.06);
++}
+diff --git a/windows/src/views/markdown.ts b/windows/src/views/markdown.ts
+new file mode 100644
+index 0000000..ce4fffb
+--- /dev/null
++++ b/windows/src/views/markdown.ts
+@@ -0,0 +1,177 @@
++// The agent answers in Markdown (tables, bold, lists). This draws the subset it
++// uses as real elements. It builds the DOM node by node and only ever sets
++// textContent: the text comes from the model and from bank statements, so it
++// must never reach innerHTML.
++
++import { h } from "./dom";
++
++type Block =
++  | { kind: "p"; lines: string[] }
++  | { kind: "h"; level: number; text: string }
++  | { kind: "ul" | "ol"; items: string[] }
++  | { kind: "table"; head: string[]; rows: string[][]; align: ("l" | "r" | "c")[] }
++  | { kind: "hr" }
++  | { kind: "source"; text: string };
++
++const TABLE_SEP = /^\s*\|?\s*:?-{2,}:?\s*(\|\s*:?-{2,}:?\s*)*\|?\s*$/;
++const BULLET = /^\s*[-*•]\s+(.*)$/;
++const NUMBERED = /^\s*\d+[.)]\s+(.*)$/;
++// A money or plain number cell: right-aligned, tabular figures.
++const NUMERIC = /^[\s(+−-]*(US\$|U\$S|\$|USD|ARS)?\s*[−-]?[\d.,]+(\s*(%|USD|ARS))?\)?\s*$/;
++
++function cells(line: string): string[] {
++  let s = line.trim();
++  if (s.startsWith("|")) s = s.slice(1);
++  if (s.endsWith("|")) s = s.slice(0, -1);
++  return s.split("|").map((c) => c.trim());
++}
++
++function parse(text: string): Block[] {
++  const lines = text.replace(/\r\n?/g, "\n").split("\n");
++  const blocks: Block[] = [];
++  let para: string[] = [];
++  const flush = () => {
++    if (para.length) blocks.push({ kind: "p", lines: para });
++    para = [];
++  };
++
++  for (let i = 0; i < lines.length; i++) {
++    const line = lines[i];
++    const t = line.trim();
++    if (!t) {
++      flush();
++      continue;
++    }
++    // Table: a header row followed by its |---| line.
++    if (t.includes("|") && i + 1 < lines.length && TABLE_SEP.test(lines[i + 1])) {
++      flush();
++      const head = cells(t);
++      const align = cells(lines[i + 1]).map((c) => (c.endsWith(":") ? (c.startsWith(":") ? "c" : "r") : "l") as "l" | "r" | "c");
++      const rows: string[][] = [];
++      i += 2;
++      while (i < lines.length && lines[i].trim().includes("|")) {
++        rows.push(cells(lines[i]));
++        i++;
++      }
++      i--;
++      blocks.push({ kind: "table", head, rows, align });
++      continue;
++    }
++    const heading = /^(#{1,6})\s+(.*)$/.exec(t);
++    if (heading) {
++      flush();
++      blocks.push({ kind: "h", level: Math.min(heading[1].length, 3), text: heading[2] });
++      continue;
++    }
++    if (/^(-{3,}|\*{3,}|_{3,})$/.test(t)) {
++      flush();
++      blocks.push({ kind: "hr" });
++      continue;
++    }
++    // The agent closes every answer with its sources: a footnote, not prose.
++    if (/^\*{0,2}(Fuentes?|Fuente)\*{0,2}\s*:/i.test(t)) {
++      flush();
++      blocks.push({ kind: "source", text: t.replace(/^\*{0,2}(Fuentes?)\*{0,2}\s*:\s*/i, "") });
++      continue;
++    }
++    const bullet = BULLET.exec(line);
++    const numbered = bullet ? null : NUMBERED.exec(line);
++    if (bullet || numbered) {
++      flush();
++      const kind = bullet ? "ul" : "ol";
++      const last = blocks[blocks.length - 1];
++      const item = (bullet ?? numbered)![1];
++      if (last && last.kind === kind) last.items.push(item);
++      else blocks.push({ kind, items: [item] });
++      continue;
++    }
++    // A line that continues a list item (indented) stays with it.
++    const last = blocks[blocks.length - 1];
++    if (!para.length && last && (last.kind === "ul" || last.kind === "ol") && /^\s{2,}/.test(line)) {
++      last.items[last.items.length - 1] += " " + t;
++      continue;
++    }
++    para.push(t);
++  }
++  flush();
++  return blocks;
++}
++
++/** Bold, italics and code inside a line, as nodes. */
++function inline(text: string): Node[] {
++  const out: Node[] = [];
++  const re = /(\*\*[^*]+\*\*|`[^`]+`|(?<![\w*])\*[^*\s][^*]*\*(?![\w*])|(?<![\w_])_[^_\s][^_]*_(?![\w_]))/g;
++  let at = 0;
++  for (const m of text.matchAll(re)) {
++    if (m.index! > at) out.push(document.createTextNode(text.slice(at, m.index)));
++    const tok = m[0];
++    if (tok.startsWith("**")) out.push(h("strong", { text: tok.slice(2, -2) }));
++    else if (tok.startsWith("`")) out.push(h("code", { text: tok.slice(1, -1) }));
++    else out.push(h("em", { text: tok.slice(1, -1) }));
++    at = m.index! + tok.length;
++  }
++  if (at < text.length) out.push(document.createTextNode(text.slice(at)));
++  return out;
++}
++
++function withInline<T extends HTMLElement>(el: T, text: string): T {
++  el.append(...inline(text));
++  return el;
++}
++
++/** The agent's Markdown as elements, ready to put in a `.md` container. */
++export function renderMarkdown(text: string): DocumentFragment {
++  const frag = document.createDocumentFragment();
++  for (const b of parse(text)) {
++    switch (b.kind) {
++      case "p": {
++        const p = h("p");
++        b.lines.forEach((l, i) => {
++          if (i) p.append(h("br"));
++          p.append(...inline(l));
++        });
++        frag.append(p);
++        break;
++      }
++      case "h":
++        frag.append(withInline(h(b.level === 1 ? "h3" : b.level === 2 ? "h4" : "h5"), b.text));
++        break;
++      case "ul":
++      case "ol": {
++        const list = h(b.kind);
++        for (const item of b.items) list.append(withInline(h("li"), item));
++        frag.append(list);
++        break;
++      }
++      case "hr":
++        frag.append(h("hr"));
++        break;
++      case "source":
++        frag.append(withInline(h("p", { class: "md-source" }, "Fuente · "), b.text));
++        break;
++      case "table": {
++        const numericCol = b.head.map((_, c) => {
++          const vals = b.rows.map((r) => r[c] ?? "").filter((v) => v && v !== "—" && v !== "-");
++          return vals.length > 0 && vals.every((v) => NUMERIC.test(v.replace(/\*\*/g, "")));
++        });
++        const cls = (c: number) => (b.align[c] === "r" || numericCol[c] ? "num" : b.align[c] === "c" ? "mid" : "");
++        const table = h("table");
++        const tr = h("tr");
++        b.head.forEach((cell, c) => tr.append(withInline(h("th", { class: cls(c) }), cell)));
++        table.append(h("thead", {}, tr));
++        const body = h("tbody");
++        for (const row of b.rows) {
++          const r = h("tr");
++          // A "Total" row reads as the result of the table.
++          if (/^\**\s*total/i.test(row[0] ?? "")) r.className = "total";
++          b.head.forEach((_, c) => r.append(withInline(h("td", { class: cls(c) }), row[c] ?? "")));
++          body.append(r);
++        }
++        table.append(body);
++        frag.append(h("div", { class: "md-table" }, table));
++        break;
++      }
++    }
++  }
++  return frag;
++}
+diff --git a/windows/src/views/plata.ts b/windows/src/views/plata.ts
+index fde7b29..09465b3 100644
+--- a/windows/src/views/plata.ts
++++ b/windows/src/views/plata.ts
+@@ -23,6 +23,7 @@ import { Bridge, onEvent, type PlataAgentStatus } from "../core/bridge";
+ import { Sound } from "../core/sound";
+ import { State } from "../core/state";
+ import { plataBigSize, setPlataBig } from "../core/layout";
++import { renderMarkdown } from "./markdown";
+ import type { ViewHost } from "./views";
+ 
+ type Propuesta = {
+@@ -631,8 +632,12 @@ export function buildPlata(onSizeChange: () => void = () => {}): ViewHost {
+       case "texto": {
+         typing(false);
+         toolsEl = null;
+-        if (!replyEl) replyEl = row(h("div", { class: "reply" })).firstElementChild as HTMLElement;
+-        replyEl.textContent = plain(`${replyEl.textContent ? replyEl.textContent + "\n\n" : ""}${ev.texto}`);
++        if (!replyEl) replyEl = row(h("div", { class: "reply md" })).firstElementChild as HTMLElement;
++        // Markdown, drawn: tables, bold, lists. The raw text is kept to append to.
++        const md = `${replyEl.dataset.raw ? replyEl.dataset.raw + "\n\n" : ""}${ev.texto}`;
++        replyEl.dataset.raw = md;
++        clear(replyEl);
++        replyEl.append(renderMarkdown(md));
+         scroll();
+         typing(sending);
+         break;
 -- 
 2.53.0.windows.2
 
