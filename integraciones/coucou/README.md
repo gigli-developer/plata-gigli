@@ -104,7 +104,7 @@ poll_railway ── cada 30 s ────────────────�
 - Fuentes versionadas en este repo:
   - `supabase/functions/coucou-health/index.ts`: se deploya con el MCP de Supabase, `verify_jwt=false`.
   - `supabase/sql/coucou_health.sql`: se aplica con `execute_sql`.
-- Del lado de Coucou, todo lo propio está en `plata.patch` (doce commits):
+- Del lado de Coucou, todo lo propio está en `plata.patch` (once commits):
   - `windows/src-tauri/src/integrations.rs`: `poll_plata` y `poll_railway`.
   - `windows/src/views/integrations.ts`: las tarjetas.
   - `state.ts`, `settings/main.ts`, `secrets.rs`, `settings.rs`, `island.ts`: el registro de las dos pills.
