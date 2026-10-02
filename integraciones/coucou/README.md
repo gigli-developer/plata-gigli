@@ -79,6 +79,8 @@ La pestaña de la moneda abre un chat con el agente de Plata del repo `agentes`:
 - **Voz (micrófono):** activa el dictado de Windows (Win+H) sobre el campo del chat. Dictás, y el texto queda escrito para enviarlo. Usa el idioma de dictado de Windows.
 - **Propuestas:** la tarjeta trae **Aprobar** y **Rechazar**. La respuesta viaja como el mensaje siguiente ("Sí, aprobá la propuesta 42."), que es lo único que la base acepta: rechaza una confirmación hecha en el mismo turno que la propuso. La isla nunca escribe en Supabase.
 - **⤢ Agrandar:** el botón naranja del encabezado de la isla (al lado del engranaje) abre el chat de Plata en grande desde cualquier vista; adentro del chat, el botón "Agrandar" lo lleva a casi toda la pantalla (hasta 1100×900, según el monitor) y lo vuelve a achicar. Se recuerda.
+- **Conciliar con Claude Code:** soltar un PDF/captura o pegar un resumen en la pestaña Plata lo concilia Claude Code en segundo plano (con la suscripción, no la API), con la skill `conciliar-resumen` y `npm run conciliar:leer` del repo agentes. El progreso y el resultado (totales, diferencias, Abrir informe, Cargar faltantes con Plata) aparecen en el chat. Requiere iniciar sesión una vez en el Claude Code de la app de escritorio (la isla muestra el botón). El agente también puede sugerirlo con el evento `delegar`.
+- **Fluidez:** mientras la isla está visible la ventana queda en su tamaño máximo y todos los cambios de tamaño son animaciones dentro de la página; al soltarla se desliza hasta el ancla.
 - **Historial local:** cada mensaje y cada respuesta del agente quedan en `%LOCALAPPDATA%\Coucou\plata-chat.log` (solo en tu PC; se reinicia al pasar 5 MB), para poder revisar un turno que salió mal: el agente guarda las conversaciones solo en memoria.
 - **Nueva** arranca otra conversación. Cada una vive en el agente hasta 30 minutos sin mensajes.
 - Mientras el chat está abierto, la ventana de la isla crece de 720×320 a 720×480. Es transparente y deja pasar los clics fuera de la isla, pero toma el mouse mientras hay un botón apretado encima (para poder soltar archivos), así que vuelve a su tamaño apenas se cierra el chat.
@@ -102,7 +104,7 @@ poll_railway ── cada 30 s ────────────────�
 - Fuentes versionadas en este repo:
   - `supabase/functions/coucou-health/index.ts`: se deploya con el MCP de Supabase, `verify_jwt=false`.
   - `supabase/sql/coucou_health.sql`: se aplica con `execute_sql`.
-- Del lado de Coucou, todo lo propio está en `plata.patch` (nueve commits):
+- Del lado de Coucou, todo lo propio está en `plata.patch` (doce commits):
   - `windows/src-tauri/src/integrations.rs`: `poll_plata` y `poll_railway`.
   - `windows/src/views/integrations.ts`: las tarjetas.
   - `state.ts`, `settings/main.ts`, `secrets.rs`, `settings.rs`, `island.ts`: el registro de las dos pills.

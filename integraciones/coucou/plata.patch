@@ -1,7 +1,7 @@
 From 680c133ae9c577ce390172fe712e22debc666756 Mon Sep 17 00:00:00 2001
 From: Lucas Gigli <giglilangonelucas@gmail.com>
 Date: Wed, 30 Sep 2026 20:56:49 +0000
-Subject: [PATCH 1/9] Pills de Plata y Railway
+Subject: [PATCH 01/11] Pills de Plata y Railway
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -688,7 +688,7 @@ index b8ad73c..1e394d3 100644
 From 300ffc9f910104c945e4bac87f07652ff76cdef8 Mon Sep 17 00:00:00 2001
 From: Lucas <lucasgigli3@gmail.com>
 Date: Wed, 30 Sep 2026 19:26:42 -0300
-Subject: [PATCH 2/9] Isla movible y chat con el agente de Plata
+Subject: [PATCH 02/11] Isla movible y chat con el agente de Plata
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -2050,7 +2050,7 @@ index ac0ac7b..b0aea0d 100644
 From bc47f21c9aebad91c668224113e757e8621898c3 Mon Sep 17 00:00:00 2001
 From: Lucas <lucasgigli3@gmail.com>
 Date: Wed, 30 Sep 2026 19:41:15 -0300
-Subject: [PATCH 3/9] Plata en la isla: tarjetas, pedidos a Claude Code y voz
+Subject: [PATCH 03/11] Plata en la isla: tarjetas, pedidos a Claude Code y voz
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -2648,7 +2648,7 @@ index 6c6bb30..668ec54 100644
 From a651a03795654c762b61b66dd6906f0a9d326a3b Mon Sep 17 00:00:00 2001
 From: Lucas <lucasgigli3@gmail.com>
 Date: Wed, 30 Sep 2026 20:58:44 -0300
-Subject: [PATCH 4/9] El agente de Plata se prende solo
+Subject: [PATCH 04/11] El agente de Plata se prende solo
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -2837,7 +2837,7 @@ index 668ec54..6de96d2 100644
 From 6b35f453bdc19dd5a88bfaf5147cac5d4aadd88f Mon Sep 17 00:00:00 2001
 From: Lucas <lucasgigli3@gmail.com>
 Date: Wed, 30 Sep 2026 21:19:44 -0300
-Subject: [PATCH 5/9] La isla se ancla en cualquier monitor
+Subject: [PATCH 05/11] La isla se ancla en cualquier monitor
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -2995,8 +2995,8 @@ index 96367bd..4a31905 100644
 From 10df29a346632a6204e9d3e29485cd1ca4f1449d Mon Sep 17 00:00:00 2001
 From: Lucas <lucasgigli3@gmail.com>
 Date: Wed, 30 Sep 2026 22:32:46 -0300
-Subject: [PATCH 6/9] Plata tab: attach a card statement (drop a PDF/screenshot
- or paste it) to reconcile
+Subject: [PATCH 06/11] Plata tab: attach a card statement (drop a
+ PDF/screenshot or paste it) to reconcile
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -3683,8 +3683,8 @@ index b0aea0d..791ea8a 100644
 From cc3b3a857b5ae6eb024de26bd9e1b2493dbc2e65 Mon Sep 17 00:00:00 2001
 From: Lucas <lucasgigli3@gmail.com>
 Date: Wed, 30 Sep 2026 22:56:17 -0300
-Subject: [PATCH 7/9] =?UTF-8?q?Pesta=C3=B1a=20Plata:=20agrandar=20el=20cha?=
- =?UTF-8?q?t=20e=20historial=20local=20de=20la=20conversaci=C3=B3n?=
+Subject: [PATCH 07/11] =?UTF-8?q?Pesta=C3=B1a=20Plata:=20agrandar=20el=20c?=
+ =?UTF-8?q?hat=20e=20historial=20local=20de=20la=20conversaci=C3=B3n?=
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -4099,8 +4099,8 @@ index 791ea8a..2cee61f 100644
 From 05b9ad0894d7422a3123551b89b309777eda2aba Mon Sep 17 00:00:00 2001
 From: Lucas <lucasgigli3@gmail.com>
 Date: Wed, 30 Sep 2026 23:13:01 -0300
-Subject: [PATCH 8/9] =?UTF-8?q?Pesta=C3=B1a=20Plata:=20el=20bot=C3=B3n=20d?=
- =?UTF-8?q?e=20agrandar=20con=20texto=20y=20en=20naranja?=
+Subject: [PATCH 08/11] =?UTF-8?q?Pesta=C3=B1a=20Plata:=20el=20bot=C3=B3n?=
+ =?UTF-8?q?=20de=20agrandar=20con=20texto=20y=20en=20naranja?=
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -4177,8 +4177,8 @@ index b487a5e..e983567 100644
 From dc4ab4cf9f001e33e42b79fdfafc937da0cce072 Mon Sep 17 00:00:00 2001
 From: Lucas <lucasgigli3@gmail.com>
 Date: Wed, 30 Sep 2026 23:17:23 -0300
-Subject: [PATCH 9/9] =?UTF-8?q?Bot=C3=B3n=20en=20el=20encabezado=20de=20la?=
- =?UTF-8?q?=20isla:=20abre=20el=20chat=20de=20Plata=20en=20grande?=
+Subject: [PATCH 09/11] =?UTF-8?q?Bot=C3=B3n=20en=20el=20encabezado=20de=20?=
+ =?UTF-8?q?la=20isla:=20abre=20el=20chat=20de=20Plata=20en=20grande?=
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -4272,6 +4272,2955 @@ index 2cee61f..416788e 100644
    );
  
    return {
+-- 
+2.53.0.windows.2
+
+
+From d168c3b1df9f0d0e0a178a2bec6ddec99f877c28 Mon Sep 17 00:00:00 2001
+From: Lucas <lucasgigli3@gmail.com>
+Date: Thu, 1 Oct 2026 21:31:50 -0300
+Subject: [PATCH 10/11] =?UTF-8?q?Isla=20m=C3=A1s=20fluida:=20ventana=20de?=
+ =?UTF-8?q?=20tama=C3=B1o=20fijo,=20anclaje=20y=20deslizamiento=20al=20sol?=
+ =?UTF-8?q?tar?=
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+- La ventana toma una sola vez el tamaño del chat de Plata en grande
+  (1140x924 lógicos, recortado al área de trabajo) mientras la isla está
+  visible; solo vuelve a la franja al ocultarse. Todos los cambios de
+  tamaño (compacta, expandida, Plata normal/alto/en grande) son en la
+  página, sin redimensionar la ventana del SO.
+- Rust calcula la ubicación (place) y le manda a la página el ancla de la
+  isla dentro de la ventana (island-anchor); la isla crece desde el ancla
+  y no salta. Mover+redimensionar en un solo SetWindowPos.
+- Arrastre a la frecuencia del monitor (DwmFlush), escala por iteración;
+  al soltar la isla se desliza 180 ms (ease-out) hasta su ancla.
+- Ya no hay un segundo "display layout changed" después de soltar en
+  otro monitor.
+- Con la ventana más grande, el botón apretado solo toma el mouse cerca de
+  la isla (zona de 720x320 como antes), para no robar arrastres de
+  archivos a otras apps.
+- Contenido dispuesto al tamaño final y fijo en el ancla (sin reflow por
+  cuadro al crecer); resortes por dimensión; crossfade entre vistas;
+  prefers-reduced-motion sin animación.
+- ⤢ del encabezado: una sola animación hasta el chat en grande.
+
+Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+---
+ windows/src-tauri/Cargo.toml    |   2 +
+ windows/src-tauri/src/island.rs | 598 ++++++++++++++++++++++++++------
+ windows/src/core/layout.ts      |  72 +++-
+ windows/src/island/island.ts    | 147 +++++---
+ windows/src/style.css           |  48 ++-
+ windows/src/views/views.ts      |   6 +-
+ 6 files changed, 691 insertions(+), 182 deletions(-)
+
+diff --git a/windows/src-tauri/Cargo.toml b/windows/src-tauri/Cargo.toml
+index 0274d9f..a341ae6 100644
+--- a/windows/src-tauri/Cargo.toml
++++ b/windows/src-tauri/Cargo.toml
+@@ -24,11 +24,13 @@ reqwest = { version = "0.12", default-features = false, features = ["json", "rus
+ keyring = { version = "3", features = ["windows-native"] }
+ windows = { version = "0.61", features = [
+   "Win32_Foundation",
++  "Win32_Graphics_Dwm",
+   "Win32_Security",
+   "Win32_Security_Authorization",
+   "Win32_System_Ole",
+   "Win32_System_SystemInformation",
+   "Win32_System_Threading",
++  "Win32_UI_HiDpi",
+   "Win32_UI_Input_KeyboardAndMouse",
+   "Win32_UI_WindowsAndMessaging",
+ ] }
+diff --git a/windows/src-tauri/src/island.rs b/windows/src-tauri/src/island.rs
+index 117497a..ca957ad 100644
+--- a/windows/src-tauri/src/island.rs
++++ b/windows/src-tauri/src/island.rs
+@@ -5,31 +5,46 @@
+ // centre of the main display inside a borderless, transparent, always-on-top
+ // window that never takes focus.
+ 
+-use std::sync::atomic::{AtomicBool, Ordering};
++use std::sync::atomic::{AtomicBool, AtomicU64, Ordering};
+ use std::sync::{Arc, Condvar, Mutex};
+-use std::time::Duration;
++use std::time::{Duration, Instant};
+ 
+ use serde::Serialize;
+-use tauri::{AppHandle, Emitter, Manager, Monitor, PhysicalPosition, PhysicalSize, WebviewWindow};
++use tauri::{AppHandle, Emitter, Manager, Monitor, WebviewWindow};
+ 
+-use windows::Win32::Foundation::{HWND, POINT};
++use windows::Win32::Foundation::{HWND, POINT, RECT};
++use windows::Win32::Graphics::Dwm::DwmFlush;
++use windows::Win32::UI::HiDpi::GetDpiForWindow;
+ use windows::core::BOOL;
+ use windows::Win32::Foundation::LPARAM;
+ use windows::Win32::System::Ole::RevokeDragDrop;
+ use windows::Win32::UI::Input::KeyboardAndMouse::{GetAsyncKeyState, VK_LBUTTON};
+ use windows::Win32::UI::WindowsAndMessaging::{EnumChildWindows, GetClassNameW};
+ use windows::Win32::UI::WindowsAndMessaging::{
+-    GetCursorPos, GetWindowLongPtrW, SetWindowLongPtrW, GWL_EXSTYLE, WS_EX_NOACTIVATE,
+-    WS_EX_TOOLWINDOW,
++    GetCursorPos, GetWindowLongPtrW, GetWindowRect, SetWindowLongPtrW, SetWindowPos, SystemParametersInfoW,
++    GWL_EXSTYLE, HWND_TOPMOST, SET_WINDOW_POS_FLAGS, SPI_GETCLIENTAREAANIMATION, SWP_ASYNCWINDOWPOS,
++    SWP_NOACTIVATE, SWP_NOOWNERZORDER, SWP_NOSIZE, SWP_NOZORDER, SYSTEM_PARAMETERS_INFO_UPDATE_FLAGS,
++    WS_EX_NOACTIVATE, WS_EX_TOOLWINDOW,
+ };
+ 
+-/// Logical size of the full window — the largest island view, like the macOS panel.
++/// Logical size of the old fixed window, like the macOS panel. The window is
++/// bigger now (WINDOW_W x WINDOW_H), but this is still the drop zone around the
++/// island (see the poll) and the unit `dock_x` is stored in.
+ pub const PANEL_W: f64 = 720.0;
+ pub const PANEL_H: f64 = 320.0;
+-/// Bigger windows are asked for by the page (`set_panel`): taller while the
+-/// Plata chat is open, and nearly the whole screen when it is enlarged. Only
+-/// then: the window takes the mouse while a button is held over it (see the
+-/// poll), so it stays as small as the view allows the rest of the time.
++/// Logical size of the window whenever the island is visible: room for the
++/// largest view, the enlarged Plata chat (1100 x 900 plus its margins). It is
++/// taken once and kept, so every change of size of the island (compact,
++/// expanded, the Plata chat normal, tall or enlarged) is drawn inside the page
++/// and never waits on the OS resizing a window, which lags a frame or two and
++/// flickers. Outside the island the window lets the mouse through, and it only
++/// takes a held button near the island (the poll), so the extra room costs
++/// nothing. Clamped to the work area of the display; `set_panel` overrides it.
++pub const WINDOW_W: f64 = 1140.0;
++pub const WINDOW_H: f64 = 924.0;
++/// After a drop the island glides to where it docks instead of jumping: the
++/// glide's duration (ease-out cubic). 0 = jump.
++pub const SLIDE_MS: u64 = 180;
+ /// Logical size of the invisible strip that wakes the island when it is hidden.
+ pub const STRIP_W: f64 = 240.0;
+ pub const STRIP_H: f64 = 6.0;
+@@ -71,7 +86,7 @@ pub struct PollGate {
+     active: Mutex<bool>,
+     cv: Condvar,
+     pub collapsed: AtomicBool,
+-    /// Logical window size asked for by the page; None = PANEL_W x PANEL_H.
++    /// Logical window size asked for by the page; None = WINDOW_W x WINDOW_H.
+     pub panel: Mutex<Option<(f64, f64)>>,
+     pub rect: Mutex<IslandRect>,
+     /// Mirrors the window flag so we only call into Win32 when it changes.
+@@ -235,52 +250,250 @@ fn dock_of(app: &AppHandle) -> (String, f64, f64) {
+         .unwrap_or_else(|| ("top".into(), 0.0, 0.0))
+ }
+ 
+-/// Places and sizes the window. `collapsed` picks the wake strip instead of the panel.
++/// A rectangle in physical screen px.
++#[derive(Clone, Copy, Debug, PartialEq)]
++pub struct Area {
++    pub x: i32,
++    pub y: i32,
++    pub w: i32,
++    pub h: i32,
++}
++
++/// Where the window goes (physical px) and where, inside it, the island is
++/// anchored (window-logical px). What the anchor means depends on the dock:
++/// `top`/`float` → x is the island's centre; `left` → its left edge; `right` →
++/// its right edge. y is the island's top. The page lays the island out from it
++/// (layout.ts islandX / islandY), so the island grows from the anchor and the
++/// window never has to move while it does.
++#[derive(Clone, Copy, Debug, PartialEq)]
++pub struct Placement {
++    pub x: i32,
++    pub y: i32,
++    pub anchor_x: f64,
++    pub anchor_y: f64,
++}
++
++/// The anchor as the page receives it (`island-anchor`).
++#[derive(Serialize, Clone, Debug)]
++pub struct AnchorPayload {
++    pub dock: String,
++    pub x: f64,
++    pub y: f64,
++    /// Window size, logical px.
++    pub w: f64,
++    pub h: f64,
++}
++
++/// Places a `pw` x `ph` window (physical) for `dock` on a display.
+ ///
+-/// `top` glues the window to the top edge, centred, as it always was. `left` and
+-/// `right` put it against that edge of the work area at the stored height, and
+-/// `float` wherever it was dropped. The island inside the window follows: the
+-/// front end aligns it to the same side (layout.ts, islandX).
+-pub fn apply_geometry(app: &AppHandle, pref: &str, collapsed: bool) {
+-    let Some(win) = window(app) else { return };
+-    let Some(m) = target_monitor(app, pref) else { return };
++/// `want` is where the island should be on screen: its centre x and its top y,
++/// physical px (only `left`/`right`/`float` use it; `top` is always the top
++/// centre). `keep` is the anchor the island has now inside the window: when the
++/// window can stay put around it, it does, so the island does not have to move
++/// inside the window — a change the page and the OS cannot make in the same frame.
++#[allow(clippy::too_many_arguments)]
++pub fn place(
++    dock: &str,
++    mon: Area,
++    wa: Area,
++    scale: f64,
++    pw: i32,
++    ph: i32,
++    want: (f64, f64),
++    keep: Option<(f64, f64)>,
++) -> Placement {
++    let clamp_x = |x: f64| (x.round() as i32).clamp(wa.x, (wa.x + wa.w - pw).max(wa.x));
++    let clamp_y = |y: f64| (y.round() as i32).clamp(wa.y, (wa.y + wa.h - ph).max(wa.y));
++    if dock != "left" && dock != "right" && dock != "float" {
++        let x = mon.x + (mon.w - pw) / 2;
++        let centre = mon.x as f64 + mon.w as f64 / 2.0;
++        return Placement { x, y: mon.y, anchor_x: (centre - x as f64) / scale, anchor_y: 0.0 };
++    }
++    let top = want.1.clamp(wa.y as f64, (wa.y + wa.h) as f64);
++    let keep_y = keep.map(|k| k.1).unwrap_or(0.0);
++    let y = clamp_y(top - keep_y * scale);
++    let anchor_y = (top - y as f64) / scale;
++    let (x, anchor_x) = match dock {
++        "left" => (wa.x, 0.0),
++        "right" => (wa.x + wa.w - pw, pw as f64 / scale),
++        _ => {
++            let keep_x = keep.map(|k| k.0).unwrap_or(pw as f64 / scale / 2.0);
++            let x = clamp_x(want.0 - keep_x * scale);
++            (x, (want.0 - x as f64) / scale)
++        }
++    };
++    Placement { x, y, anchor_x, anchor_y }
++}
+ 
+-    let scale = m.scale_factor();
+-    let mp = *m.position();
+-    let ms = *m.size();
+-    // The work area leaves the taskbar out, so a docked island never hides under it.
++/// Top-left of a `w` x `h` island inside a `win.0` x `win.1` window, logical
++/// px. Mirrors layout.ts (islandX / islandY): the island sits on its anchor and
++/// is only pushed back inside when it would not fit.
++pub fn island_offset(dock: &str, anchor: (f64, f64), win: (f64, f64), w: f64, h: f64) -> (f64, f64) {
++    let x = match dock {
++        "left" => anchor.0,
++        "right" => anchor.0 - w,
++        _ => (anchor.0 - w / 2.0).clamp(0.0, (win.0 - w).max(0.0)),
++    };
++    let y = if dock == "left" || dock == "right" || dock == "float" {
++        anchor.1.clamp(0.0, (win.1 - h).max(0.0))
++    } else {
++        0.0
++    };
++    (x, y)
++}
++
++/// The last anchor handed to the page, so a later placement (a display change,
++/// the island coming back from hidden) keeps the window where it is if it can.
++static LAST_ANCHOR: Mutex<Option<(String, f64, f64)>> = Mutex::new(None);
++/// Bumped by every placement: a glide still running after a drop gives up.
++static PLACEMENT: AtomicU64 = AtomicU64::new(0);
++
++fn area_of(m: &Monitor) -> (Area, Area) {
++    let (p, s) = (m.position(), m.size());
+     let wa = m.work_area();
+-    let (wx, wy) = (wa.position.x, wa.position.y);
+-    let (ww, wh) = (wa.size.width as i32, wa.size.height as i32);
++    (
++        Area { x: p.x, y: p.y, w: s.width as i32, h: s.height as i32 },
++        Area {
++            x: wa.position.x,
++            y: wa.position.y,
++            w: wa.size.width as i32,
++            h: wa.size.height as i32,
++        },
++    )
++}
+ 
+-    let (panel_w, panel_h) = app
++/// Physical size of the visible window on a display.
++fn window_size(app: &AppHandle, wa: Area, scale: f64) -> (i32, i32) {
++    let (w, h) = app
+         .try_state::<crate::Shared>()
+         .and_then(|s| *s.gate.panel.lock().unwrap())
+-        .unwrap_or((PANEL_W, PANEL_H));
++        .unwrap_or((WINDOW_W, WINDOW_H));
+     // Never bigger than the work area of this display.
+-    let panel_w = panel_w.min(ww as f64 / scale);
+-    let panel_h = panel_h.min(wh as f64 / scale);
+-    let (lw, lh) = if collapsed { (STRIP_W, STRIP_H) } else { (panel_w, panel_h) };
+-    let pw = (lw * scale).round().max(1.0) as u32;
+-    let ph = (lh * scale).round().max(1.0) as u32;
++    let pw = ((w * scale).round() as i32).clamp(1, wa.w.max(1));
++    let ph = ((h * scale).round() as i32).clamp(1, wa.h.max(1));
++    (pw, ph)
++}
+ 
+-    let (dock, dx, dy) = dock_of(app);
+-    let off_x = (dx * scale).round() as i32;
+-    let off_y = (dy * scale).round() as i32;
+-    let clamp_y = |y: i32| y.clamp(wy, (wy + wh - ph as i32).max(wy));
+-    let clamp_x = |x: i32| x.clamp(wx, (wx + ww - pw as i32).max(wx));
+-    let (x, y) = match dock.as_str() {
+-        "left" => (wx, clamp_y(mp.y + off_y)),
+-        "right" => (wx + ww - pw as i32, clamp_y(mp.y + off_y)),
+-        "float" => (clamp_x(mp.x + off_x), clamp_y(mp.y + off_y)),
+-        _ => (mp.x + (ms.width as i32 - pw as i32) / 2, mp.y),
++/// Moves and sizes the window in one call, always on top, never activating it.
++/// One SetWindowPos instead of Tauri's separate size and position calls, which
++/// could show the window resized but not yet moved for a frame.
++fn set_bounds(hwnd: HWND, x: i32, y: i32, w: i32, h: i32) {
++    let flags = SWP_NOACTIVATE | SWP_NOOWNERZORDER;
++    unsafe {
++        let _ = SetWindowPos(hwnd, Some(HWND_TOPMOST), x, y, w, h, flags);
++    }
++    // Crossing to a display with another scale makes Windows rescale the window
++    // (WM_DPICHANGED) after the move: put back the size computed for it.
++    if let Some(r) = window_rect(hwnd) {
++        if r.left != x || r.top != y || r.right - r.left != w || r.bottom - r.top != h {
++            unsafe {
++                let _ = SetWindowPos(hwnd, Some(HWND_TOPMOST), x, y, w, h, flags);
++            }
++        }
++    }
++}
++
++/// Moves the window without waiting for its thread (drag and glide loops).
++fn move_to(hwnd: HWND, x: i32, y: i32) {
++    let flags: SET_WINDOW_POS_FLAGS =
++        SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE | SWP_NOOWNERZORDER | SWP_ASYNCWINDOWPOS;
++    unsafe {
++        let _ = SetWindowPos(hwnd, None, x, y, 0, 0, flags);
++    }
++}
++
++fn window_rect(hwnd: HWND) -> Option<RECT> {
++    let mut r = RECT::default();
++    unsafe { GetWindowRect(hwnd, &mut r) }.ok()?;
++    Some(r)
++}
++
++/// The window's own scale (it follows the display Windows thinks it is on).
++fn dpi_scale(hwnd: HWND) -> f64 {
++    let dpi = unsafe { GetDpiForWindow(hwnd) };
++    if dpi == 0 { 1.0 } else { dpi as f64 / 96.0 }
++}
++
++/// Blocks until the next frame is composed, so a moving window follows the mouse
++/// at the display's own rate. DWM may return at once when nothing changes on
++/// screen: then a short sleep keeps the loop from spinning.
++fn wait_frame() {
++    let t = Instant::now();
++    if unsafe { DwmFlush() }.is_err() || t.elapsed() < Duration::from_millis(2) {
++        std::thread::sleep(Duration::from_millis(4));
++    }
++}
++
++/// "Show animations in Windows" — the setting prefers-reduced-motion follows too.
++fn animations_enabled() -> bool {
++    let mut on = BOOL(1);
++    let ok = unsafe {
++        SystemParametersInfoW(
++            SPI_GETCLIENTAREAANIMATION,
++            0,
++            Some(&mut on as *mut BOOL as *mut std::ffi::c_void),
++            SYSTEM_PARAMETERS_INFO_UPDATE_FLAGS(0),
++        )
+     };
++    ok.is_err() || on.as_bool()
++}
+ 
+-    let _ = win.set_size(PhysicalSize::new(pw, ph));
+-    let _ = win.set_position(PhysicalPosition::new(x, y));
+-    // Moving across displays can rescale the window: re-assert the physical size.
+-    let _ = win.set_size(PhysicalSize::new(pw, ph));
+-    let _ = win.set_always_on_top(true);
++fn send_anchor(app: &AppHandle, dock: &str, p: &Placement, pw: i32, ph: i32, scale: f64) {
++    *LAST_ANCHOR.lock().unwrap() = Some((dock.to_string(), p.anchor_x, p.anchor_y));
++    let _ = app.emit_to(
++        WINDOW_LABEL,
++        "island-anchor",
++        AnchorPayload {
++            dock: dock.to_string(),
++            x: p.anchor_x,
++            y: p.anchor_y,
++            w: pw as f64 / scale,
++            h: ph as f64 / scale,
++        },
++    );
++}
++
++/// Places and sizes the window. `collapsed` picks the wake strip instead of the panel.
++///
++/// `top` glues the window to the top edge, centred, as it always was. `left` and
++/// `right` put it against that edge of the work area at the stored height, and
++/// `float` wherever it was dropped. The page is told where the island is
++/// anchored inside the window (`island-anchor`) and lays it out from there.
++pub fn apply_geometry(app: &AppHandle, pref: &str, collapsed: bool) {
++    PLACEMENT.fetch_add(1, Ordering::SeqCst);
++    let Some(win) = window(app) else { return };
++    let Some(hwnd) = hwnd_of(&win) else { return };
++    let Some(m) = target_monitor(app, pref) else { return };
++    let scale = m.scale_factor();
++    let (mon, wa) = area_of(&m);
++
++    if collapsed {
++        // The wake strip, top centre. Only `top` hides, and the page keeps its
++        // anchor: the window comes back exactly where it was.
++        let sw = ((STRIP_W * scale).round() as i32).max(1);
++        let sh = ((STRIP_H * scale).round() as i32).max(1);
++        set_bounds(hwnd, mon.x + (mon.w - sw) / 2, mon.y, sw, sh);
++        remember_screen(app);
++        return;
++    }
++
++    let (pw, ph) = window_size(app, wa, scale);
++    let (dock, dx, dy) = dock_of(app);
++    // dock_x is the left of a PANEL_W-wide window centred on the island, dock_y
++    // the island's top (settings.rs).
++    let want = (mon.x as f64 + (dx + PANEL_W / 2.0) * scale, mon.y as f64 + dy * scale);
++    let keep = LAST_ANCHOR
++        .lock()
++        .unwrap()
++        .as_ref()
++        .filter(|(d, _, _)| *d == dock)
++        .map(|(_, x, y)| (*x, *y));
++    let p = place(&dock, mon, wa, scale, pw, ph, want, keep);
++    // The anchor first: the page relays out on its next frame, about when the
++    // window lands — and when nothing moved, nothing changes.
++    send_anchor(app, &dock, &p, pw, ph, scale);
++    set_bounds(hwnd, p.x, p.y, pw, ph);
++    remember_screen(app);
+ }
+ 
+ static DRAGGING: AtomicBool = AtomicBool::new(false);
+@@ -294,51 +507,104 @@ const SNAP: f64 = 56.0;
+ ///
+ /// Rust owns the loop rather than the page: the window moves under the cursor, so
+ /// window-relative mouse events would chase themselves. `offset_*` is where the
+-/// cursor grabbed the window, in window-logical px.
++/// cursor grabbed the window, in window-logical px. The loop runs once per
++/// composed frame (DwmFlush), so the island keeps up with the mouse at the
++/// display's rate, and re-reads the window's scale every time: crossing to a
++/// display with another scale keeps the grab point under the cursor.
+ pub fn drag_loop(app: AppHandle, offset_x: f64, offset_y: f64) {
+     if DRAGGING.swap(true, Ordering::SeqCst) {
+         return;
+     }
+-    let Some(win) = window(&app) else {
++    PLACEMENT.fetch_add(1, Ordering::SeqCst);
++    let Some(hwnd) = window(&app).and_then(|w| hwnd_of(&w)) else {
+         DRAGGING.store(false, Ordering::SeqCst);
+         return;
+     };
+-    let scale = win.scale_factor().unwrap_or(1.0);
+-    let (ox, oy) = ((offset_x * scale).round() as i32, (offset_y * scale).round() as i32);
+     let mut last = (i32::MIN, i32::MIN);
+     while left_button_down() {
+         if let Some((cx, cy)) = cursor_physical() {
+-            let pos = (cx as i32 - ox, cy as i32 - oy);
++            let s = dpi_scale(hwnd);
++            let pos = (
++                cx as i32 - (offset_x * s).round() as i32,
++                cy as i32 - (offset_y * s).round() as i32,
++            );
+             if pos != last {
+-                let _ = win.set_position(PhysicalPosition::new(pos.0, pos.1));
++                move_to(hwnd, pos.0, pos.1);
+                 last = pos;
+             }
+         }
+-        std::thread::sleep(Duration::from_millis(8));
++        wait_frame();
+     }
+-    if let Some(settings) = dock_after_drag(&app, &win) {
+-        crate::log::line(format!("island docked: {} ({:.0}, {:.0})", settings.dock, settings.dock_x, settings.dock_y));
++    let docked = dock_after_drag(&app, hwnd);
++    DRAGGING.store(false, Ordering::SeqCst);
++    if let Some((settings, glide)) = docked {
++        crate::log::line(format!(
++            "island docked: {} ({:.0}, {:.0})",
++            settings.dock, settings.dock_x, settings.dock_y
++        ));
+         if let Err(err) = crate::settings::save(&settings) {
+             crate::log::line(format!("could not save the island position: {err}"));
+         }
+-        apply_geometry(&app, &settings.screen, false);
+         // Both windows keep a copy of the settings: keep them in step.
+         let _ = app.emit("settings-changed", settings);
++        glide.run(hwnd);
+     }
+-    DRAGGING.store(false, Ordering::SeqCst);
+ }
+ 
+-/// Decides the dock from where the island was dropped and stores it.
+-fn dock_after_drag(app: &AppHandle, win: &WebviewWindow) -> Option<crate::settings::Settings> {
++/// The window's trip from where the island was let go to where it docks.
++struct Glide {
++    from: (i32, i32),
++    to: (i32, i32),
++    size: (i32, i32),
++    ticket: u64,
++}
++
++impl Glide {
++    /// Ease-out over SLIDE_MS, one step per composed frame. Gives up as soon as
++    /// anything else places the window (a new drag, a display change).
++    fn run(&self, hwnd: HWND) {
++        let (w, h) = self.size;
++        set_bounds(hwnd, self.from.0, self.from.1, w, h);
++        if SLIDE_MS > 0 && self.from != self.to && animations_enabled() {
++            let start = Instant::now();
++            let total = SLIDE_MS as f64 / 1000.0;
++            loop {
++                wait_frame();
++                if PLACEMENT.load(Ordering::SeqCst) != self.ticket {
++                    return;
++                }
++                let t = start.elapsed().as_secs_f64() / total;
++                if t >= 1.0 {
++                    break;
++                }
++                let e = 1.0 - (1.0 - t).powi(3);
++                let x = self.from.0 as f64 + (self.to.0 - self.from.0) as f64 * e;
++                let y = self.from.1 as f64 + (self.to.1 - self.from.1) as f64 * e;
++                move_to(hwnd, x.round() as i32, y.round() as i32);
++            }
++        }
++        if PLACEMENT.load(Ordering::SeqCst) == self.ticket {
++            set_bounds(hwnd, self.to.0, self.to.1, w, h);
++        }
++    }
++}
++
++/// Decides the dock from where the island was dropped, stores it, tells the
++/// page the new anchor and returns the glide that takes the window there.
++fn dock_after_drag(app: &AppHandle, hwnd: HWND) -> Option<(crate::settings::Settings, Glide)> {
+     let shared = app.try_state::<crate::Shared>()?;
+-    let origin = win.outer_position().ok()?;
++    let origin = window_rect(hwnd)?;
+     let r = *shared.gate.rect.lock().unwrap();
++    let ws = dpi_scale(hwnd);
++    // The island on screen, physical px.
++    let left = origin.left as f64 + r.x * ws;
++    let top = origin.top as f64 + r.y * ws;
++    let right = left + r.w * ws;
++    let cx = left + r.w * ws / 2.0;
++    let cy = top + r.h * ws / 2.0;
+     // The display the island was dropped on: the one under its centre (the
+     // cursor can sit off the island's edge), else the one under the cursor.
+     let monitors = app.available_monitors().ok()?;
+-    let ws = win.scale_factor().unwrap_or(1.0);
+-    let cx = origin.x as f64 + (r.x + r.w / 2.0) * ws;
+-    let cy = origin.y as f64 + (r.y + r.h / 2.0) * ws;
+     let m = monitors
+         .iter()
+         .find(|m| monitor_contains(m, cx, cy))
+@@ -346,17 +612,11 @@ fn dock_after_drag(app: &AppHandle, win: &WebviewWindow) -> Option<crate::settin
+         .cloned()
+         .or_else(|| app.primary_monitor().ok().flatten())?;
+     let scale = m.scale_factor();
+-    let mp = *m.position();
+-    let wa = m.work_area();
+-
+-    // The island's edges on screen, in physical px.
+-    let left = origin.x as f64 + r.x * scale;
+-    let right = left + r.w * scale;
+-    let top = origin.y as f64 + r.y * scale;
+-    let from_left = (left - wa.position.x as f64) / scale;
+-    let from_right = ((wa.position.x + wa.size.width as i32) as f64 - right) / scale;
+-    let from_top = (top - mp.y as f64) / scale;
++    let (mon, wa) = area_of(&m);
+ 
++    let from_left = (left - wa.x as f64) / scale;
++    let from_right = ((wa.x + wa.w) as f64 - right) / scale;
++    let from_top = (top - mon.y as f64) / scale;
+     let dock = if from_left < SNAP {
+         "left"
+     } else if from_right < SNAP {
+@@ -367,15 +627,35 @@ fn dock_after_drag(app: &AppHandle, win: &WebviewWindow) -> Option<crate::settin
+         "float"
+     };
+ 
+-    let mut settings = shared.settings.lock().unwrap();
+-    settings.dock = dock.to_string();
+-    settings.dock_monitor = Some(monitor_key(&m));
+-    settings.dock_y = (origin.y - mp.y) as f64 / scale;
+-    // Floating, the island is centred in its window: place the window so the
+-    // island stays exactly where it was let go, whatever side it was aligned to.
+-    let win_w = win.inner_size().map(|s| s.width as f64 / ws).unwrap_or(PANEL_W);
+-    settings.dock_x = (left - mp.x as f64) / scale - (win_w - r.w) / 2.0;
+-    Some(settings.clone())
++    let settings = {
++        let mut st = shared.settings.lock().unwrap();
++        st.dock = dock.to_string();
++        st.dock_monitor = Some(monitor_key(&m));
++        st.dock_y = (top - mon.y as f64) / scale;
++        st.dock_x = (cx - mon.x as f64) / scale - PANEL_W / 2.0;
++        st.clone()
++    };
++
++    // Where the window ends up — keeping the island where it is inside the
++    // window when it can (see `place`) — and where the island then is on screen.
++    let ticket = PLACEMENT.fetch_add(1, Ordering::SeqCst) + 1;
++    let (pw, ph) = window_size(app, wa, scale);
++    let keep = Some((r.x + r.w / 2.0, r.y));
++    let p = place(dock, mon, wa, scale, pw, ph, (cx, top), keep);
++    let (ix, iy) = island_offset(
++        dock,
++        (p.anchor_x, p.anchor_y),
++        (pw as f64 / scale, ph as f64 / scale),
++        r.w,
++        r.h,
++    );
++    let end = (p.x as f64 + ix * scale, p.y as f64 + iy * scale);
++    // The glide starts with the island where it was let go, already in the new
++    // layout, and takes the window to its place.
++    let from = (p.x + (left - end.0).round() as i32, p.y + (top - end.1).round() as i32);
++    send_anchor(app, dock, &p, pw, ph, scale);
++    remember_screen(app);
++    Some((settings, Glide { from, to: (p.x, p.y), size: (pw, ph), ticket }))
+ }
+ 
+ fn hwnd_of(win: &WebviewWindow) -> Option<HWND> {
+@@ -413,7 +693,9 @@ pub fn set_activating(win: &WebviewWindow, activating: bool) {
+ 
+ /// Position, size and scale of the monitor the island lives on. Any change here
+ /// means the island has to be placed again.
+-fn current_screen_key(app: &AppHandle) -> Option<(i32, i32, u32, u32, u64)> {
++type ScreenKey = (i32, i32, u32, u32, u64);
++
++fn current_screen_key(app: &AppHandle) -> Option<ScreenKey> {
+     let pref = app
+         .try_state::<crate::Shared>()
+         .map(|s| s.settings.lock().unwrap().screen.clone())
+@@ -424,14 +706,21 @@ fn current_screen_key(app: &AppHandle) -> Option<(i32, i32, u32, u32, u64)> {
+     Some((p.x, p.y, size.width, size.height, m.scale_factor().to_bits()))
+ }
+ 
++/// The display the island was last placed on. Every placement records it, so
++/// the poll only reacts to changes nobody asked for (a display plugged in,
++/// rescaled...), not to the island being dropped on another display, which used
++/// to place it a second time right after the drop.
++static PLACED_ON: Mutex<Option<ScreenKey>> = Mutex::new(None);
++
++fn remember_screen(app: &AppHandle) {
++    *PLACED_ON.lock().unwrap() = current_screen_key(app);
++}
++
+ /// Emits `cursor` (window-logical coordinates) at ~60 Hz while the island is
+ /// visible. Parked on a condvar the rest of the time.
+ pub fn spawn_cursor_poll(app: AppHandle, gate: Arc<PollGate>) {
+     std::thread::spawn(move || {
+         let mut was_down = false;
+-        // Remembered across wakes so a display change while hidden is noticed the
+-        // moment the island comes back.
+-        let mut last_screen: Option<(i32, i32, u32, u32, u64)> = None;
+         loop {
+             gate.wait_until_active();
+             let mut last = (f64::MIN, f64::MIN);
+@@ -444,15 +733,19 @@ pub fn spawn_cursor_poll(app: AppHandle, gate: Arc<PollGate>) {
+                 // nobody can reach. Checked about twice a second — the cursor poll
+                 // is already running, so this costs one monitor query.
+                 ticks = ticks.wrapping_add(1);
+-                if ticks % 30 == 0 {
++                if ticks % 30 == 0 && !DRAGGING.load(Ordering::SeqCst) {
+                     let now = current_screen_key(&app);
+-                    if now.is_some() && now != last_screen {
+-                        let first = last_screen.is_none();
+-                        last_screen = now;
+-                        if !first {
+-                            crate::log::line("display layout changed — repositioning".to_string());
+-                            let _ = app.emit_to(WINDOW_LABEL, "screen-changed", ());
++                    let changed = {
++                        let mut placed = PLACED_ON.lock().unwrap();
++                        let changed = now.is_some() && placed.is_some() && now != *placed;
++                        if now.is_some() {
++                            *placed = now;
+                         }
++                        changed
++                    };
++                    if changed {
++                        crate::log::line("display layout changed — repositioning".to_string());
++                        let _ = app.emit_to(WINDOW_LABEL, "screen-changed", ());
+                     }
+                 }
+ 
+@@ -462,10 +755,6 @@ pub fn spawn_cursor_poll(app: AppHandle, gate: Arc<PollGate>) {
+                 let Some((cx, cy)) = cursor_physical() else { continue };
+                 let x = (cx - origin.x as f64) / scale;
+                 let y = (cy - origin.y as f64) / scale;
+-                let size = match win.inner_size() {
+-                    Ok(s) => (s.width as f64 / scale, s.height as f64 / scale),
+-                    Err(_) => (PANEL_W, PANEL_H),
+-                };
+                 if (x - last.0).abs() < 1.0 && (y - last.1).abs() < 1.0 {
+                     continue;
+                 }
+@@ -486,8 +775,11 @@ pub fn spawn_cursor_poll(app: AppHandle, gate: Arc<PollGate>) {
+                 // WindowFromPoint, so OLE finds no drop target and shows the "no
+                 // drop" cursor. macOS has no such problem: AppKit delivers drags to
+                 // registered destinations whatever ignoresMouseEvents says. So while
+-                // a button is held anywhere over the panel, the whole panel takes
+-                // the mouse, which also makes the drop zone as forgiving as the Mac's.
++                // a button is held near the island (over the 720 x 320 panel the
++                // window used to be) the window takes the mouse, which also makes
++                // the drop zone as forgiving as the Mac's. Only there: the window
++                // is much bigger now, and a file dragged to another app below it
++                // must not land on the island.
+                 // A press may be the start of a drag: make sure the drop target is
+                 // ours before the file arrives.
+                 let down = left_button_down();
+@@ -497,11 +789,7 @@ pub fn spawn_cursor_poll(app: AppHandle, gate: Arc<PollGate>) {
+                 }
+                 was_down = down;
+ 
+-                let dragging = down
+-                    && x >= 0.0
+-                    && x <= size.0
+-                    && y >= 0.0
+-                    && y <= size.1;
++                let dragging = down && in_drop_zone(&r, x, y);
+ 
+                 let accept = on_island || dragging;
+                 if gate.ignoring.load(Ordering::Relaxed) == accept {
+@@ -515,6 +803,14 @@ pub fn spawn_cursor_poll(app: AppHandle, gate: Arc<PollGate>) {
+     });
+ }
+ 
++/// The island plus the panel-sized area around it, window-logical px.
++fn in_drop_zone(r: &IslandRect, x: f64, y: f64) -> bool {
++    let cx = r.x + r.w / 2.0;
++    let half = (PANEL_W / 2.0).max(r.w / 2.0 + HIT_MARGIN);
++    let bottom = (r.y + PANEL_H).max(r.y + r.h + HIT_MARGIN);
++    x >= cx - half && x <= cx + half && y >= r.y - HIT_MARGIN && y <= bottom
++}
++
+ pub fn set_ignore_cursor(app: &AppHandle, ignore: bool) {
+     if let Some(win) = window(app) {
+         let _ = win.set_ignore_cursor_events(ignore);
+@@ -552,3 +848,93 @@ pub fn start_dictation(app: &AppHandle) {
+         }
+     });
+ }
++
++#[cfg(test)]
++mod tests {
++    use super::*;
++
++    const MON: Area = Area { x: 0, y: 0, w: 1920, h: 1080 };
++    const WA: Area = Area { x: 0, y: 0, w: 1920, h: 1032 };
++    const PW: i32 = 1140;
++    const PH: i32 = 924;
++
++    /// Island on screen (physical) for a placement, as the page lays it out.
++    fn on_screen(dock: &str, p: &Placement, scale: f64, w: f64, h: f64) -> (f64, f64) {
++        let (ix, iy) = island_offset(
++            dock,
++            (p.anchor_x, p.anchor_y),
++            (PW as f64 / scale, PH as f64 / scale),
++            w,
++            h,
++        );
++        (p.x as f64 + ix * scale, p.y as f64 + iy * scale)
++    }
++
++    #[test]
++    fn top_is_centred_on_the_display_whatever_the_size() {
++        let p = place("top", MON, WA, 1.0, PW, PH, (0.0, 0.0), None);
++        assert_eq!((p.x, p.y), (390, 0));
++        for (w, h) in [(288.0, 32.0), (640.0, 160.0), (1100.0, 900.0)] {
++            let (x, y) = on_screen("top", &p, 1.0, w, h);
++            assert_eq!((x + w / 2.0, y), (960.0, 0.0));
++        }
++    }
++
++    #[test]
++    fn float_grows_from_its_centre_and_stays_put() {
++        // Island centre at 700, top at 300.
++        let p = place("float", MON, WA, 1.0, PW, PH, (700.0, 300.0), None);
++        for (w, h) in [(288.0, 32.0), (640.0, 440.0)] {
++            let (x, y) = on_screen("float", &p, 1.0, w, h);
++            assert_eq!(x + w / 2.0, 700.0);
++            assert_eq!(y, 300.0);
++        }
++        // Too tall to fit under its top: pushed up just enough, still inside.
++        let (_, y) = on_screen("float", &p, 1.0, 1100.0, 900.0);
++        assert!(y + 900.0 <= 1032.0 && y >= 0.0);
++    }
++
++    #[test]
++    fn edges_grow_away_from_the_edge() {
++        let l = place("left", MON, WA, 1.0, PW, PH, (500.0, 200.0), None);
++        let r = place("right", MON, WA, 1.0, PW, PH, (500.0, 200.0), None);
++        for (w, h) in [(288.0, 32.0), (640.0, 160.0)] {
++            assert_eq!(on_screen("left", &l, 1.0, w, h), (0.0, 200.0));
++            let (x, y) = on_screen("right", &r, 1.0, w, h);
++            assert_eq!((x + w, y), (1920.0, 200.0));
++        }
++    }
++
++    #[test]
++    fn keeps_the_island_where_it_is_inside_the_window_when_it_can() {
++        // Dropped at centre 900, top 100, while drawn at (570, 0) in the window.
++        let p = place("float", MON, WA, 1.0, PW, PH, (900.0, 100.0), Some((570.0, 0.0)));
++        assert_eq!((p.anchor_x, p.anchor_y), (570.0, 0.0));
++        assert_eq!((p.x, p.y), (330, 100));
++        // Lower down the window cannot follow without leaving the work area.
++        let p = place("float", MON, WA, 1.0, PW, PH, (900.0, 600.0), Some((570.0, 0.0)));
++        assert_eq!(p.y, 1032 - PH);
++        assert_eq!(p.anchor_y, (600 - (1032 - PH)) as f64);
++    }
++
++    #[test]
++    fn scaled_display_and_offset_origin() {
++        let mon = Area { x: -2880, y: 0, w: 2880, h: 1620 };
++        let wa = Area { x: -2880, y: 0, w: 2880, h: 1560 };
++        let (pw, ph) = ((1140.0 * 1.5) as i32, (924.0 * 1.5) as i32);
++        let p = place("top", mon, wa, 1.5, pw, ph, (0.0, 0.0), None);
++        assert_eq!(p.x, -2880 + (2880 - pw) / 2);
++        assert!((p.anchor_x - 570.0).abs() < 1.0);
++    }
++
++    #[test]
++    fn drop_zone_is_the_old_panel_around_the_island() {
++        let r = IslandRect { x: 426.0, y: 0.0, w: 288.0, h: 32.0 };
++        assert!(in_drop_zone(&r, 570.0, 300.0));
++        assert!(in_drop_zone(&r, 220.0, 10.0));
++        assert!(!in_drop_zone(&r, 570.0, 600.0));
++        assert!(!in_drop_zone(&r, 100.0, 10.0));
++        let big = IslandRect { x: 20.0, y: 0.0, w: 1100.0, h: 900.0 };
++        assert!(in_drop_zone(&big, 30.0, 880.0));
++    }
++}
+diff --git a/windows/src/core/layout.ts b/windows/src/core/layout.ts
+index d6c3635..2edb8ea 100644
+--- a/windows/src/core/layout.ts
++++ b/windows/src/core/layout.ts
+@@ -49,12 +49,11 @@ export interface ViewLayout {
+   agentMode: AgentLayoutMode;
+ }
+ 
+-// The window is a fixed 720×320 (720×480 while the Plata chat is open) like the macOS panel; the island is
+-// drawn inside it, glued to the top edge and horizontally centred.
++// The old fixed window, like the macOS panel. The window is bigger now (room
++// for the enlarged Plata chat, island.rs WINDOW_W/H) and keeps that size while
++// the island is visible; the island is drawn inside it, on its anchor.
+ export const PANEL_W = 720;
+ export const PANEL_H = 320;
+-/** While the Plata chat is open the window grows to this (island.rs, PANEL_H_TALL). */
+-export const PANEL_H_TALL = 480;
+ 
+ // No notch on a PC: these are the hidden/compact sizes from docs/SPEC.md.
+ export const NOTCH_W = 184;
+@@ -70,17 +69,52 @@ export const EXPANDED_W = 640;
+  */
+ export type Dock = "top" | "left" | "right" | "float";
+ 
+-/** The window's current logical width: 720, or more while the Plata chat is enlarged. */
+-let panelW = PANEL_W;
+-export function setPanelWidth(w: number): void {
+-  panelW = w;
++/**
++ * Where the island is anchored inside the window, sent by Rust with every
++ * placement (`island-anchor`, island.rs `place`). x is the island's centre for
++ * `top`/`float`, its left edge for `left`, its right edge for `right`; y is its
++ * top. w/h is the window's logical size. The island grows from the anchor, so it
++ * stays still on screen while it changes size and the window never moves.
++ */
++export interface Anchor {
++  dock: Dock;
++  x: number;
++  y: number;
++  w: number;
++  h: number;
++}
++
++let anchor: Anchor | null = null;
++export function setAnchor(a: Anchor): void {
++  anchor = a;
+ }
+ 
+-/** Island x inside the window. */
++/** Until Rust has spoken (and in a plain browser): the window as it is. */
++function currentAnchor(dock: Dock): Anchor {
++  if (anchor) return anchor;
++  const w = window.innerWidth;
++  const h = window.innerHeight;
++  return { dock, x: dock === "left" ? 0 : dock === "right" ? w : w / 2, y: 0, w, h };
++}
++
++/** The dock the island is laid out for: the one its window was placed for. */
++export function layoutDock(fallback: Dock): Dock {
++  return anchor?.dock ?? fallback;
++}
++
++/** Island x inside the window: on its anchor, pushed back inside if it would not fit. */
+ export function islandX(w: number, dock: Dock): number {
+-  if (dock === "left") return 0;
+-  if (dock === "right") return panelW - w;
+-  return (panelW - w) / 2;
++  const a = currentAnchor(dock);
++  if (a.dock === "left") return a.x;
++  if (a.dock === "right") return a.x - w;
++  return Math.min(Math.max(a.x - w / 2, 0), Math.max(0, a.w - w));
++}
++
++/** Island y inside the window: `top` hangs from the edge; the rest from the anchor. */
++export function islandY(h: number, dock: Dock): number {
++  const a = currentAnchor(dock);
++  if (a.dock === "top") return 0;
++  return Math.min(Math.max(a.y, 0), Math.max(0, a.h - h));
+ }
+ 
+ /** Size of the enlarged Plata chat (the ⤢ button), or null when it is normal. */
+@@ -291,3 +325,17 @@ export function washRGBA(wash: Wash): string {
+       return "rgba(0,0,0,0)";
+   }
+ }
++
++// ── Motion ─────────────────────────────────────────────────────────────────────
++// Every change of size of the island is drawn in the page (the window keeps its
++// size while the island is visible), with these. Growing follows a spring —
++// response in seconds, damping 1 = no overshoot — so a change of mind halfway
++// keeps its speed; shrinking follows a timed curve with no overshoot.
++export const GROW_RESPONSE = 0.42;
++export const GROW_DAMPING = 0.8;
++export const SHRINK_MS = 300;
++
++/** Windows' "Show animations" off → no island animation at all. */
++export function reducedMotion(): boolean {
++  return typeof matchMedia === "function" && matchMedia("(prefers-reduced-motion: reduce)").matches;
++}
+diff --git a/windows/src/island/island.ts b/windows/src/island/island.ts
+index 61002ff..44ae79d 100644
+--- a/windows/src/island/island.ts
++++ b/windows/src/island/island.ts
+@@ -2,12 +2,12 @@
+ // Mirrors IslandRootView.swift + IslandWindowController.swift.
+ 
+ import { Tracked, Spring, clamp } from "../core/anim";
+-import { Bridge, IS_TAURI, onDragDrop } from "../core/bridge";
++import { Bridge, IS_TAURI, onDragDrop, onEvent } from "../core/bridge";
+ import {
+-  EXPANDED_CORNER, EXPANDED_W, NOTCH_W, PANEL_H, PANEL_W,
+-  ROUNDED_CORNER, VIEW_LAYOUTS, botGlowColor, botGlowOpacity, botPosition, chatPromptHeight,
+-  islandRadius, islandSize, islandX, plataBigSize, setPanelWidth, PANEL_H_TALL,
+-  type IslandMode, type IslandViewName,
++  EXPANDED_CORNER, EXPANDED_W, GROW_DAMPING, GROW_RESPONSE, NOTCH_W, PANEL_H, PANEL_W, SHRINK_MS,
++  ROUNDED_CORNER, botGlowColor, botGlowOpacity, botPosition, chatPromptHeight,
++  islandRadius, islandSize, islandX, islandY, layoutDock, reducedMotion, setAnchor,
++  type Anchor, type IslandMode, type IslandViewName,
+ } from "../core/layout";
+ import { Sound } from "../core/sound";
+ import { State } from "../core/state";
+@@ -30,8 +30,6 @@ const UPLOAD_VIEWS: ReadonlySet<IslandViewName> = new Set(["upload", "uploading"
+ /** Seconds between the drop and the moment the progress bar starts filling. */
+ const PRE_PROGRESS = USC.T_PROG_START - USC.T_DROP;
+ 
+-const modeOrder = (m: IslandMode) => (m === "hidden" ? 0 : m === "compact" ? 1 : 2);
+-
+ export class Island {
+   readonly fsm = new IslandStateMachine();
+ 
+@@ -72,8 +70,11 @@ export class Island {
+   private wasInIsland = false;
+   /** Last shape handed to Rust for the click-through test. */
+   private pushedRect = { x: -1, y: -1, w: -1, h: -1 };
+-  private panel = { w: PANEL_W, h: PANEL_H };
+-  private tallTimer: number | null = null;
++  /** Size the content is laid out at (see layoutContent). */
++  private contentSize = { w: -1, h: -1 };
++  /** Where size and corners are heading, and whether that is down. */
++  private heading = { w: NOTCH_W, h: 0, r: ROUNDED_CORNER };
++  private shrinking = { w: false, h: false };
+   /** A press on the island that may turn into a drag (see wireInput). */
+   private drag: { x: number; y: number; started: boolean; click: boolean } | null = null;
+   /**
+@@ -108,6 +109,13 @@ export class Island {
+       this.dirty = true;
+       this.ensureRunning();
+     });
++    // Where Rust put the window, and where the island hangs inside it. Asked
++    // for once listening, since the first placement happens before the page.
++    void onEvent<Anchor>("island-anchor", (a) => {
++      setAnchor(a);
++      this.applyGeometry();
++      this.ensureRunning();
++    }).then(() => Bridge.reposition());
+   }
+ 
+   // ── DOM ─────────────────────────────────────────────────────────────────────
+@@ -188,7 +196,7 @@ export class Island {
+     this.countdown = h("div", { id: "countdown" });
+ 
+     this.header = buildHeader(actions);
+-    this.views = buildViews(actions, () => this.animateGeometry(false));
++    this.views = buildViews(actions, () => this.animateGeometry());
+     this.viewsEl = h("div", { id: "views" });
+     for (const v of this.views.values()) this.viewsEl.append(v.el);
+     this.contentEl = h("div", { id: "content" }, this.header.el, this.viewsEl);
+@@ -285,7 +293,7 @@ export class Island {
+       UploadSeq.deactivate();
+     }
+     this.updateWindowCollapsed();
+-    this.animateGeometry(modeOrder(mode) < modeOrder(prev));
++    this.animateGeometry();
+     State.notify();
+   }
+ 
+@@ -303,7 +311,7 @@ export class Island {
+     this.stopSequenceIfLeaving(view);
+     State.view = view;
+     if (State.mode !== "expanded") this.setMode("expanded");
+-    else this.animateGeometry(false);
++    else this.animateGeometry();
+     State.lastActivity = performance.now();
+     this.homeCollapseAt = null;
+     State.notify();
+@@ -314,14 +322,13 @@ export class Island {
+     if (State.mode !== "expanded") {
+       this.fsm.forceHome();
+       State.view = view;
+-      this.animateGeometry(false);
++      this.animateGeometry();
+       State.notify();
+       return;
+     }
+-    const grew = VIEW_LAYOUTS[view].height >= VIEW_LAYOUTS[State.view].height;
+     State.view = view;
+     State.lastActivity = performance.now();
+-    this.animateGeometry(!grew);
++    this.animateGeometry();
+     State.notify();
+   }
+ 
+@@ -499,17 +506,29 @@ export class Island {
+     return { w, h, r };
+   }
+ 
+-  private animateGeometry(shrinking: boolean) {
++  /**
++   * Retargets size and corners. Each one on its own: what grows springs (and a
++   * change of mind halfway keeps its momentum), what shrinks follows the close
++   * curve — so "the Plata chat, enlarged" from a small view is one movement.
++   */
++  private animateGeometry() {
+     const { w, h, r } = this.targetSize();
+-    if (shrinking) {
+-      this.width.curveTowards(w);
+-      this.height.curveTowards(h);
+-      this.radius.curveTowards(r);
+-    } else {
+-      this.width.springTo(w);
+-      this.height.springTo(h);
+-      this.radius.springTo(r);
+-    }
++    const reduce = reducedMotion();
++    const last = this.heading;
++    const go = (t: Tracked, to: number, was: number) => {
++      // Already on its way there: leave it be. Restarting the close curve on
++      // every State change (a chat message, a sync) made the shrink stutter.
++      if (t.animating && Math.abs(to - was) < 0.5) return;
++      if (reduce) t.jump(to);
++      else if (to < t.value - 0.5) t.curveTowards(to, SHRINK_MS);
++      else t.springTo(to, GROW_RESPONSE, GROW_DAMPING);
++    };
++    if (Math.abs(w - last.w) >= 0.5 || !this.width.animating) this.shrinking.w = w < this.width.value - 0.5;
++    if (Math.abs(h - last.h) >= 0.5 || !this.height.animating) this.shrinking.h = h < this.height.value - 0.5;
++    go(this.width, w, last.w);
++    go(this.height, h, last.h);
++    go(this.radius, r, last.r);
++    this.heading = { w, h, r };
+     this.ensureRunning();
+   }
+ 
+@@ -517,12 +536,16 @@ export class Island {
+     const w = this.width.value;
+     const hh = this.height.value;
+     const r = this.radius.value;
++    const dock = layoutDock(State.settings.dock);
+     const x = islandX(w, State.settings.dock);
++    const y = islandY(hh, State.settings.dock);
+     this.islandEl.style.width = `${w}px`;
+     this.islandEl.style.height = `${hh}px`;
+     this.islandEl.style.left = `${x}px`;
+-    this.islandEl.style.borderRadius = islandRadius(r, State.settings.dock);
++    this.islandEl.style.top = `${y}px`;
++    this.islandEl.style.borderRadius = islandRadius(r, dock);
+     this.islandEl.style.transform = "none";
++    this.layoutContent(w, hh, dock);
+     // These follow the island as it resizes, so they belong here rather than in
+     // the state-driven DOM sync.
+     this.miniGrid.style.left = `${w - 40 - 14.5}px`;
+@@ -530,19 +553,55 @@ export class Island {
+     this.greetingCanvas.style.left = `${(w - EXPANDED_W) / 2}px`;
+     this.uploadCanvas.el.style.left = `${(w - EXPANDED_W) / 2}px`;
+ 
+-    const rect = { x, y: 0, w, h: hh };
++    // Rust's click-through test. While the island grows it already gets the
++    // final shape — one message, not one per frame; while it shrinks, the
++    // current one, so a click just outside it is never swallowed.
++    const t = this.targetSize();
++    const rw = Math.max(w, t.w);
++    const rh = Math.max(hh, t.h);
++    const rect = { x: islandX(rw, State.settings.dock), y: islandY(rh, State.settings.dock), w: rw, h: rh };
+     const p = this.pushedRect;
+-    if (Math.abs(p.x - rect.x) > 0.5 || Math.abs(p.w - rect.w) > 0.5 || Math.abs(p.h - rect.h) > 0.5) {
++    if (
++      Math.abs(p.x - rect.x) > 0.5 || Math.abs(p.y - rect.y) > 0.5 ||
++      Math.abs(p.w - rect.w) > 0.5 || Math.abs(p.h - rect.h) > 0.5
++    ) {
+       this.pushedRect = rect;
+       void Bridge.setIslandRect(rect.x, rect.y, rect.w, rect.h);
+     }
+   }
+ 
+-  /** Island rect in window coordinates (origin top-left of the 720×320 window). */
++  /**
++   * The content (header + views) is laid out at the size the island is heading
++   * to, not at every in-between size: growing, it is drawn once at its final
++   * size and the island opens over it — no reflow per frame, nothing jumping
++   * about inside. It is pinned to the island's anchor (centre, or the docked
++   * edge), so it stays still on screen while the island grows around it.
++   * Shrinking, it follows the island so nothing is cut off; collapsing, it
++   * keeps its size while it fades out.
++   */
++  private layoutContent(w: number, hh: number, dock: string) {
++    if (State.mode === "expanded") {
++      // Growing: the final size (the spring's overshoot is the frame's, not
++      // the content's). Shrinking: never smaller than the island yet.
++      const t = this.targetSize();
++      const cw = this.shrinking.w ? Math.max(t.w, w) : t.w;
++      const ch = this.shrinking.h ? Math.max(t.h, hh) : t.h;
++      if (cw !== this.contentSize.w || ch !== this.contentSize.h) {
++        this.contentSize = { w: cw, h: ch };
++        this.contentEl.style.width = `${cw}px`;
++        this.contentEl.style.height = `${ch}px`;
++      }
++    }
++    const cw = this.contentSize.w < 0 ? w : this.contentSize.w;
++    const left = dock === "left" ? 0 : dock === "right" ? w - cw : (w - cw) / 2;
++    this.contentEl.style.transform = `translate3d(${left}px,0,0)`;
++  }
++
++  /** Island rect in window coordinates (origin top-left of the window). */
+   private islandRect(): { x: number; y: number; w: number; h: number } {
+     const w = this.width.value;
+     const hh = this.height.value;
+-    return { x: islandX(w, State.settings.dock), y: 0, w, h: hh };
++    return { x: islandX(w, State.settings.dock), y: islandY(hh, State.settings.dock), w, h: hh };
+   }
+ 
+   // ── Window collapse (hidden → tiny wake strip, zero polling) ────────────────
+@@ -875,7 +934,7 @@ export class Island {
+   }
+ 
+   private lookY(): number {
+-    return -Math.tanh((State.mouse.y - this.botCy.value) / 200);
++    return -Math.tanh((State.mouse.y - this.islandRect().y - this.botCy.value) / 200);
+   }
+ 
+   private updateCountdown(nowMs: number) {
+@@ -907,29 +966,9 @@ export class Island {
+       if (on) view.sync();
+     }
+ 
+-    // The window grows before the Plata chat opens (or is enlarged) and shrinks
+-    // once the island has finished shrinking, so it never draws outside it.
+-    const big = plataBigSize();
+-    const want =
+-      State.mode === "expanded" && State.view === "plata"
+-        ? big
+-          ? { w: Math.max(PANEL_W, big.w + 40), h: big.h + 24 }
+-          : { w: PANEL_W, h: PANEL_H_TALL }
+-        : { w: PANEL_W, h: PANEL_H };
+-    if (want.w !== this.panel.w || want.h !== this.panel.h) {
+-      if (this.tallTimer != null) window.clearTimeout(this.tallTimer);
+-      this.tallTimer = null;
+-      const apply = () => {
+-        this.panel = want;
+-        setPanelWidth(want.w);
+-        const usual = want.w === PANEL_W && want.h === PANEL_H;
+-        void Bridge.setPanel(usual ? 0 : want.w, usual ? 0 : want.h);
+-        this.applyGeometry();
+-      };
+-      const growing = want.w >= this.panel.w && want.h >= this.panel.h;
+-      if (growing) apply();
+-      else this.tallTimer = window.setTimeout(apply, 450);
+-    }
++    // No window resizing here any more: the window keeps the size of the
++    // largest view while the island is visible (island.rs WINDOW_W/H), so the
++    // Plata chat — normal, tall or enlarged — opens and closes inside the page.
+ 
+     // The two chats (Claude and Plata) are the only views with a text field, so
+     // they are the only time the island is allowed to take keyboard focus.
+diff --git a/windows/src/style.css b/windows/src/style.css
+index 6cb9325..0f0f33a 100644
+--- a/windows/src/style.css
++++ b/windows/src/style.css
+@@ -26,6 +26,16 @@
+   --cyan: #22d3ee;
+   --indigo: #6366f1;
+   --pink: #f472b6;
++
++  /* Motion. The island's own size is animated in JS (layout.ts GROW_* /
++     SHRINK_MS); these are for what happens inside it. */
++  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
++  /* A soft spring: a hair of overshoot, settles fast. */
++  --ease-spring: cubic-bezier(0.2, 0.9, 0.25, 1.05);
++  --view-in: 260ms;   /* incoming view: fade + scale up */
++  --view-out: 150ms;  /* outgoing view: fade */
++  --view-gap: 40ms;   /* the incoming one starts this much later (crossfade) */
++  --view-scale: 0.985;
+ }
+ 
+ * {
+@@ -68,11 +78,11 @@ body {
+ #island {
+   position: absolute;
+   top: 0;
+-  left: 50%;
++  left: 0;
+   background: #000;
+   border-radius: 0 0 14px 14px;
+   overflow: visible;
+-  will-change: width, height, transform;
++  will-change: width, height, left, top;
+ }
+ 
+ #island-clip {
+@@ -183,13 +193,20 @@ body {
+ 
+ /* ── Content shell (expanded) ───────────────────────────────────────────── */
+ 
++/* Laid out at the size the island is heading to and pinned to its anchor
++   (island.ts layoutContent): the island opens over it instead of squeezing it
++   frame by frame. */
+ #content {
+   position: absolute;
+-  inset: 0;
++  top: 0;
++  left: 0;
++  width: 100%;
++  height: 100%;
+   padding: 8px 10px 10px;
+   display: flex;
+   flex-direction: column;
+-  transition: opacity 0.2s ease-in-out;
++  transition: opacity 0.2s var(--ease-out);
++  will-change: transform;
+ }
+ 
+ #header {
+@@ -255,20 +272,24 @@ body {
+   min-height: 0;
+ }
+ 
++/* Views cross-fade: the old one fades out while the new one fades and scales
++   in right behind it, instead of one after the other (was 160 + 300 ms). */
+ .view {
+   position: absolute;
+   inset: 0;
+   opacity: 0;
+-  transform: scale(0.97);
++  transform: scale(var(--view-scale));
++  transform-origin: 50% 0;
+   pointer-events: none;
+-  transition: opacity 0.16s ease-in;
++  transition: opacity var(--view-out) var(--ease-out), transform var(--view-out) var(--ease-out);
+ }
+ 
+ .view.on {
+   opacity: 1;
+-  transform: scale(1);
++  transform: none;
+   pointer-events: auto;
+-  transition: opacity 0.3s ease-out 0.16s, transform 0.3s cubic-bezier(0.3, 1.2, 0.4, 1) 0.16s;
++  transition: opacity var(--view-in) var(--ease-out) var(--view-gap),
++    transform var(--view-in) var(--ease-spring) var(--view-gap);
+ }
+ 
+ /* ── Cards ──────────────────────────────────────────────────────────────── */
+@@ -1718,3 +1739,14 @@ input[type="range"]::-webkit-slider-thumb {
+ .header-plata-big {
+   color: #ffb84d !important;
+ }
++
++/* Windows' "Show animations" off: nothing moves inside the island either (its
++   size jumps too, island.ts). Looping indicators keep going, they are status. */
++@media (prefers-reduced-motion: reduce) {
++  *,
++  *::before,
++  *::after {
++    transition-duration: 0s !important;
++    transition-delay: 0s !important;
++  }
++}
+diff --git a/windows/src/views/views.ts b/windows/src/views/views.ts
+index 416788e..debb686 100644
+--- a/windows/src/views/views.ts
++++ b/windows/src/views/views.ts
+@@ -91,15 +91,17 @@ export function buildHeader(actions: ViewActions): ViewHost {
+   const tabPlata = h("button", { class: "tab tab-plata", title: "Plata", onclick: () => go("plata") }, svg(ICONS.coin, 14, { stroke: 1.7 }));
+ 
+   const gearBtn = h("button", { title: "Settings", onclick: () => go("settings") }, svg(ICONS.gear, 14));
+-  // Straight to the Plata chat, enlarged, from any view.
++  // Straight to the Plata chat, enlarged, from any view. Enlarged first, then
++  // the view: the island gets a single target and opens in one movement
++  // instead of heading for the normal chat and then growing again.
+   const bigChatBtn = h(
+     "button",
+     {
+       class: "header-plata-big",
+       title: "Chat de Plata en grande",
+       onclick: () => {
+-        go("plata");
+         plataSetBig(true);
++        go("plata");
+       },
+     },
+     svg(ICONS.expand, 14, { stroke: 1.9 }),
+-- 
+2.53.0.windows.2
+
+
+From 42a905cac32e14abd26643bf18e8ae15e8d46deb Mon Sep 17 00:00:00 2001
+From: Lucas <lucasgigli3@gmail.com>
+Date: Thu, 1 Oct 2026 21:32:36 -0300
+Subject: [PATCH 11/11] =?UTF-8?q?Pesta=C3=B1a=20Plata:=20conciliar=20un=20?=
+ =?UTF-8?q?resumen=20con=20Claude=20Code,=20con=20el=20plan=20y=20no=20la?=
+ =?UTF-8?q?=20API?=
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Un mensaje con adjuntos (PDF, captura o resumen pegado) ya no va al agente:
+lo hace Claude Code en segundo plano (claude -p, stream-json) con la skill
+conciliar-resumen, en %LOCALAPPDATA%\Coucou\conciliaciones\<fecha>\. La isla
+muestra el progreso en vivo con Cancelar, y al final una tarjeta con los
+totales por moneda, las diferencias y los botones para abrir el informe,
+copiar los faltantes o pasárselos al agente. El evento `delegar` del agente
+ofrece hacerlo así. Si Claude Code no arranca o no tiene sesión, se puede
+iniciar sesión o mandárselo al agente igual.
+
+Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+---
+ windows/src-tauri/src/claude_code.rs | 632 +++++++++++++++++++++++++++
+ windows/src-tauri/src/lib.rs         |  41 ++
+ windows/src-tauri/src/plata_agent.rs |   8 +-
+ windows/src/core/bridge.ts           |  14 +
+ windows/src/style.css                | 271 ++++++++++++
+ windows/src/views/plata.ts           | 462 +++++++++++++++++++-
+ 6 files changed, 1413 insertions(+), 15 deletions(-)
+ create mode 100644 windows/src-tauri/src/claude_code.rs
+
+diff --git a/windows/src-tauri/src/claude_code.rs b/windows/src-tauri/src/claude_code.rs
+new file mode 100644
+index 0000000..dd5ebe7
+--- /dev/null
++++ b/windows/src-tauri/src/claude_code.rs
+@@ -0,0 +1,632 @@
++// Reconciling a card statement with Claude Code, headless, on Lucas's own plan.
++//
++// The Plata agent (plata_agent.rs) runs on the API and is billed per token.
++// Reconciling a statement is a long read of a PDF against many rows, so the
++// island hands it to Claude Code instead: `claude -p` in the background, with
++// the `conciliar-resumen` skill, which leaves `datos.json` and `informe.html`
++// in a folder of its own. Nothing here writes to Plata.
++//
++// One run per conversation. Its stream-json output is read line by line and
++// turned into short progress lines for the page (`plata-delegado`), then a
++// final event with the parsed `datos.json`.
++
++use std::io::{BufRead, BufReader, Write};
++use std::os::windows::process::CommandExt;
++use std::path::{Path, PathBuf};
++use std::process::{Command, Stdio};
++use std::sync::atomic::{AtomicU8, Ordering};
++use std::sync::{mpsc, Arc, Mutex};
++use std::time::{Duration, Instant};
++
++use serde::Serialize;
++use serde_json::{json, Value};
++use tauri::{AppHandle, Emitter};
++
++use crate::plata_agent::{self, CREATE_NO_WINDOW};
++
++/// The event every run reports on: `{sesionId, ev}`.
++pub const EVENT: &str = "plata-delegado";
++/// The skill writes and checks a few files; past this the run is stuck.
++const TIMEOUT: Duration = Duration::from_secs(10 * 60);
++const SKILL: &str = "conciliar-resumen";
++
++/// The whole invocation in one place, so it can follow the skill's side of the
++/// contract. The prompt goes in through stdin.
++fn claude_args(carpeta: &Path, skill_dir: &Path) -> Vec<String> {
++    let mut args: Vec<String> = ["-p", "--output-format", "stream-json", "--verbose", "--model", "sonnet", "--allowedTools"]
++        .iter()
++        .map(|s| s.to_string())
++        .collect();
++    args.extend(
++        ["Read", "Write", "Glob", "Skill", "Bash(npm run -s conciliar:leer*)", "Bash(node *llenar.mjs*)"]
++            .iter()
++            .map(|s| s.to_string()),
++    );
++    args.push("--add-dir".into());
++    args.push(carpeta.to_string_lossy().to_string());
++    args.push("--add-dir".into());
++    args.push(skill_dir.to_string_lossy().to_string());
++    args
++}
++
++fn prompt(resumen: &[PathBuf], carpeta: &Path, pedido: &str) -> String {
++    let rutas: Vec<String> = resumen.iter().map(|p| p.to_string_lossy().to_string()).collect();
++    let mut p = format!(
++        "MODO ISLA. Usá la skill {SKILL}. Resumen: {}. Carpeta de salida: {}",
++        rutas.join(", "),
++        carpeta.display()
++    );
++    let pedido = pedido.trim();
++    if !pedido.is_empty() {
++        p.push_str(&format!("\nPedido de Lucas: {pedido}"));
++    }
++    p
++}
++
++/// Variables that would make the child something other than a plain run on
++/// Lucas's login: an API key (billed per token, the thing this avoids) or the
++/// markers of a Claude Code session it was started from.
++const ENV_DROP: &[&str] = &[
++    "ANTHROPIC_API_KEY",
++    "ANTHROPIC_AUTH_TOKEN",
++    "CLAUDECODE",
++    "CLAUDE_CODE_ENTRYPOINT",
++    "CLAUDE_CODE_SESSION_ID",
++    "CLAUDE_CODE_CHILD_SESSION",
++    "CLAUDE_CODE_HOST_SESSION_ID",
++    "CLAUDE_CODE_SDK_HAS_HOST_AUTH_REFRESH",
++    "CLAUDE_CODE_OAUTH_SCOPES",
++    "CLAUDE_CODE_MESSAGING_SOCKET",
++    "CLAUDE_CODE_MESSAGING_TOKEN",
++];
++
++// ── Running jobs ────────────────────────────────────────────────────────────
++
++const STOP_NONE: u8 = 0;
++const STOP_CANCEL: u8 = 1;
++const STOP_TIMEOUT: u8 = 2;
++
++struct Run {
++    sesion_id: String,
++    pid: u32,
++    stop: Arc<AtomicU8>,
++}
++
++static RUNNING: Mutex<Vec<Run>> = Mutex::new(Vec::new());
++
++/// Claude Code starts shells and node: the whole tree goes, not just claude.exe.
++fn kill_tree(pid: u32) {
++    let _ = Command::new("taskkill")
++        .args(["/PID", &pid.to_string(), "/T", "/F"])
++        .stdout(Stdio::null())
++        .stderr(Stdio::null())
++        .creation_flags(CREATE_NO_WINDOW)
++        .status();
++}
++
++fn stop(sesion_id: &str, why: u8) -> bool {
++    let running = RUNNING.lock().unwrap();
++    let Some(run) = running.iter().find(|r| r.sesion_id == sesion_id) else { return false };
++    run.stop.store(why, Ordering::SeqCst);
++    kill_tree(run.pid);
++    true
++}
++
++pub fn cancel(sesion_id: &str) -> bool {
++    stop(sesion_id, STOP_CANCEL)
++}
++
++// ── The folder of a run ─────────────────────────────────────────────────────
++
++pub fn runs_dir() -> PathBuf {
++    crate::settings::local_dir().join("conciliaciones")
++}
++
++/// `%LOCALAPPDATA%\Coucou\conciliaciones\2026-10-01_2105-33`, local time.
++fn new_run_dir() -> Result<PathBuf, String> {
++    use windows::Win32::System::SystemInformation::GetLocalTime;
++    let t = unsafe { GetLocalTime() };
++    let stamp = format!("{:04}-{:02}-{:02}_{:02}{:02}-{:02}", t.wYear, t.wMonth, t.wDay, t.wHour, t.wMinute, t.wSecond);
++    let base = runs_dir();
++    let mut dir = base.join(&stamp);
++    let mut n = 2;
++    while dir.exists() {
++        dir = base.join(format!("{stamp}-{n}"));
++        n += 1;
++    }
++    std::fs::create_dir_all(&dir).map_err(|e| format!("No pude crear la carpeta de la conciliación: {e}"))?;
++    Ok(dir)
++}
++
++/// Copies the statement into the run folder, so the run reads (and keeps) its
++/// own copy. Same checks as for the agent: PDF or image, within the limits.
++fn stage_inputs(dir: &Path, adjuntos: &[String], pegado: Option<&str>) -> Result<Vec<PathBuf>, String> {
++    if adjuntos.len() > plata_agent::MAX_ATTACHMENTS {
++        return Err(format!("Hasta {} adjuntos por mensaje.", plata_agent::MAX_ATTACHMENTS));
++    }
++    let mut out = Vec::new();
++    for path in adjuntos {
++        let info = plata_agent::attachment_info(path)?;
++        let name: String = info
++            .name
++            .chars()
++            .map(|c| if c.is_alphanumeric() || " ._-()".contains(c) { c } else { '_' })
++            .collect();
++        let mut target = dir.join(&name);
++        let mut n = 2;
++        while target.exists() {
++            target = dir.join(format!("{n}-{name}"));
++            n += 1;
++        }
++        std::fs::copy(path, &target).map_err(|e| format!("No pude copiar «{}»: {e}", info.name))?;
++        out.push(target);
++    }
++    if let Some(text) = pegado.map(str::trim).filter(|t| !t.is_empty()) {
++        let target = dir.join("resumen.txt");
++        std::fs::write(&target, text).map_err(|e| format!("No pude guardar el resumen pegado: {e}"))?;
++        out.push(target);
++    }
++    if out.is_empty() {
++        return Err("No hay resumen: soltá el PDF o la captura, o pegá el texto.".into());
++    }
++    Ok(out)
++}
++
++// ── stream-json → progress ──────────────────────────────────────────────────
++
++/// What the stream said so far that matters at the end.
++#[derive(Default, Debug)]
++pub(crate) struct Stream {
++    last_progress: Option<String>,
++    /// The `result` line: the final text and whether it is an error.
++    pub result: Option<(String, bool)>,
++    /// The last thing the assistant said, in case no `result` arrives.
++    pub last_text: Option<String>,
++    /// Claude Code has no login (`/login`), so nothing can run.
++    pub auth_failed: bool,
++}
++
++fn file_name_of(input: &Value, key: &str) -> String {
++    let p = input.get(key).and_then(Value::as_str).unwrap_or("");
++    p.rsplit(['\\', '/']).next().unwrap_or(p).to_string()
++}
++
++/// A tool call, said the way Lucas would: what it is doing, not which tool.
++fn tool_phrase(name: &str, input: &Value) -> Option<String> {
++    let path = input.get("file_path").and_then(Value::as_str).unwrap_or("").replace('\\', "/").to_lowercase();
++    let file = file_name_of(input, "file_path");
++    let lower = file.to_lowercase();
++    let ext = lower.rsplit('.').next().unwrap_or("");
++    let phrase = match name {
++        "Skill" => "Usando la receta de conciliación".to_string(),
++        "Read" if path.contains(&format!("/{SKILL}/")) => "Usando la receta de conciliación".to_string(),
++        "Read" if ["pdf", "txt", "png", "jpg", "jpeg", "webp"].contains(&ext) => "Leyendo el resumen".to_string(),
++        "Read" => format!("Leyendo {file}"),
++        "Bash" => {
++            let cmd = input.get("command").and_then(Value::as_str).unwrap_or("");
++            if cmd.contains("conciliar:leer") {
++                "Consultando Plata".to_string()
++            } else if cmd.contains("llenar.mjs") {
++                "Armando el informe".to_string()
++            } else {
++                "Corriendo un comando".to_string()
++            }
++        }
++        "Write" | "Edit" if lower == "datos.json" => "Comparando línea por línea".to_string(),
++        "Write" | "Edit" if lower.ends_with(".html") => "Armando el informe".to_string(),
++        "Write" | "Edit" => format!("Escribiendo {file}"),
++        "Glob" | "Grep" => "Buscando archivos".to_string(),
++        "ToolSearch" | "TodoWrite" => return None,
++        other => format!("Usando {other}"),
++    };
++    Some(phrase)
++}
++
++/// One line of `--output-format stream-json`. Returns the progress events it
++/// produces (none for most lines) and keeps what the final event needs.
++pub(crate) fn parse_line(line: &str, st: &mut Stream) -> Vec<Value> {
++    let Ok(v) = serde_json::from_str::<Value>(line.trim()) else { return vec![] };
++    let mut phrases: Vec<String> = Vec::new();
++    match v.get("type").and_then(Value::as_str) {
++        Some("system") if v.get("subtype").and_then(Value::as_str) == Some("init") => {
++            phrases.push("Claude Code arrancó".into());
++        }
++        Some("assistant") => {
++            if v.get("error").and_then(Value::as_str) == Some("authentication_failed") {
++                st.auth_failed = true;
++            }
++            let content = v.pointer("/message/content").and_then(Value::as_array).cloned().unwrap_or_default();
++            for block in content {
++                match block.get("type").and_then(Value::as_str) {
++                    Some("tool_use") => {
++                        let name = block.get("name").and_then(Value::as_str).unwrap_or("");
++                        let input = block.get("input").cloned().unwrap_or(Value::Null);
++                        if let Some(p) = tool_phrase(name, &input) {
++                            phrases.push(p);
++                        }
++                    }
++                    Some("text") => {
++                        if let Some(t) = block.get("text").and_then(Value::as_str).filter(|t| !t.trim().is_empty()) {
++                            st.last_text = Some(t.trim().to_string());
++                        }
++                    }
++                    _ => {}
++                }
++            }
++        }
++        Some("result") => {
++            let text = v.get("result").and_then(Value::as_str).unwrap_or("").trim().to_string();
++            let is_error = v.get("is_error").and_then(Value::as_bool).unwrap_or(false)
++                || v.get("subtype").and_then(Value::as_str).is_some_and(|s| s != "success");
++            if is_error && (text.contains("Not logged in") || text.contains("/login")) {
++                st.auth_failed = true;
++            }
++            st.result = Some((text, is_error));
++        }
++        _ => {}
++    }
++    let mut out = Vec::new();
++    for p in phrases {
++        // The same step twice in a row (three reads of the PDF) is one line.
++        if st.last_progress.as_deref() == Some(p.as_str()) {
++            continue;
++        }
++        st.last_progress = Some(p.clone());
++        out.push(json!({ "tipo": "progreso", "texto": p }));
++    }
++    out
++}
++
++/// The final event, from what the stream said and what the run left behind.
++pub(crate) fn final_event(st: &Stream, carpeta: &Path, secs: u64, stop: u8, exit_ok: bool, stderr_tail: &str) -> Value {
++    if stop == STOP_CANCEL {
++        return json!({ "tipo": "error", "texto": "Cancelado.", "cancelado": true });
++    }
++    if stop == STOP_TIMEOUT {
++        return json!({ "tipo": "error", "texto": format!("Claude Code tardó más de {} minutos: lo corté.", TIMEOUT.as_secs() / 60) });
++    }
++    if st.auth_failed {
++        return json!({
++            "tipo": "error",
++            "texto": "Claude Code no tiene la sesión iniciada en esta PC. Iniciala una vez (se abre una terminal: seguí los pasos para entrar con tu cuenta) y volvé a probar.",
++            "login": true,
++        });
++    }
++    let datos: Option<Value> = std::fs::read_to_string(carpeta.join("datos.json"))
++        .ok()
++        .and_then(|s| serde_json::from_str(s.trim_start_matches('\u{feff}')).ok());
++    let informe = carpeta.join("informe.html");
++    let informe = informe.is_file().then(|| informe.to_string_lossy().to_string());
++    let (mensaje, is_error) = match &st.result {
++        Some((t, e)) => (t.clone(), *e),
++        None => (st.last_text.clone().unwrap_or_default(), true),
++    };
++    if datos.is_none() && st.result.is_none() && !exit_ok {
++        let detail = stderr_tail.trim();
++        return json!({
++            "tipo": "error",
++            "texto": if detail.is_empty() {
++                "Claude Code terminó sin responder.".to_string()
++            } else {
++                format!("Claude Code terminó con un error: {detail}")
++            },
++        });
++    }
++    let ok = !is_error && datos.as_ref().is_some_and(|d| d.get("error").is_none());
++    json!({
++        "tipo": "fin",
++        "ok": ok,
++        "mensaje": mensaje,
++        "datos": datos,
++        "informe": informe,
++        "carpeta": carpeta.to_string_lossy(),
++        "segundos": secs,
++    })
++}
++
++// ── The run ─────────────────────────────────────────────────────────────────
++
++#[derive(Serialize, Clone)]
++#[serde(rename_all = "camelCase")]
++struct Delegado {
++    sesion_id: String,
++    ev: Value,
++}
++
++#[derive(Serialize, Clone)]
++#[serde(rename_all = "camelCase")]
++pub struct Started {
++    pub carpeta: String,
++}
++
++fn emit(app: &AppHandle, sesion_id: &str, ev: Value) {
++    let _ = app.emit_to(crate::island::WINDOW_LABEL, EVENT, Delegado { sesion_id: sesion_id.to_string(), ev });
++}
++
++fn skill_dir() -> Option<PathBuf> {
++    let p = PathBuf::from(std::env::var_os("USERPROFILE")?).join(".claude").join("skills").join(SKILL);
++    p.join("SKILL.md").is_file().then_some(p)
++}
++
++/// Starts the run and returns once Claude Code is up; everything after that
++/// arrives as `plata-delegado` events. An error here means it never started.
++pub fn delegate(app: AppHandle, sesion_id: String, texto: String, adjuntos: Vec<String>, pegado: Option<String>) -> Result<Started, String> {
++    if RUNNING.lock().unwrap().iter().any(|r| r.sesion_id == sesion_id) {
++        return Err("Ya hay una conciliación en curso en esta conversación.".into());
++    }
++    let exe = plata_agent::claude_exe().ok_or_else(|| "No encuentro Claude Code (viene con la app de escritorio de Claude).".to_string())?;
++    let cwd = plata_agent::agent_dir().ok_or_else(|| "No encuentro la carpeta agentes, que es donde corre la conciliación.".to_string())?;
++    let skill = skill_dir().ok_or_else(|| format!("No encuentro la skill {SKILL} en .claude\\skills."))?;
++
++    let carpeta = new_run_dir()?;
++    let inputs = match stage_inputs(&carpeta, &adjuntos, pegado.as_deref()) {
++        Ok(i) => i,
++        Err(e) => {
++            let _ = std::fs::remove_dir_all(&carpeta);
++            return Err(e);
++        }
++    };
++    let names: Vec<String> = inputs.iter().filter_map(|p| p.file_name().map(|n| n.to_string_lossy().to_string())).collect();
++    plata_agent::transcript(&sesion_id, "delegado", &format!("{} [{}] → {}", texto.trim(), names.join(", "), carpeta.display()));
++
++    let stderr = std::fs::File::create(carpeta.join("claude-code.log")).map_err(|e| e.to_string())?;
++    let mut cmd = Command::new(&exe);
++    cmd.args(claude_args(&carpeta, &skill))
++        .current_dir(&cwd)
++        .stdin(Stdio::piped())
++        .stdout(Stdio::piped())
++        .stderr(stderr)
++        .creation_flags(CREATE_NO_WINDOW);
++    for k in ENV_DROP {
++        cmd.env_remove(k);
++    }
++    let mut child = cmd.spawn().map_err(|e| format!("No pude arrancar Claude Code: {e}"))?;
++    if let Some(mut stdin) = child.stdin.take() {
++        // Closing stdin is what tells `-p` the prompt is complete.
++        let _ = stdin.write_all(prompt(&inputs, &carpeta, &texto).as_bytes());
++    }
++    let stdout = child.stdout.take().ok_or("Claude Code no dio salida.")?;
++    let stop_flag = Arc::new(AtomicU8::new(STOP_NONE));
++    RUNNING.lock().unwrap().push(Run { sesion_id: sesion_id.clone(), pid: child.id(), stop: stop_flag.clone() });
++    crate::log::line(format!("claude code headless started for {sesion_id} in {}", carpeta.display()));
++
++    // Watchdog: the reader below blocks on stdout, so the deadline lives here.
++    let (done_tx, done_rx) = mpsc::channel::<()>();
++    {
++        let sesion_id = sesion_id.clone();
++        std::thread::spawn(move || {
++            if let Err(mpsc::RecvTimeoutError::Timeout) = done_rx.recv_timeout(TIMEOUT) {
++                stop(&sesion_id, STOP_TIMEOUT);
++            }
++        });
++    }
++
++    let result = Started { carpeta: carpeta.to_string_lossy().to_string() };
++    std::thread::spawn(move || {
++        let started = Instant::now();
++        let mut st = Stream::default();
++        let mut raw = std::fs::File::create(carpeta.join("stream.jsonl")).ok();
++        let mut reader = BufReader::new(stdout);
++        let mut buf = Vec::new();
++        loop {
++            buf.clear();
++            match reader.read_until(b'\n', &mut buf) {
++                Ok(0) | Err(_) => break,
++                Ok(_) => {}
++            }
++            let line = String::from_utf8_lossy(&buf);
++            if let Some(f) = raw.as_mut() {
++                let _ = f.write_all(line.as_bytes());
++            }
++            for ev in parse_line(&line, &mut st) {
++                emit(&app, &sesion_id, ev);
++            }
++        }
++        let exit_ok = child.wait().map(|s| s.success()).unwrap_or(false);
++        let _ = done_tx.send(());
++        let why = stop_flag.load(Ordering::SeqCst);
++        RUNNING.lock().unwrap().retain(|r| r.sesion_id != sesion_id);
++
++        let tail = std::fs::read_to_string(carpeta.join("claude-code.log")).unwrap_or_default();
++        let tail: String = tail.lines().rev().take(3).collect::<Vec<_>>().into_iter().rev().collect::<Vec<_>>().join(" ");
++        let ev = final_event(&st, &carpeta, started.elapsed().as_secs(), why, exit_ok, &tail);
++        let summary = match ev.get("tipo").and_then(Value::as_str) {
++            Some("fin") => format!(
++                "ok={} {}s diferencias={} {}",
++                ev["ok"],
++                ev["segundos"],
++                ev.pointer("/datos/diferencias").and_then(Value::as_array).map_or(0, Vec::len),
++                ev["mensaje"].as_str().unwrap_or("").chars().take(300).collect::<String>()
++            ),
++            _ => ev["texto"].as_str().unwrap_or("").to_string(),
++        };
++        plata_agent::transcript(&sesion_id, "delegado-fin", &summary);
++        crate::log::line(format!("claude code headless ended for {sesion_id}: {summary}"));
++        emit(&app, &sesion_id, ev);
++    });
++    Ok(result)
++}
++
++/// The report of a run, in the default browser. Only files inside the runs
++/// folder: the page hands back a path, and this must not open anything else.
++pub fn open_report(path: &str) -> Result<(), String> {
++    let p = std::fs::canonicalize(path).map_err(|_| "No encuentro el informe.".to_string())?;
++    let base = std::fs::canonicalize(runs_dir()).map_err(|_| "No encuentro el informe.".to_string())?;
++    let is_html = p.extension().is_some_and(|e| e.eq_ignore_ascii_case("html"));
++    if !p.starts_with(&base) || !is_html {
++        return Err("Ese archivo no es un informe de conciliación.".into());
++    }
++    Command::new("explorer").arg(&p).spawn().map_err(|e| format!("No pude abrir el informe: {e}"))?;
++    Ok(())
++}
++
++/// Claude Code needs to be logged in once on this PC for `-p` to work: opens it
++/// in a terminal, where it walks Lucas through the login.
++pub fn open_login() -> Result<(), String> {
++    let exe = plata_agent::claude_exe().ok_or_else(|| "No encuentro Claude Code (viene con la app de escritorio de Claude).".to_string())?;
++    let home = std::env::var_os("USERPROFILE").map(PathBuf::from).unwrap_or_else(|| PathBuf::from("."));
++    let mut wt = Command::new("wt");
++    wt.args(["-d", &home.to_string_lossy(), "--title", "Claude Code · iniciar sesión"]).arg(&exe);
++    for k in ENV_DROP {
++        wt.env_remove(k);
++    }
++    if wt.spawn().is_err() {
++        let mut cmd = Command::new("cmd");
++        cmd.args(["/C", "start", "Claude Code"]).arg(&exe).current_dir(&home).creation_flags(CREATE_NO_WINDOW);
++        for k in ENV_DROP {
++            cmd.env_remove(k);
++        }
++        cmd.spawn().map_err(|e| format!("No pude abrir la terminal: {e}"))?;
++    }
++    Ok(())
++}
++
++#[cfg(test)]
++mod tests {
++    use super::*;
++
++    // Lines as `claude -p --output-format stream-json --verbose` writes them
++    // (2.1.284). The init and auth-failure lines are real ones, trimmed.
++    const INIT: &str = r#"{"type":"system","subtype":"init","cwd":"C:\\Users\\gigli\\OneDrive\\Desktop\\Claude\\agentes","session_id":"670676f6","tools":["Read","Write","Glob","Skill","Bash"],"model":"claude-sonnet-4-6","permissionMode":"default","apiKeySource":"none"}"#;
++    const HOOK: &str = r#"{"type":"system","subtype":"hook_started","hook_id":"18aa","hook_name":"SessionStart:startup","hook_event":"SessionStart","session_id":"670676f6"}"#;
++    const SKILL_USE: &str = r#"{"type":"assistant","message":{"id":"msg_1","role":"assistant","model":"claude-sonnet-4-6","content":[{"type":"text","text":"Voy a usar la skill."},{"type":"tool_use","id":"toolu_1","name":"Skill","input":{"skill":"conciliar-resumen"}}]},"parent_tool_use_id":null,"session_id":"670676f6"}"#;
++    const READ_PDF: &str = r#"{"type":"assistant","message":{"id":"msg_2","role":"assistant","content":[{"type":"tool_use","id":"toolu_2","name":"Read","input":{"file_path":"C:\\Users\\gigli\\AppData\\Local\\Coucou\\conciliaciones\\2026-10-01_2105-33\\visa.pdf"}}]},"session_id":"670676f6"}"#;
++    const READ_PDF_AGAIN: &str = r#"{"type":"assistant","message":{"id":"msg_3","role":"assistant","content":[{"type":"tool_use","id":"toolu_3","name":"Read","input":{"file_path":"C:\\x\\visa.pdf","offset":2}}]},"session_id":"670676f6"}"#;
++    const TOOL_RESULT: &str = r#"{"type":"user","message":{"role":"user","content":[{"tool_use_id":"toolu_2","type":"tool_result","content":"..."}]},"session_id":"670676f6"}"#;
++    const LEER: &str = r#"{"type":"assistant","message":{"id":"msg_4","role":"assistant","content":[{"type":"tool_use","id":"toolu_4","name":"Bash","input":{"command":"npm run -s conciliar:leer -- --last4 2811","description":"Leer Plata"}}]},"session_id":"670676f6"}"#;
++    const WRITE_DATOS: &str = r#"{"type":"assistant","message":{"id":"msg_5","role":"assistant","content":[{"type":"tool_use","id":"toolu_5","name":"Write","input":{"file_path":"C:\\x\\datos.json","content":"{}"}}]},"session_id":"670676f6"}"#;
++    const LLENAR: &str = r#"{"type":"assistant","message":{"id":"msg_6","role":"assistant","content":[{"type":"tool_use","id":"toolu_6","name":"Bash","input":{"command":"node C:\\Users\\gigli\\.claude\\skills\\conciliar-resumen\\llenar.mjs C:\\x"}}]},"session_id":"670676f6"}"#;
++    const RESULT_OK: &str = r#"{"type":"result","subtype":"success","is_error":false,"duration_ms":95000,"num_turns":9,"result":"Listo: 31 coinciden, 3 diferencias.","session_id":"670676f6","total_cost_usd":0.41}"#;
++    const AUTH_FAIL: &str = r#"{"type":"assistant","message":{"id":"4a72","model":"<synthetic>","role":"assistant","content":[{"type":"text","text":"Not logged in · Please run /login"}]},"session_id":"1fd9","error":"authentication_failed","is_api_error_message":true}"#;
++    const RESULT_AUTH: &str = r#"{"type":"result","subtype":"success","is_error":true,"num_turns":1,"result":"Not logged in · Please run /login","session_id":"1fd9","total_cost_usd":0}"#;
++
++    fn texts(evs: &[Value]) -> Vec<String> {
++        evs.iter().map(|e| e["texto"].as_str().unwrap().to_string()).collect()
++    }
++
++    #[test]
++    fn stream_lines_become_short_progress_lines() {
++        let mut st = Stream::default();
++        let mut all = Vec::new();
++        for line in [HOOK, INIT, SKILL_USE, READ_PDF, TOOL_RESULT, READ_PDF_AGAIN, LEER, WRITE_DATOS, LLENAR, RESULT_OK, "", "no es json"] {
++            let evs = parse_line(line, &mut st);
++            assert!(evs.iter().all(|e| e["tipo"] == "progreso"));
++            all.extend(evs);
++        }
++        assert_eq!(
++            texts(&all),
++            [
++                "Claude Code arrancó",
++                "Usando la receta de conciliación",
++                "Leyendo el resumen",
++                "Consultando Plata",
++                "Comparando línea por línea",
++                "Armando el informe",
++            ]
++        );
++        assert_eq!(st.result, Some(("Listo: 31 coinciden, 3 diferencias.".into(), false)));
++        assert_eq!(st.last_text.as_deref(), Some("Voy a usar la skill."));
++        assert!(!st.auth_failed);
++    }
++
++    #[test]
++    fn tool_phrases() {
++        let p = |name: &str, input: Value| tool_phrase(name, &input);
++        assert_eq!(p("Read", json!({"file_path": "C:\\Users\\g\\.claude\\skills\\conciliar-resumen\\SKILL.md"})).unwrap(), "Usando la receta de conciliación");
++        assert_eq!(p("Read", json!({"file_path": "D:\\run\\resumen.txt"})).unwrap(), "Leyendo el resumen");
++        assert_eq!(p("Read", json!({"file_path": "D:\\run\\captura.PNG"})).unwrap(), "Leyendo el resumen");
++        assert_eq!(p("Read", json!({"file_path": "D:\\a\\package.json"})).unwrap(), "Leyendo package.json");
++        assert_eq!(p("Write", json!({"file_path": "D:\\run\\informe.html"})).unwrap(), "Armando el informe");
++        assert_eq!(p("Bash", json!({"command": "dir"})).unwrap(), "Corriendo un comando");
++        assert_eq!(p("Glob", json!({"pattern": "*.pdf"})).unwrap(), "Buscando archivos");
++        assert!(p("ToolSearch", json!({})).is_none());
++    }
++
++    fn tmp_dir(tag: &str) -> PathBuf {
++        let d = std::env::temp_dir().join(format!("coucou-cc-test-{tag}-{}", std::process::id()));
++        let _ = std::fs::remove_dir_all(&d);
++        std::fs::create_dir_all(&d).unwrap();
++        d
++    }
++
++    #[test]
++    fn a_missing_login_is_its_own_error() {
++        let mut st = Stream::default();
++        for line in [INIT, AUTH_FAIL, RESULT_AUTH] {
++            parse_line(line, &mut st);
++        }
++        assert!(st.auth_failed);
++        let ev = final_event(&st, &tmp_dir("auth"), 1, STOP_NONE, false, "");
++        assert_eq!(ev["tipo"], "error");
++        assert_eq!(ev["login"], true);
++    }
++
++    #[test]
++    fn the_end_carries_datos_and_the_report() {
++        let dir = tmp_dir("fin");
++        let datos = json!({"tarjeta": "Platinum Gal", "last4": "2811", "coinciden": 31, "diferencias": [{"tipo": "falta en Plata"}]});
++        std::fs::write(dir.join("datos.json"), format!("\u{feff}{datos}")).unwrap();
++        std::fs::write(dir.join("informe.html"), "<html></html>").unwrap();
++        let mut st = Stream::default();
++        parse_line(RESULT_OK, &mut st);
++        let ev = final_event(&st, &dir, 95, STOP_NONE, true, "");
++        assert_eq!(ev["tipo"], "fin");
++        assert_eq!(ev["ok"], true);
++        assert_eq!(ev["datos"]["coinciden"], 31);
++        assert_eq!(ev["segundos"], 95);
++        assert!(ev["informe"].as_str().unwrap().ends_with("informe.html"));
++        assert_eq!(ev["mensaje"], "Listo: 31 coinciden, 3 diferencias.");
++
++        // The skill could not do it: `{"error": ...}` is a finished run, not ok.
++        std::fs::write(dir.join("datos.json"), r#"{"error":"No encuentro la tarjeta 2811 en Plata."}"#).unwrap();
++        let ev = final_event(&st, &dir, 5, STOP_NONE, true, "");
++        assert_eq!((ev["tipo"].as_str(), ev["ok"].as_bool()), (Some("fin"), Some(false)));
++        assert_eq!(ev["datos"]["error"], "No encuentro la tarjeta 2811 en Plata.");
++
++        // No datos.json but an answer (a question back, say): fin, not ok, with the text.
++        std::fs::remove_file(dir.join("datos.json")).unwrap();
++        let ev = final_event(&st, &dir, 5, STOP_NONE, true, "");
++        assert_eq!((ev["ok"].as_bool(), ev["datos"].is_null()), (Some(false), true));
++
++        let none = Stream::default();
++        assert_eq!(final_event(&none, &dir, 5, STOP_CANCEL, false, "")["cancelado"], true);
++        assert!(final_event(&none, &dir, 600, STOP_TIMEOUT, false, "")["texto"].as_str().unwrap().contains("10 minutos"));
++        assert!(final_event(&none, &dir, 1, STOP_NONE, false, "boom")["texto"].as_str().unwrap().contains("boom"));
++        let _ = std::fs::remove_dir_all(&dir);
++    }
++
++    #[test]
++    fn inputs_are_copied_into_the_run_folder() {
++        let src = tmp_dir("src");
++        let pdf = src.join("visa sept.pdf");
++        std::fs::write(&pdf, b"%PDF-1.7\nhola").unwrap();
++        let run = tmp_dir("run");
++        let s = pdf.to_string_lossy().to_string();
++        let out = stage_inputs(&run, &[s.clone(), s.clone()], Some("  12/09 MERPAGO*VERDULERIA 6.500,00 \n")).unwrap();
++        let names: Vec<_> = out.iter().map(|p| p.file_name().unwrap().to_string_lossy().to_string()).collect();
++        assert_eq!(names, ["visa sept.pdf", "2-visa sept.pdf", "resumen.txt"]);
++        assert_eq!(std::fs::read_to_string(run.join("resumen.txt")).unwrap(), "12/09 MERPAGO*VERDULERIA 6.500,00");
++        assert!(stage_inputs(&run, &[], Some("   ")).is_err());
++        let txt = src.join("notas.txt");
++        std::fs::write(&txt, b"no soy pdf").unwrap();
++        assert!(stage_inputs(&run, &[txt.to_string_lossy().to_string()], None).is_err());
++
++        let p = prompt(&out[..1], &run, " fijate las cuotas ");
++        assert!(p.starts_with("MODO ISLA. Usá la skill conciliar-resumen. Resumen: "));
++        assert!(p.contains("visa sept.pdf. Carpeta de salida: "));
++        assert!(p.ends_with("\nPedido de Lucas: fijate las cuotas"));
++        assert!(!prompt(&out[..1], &run, "").contains("Pedido"));
++        let _ = std::fs::remove_dir_all(&src);
++        let _ = std::fs::remove_dir_all(&run);
++    }
++
++    #[test]
++    fn the_invocation_matches_the_contract() {
++        let a = claude_args(Path::new("D:\\run"), Path::new("C:\\s\\conciliar-resumen"));
++        let joined = a.join(" ");
++        assert!(joined.starts_with("-p --output-format stream-json --verbose --model sonnet --allowedTools Read Write Glob Skill"));
++        assert!(a.contains(&"Bash(npm run -s conciliar:leer*)".to_string()));
++        assert!(a.contains(&"Bash(node *llenar.mjs*)".to_string()));
++        assert!(joined.ends_with("--add-dir D:\\run --add-dir C:\\s\\conciliar-resumen"));
++    }
++}
+diff --git a/windows/src-tauri/src/lib.rs b/windows/src-tauri/src/lib.rs
+index c325e90..b73a11f 100644
+--- a/windows/src-tauri/src/lib.rs
++++ b/windows/src-tauri/src/lib.rs
+@@ -1,6 +1,7 @@
+ // Coucou for Windows — app wiring and the commands the island calls.
+ 
+ mod claude;
++mod claude_code;
+ mod files;
+ mod hooks;
+ mod integrations;
+@@ -311,6 +312,42 @@ fn open_claude_code(pedido: String) -> Result<String, String> {
+     plata_agent::open_claude_code(&pedido)
+ }
+ 
++/// A card statement to reconcile: Claude Code, headless, on Lucas's plan (not
++/// the API). Returns once it started; progress and the result arrive as
++/// `plata-delegado` events. `adjuntos` are paths, `pegado` a pasted statement.
++#[tauri::command]
++async fn plata_delegate(
++    app: AppHandle,
++    sesion_id: String,
++    texto: String,
++    adjuntos: Option<Vec<String>>,
++    pegado: Option<String>,
++) -> Result<claude_code::Started, String> {
++    // Copying the statement and spawning: off the main thread.
++    tauri::async_runtime::spawn_blocking(move || {
++        claude_code::delegate(app, sesion_id, texto, adjuntos.unwrap_or_default(), pegado)
++    })
++    .await
++    .map_err(|e| e.to_string())?
++}
++
++#[tauri::command]
++async fn plata_delegate_cancel(sesion_id: String) -> bool {
++    tauri::async_runtime::spawn_blocking(move || claude_code::cancel(&sesion_id)).await.unwrap_or(false)
++}
++
++/// The `informe.html` a reconciliation left, in the default browser.
++#[tauri::command]
++fn plata_open_report(path: String) -> Result<(), String> {
++    claude_code::open_report(&path)
++}
++
++/// Claude Code in a terminal, to log in once so headless runs work.
++#[tauri::command]
++fn plata_claude_login() -> Result<(), String> {
++    claude_code::open_login()
++}
++
+ /// Windows voice typing into the focused chat field.
+ #[tauri::command]
+ fn start_dictation(app: AppHandle) {
+@@ -479,6 +516,10 @@ pub fn run() {
+             plata_send,
+             plata_attachment_info,
+             open_claude_code,
++            plata_delegate,
++            plata_delegate_cancel,
++            plata_open_report,
++            plata_claude_login,
+             start_dictation,
+         ])
+         .setup(move |app| {
+diff --git a/windows/src-tauri/src/plata_agent.rs b/windows/src-tauri/src/plata_agent.rs
+index 01fa69c..3b73768 100644
+--- a/windows/src-tauri/src/plata_agent.rs
++++ b/windows/src-tauri/src/plata_agent.rs
+@@ -21,7 +21,7 @@ const BASE: &str = "http://127.0.0.1:8787";
+ const START_GRACE: std::time::Duration = std::time::Duration::from_secs(60);
+ 
+ static LAST_START: std::sync::Mutex<Option<std::time::Instant>> = std::sync::Mutex::new(None);
+-const CREATE_NO_WINDOW: u32 = 0x0800_0000;
++pub(crate) const CREATE_NO_WINDOW: u32 = 0x0800_0000;
+ 
+ #[derive(Serialize, Clone)]
+ #[serde(rename_all = "camelCase")]
+@@ -40,7 +40,7 @@ struct PlataEvent {
+ }
+ 
+ /// Where the `agentes` repo is checked out. First match wins.
+-fn agent_dir() -> Option<PathBuf> {
++pub(crate) fn agent_dir() -> Option<PathBuf> {
+     let home = PathBuf::from(std::env::var_os("USERPROFILE")?);
+     [
+         home.join("OneDrive").join("Desktop").join("Claude").join("agentes"),
+@@ -188,7 +188,7 @@ fn read_attachments(paths: &[String]) -> Result<Vec<Value>, String> {
+ /// %LOCALAPPDATA%\Coucou\plata-chat.log: the Plata chat, one line per message
+ /// and per event, so a turn that went wrong can be read afterwards (the agent
+ /// keeps conversations in memory only). Local file; restarted past 5 MB.
+-fn transcript(sesion_id: &str, kind: &str, body: &str) {
++pub(crate) fn transcript(sesion_id: &str, kind: &str, body: &str) {
+     use std::io::Write;
+     let path = crate::settings::local_dir().join("plata-chat.log");
+     if std::fs::metadata(&path).map(|m| m.len() > 5_000_000).unwrap_or(false) {
+@@ -351,7 +351,7 @@ fn plata_repo_dir() -> Option<PathBuf> {
+ }
+ 
+ /// The newest Claude Code the desktop app ships (%APPDATA%\Claude\claude-code\<version>\claude.exe).
+-fn claude_exe() -> Option<PathBuf> {
++pub(crate) fn claude_exe() -> Option<PathBuf> {
+     let base = PathBuf::from(std::env::var_os("APPDATA")?).join("Claude").join("claude-code");
+     std::fs::read_dir(base)
+         .ok()?
+diff --git a/windows/src/core/bridge.ts b/windows/src/core/bridge.ts
+index 95c0ae4..4bd5ed8 100644
+--- a/windows/src/core/bridge.ts
++++ b/windows/src/core/bridge.ts
+@@ -83,6 +83,20 @@ export const Bridge = {
+   /** Can the agent read this dropped file (PDF or image, within the size limit)? */
+   plataAttachmentInfo: (path: string) => callOrThrow<PlataAttachmentInfo>("plata_attachment_info", { path }),
+ 
++  /**
++   * A card statement to reconcile, done by Claude Code headless on Lucas's plan
++   * (not the API). Resolves once it started; progress and the result come as
++   * `plata-delegado` events. `adjuntos` are paths; `pegado` is a pasted statement.
++   */
++  plataDelegate: (sesionId: string, texto: string, adjuntos: string[], pegado: string | null) =>
++    callOrThrow<{ carpeta: string }>("plata_delegate", { sesionId, texto, adjuntos, pegado }),
++  /** Stops the run (the whole process tree). False if nothing was running. */
++  plataDelegateCancel: (sesionId: string) => call<boolean>("plata_delegate_cancel", { sesionId }),
++  /** Opens a reconciliation's informe.html in the default browser. */
++  plataOpenReport: (path: string) => callOrThrow<void>("plata_open_report", { path }),
++  /** Claude Code in a terminal, to log in once so headless runs work. */
++  plataClaudeLogin: () => callOrThrow<void>("plata_claude_login"),
++
+   /** Give the window keyboard focus (chat field) and take it away again. */
+   focusWindow: (focused: boolean) => call<void>("focus_window", { focused }),
+ 
+diff --git a/windows/src/style.css b/windows/src/style.css
+index 6cb9325..4e98f17 100644
+--- a/windows/src/style.css
++++ b/windows/src/style.css
+@@ -1718,3 +1718,274 @@ input[type="range"]::-webkit-slider-thumb {
+ .header-plata-big {
+   color: #ffb84d !important;
+ }
++
++/* ── Plata · Claude Code: reconciling a statement on Lucas's plan ───────── */
++
++/* The run line: same quiet look as the agent's tools line, plus Cancel. */
++.plata-cc-run {
++  display: flex;
++  flex-wrap: wrap;
++  align-items: center;
++  gap: 3px 10px;
++  font: 400 11.5px var(--font);
++  color: var(--dim-3, #6b6b70);
++}
++
++.plata-cc-run-head {
++  display: inline-flex;
++  align-items: center;
++  gap: 6px;
++  flex: 1 0 100%;
++  color: #ffb84d;
++}
++
++.plata-cc-run.done .plata-cc-run-head {
++  color: var(--dim-3, #6b6b70);
++}
++
++.plata-cc-run.done .plata-cc-run-head svg {
++  color: #35e08a;
++}
++
++.plata-cc-step {
++  display: inline-flex;
++  align-items: center;
++  gap: 7px;
++  min-width: 0;
++  color: var(--dim-2, #9a9fa8);
++}
++
++.plata-cc-step-text {
++  min-width: 0;
++  overflow: hidden;
++  white-space: nowrap;
++  text-overflow: ellipsis;
++}
++
++.plata-cc-time {
++  flex: none;
++  font-variant-numeric: tabular-nums;
++  color: var(--dim-3, #6b6b70);
++}
++
++.plata-cc-pulse {
++  width: 6px;
++  height: 6px;
++  flex: none;
++  border-radius: 50%;
++  background: #ff9e1b;
++  animation: plata-cc-pulse 1.2s ease-in-out infinite;
++}
++
++@keyframes plata-cc-pulse {
++  50% {
++    opacity: 0.25;
++    transform: scale(0.7);
++  }
++}
++
++@media (prefers-reduced-motion: reduce) {
++  .plata-cc-pulse {
++    animation: none;
++  }
++}
++
++.plata-cc-cancel {
++  margin-left: auto;
++}
++
++.plata-cc-btn:disabled {
++  opacity: 0.5;
++}
++
++.plata-cc-run button:focus-visible,
++.plata-cc-btn:focus-visible,
++.plata-cc-error button:focus-visible {
++  outline: 2px solid #ffb84d;
++  outline-offset: 2px;
++}
++
++/* The result card: totals per currency, counts, the first differences. */
++.plata-cc-result {
++  gap: 8px;
++}
++
++.plata-cc-totals {
++  display: grid;
++  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
++  gap: 8px;
++}
++
++.plata-cc-tot {
++  display: grid;
++  grid-template-columns: 1fr 1fr;
++  gap: 1px 10px;
++  padding: 8px 10px;
++  border-radius: 10px;
++  background: rgba(255, 255, 255, 0.04);
++  border: 1px solid rgba(255, 255, 255, 0.08);
++}
++
++.plata-cc-tot-head {
++  grid-column: 1 / -1;
++  display: flex;
++  justify-content: space-between;
++  align-items: center;
++  margin-bottom: 3px;
++  font: 500 11px var(--font);
++  letter-spacing: 0.06em;
++  color: var(--dim-2, #9a9fa8);
++}
++
++.plata-cc-state {
++  padding: 1px 7px;
++  border-radius: 99px;
++  font: 500 10.5px var(--font);
++  letter-spacing: 0;
++}
++
++.plata-cc-state.ok {
++  color: #35e08a;
++  background: rgba(53, 224, 138, 0.12);
++}
++
++.plata-cc-state.bad {
++  color: #ff8a84;
++  background: rgba(255, 107, 99, 0.14);
++}
++
++.plata-cc-k {
++  font: 400 10.5px var(--font);
++  color: var(--dim-3, #6b6b70);
++}
++
++.plata-cc-v {
++  font: 500 13.5px var(--font);
++  font-variant-numeric: tabular-nums;
++  color: var(--ink-2);
++  white-space: nowrap;
++}
++
++.plata-cc-v.bad {
++  color: #ff8a84;
++}
++
++.plata-cc-chips {
++  display: flex;
++  flex-wrap: wrap;
++  gap: 6px;
++}
++
++.plata-cc-chip {
++  display: inline-flex;
++  align-items: center;
++  gap: 5px;
++  padding: 2px 9px 2px 7px;
++  border-radius: 99px;
++  background: rgba(255, 255, 255, 0.06);
++  font: 400 11.5px var(--font);
++  color: var(--ink-2);
++}
++
++.plata-cc-chip i,
++.plata-cc-kind i {
++  width: 7px;
++  height: 7px;
++  flex: none;
++  border-radius: 50%;
++  background: var(--c);
++}
++
++.plata-cc-chip b {
++  font-weight: 600;
++  font-variant-numeric: tabular-nums;
++}
++
++.plata-cc-clean {
++  font: 400 12.5px var(--font);
++  color: #35e08a;
++}
++
++.plata-cc-difs {
++  list-style: none;
++  margin: 0;
++  padding: 0;
++  display: grid;
++  gap: 6px;
++}
++
++.plata-is-big .plata-cc-difs {
++  grid-template-columns: repeat(2, minmax(0, 1fr));
++}
++
++.plata-cc-dif {
++  display: flex;
++  flex-direction: column;
++  gap: 2px;
++  min-width: 0;
++  padding: 7px 10px;
++  border-radius: 10px;
++  background: rgba(255, 255, 255, 0.035);
++  border-left: 2px solid rgba(255, 255, 255, 0.12);
++  user-select: text;
++}
++
++.plata-cc-dif-top {
++  display: flex;
++  justify-content: space-between;
++  gap: 8px;
++  font: 400 10.5px var(--font);
++  color: var(--dim-3, #6b6b70);
++}
++
++.plata-cc-kind {
++  display: inline-flex;
++  align-items: center;
++  gap: 5px;
++  color: var(--c);
++  font-weight: 500;
++}
++
++.plata-cc-date {
++  font-variant-numeric: tabular-nums;
++}
++
++.plata-cc-dif-name {
++  display: flex;
++  gap: 6px;
++  min-width: 0;
++  font: 500 12.5px var(--font);
++  color: var(--ink-2);
++}
++
++.plata-cc-dif-name span:last-child {
++  min-width: 0;
++  overflow: hidden;
++  white-space: nowrap;
++  text-overflow: ellipsis;
++}
++
++.plata-cc-id {
++  flex: none;
++  font-variant-numeric: tabular-nums;
++  color: #ffb84d;
++}
++
++.plata-cc-dif-amt {
++  font: 400 12px var(--font);
++  font-variant-numeric: tabular-nums;
++  color: #b0b5be;
++}
++
++.plata-cc-dif-do {
++  font: 400 11.5px var(--font);
++  color: var(--dim-2, #9a9fa8);
++}
++
++.plata-cc-actions {
++  flex-wrap: wrap;
++}
++
++.plata-cc-error {
++  row-gap: 6px;
++}
+diff --git a/windows/src/views/plata.ts b/windows/src/views/plata.ts
+index 851e6da..53b99a0 100644
+--- a/windows/src/views/plata.ts
++++ b/windows/src/views/plata.ts
+@@ -10,6 +10,12 @@
+ // dropped on this tab (the island routes the drop here instead of the upload
+ // sequence), or a long paste (the statement as it arrives on WhatsApp). Files
+ // travel as paths and Rust reads them; pasted text goes inside `texto`.
++//
++// A message with attachments doesn't go to the agent, though: reconciling is
++// done by Claude Code, headless, on Lucas's plan instead of the API (Rust:
++// claude_code.rs). Its progress arrives as `plata-delegado` and the result is a
++// card drawn from the `datos.json` it leaves. The agent can also suggest it
++// (a `delegar` event); its "Hacerlo" reuses the last attachments, if any.
+ 
+ import { h, svg, clear } from "./dom";
+ import { ICONS } from "./icons";
+@@ -36,7 +42,22 @@ type Evento =
+   | { tipo: "propuesta"; propuesta: Propuesta }
+   | { tipo: "error"; texto: string }
+   | { tipo: "resultado"; nombre: string; datos: unknown }
+-  | { tipo: "fin"; usos: Array<{ usd: number; precio_conocido: boolean }>; duracionMs: number };
++  | { tipo: "fin"; usos: Array<{ usd: number; precio_conocido: boolean }>; duracionMs: number }
++  | { tipo: "delegar"; tarea: string; detalle: string };
++
++/** Events of a run of Claude Code (`plata-delegado`). */
++type Delegado =
++  | { tipo: "progreso"; texto: string }
++  | {
++      tipo: "fin";
++      ok: boolean;
++      mensaje: string;
++      datos: Record<string, unknown> | null;
++      informe: string | null;
++      carpeta: string;
++      segundos: number;
++    }
++  | { tipo: "error"; texto: string; login?: boolean; cancelado?: boolean };
+ 
+ const ars = new Intl.NumberFormat("es-AR", { maximumFractionDigits: 2 });
+ const ars0 = new Intl.NumberFormat("es-AR", { maximumFractionDigits: 0 });
+@@ -207,6 +228,174 @@ function cardFor(nombre: string, datos: unknown): HTMLElement | null {
+   return null;
+ }
+ 
++// ── The reconciliation, as Claude Code left it in datos.json ──────────────
++// Same shape as the DATOS object of the skill's informe (conciliar-resumen).
++
++const dec2 = new Intl.NumberFormat("es-AR", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
++/** Money the way the informe writes it, so the copied message matches it. */
++const money2 = (n: number | null, moneda: string) =>
++  n === null
++    ? "—"
++    : `${moneda === "USD" ? "US$ " : moneda === "ARS" ? "$ " : ""}${dec2.format(n)}${moneda && moneda !== "ARS" && moneda !== "USD" ? ` ${moneda}` : ""}`;
++const str = (v: unknown) => (v === null || v === undefined ? "" : String(v));
++
++/** Each kind of difference keeps the color it has in the informe. */
++const DIF_COLOR: Record<string, string> = {
++  "falta en Plata": "#ff8a84",
++  "en otro resumen": "#5ec8ff",
++  "sobra en Plata": "#b69cff",
++  "monto distinto": "#ffbf47",
++  "moneda distinta": "#ffbf47",
++  "cuota distinta": "#ffbf47",
++  duplicado: "#ff9e1b",
++};
++const DIFS_SHOWN = 8;
++
++function fmtSecs(s: number): string {
++  s = Math.max(0, Math.round(s));
++  return s < 60 ? `${s} s` : `${Math.floor(s / 60)} min ${String(s % 60).padStart(2, "0")} s`;
++}
++
++/** The message to load what is missing, word for word as the informe has it. Null if nothing is. */
++function faltantesMensaje(d: Obj): string | null {
++  const faltan = arr(d.diferencias).filter((x) => x.tipo === "falta en Plata" && x.banco);
++  if (!faltan.length) return null;
++  const periodo = str(obj(d.plata_resumen).periodo);
++  return (
++    `Cargá estos consumos de la tarjeta ${str(d.tarjeta)} (··${str(d.last4)}), del resumen ${periodo}, como propuesta:\n` +
++    faltan
++      .map((x) => {
++        const b = obj(x.banco);
++        return `- ${str(x.fecha)} · ${str(x.comercio)} · ${money2(num(b.monto), str(b.moneda))}${b.cuota ? ` · cuota ${str(b.cuota)}` : ""}`;
++      })
++      .join("\n")
++  );
++}
++
++function ccButton(label: string, primary: boolean, onClick: () => void, title = ""): HTMLButtonElement {
++  const b = h(
++    "button",
++    { type: "button", class: `btn ${primary ? "primary" : "secondary"} plata-btn plata-cc-btn`, title: title || undefined },
++    h("span", { text: label }),
++  );
++  b.addEventListener("click", onClick);
++  return b;
++}
++
++type CardActions = {
++  openReport: (path: string) => void;
++  copy: (msg: string, btn: HTMLButtonElement) => void;
++  load: (msg: string) => void;
++};
++
++/** Totals per currency, counts per kind, the first differences, and what to do next. */
++function conciliacionCard(d: Obj, informe: string | null, act: CardActions): HTMLElement {
++  const resumen = obj(d.plata_resumen);
++  const titulo = [str(d.tarjeta) || "Tarjeta", d.last4 ? `··${str(d.last4)}` : ""].filter(Boolean).join(" ");
++  const card = h(
++    "div",
++    { class: "plata-data plata-cc-result" },
++    h(
++      "div",
++      { class: "plata-prop-head" },
++      h("span", { class: "plata-data-kind", text: `Conciliación · ${titulo}` }),
++      h("span", { class: "plata-prop-exp", text: resumen.periodo ? `resumen ${str(resumen.periodo)}` : str(d.banco) }),
++    ),
++  );
++  if (d.ejemplo) card.append(h("div", { class: "plata-note", text: "Datos de ejemplo, no de tu resumen." }));
++
++  const totales = arr(d.totales);
++  if (totales.length) {
++    const box = h("div", { class: "plata-cc-totals" });
++    for (const t of totales) {
++      const moneda = str(t.moneda);
++      const banco = num(t.banco);
++      const plata = num(t.plata);
++      const ok = banco !== null && plata !== null && banco.toFixed(2) === plata.toFixed(2);
++      box.append(
++        h(
++          "div",
++          { class: "plata-cc-tot" },
++          h(
++            "div",
++            { class: "plata-cc-tot-head" },
++            h("span", { text: moneda }),
++            h("span", { class: `plata-cc-state ${ok ? "ok" : "bad"}`, text: ok ? "coinciden" : "no coinciden" }),
++          ),
++          h("span", { class: "plata-cc-k", text: "Banco" }),
++          h("span", { class: "plata-cc-k", text: "Plata" }),
++          h("span", { class: "plata-cc-v", text: money2(banco, moneda) }),
++          h("span", { class: `plata-cc-v ${ok ? "" : "bad"}`, text: money2(plata, moneda) }),
++        ),
++      );
++    }
++    card.append(box);
++  }
++
++  const difs = arr(d.diferencias);
++  const chips = h("div", { class: "plata-cc-chips" });
++  const chip = (n: number, label: string, color: string) => {
++    const c = h("span", { class: "plata-cc-chip" }, h("i"), h("b", { text: String(n) }), ` ${label}`);
++    c.style.setProperty("--c", color);
++    return c;
++  };
++  chips.append(chip(num(d.coinciden) ?? 0, "coinciden", "#35e08a"));
++  for (const tipo of [...new Set(difs.map((x) => str(x.tipo)))]) {
++    chips.append(chip(difs.filter((x) => x.tipo === tipo).length, tipo, DIF_COLOR[tipo] ?? "#9a9fa8"));
++  }
++  card.append(chips);
++
++  if (!difs.length) {
++    card.append(h("div", { class: "plata-cc-clean", text: "Sin diferencias: todo lo del resumen está en Plata." }));
++  } else {
++    const list = h("ul", { class: "plata-cc-difs" });
++    for (const x of difs.slice(0, DIFS_SHOWN)) {
++      const b = x.banco ? obj(x.banco) : null;
++      const p = x.plata ? obj(x.plata) : null;
++      const bancoTxt = b ? `${money2(num(b.monto), str(b.moneda))}${b.cuota ? ` (cuota ${str(b.cuota)})` : ""}` : "—";
++      const plataTxt = p
++        ? `${money2(num(p.monto), str(p.moneda))}${p.cuota ? ` (cuota ${str(p.cuota)})` : ""}${p.resumen ? ` · resumen ${str(p.resumen)}` : ""}`
++        : "—";
++      const tipo = str(x.tipo);
++      const kind = h("span", { class: "plata-cc-kind" }, h("i"), tipo);
++      kind.style.setProperty("--c", DIF_COLOR[tipo] ?? "#9a9fa8");
++      list.append(
++        h(
++          "li",
++          { class: "plata-cc-dif" },
++          h("div", { class: "plata-cc-dif-top" }, kind, h("span", { class: "plata-cc-date", text: str(x.fecha) })),
++          h(
++            "div",
++            { class: "plata-cc-dif-name" },
++            p && p.id != null ? h("span", { class: "plata-cc-id", text: `#${str(p.id)}` }) : null,
++            h("span", { text: str(x.comercio) }),
++          ),
++          h("div", { class: "plata-cc-dif-amt", text: `Banco ${bancoTxt} → Plata ${plataTxt}` }),
++          x.que_hacer ? h("div", { class: "plata-cc-dif-do", text: str(x.que_hacer) }) : null,
++        ),
++      );
++    }
++    card.append(list);
++    if (difs.length > DIFS_SHOWN) {
++      const more = difs.length - DIFS_SHOWN;
++      card.append(h("div", { class: "plata-note", text: `y ${more} ${more === 1 ? "diferencia más" : "diferencias más"} en el informe` }));
++    }
++  }
++
++  const actions = h("div", { class: "plata-actions plata-cc-actions" });
++  if (informe) actions.append(ccButton("Abrir informe", true, () => act.openReport(informe), "Abre el informe completo en el navegador"));
++  const msg = faltantesMensaje(d);
++  if (msg) {
++    const copy = ccButton("Copiar faltantes", false, () => act.copy(msg, copy), "Copia el mensaje para cargar lo que falta");
++    actions.append(
++      copy,
++      ccButton("Cargar faltantes con Plata", false, () => act.load(msg), "Se lo manda al agente de Plata, que te los propone para aprobar"),
++    );
++  }
++  if (actions.childElementCount) card.append(actions);
++  return card;
++}
++
+ function hhmm(iso: string | null): string {
+   if (!iso) return "";
+   const d = new Date(iso);
+@@ -229,6 +418,18 @@ export function buildPlata(onSizeChange: () => void = () => {}): ViewHost {
+   let replyEl: HTMLElement | null = null;
+   let toolsEl: HTMLElement | null = null;
+   let toolsSeen: string[] = [];
++  // Claude Code: the run in progress (one at a time) and the last attachments
++  // sent, which the agent's "hacelo con Claude Code" suggestion reuses.
++  let ccRun: {
++    sesion: string;
++    step: HTMLElement;
++    box: HTMLElement;
++    timer: number;
++    started: number;
++    text: string;
++    atts: Attachment[];
++  } | null = null;
++  let lastAtts: { text: string; atts: Attachment[] } | null = null;
+ 
+   const dotEl = h("i", { class: "plata-dot" });
+   const statusText = h("span", { class: "plata-status-text", text: "Plata" });
+@@ -466,6 +667,13 @@ export function buildPlata(onSizeChange: () => void = () => {}): ViewHost {
+         typing(sending);
+         break;
+       }
++      case "delegar":
++        typing(false);
++        replyEl = null;
++        toolsEl = null;
++        delegateSuggestion(ev.tarea, ev.detalle);
++        typing(sending);
++        break;
+       case "fin": {
+         const total = (ev.usos ?? []).reduce((a, u) => a + (u.usd ?? 0), 0);
+         const known = (ev.usos ?? []).every((u) => u.precio_conocido !== false);
+@@ -477,6 +685,222 @@ export function buildPlata(onSizeChange: () => void = () => {}): ViewHost {
+     }
+   }
+ 
++  // ── Claude Code (headless, on Lucas's plan) ────────────────────────────
++
++  function busy(): void {
++    State.stateOverride = sending || ccRun ? "thinking" : null;
++    State.notify();
++  }
++
++  const errText = (e: unknown) => String(e).replace(/^Error:\s*/, "");
++
++  /** The error, and what can be done instead: the agent, or logging in. */
++  function ccFailed(texto: string, text: string, atts: Attachment[], login = false) {
++    const box = h("div", { class: "plata-error plata-cc-error" }, h("span", { text: texto }));
++    if (login) {
++      box.append(
++        ccButton("Iniciar sesión en Claude Code", true, () => {
++          Bridge.plataClaudeLogin().catch((e) => note(errText(e), "plata-error"));
++        }),
++      );
++    }
++    const toAgent = ccButton(
++      "Mandárselo a Plata",
++      false,
++      () => {
++        toAgent.disabled = true;
++        void submit(text, { atts, toAgent: true, retry: true });
++      },
++      "Lo hace el agente de Plata, con la API (cuesta plata)",
++    );
++    box.append(toAgent);
++    row(box);
++  }
++
++  /**
++   * Reconciles with Claude Code instead of the agent. `bubble`: false when the
++   * message is already on screen (the agent's suggestion reusing it).
++   */
++  async function delegate(text: string, atts: Attachment[], opts: { bubble?: boolean } = {}) {
++    if (ccRun) {
++      note("Ya estoy conciliando un resumen con Claude Code: esperá que termine o cancelalo.", "plata-error");
++      pending = [...atts, ...pending];
++      renderAttachments();
++      return;
++    }
++    lastAtts = { text, atts };
++    if (opts.bubble !== false) {
++      const bubble = h("div", { class: "bubble", text: text.trim() || DEFAULT_ASK });
++      bubble.append(h("div", { class: "plata-bubble-atts", text: atts.map(attachmentLabel).join(" · ") }));
++      row(bubble, "chat-row user");
++    }
++    const step = h("span", { class: "plata-cc-step-text", text: "Arrancando Claude Code…" });
++    const time = h("span", { class: "plata-cc-time", text: "0 s" });
++    const cancel = h("button", { type: "button", class: "plata-link plata-cc-cancel", text: "Cancelar", title: "Cortar la conciliación" });
++    const box = h(
++      "div",
++      { class: "plata-cc-run" },
++      h(
++        "div",
++        { class: "plata-cc-run-head" },
++        svg(ICONS.terminal, 12, { stroke: 2 }),
++        h("span", { text: "Lo hago con Claude Code · incluido en tu plan" }),
++      ),
++      h("div", { class: "plata-cc-step", role: "status", "aria-live": "polite" }, h("i", { class: "plata-cc-pulse" }), step, time),
++      cancel,
++    );
++    row(box, "chat-row plata-cc-run-row");
++    const sesion = sesionId;
++    const started = Date.now();
++    const timer = window.setInterval(() => {
++      time.textContent = fmtSecs((Date.now() - started) / 1000);
++    }, 1000);
++    ccRun = { sesion, step, box, timer, started, text, atts };
++    cancel.addEventListener("click", () => {
++      (cancel as HTMLButtonElement).disabled = true;
++      step.textContent = "Cancelando…";
++      void Bridge.plataDelegateCancel(sesion);
++    });
++    Sound.play("send");
++    busy();
++    const files = atts.filter((a): a is FileAttachment => a.kind === "file").map((a) => a.path);
++    const pasted = atts.filter((a): a is TextAttachment => a.kind === "text").map((a) => a.text);
++    try {
++      await Bridge.plataDelegate(sesion, text.trim(), files, pasted.length ? pasted.join("\n\n") : null);
++    } catch (e) {
++      // It never started, so no event will come.
++      endRun();
++      box.remove();
++      ccFailed(`No pude arrancar Claude Code: ${errText(e)}`, text, atts);
++      Sound.play("error");
++    }
++  }
++
++  function endRun() {
++    if (!ccRun) return;
++    window.clearInterval(ccRun.timer);
++    ccRun = null;
++    busy();
++    sync();
++  }
++
++  function onDelegado(ev: Delegado) {
++    const run = ccRun;
++    if (!run) return;
++    if (ev.tipo === "progreso") {
++      run.step.textContent = `${ev.texto}…`;
++      return;
++    }
++    const { box, text, atts, started } = run;
++    endRun();
++    if (ev.tipo === "error") {
++      box.remove();
++      if (ev.cancelado) {
++        note("Cancelaste la conciliación.");
++      } else {
++        ccFailed(ev.texto, text, atts, ev.login === true);
++        Sound.play("error");
++      }
++      return;
++    }
++    // fin: the line stays, as the record of what ran and how long it took.
++    clear(box);
++    box.classList.add("done");
++    box.append(
++      h(
++        "div",
++        { class: "plata-cc-run-head" },
++        svg(ICONS.check, 12, { stroke: 2.2 }),
++        h("span", { text: `Claude Code · ${fmtSecs(ev.segundos ?? (Date.now() - started) / 1000)} · incluido en tu plan` }),
++      ),
++    );
++    const datos = ev.datos ? obj(ev.datos) : null;
++    if (datos && typeof datos.error === "string") {
++      row(h("div", { class: "plata-error", text: `No pude conciliar: ${datos.error}` }));
++      Sound.play("error");
++    } else if (datos) {
++      row(
++        conciliacionCard(datos, ev.informe, {
++          openReport: (p) => {
++            Bridge.plataOpenReport(p).catch((e) => note(errText(e), "plata-error"));
++          },
++          copy: (msg, btn) => void copyText(msg, btn),
++          load: (msg) => void submit(msg),
++        }),
++        "chat-row plata-prop-row",
++      );
++      Sound.play("finish");
++    } else {
++      // No datos.json: Claude Code answered something else (a question, a problem).
++      if (ev.mensaje) row(h("div", { class: "reply", text: plain(ev.mensaje) }));
++      else note("Claude Code terminó sin dejar el resultado.", "plata-error");
++      const informe = ev.informe;
++      if (informe) {
++        row(
++          h(
++            "div",
++            { class: "plata-actions" },
++            ccButton("Abrir informe", true, () => {
++              Bridge.plataOpenReport(informe).catch((e) => note(errText(e), "plata-error"));
++            }),
++          ),
++        );
++      }
++      Sound.play(ev.ok ? "finish" : "error");
++    }
++  }
++
++  async function copyText(msg: string, btn: HTMLButtonElement) {
++    const label = btn.querySelector("span");
++    try {
++      await navigator.clipboard.writeText(msg);
++      if (label) {
++        label.textContent = "Copiado";
++        window.setTimeout(() => (label.textContent = "Copiar faltantes"), 1500);
++      }
++    } catch {
++      // No clipboard: the text on screen, to select by hand.
++      note(msg);
++    }
++  }
++
++  /** The agent says this is a job for Claude Code: offer it, one click away. */
++  function delegateSuggestion(tarea: string, detalle: string) {
++    const actions = h("div", { class: "plata-actions" });
++    const decide = (ok: boolean) => {
++      clear(actions);
++      actions.append(h("span", { class: "plata-decided", text: ok ? "Se lo paso a Claude Code" : "Sigue con Plata" }));
++      if (!ok) return;
++      if (tarea !== "conciliar_resumen") {
++        // Anything else is a change to the app: the same as the terminal button.
++        Bridge.openClaudeCode(detalle)
++          .then((repo) => note(`Se lo pasé a Claude Code en ${repo || "el repo de Plata"}: se abrió una terminal.`))
++          .catch((e) => note(errText(e), "plata-error"));
++        return;
++      }
++      if (lastAtts?.atts.length) {
++        void delegate(lastAtts.text, lastAtts.atts, { bubble: false });
++      } else {
++        note("Soltá el resumen o pegalo acá: lo hago con Claude Code.");
++        input.focus();
++      }
++    };
++    actions.append(ccButton("Hacerlo", true, () => decide(true)), ccButton("No", false, () => decide(false)));
++    row(
++      h(
++        "div",
++        { class: "plata-prop plata-cc-suggest" },
++        h("div", { class: "plata-prop-head" }, h("span", { class: "plata-prop-kind", text: "Sugerencia" })),
++        h("div", {
++          class: "plata-prop-body",
++          text: `Plata sugiere hacerlo con Claude Code (incluido en tu plan)${detalle ? `: ${plain(detalle)}` : "."}`,
++        }),
++        actions,
++      ),
++      "chat-row plata-prop-row",
++    );
++  }
++
+   /** The agent isn't listening: say so, and offer to start it. */
+   /**
+    * The agent isn't listening. Coucou starts it at launch, so this is a crash or
+@@ -498,7 +922,7 @@ export function buildPlata(onSizeChange: () => void = () => {}): ViewHost {
+     State.notify();
+     if (up) {
+       line.textContent = "Agente prendido. La primera respuesta tarda un poco más.";
+-      void submit(retryText, { retry: true, atts });
++      void submit(retryText, { retry: true, atts, toAgent: true });
+       return;
+     }
+     line.remove();
+@@ -536,10 +960,16 @@ export function buildPlata(onSizeChange: () => void = () => {}): ViewHost {
+    * Sends one message. `atts` are the attachments taken for it: only the field
+    * (Enter / send) takes them, so an Approve click never carries pending chips.
+    */
+-  async function submit(text: string, opts: { retry?: boolean; atts?: Attachment[] } = {}) {
++  async function submit(text: string, opts: { retry?: boolean; atts?: Attachment[]; toAgent?: boolean } = {}) {
+     const atts = opts.atts ?? [];
++    // A statement to reconcile goes to Claude Code (Lucas's plan), not the API.
++    if (atts.length && !opts.toAgent) {
++      void delegate(text, atts);
++      return;
++    }
+     const query = text.trim() || (atts.length ? DEFAULT_ASK : "");
+     if (!query || sending) return;
++    if (atts.length) lastAtts = { text, atts };
+     const texto = composeText(query, atts);
+     if (texto.length > MAX_TEXT) {
+       note(
+@@ -583,8 +1013,7 @@ export function buildPlata(onSizeChange: () => void = () => {}): ViewHost {
+     } finally {
+       sending = false;
+       typing(false);
+-      State.stateOverride = null;
+-      State.notify();
++      busy();
+       input.disabled = false;
+       input.focus();
+     }
+@@ -593,9 +1022,17 @@ export function buildPlata(onSizeChange: () => void = () => {}): ViewHost {
+   void onEvent<{ sesionId: string; ev: Evento }>("plata-event", (p) => {
+     if (p.sesionId === sesionId) onEvento(p.ev);
+   });
++  void onEvent<{ sesionId: string; ev: Delegado }>("plata-delegado", (p) => {
++    if (ccRun && p.sesionId === ccRun.sesion) onDelegado(p.ev);
++  });
+ 
+   const sendFromField = () => {
+     if (sending) return;
++    // While Claude Code reconciles, questions still go to the agent; another statement waits.
++    if (ccRun && pending.length) {
++      note("Ya estoy conciliando un resumen con Claude Code: esperá que termine o cancelalo.");
++      return;
++    }
+     const text = input.value;
+     if (!text.trim() && !pending.length) return;
+     input.value = "";
+@@ -642,23 +1079,26 @@ export function buildPlata(onSizeChange: () => void = () => {}): ViewHost {
+     }
+   });
+   resetBtn.addEventListener("click", () => {
+-    if (sending) return;
++    if (sending || ccRun) return;
+     sesionId = newSession();
+     lastText = "";
++    lastAtts = null;
+     pending = [];
+     renderAttachments();
+     clear(log);
+     note("Conversación nueva.");
+   });
+ 
+-  note("Preguntale por tus saldos, gastos o deudas, o pedile que registre algo. Lo que cambie datos te lo muestra antes, para que lo apruebes. Para cambios en la app, escribilos y tocá el botón de la terminal. Para revisar un resumen de tarjeta, soltá acá el PDF o la captura, o pegá el texto.");
++  note("Preguntale por tus saldos, gastos o deudas, o pedile que registre algo. Lo que cambie datos te lo muestra antes, para que lo apruebes. Para cambios en la app, escribilos y tocá el botón de la terminal. Para revisar un resumen de tarjeta, soltá acá el PDF o la captura, o pegá el texto: lo hace Claude Code, incluido en tu plan.");
++
++  function sync() {
++    input.disabled = sending;
++    input.placeholder = placeholder();
++  }
+ 
+   return {
+     el,
+-    sync() {
+-      input.disabled = sending;
+-      input.placeholder = placeholder();
+-    },
++    sync,
+     dropFiles(paths: string[]) {
+       void addFiles(paths);
+     },
 -- 
 2.53.0.windows.2
 
