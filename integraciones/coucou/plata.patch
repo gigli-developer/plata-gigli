@@ -1,7 +1,7 @@
 From 680c133ae9c577ce390172fe712e22debc666756 Mon Sep 17 00:00:00 2001
 From: Lucas Gigli <giglilangonelucas@gmail.com>
 Date: Wed, 30 Sep 2026 20:56:49 +0000
-Subject: [PATCH 01/13] Pills de Plata y Railway
+Subject: [PATCH 01/15] Pills de Plata y Railway
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -688,7 +688,7 @@ index b8ad73c..1e394d3 100644
 From 300ffc9f910104c945e4bac87f07652ff76cdef8 Mon Sep 17 00:00:00 2001
 From: Lucas <lucasgigli3@gmail.com>
 Date: Wed, 30 Sep 2026 19:26:42 -0300
-Subject: [PATCH 02/13] Isla movible y chat con el agente de Plata
+Subject: [PATCH 02/15] Isla movible y chat con el agente de Plata
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -2050,7 +2050,7 @@ index ac0ac7b..b0aea0d 100644
 From bc47f21c9aebad91c668224113e757e8621898c3 Mon Sep 17 00:00:00 2001
 From: Lucas <lucasgigli3@gmail.com>
 Date: Wed, 30 Sep 2026 19:41:15 -0300
-Subject: [PATCH 03/13] Plata en la isla: tarjetas, pedidos a Claude Code y voz
+Subject: [PATCH 03/15] Plata en la isla: tarjetas, pedidos a Claude Code y voz
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -2648,7 +2648,7 @@ index 6c6bb30..668ec54 100644
 From a651a03795654c762b61b66dd6906f0a9d326a3b Mon Sep 17 00:00:00 2001
 From: Lucas <lucasgigli3@gmail.com>
 Date: Wed, 30 Sep 2026 20:58:44 -0300
-Subject: [PATCH 04/13] El agente de Plata se prende solo
+Subject: [PATCH 04/15] El agente de Plata se prende solo
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -2837,7 +2837,7 @@ index 668ec54..6de96d2 100644
 From 6b35f453bdc19dd5a88bfaf5147cac5d4aadd88f Mon Sep 17 00:00:00 2001
 From: Lucas <lucasgigli3@gmail.com>
 Date: Wed, 30 Sep 2026 21:19:44 -0300
-Subject: [PATCH 05/13] La isla se ancla en cualquier monitor
+Subject: [PATCH 05/15] La isla se ancla en cualquier monitor
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -2995,7 +2995,7 @@ index 96367bd..4a31905 100644
 From 10df29a346632a6204e9d3e29485cd1ca4f1449d Mon Sep 17 00:00:00 2001
 From: Lucas <lucasgigli3@gmail.com>
 Date: Wed, 30 Sep 2026 22:32:46 -0300
-Subject: [PATCH 06/13] Plata tab: attach a card statement (drop a
+Subject: [PATCH 06/15] Plata tab: attach a card statement (drop a
  PDF/screenshot or paste it) to reconcile
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -3683,7 +3683,7 @@ index b0aea0d..791ea8a 100644
 From cc3b3a857b5ae6eb024de26bd9e1b2493dbc2e65 Mon Sep 17 00:00:00 2001
 From: Lucas <lucasgigli3@gmail.com>
 Date: Wed, 30 Sep 2026 22:56:17 -0300
-Subject: [PATCH 07/13] =?UTF-8?q?Pesta=C3=B1a=20Plata:=20agrandar=20el=20c?=
+Subject: [PATCH 07/15] =?UTF-8?q?Pesta=C3=B1a=20Plata:=20agrandar=20el=20c?=
  =?UTF-8?q?hat=20e=20historial=20local=20de=20la=20conversaci=C3=B3n?=
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -4099,7 +4099,7 @@ index 791ea8a..2cee61f 100644
 From 05b9ad0894d7422a3123551b89b309777eda2aba Mon Sep 17 00:00:00 2001
 From: Lucas <lucasgigli3@gmail.com>
 Date: Wed, 30 Sep 2026 23:13:01 -0300
-Subject: [PATCH 08/13] =?UTF-8?q?Pesta=C3=B1a=20Plata:=20el=20bot=C3=B3n?=
+Subject: [PATCH 08/15] =?UTF-8?q?Pesta=C3=B1a=20Plata:=20el=20bot=C3=B3n?=
  =?UTF-8?q?=20de=20agrandar=20con=20texto=20y=20en=20naranja?=
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -4177,7 +4177,7 @@ index b487a5e..e983567 100644
 From dc4ab4cf9f001e33e42b79fdfafc937da0cce072 Mon Sep 17 00:00:00 2001
 From: Lucas <lucasgigli3@gmail.com>
 Date: Wed, 30 Sep 2026 23:17:23 -0300
-Subject: [PATCH 09/13] =?UTF-8?q?Bot=C3=B3n=20en=20el=20encabezado=20de=20?=
+Subject: [PATCH 09/15] =?UTF-8?q?Bot=C3=B3n=20en=20el=20encabezado=20de=20?=
  =?UTF-8?q?la=20isla:=20abre=20el=20chat=20de=20Plata=20en=20grande?=
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -4279,7 +4279,7 @@ index 2cee61f..416788e 100644
 From d168c3b1df9f0d0e0a178a2bec6ddec99f877c28 Mon Sep 17 00:00:00 2001
 From: Lucas <lucasgigli3@gmail.com>
 Date: Thu, 1 Oct 2026 21:31:50 -0300
-Subject: [PATCH 10/13] =?UTF-8?q?Isla=20m=C3=A1s=20fluida:=20ventana=20de?=
+Subject: [PATCH 10/15] =?UTF-8?q?Isla=20m=C3=A1s=20fluida:=20ventana=20de?=
  =?UTF-8?q?=20tama=C3=B1o=20fijo,=20anclaje=20y=20deslizamiento=20al=20sol?=
  =?UTF-8?q?tar?=
 MIME-Version: 1.0
@@ -5586,7 +5586,7 @@ index 416788e..debb686 100644
 From 42a905cac32e14abd26643bf18e8ae15e8d46deb Mon Sep 17 00:00:00 2001
 From: Lucas <lucasgigli3@gmail.com>
 Date: Thu, 1 Oct 2026 21:32:36 -0300
-Subject: [PATCH 11/13] =?UTF-8?q?Pesta=C3=B1a=20Plata:=20conciliar=20un=20?=
+Subject: [PATCH 11/15] =?UTF-8?q?Pesta=C3=B1a=20Plata:=20conciliar=20un=20?=
  =?UTF-8?q?resumen=20con=20Claude=20Code,=20con=20el=20plan=20y=20no=20la?=
  =?UTF-8?q?=20API?=
 MIME-Version: 1.0
@@ -7228,7 +7228,7 @@ index 851e6da..53b99a0 100644
 From 71fb67002d30c12e7808bbb1548cbe9eec850477 Mon Sep 17 00:00:00 2001
 From: Lucas <lucasgigli3@gmail.com>
 Date: Thu, 1 Oct 2026 22:01:26 -0300
-Subject: [PATCH 12/13] =?UTF-8?q?Pesta=C3=B1a=20Plata:=20sin=20sesi=C3=B3n?=
+Subject: [PATCH 12/15] =?UTF-8?q?Pesta=C3=B1a=20Plata:=20sin=20sesi=C3=B3n?=
  =?UTF-8?q?=20de=20Claude=20Code,=20Reintentar=20en=20vez=20de=20mand?=
  =?UTF-8?q?=C3=A1rselo=20al=20agente?=
 MIME-Version: 1.0
@@ -7325,7 +7325,7 @@ index 53b99a0..fde7b29 100644
 From fcb9a85a1600172b861b74e8260577e1017d50dd Mon Sep 17 00:00:00 2001
 From: Lucas <lucasgigli3@gmail.com>
 Date: Thu, 1 Oct 2026 22:07:16 -0300
-Subject: [PATCH 13/13] =?UTF-8?q?Pesta=C3=B1a=20Plata:=20las=20respuestas?=
+Subject: [PATCH 13/15] =?UTF-8?q?Pesta=C3=B1a=20Plata:=20las=20respuestas?=
  =?UTF-8?q?=20del=20agente=20con=20formato=20(tablas,=20negritas,=20listas?=
  =?UTF-8?q?)?=
 MIME-Version: 1.0
@@ -7687,6 +7687,250 @@ index fde7b29..09465b3 100644
          scroll();
          typing(sending);
          break;
+-- 
+2.53.0.windows.2
+
+
+From 27d8a7472d2e8735e30bee24dd325d622251047c Mon Sep 17 00:00:00 2001
+From: Lucas <lucasgigli3@gmail.com>
+Date: Thu, 1 Oct 2026 22:26:24 -0300
+Subject: [PATCH 14/15] =?UTF-8?q?Buscar=20claude.exe=20tambi=C3=A9n=20en?=
+ =?UTF-8?q?=20la=20carpeta=20del=20paquete=20de=20la=20app=20(MSIX)?=
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+La app de Claude de la Microsoft Store guarda %APPDATA%\Claude dentro de
+%LOCALAPPDATA%\Packages\Claude_<id>\LocalCache\Roaming. Desde fuera del
+paquete esa ruta no existe: el login y la conciliación fallaban con "el
+sistema no puede encontrar el archivo especificado".
+
+Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+---
+ windows/src-tauri/src/plata_agent.rs | 28 +++++++++++++++++++++++-----
+ 1 file changed, 23 insertions(+), 5 deletions(-)
+
+diff --git a/windows/src-tauri/src/plata_agent.rs b/windows/src-tauri/src/plata_agent.rs
+index 3b73768..83bbfae 100644
+--- a/windows/src-tauri/src/plata_agent.rs
++++ b/windows/src-tauri/src/plata_agent.rs
+@@ -350,12 +350,30 @@ fn plata_repo_dir() -> Option<PathBuf> {
+     })
+ }
+ 
+-/// The newest Claude Code the desktop app ships (%APPDATA%\Claude\claude-code\<version>\claude.exe).
++/// The newest Claude Code the desktop app ships (claude-code\<version>\claude.exe).
++///
++/// The Store (MSIX) build of the app writes %APPDATA%\Claude into its package:
++/// %LOCALAPPDATA%\Packages\Claude_<id>\LocalCache\Roaming\Claude. Only the app
++/// itself sees it at %APPDATA%; from Coucou (outside the package) that path does
++/// not exist, so the package folder is searched too.
+ pub(crate) fn claude_exe() -> Option<PathBuf> {
+-    let base = PathBuf::from(std::env::var_os("APPDATA")?).join("Claude").join("claude-code");
+-    std::fs::read_dir(base)
+-        .ok()?
+-        .flatten()
++    let mut bases = Vec::new();
++    if let Some(local) = std::env::var_os("LOCALAPPDATA") {
++        if let Ok(pkgs) = std::fs::read_dir(PathBuf::from(local).join("Packages")) {
++            for p in pkgs.flatten() {
++                if p.file_name().to_string_lossy().starts_with("Claude_") {
++                    bases.push(p.path().join("LocalCache").join("Roaming").join("Claude").join("claude-code"));
++                }
++            }
++        }
++    }
++    if let Some(roaming) = std::env::var_os("APPDATA") {
++        bases.push(PathBuf::from(roaming).join("Claude").join("claude-code"));
++    }
++    bases
++        .into_iter()
++        .filter_map(|b| std::fs::read_dir(b).ok())
++        .flat_map(|dir| dir.flatten())
+         .filter_map(|e| {
+             let exe = e.path().join("claude.exe");
+             let version: Vec<u64> = e.file_name().to_string_lossy().split('.').map(|n| n.parse().unwrap_or(0)).collect();
+-- 
+2.53.0.windows.2
+
+
+From 11810d3699dc676d109b16b76a1eed171f3fdcf7 Mon Sep 17 00:00:00 2001
+From: Lucas <lucasgigli3@gmail.com>
+Date: Thu, 1 Oct 2026 22:44:34 -0300
+Subject: [PATCH 15/15] Conciliar: de 8 minutos a 50 segundos, y el resultado
+ le llega al agente
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+- claude -p con --permission-mode dontAsk y --tools Read,Write,Glob,Skill,Bash:
+  en -p un pedido de permiso no tiene quién lo conteste y espera hasta
+  vencer. Seis de esos (PowerShell, comandos con cd) hicieron que la primera
+  corrida real tardara 493 s; con esto, la misma tardó 51 s.
+- La conciliación corre en Claude Code y el agente no la veía: "hacé las
+  correcciones" contestaba que no sabía de qué hablaba. Ahora el próximo
+  mensaje al agente lleva el resultado (una vez), y la tarjeta tiene
+  "Corregir en Plata", que le pide una sola propuesta con los arreglos.
+
+Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+---
+ windows/src-tauri/src/claude_code.rs | 23 +++++++++++++--
+ windows/src/views/plata.ts           | 43 ++++++++++++++++++++++++++--
+ 2 files changed, 60 insertions(+), 6 deletions(-)
+
+diff --git a/windows/src-tauri/src/claude_code.rs b/windows/src-tauri/src/claude_code.rs
+index dd5ebe7..15da981 100644
+--- a/windows/src-tauri/src/claude_code.rs
++++ b/windows/src-tauri/src/claude_code.rs
+@@ -33,7 +33,23 @@ const SKILL: &str = "conciliar-resumen";
+ /// The whole invocation in one place, so it can follow the skill's side of the
+ /// contract. The prompt goes in through stdin.
+ fn claude_args(carpeta: &Path, skill_dir: &Path) -> Vec<String> {
+-    let mut args: Vec<String> = ["-p", "--output-format", "stream-json", "--verbose", "--model", "sonnet", "--allowedTools"]
++    // --tools: only what the recipe uses (no PowerShell to wander into).
++    // dontAsk: anything not pre-approved is refused at once. In -p a permission
++    // prompt has nobody to answer it and waits until it times out: six of
++    // those made the first real run take 8 minutes instead of ~1.
++    let mut args: Vec<String> = [
++        "-p",
++        "--output-format",
++        "stream-json",
++        "--verbose",
++        "--model",
++        "sonnet",
++        "--permission-mode",
++        "dontAsk",
++        "--tools",
++        "Read,Write,Glob,Skill,Bash",
++        "--allowedTools",
++    ]
+         .iter()
+         .map(|s| s.to_string())
+         .collect();
+@@ -52,7 +68,8 @@ fn claude_args(carpeta: &Path, skill_dir: &Path) -> Vec<String> {
+ fn prompt(resumen: &[PathBuf], carpeta: &Path, pedido: &str) -> String {
+     let rutas: Vec<String> = resumen.iter().map(|p| p.to_string_lossy().to_string()).collect();
+     let mut p = format!(
+-        "MODO ISLA. Usá la skill {SKILL}. Resumen: {}. Carpeta de salida: {}",
++        "MODO ISLA. Usá la skill {SKILL}. Resumen: {}. Carpeta de salida: {}
++         Comandos: solo con Bash, uno por llamada, sin cd, sin variables y sin encadenar          (el cwd ya es el repo agentes). Los únicos permitidos:          `npm run -s conciliar:leer -- ...` y `node <ruta de la skill>/llenar.mjs ...`.",
+         rutas.join(", "),
+         carpeta.display()
+     );
+@@ -624,7 +641,7 @@ mod tests {
+     fn the_invocation_matches_the_contract() {
+         let a = claude_args(Path::new("D:\\run"), Path::new("C:\\s\\conciliar-resumen"));
+         let joined = a.join(" ");
+-        assert!(joined.starts_with("-p --output-format stream-json --verbose --model sonnet --allowedTools Read Write Glob Skill"));
++        assert!(joined.starts_with("-p --output-format stream-json --verbose --model sonnet --permission-mode dontAsk --tools Read,Write,Glob,Skill,Bash --allowedTools Read Write Glob Skill"));
+         assert!(a.contains(&"Bash(npm run -s conciliar:leer*)".to_string()));
+         assert!(a.contains(&"Bash(node *llenar.mjs*)".to_string()));
+         assert!(joined.ends_with("--add-dir D:\\run --add-dir C:\\s\\conciliar-resumen"));
+diff --git a/windows/src/views/plata.ts b/windows/src/views/plata.ts
+index 09465b3..acf043e 100644
+--- a/windows/src/views/plata.ts
++++ b/windows/src/views/plata.ts
+@@ -287,8 +287,26 @@ type CardActions = {
+   openReport: (path: string) => void;
+   copy: (msg: string, btn: HTMLButtonElement) => void;
+   load: (msg: string) => void;
++  /** Asks the agent to fix what it can, with the differences attached. */
++  fix: () => void;
+ };
+ 
++/** Marker the agent's prompt looks for ("Corregir según una conciliación"). */
++const CONC_HEAD = "--- Conciliación de Claude Code ---";
++
++/**
++ * The reconciliation, for the agent: it ran in Claude Code, so the agent's
++ * conversation never saw it. Only what the agent needs to fix it.
++ */
++function conciliacionContexto(d: Obj): string {
++  const { tarjeta, last4, banco, banco_periodo, plata_resumen, totales, diferencias } = d;
++  const json = JSON.stringify({ tarjeta, last4, banco, banco_periodo, plata_resumen, totales, diferencias });
++  return `${CONC_HEAD}\n${json}\n--- fin de la conciliación ---`;
++}
++
++const PEDIDO_CORREGIR =
++  "Corregí en Plata lo que se pueda para igualar el resumen del banco: armá una sola propuesta para que la apruebe, y lo dudoso preguntámelo.";
++
+ /** Totals per currency, counts per kind, the first differences, and what to do next. */
+ function conciliacionCard(d: Obj, informe: string | null, act: CardActions): HTMLElement {
+   const resumen = obj(d.plata_resumen);
+@@ -384,7 +402,10 @@ function conciliacionCard(d: Obj, informe: string | null, act: CardActions): HTM
+   }
+ 
+   const actions = h("div", { class: "plata-actions plata-cc-actions" });
+-  if (informe) actions.append(ccButton("Abrir informe", true, () => act.openReport(informe), "Abre el informe completo en el navegador"));
++  if (difs.length) {
++    actions.append(ccButton("Corregir en Plata", true, act.fix, "El agente de Plata arma una propuesta con los arreglos, para que la apruebes"));
++  }
++  if (informe) actions.append(ccButton("Abrir informe", !difs.length, () => act.openReport(informe), "Abre el informe completo en el navegador"));
+   const msg = faltantesMensaje(d);
+   if (msg) {
+     const copy = ccButton("Copiar faltantes", false, () => act.copy(msg, copy), "Copia el mensaje para cargar lo que falta");
+@@ -418,6 +439,8 @@ export function buildPlata(onSizeChange: () => void = () => {}): ViewHost {
+   let sending = false;
+   /** The last Claude Code run failed for lack of a login. */
+   let ccNeedsLogin = false;
++  /** A reconciliation the agent has not seen yet: rides on the next message. */
++  let pendingConc: string | null = null;
+   let lastText = "";
+   let status: PlataAgentStatus | null = null;
+   // Per turn: the reply paragraph being filled and the running tools line.
+@@ -840,6 +863,9 @@ export function buildPlata(onSizeChange: () => void = () => {}): ViewHost {
+       row(h("div", { class: "plata-error", text: `No pude conciliar: ${datos.error}` }));
+       Sound.play("error");
+     } else if (datos) {
++      // The next message to the agent carries it, so "fix it" just works.
++      const contexto = conciliacionContexto(datos);
++      pendingConc = contexto;
+       row(
+         conciliacionCard(datos, ev.informe, {
+           openReport: (p) => {
+@@ -847,6 +873,7 @@ export function buildPlata(onSizeChange: () => void = () => {}): ViewHost {
+           },
+           copy: (msg, btn) => void copyText(msg, btn),
+           load: (msg) => void submit(msg),
++          fix: () => void submit(PEDIDO_CORREGIR, { contexto }),
+         }),
+         "chat-row plata-prop-row",
+       );
+@@ -983,7 +1010,10 @@ export function buildPlata(onSizeChange: () => void = () => {}): ViewHost {
+    * Sends one message. `atts` are the attachments taken for it: only the field
+    * (Enter / send) takes them, so an Approve click never carries pending chips.
+    */
+-  async function submit(text: string, opts: { retry?: boolean; atts?: Attachment[]; toAgent?: boolean } = {}) {
++  async function submit(
++    text: string,
++    opts: { retry?: boolean; atts?: Attachment[]; toAgent?: boolean; contexto?: string } = {},
++  ) {
+     const atts = opts.atts ?? [];
+     // A statement to reconcile goes to Claude Code (Lucas's plan), not the API.
+     if (atts.length && !opts.toAgent) {
+@@ -994,7 +1024,13 @@ export function buildPlata(onSizeChange: () => void = () => {}): ViewHost {
+     if (!query || sending) return;
+     if (atts.length) lastAtts = { text, atts };
+     // Sent to the agent after Claude Code could not: it must not hand it back.
+-    const texto = composeText(opts.toAgent ? `${NO_DELEGAR} ${query}` : query, atts);
++    let forAgent = opts.toAgent ? `${NO_DELEGAR} ${query}` : query;
++    // A reconciliation the agent has not seen rides on this message, once.
++    // The bubble shows only what Lucas wrote.
++    const contexto = opts.contexto ?? pendingConc;
++    if (contexto && !forAgent.includes(CONC_HEAD)) forAgent = `${contexto}\n\n${forAgent}`;
++    pendingConc = null;
++    const texto = composeText(forAgent, atts);
+     if (texto.length > MAX_TEXT) {
+       note(
+         `Lo pegado es demasiado largo para el agente (${ars0.format(texto.length)} caracteres; hasta ${ars0.format(MAX_TEXT)}). ` +
+@@ -1107,6 +1143,7 @@ export function buildPlata(onSizeChange: () => void = () => {}): ViewHost {
+     sesionId = newSession();
+     lastText = "";
+     lastAtts = null;
++    pendingConc = null;
+     pending = [];
+     renderAttachments();
+     clear(log);
 -- 
 2.53.0.windows.2
 
