@@ -1,7 +1,7 @@
 From 680c133ae9c577ce390172fe712e22debc666756 Mon Sep 17 00:00:00 2001
 From: Lucas Gigli <giglilangonelucas@gmail.com>
 Date: Wed, 30 Sep 2026 20:56:49 +0000
-Subject: [PATCH 01/15] Pills de Plata y Railway
+Subject: [PATCH 01/20] Pills de Plata y Railway
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -688,7 +688,7 @@ index b8ad73c..1e394d3 100644
 From 300ffc9f910104c945e4bac87f07652ff76cdef8 Mon Sep 17 00:00:00 2001
 From: Lucas <lucasgigli3@gmail.com>
 Date: Wed, 30 Sep 2026 19:26:42 -0300
-Subject: [PATCH 02/15] Isla movible y chat con el agente de Plata
+Subject: [PATCH 02/20] Isla movible y chat con el agente de Plata
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -2050,7 +2050,7 @@ index ac0ac7b..b0aea0d 100644
 From bc47f21c9aebad91c668224113e757e8621898c3 Mon Sep 17 00:00:00 2001
 From: Lucas <lucasgigli3@gmail.com>
 Date: Wed, 30 Sep 2026 19:41:15 -0300
-Subject: [PATCH 03/15] Plata en la isla: tarjetas, pedidos a Claude Code y voz
+Subject: [PATCH 03/20] Plata en la isla: tarjetas, pedidos a Claude Code y voz
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -2648,7 +2648,7 @@ index 6c6bb30..668ec54 100644
 From a651a03795654c762b61b66dd6906f0a9d326a3b Mon Sep 17 00:00:00 2001
 From: Lucas <lucasgigli3@gmail.com>
 Date: Wed, 30 Sep 2026 20:58:44 -0300
-Subject: [PATCH 04/15] El agente de Plata se prende solo
+Subject: [PATCH 04/20] El agente de Plata se prende solo
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -2837,7 +2837,7 @@ index 668ec54..6de96d2 100644
 From 6b35f453bdc19dd5a88bfaf5147cac5d4aadd88f Mon Sep 17 00:00:00 2001
 From: Lucas <lucasgigli3@gmail.com>
 Date: Wed, 30 Sep 2026 21:19:44 -0300
-Subject: [PATCH 05/15] La isla se ancla en cualquier monitor
+Subject: [PATCH 05/20] La isla se ancla en cualquier monitor
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -2995,7 +2995,7 @@ index 96367bd..4a31905 100644
 From 10df29a346632a6204e9d3e29485cd1ca4f1449d Mon Sep 17 00:00:00 2001
 From: Lucas <lucasgigli3@gmail.com>
 Date: Wed, 30 Sep 2026 22:32:46 -0300
-Subject: [PATCH 06/15] Plata tab: attach a card statement (drop a
+Subject: [PATCH 06/20] Plata tab: attach a card statement (drop a
  PDF/screenshot or paste it) to reconcile
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -3683,7 +3683,7 @@ index b0aea0d..791ea8a 100644
 From cc3b3a857b5ae6eb024de26bd9e1b2493dbc2e65 Mon Sep 17 00:00:00 2001
 From: Lucas <lucasgigli3@gmail.com>
 Date: Wed, 30 Sep 2026 22:56:17 -0300
-Subject: [PATCH 07/15] =?UTF-8?q?Pesta=C3=B1a=20Plata:=20agrandar=20el=20c?=
+Subject: [PATCH 07/20] =?UTF-8?q?Pesta=C3=B1a=20Plata:=20agrandar=20el=20c?=
  =?UTF-8?q?hat=20e=20historial=20local=20de=20la=20conversaci=C3=B3n?=
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -4099,7 +4099,7 @@ index 791ea8a..2cee61f 100644
 From 05b9ad0894d7422a3123551b89b309777eda2aba Mon Sep 17 00:00:00 2001
 From: Lucas <lucasgigli3@gmail.com>
 Date: Wed, 30 Sep 2026 23:13:01 -0300
-Subject: [PATCH 08/15] =?UTF-8?q?Pesta=C3=B1a=20Plata:=20el=20bot=C3=B3n?=
+Subject: [PATCH 08/20] =?UTF-8?q?Pesta=C3=B1a=20Plata:=20el=20bot=C3=B3n?=
  =?UTF-8?q?=20de=20agrandar=20con=20texto=20y=20en=20naranja?=
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -4177,7 +4177,7 @@ index b487a5e..e983567 100644
 From dc4ab4cf9f001e33e42b79fdfafc937da0cce072 Mon Sep 17 00:00:00 2001
 From: Lucas <lucasgigli3@gmail.com>
 Date: Wed, 30 Sep 2026 23:17:23 -0300
-Subject: [PATCH 09/15] =?UTF-8?q?Bot=C3=B3n=20en=20el=20encabezado=20de=20?=
+Subject: [PATCH 09/20] =?UTF-8?q?Bot=C3=B3n=20en=20el=20encabezado=20de=20?=
  =?UTF-8?q?la=20isla:=20abre=20el=20chat=20de=20Plata=20en=20grande?=
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -4279,7 +4279,7 @@ index 2cee61f..416788e 100644
 From d168c3b1df9f0d0e0a178a2bec6ddec99f877c28 Mon Sep 17 00:00:00 2001
 From: Lucas <lucasgigli3@gmail.com>
 Date: Thu, 1 Oct 2026 21:31:50 -0300
-Subject: [PATCH 10/15] =?UTF-8?q?Isla=20m=C3=A1s=20fluida:=20ventana=20de?=
+Subject: [PATCH 10/20] =?UTF-8?q?Isla=20m=C3=A1s=20fluida:=20ventana=20de?=
  =?UTF-8?q?=20tama=C3=B1o=20fijo,=20anclaje=20y=20deslizamiento=20al=20sol?=
  =?UTF-8?q?tar?=
 MIME-Version: 1.0
@@ -5586,7 +5586,7 @@ index 416788e..debb686 100644
 From 42a905cac32e14abd26643bf18e8ae15e8d46deb Mon Sep 17 00:00:00 2001
 From: Lucas <lucasgigli3@gmail.com>
 Date: Thu, 1 Oct 2026 21:32:36 -0300
-Subject: [PATCH 11/15] =?UTF-8?q?Pesta=C3=B1a=20Plata:=20conciliar=20un=20?=
+Subject: [PATCH 11/20] =?UTF-8?q?Pesta=C3=B1a=20Plata:=20conciliar=20un=20?=
  =?UTF-8?q?resumen=20con=20Claude=20Code,=20con=20el=20plan=20y=20no=20la?=
  =?UTF-8?q?=20API?=
 MIME-Version: 1.0
@@ -7228,7 +7228,7 @@ index 851e6da..53b99a0 100644
 From 71fb67002d30c12e7808bbb1548cbe9eec850477 Mon Sep 17 00:00:00 2001
 From: Lucas <lucasgigli3@gmail.com>
 Date: Thu, 1 Oct 2026 22:01:26 -0300
-Subject: [PATCH 12/15] =?UTF-8?q?Pesta=C3=B1a=20Plata:=20sin=20sesi=C3=B3n?=
+Subject: [PATCH 12/20] =?UTF-8?q?Pesta=C3=B1a=20Plata:=20sin=20sesi=C3=B3n?=
  =?UTF-8?q?=20de=20Claude=20Code,=20Reintentar=20en=20vez=20de=20mand?=
  =?UTF-8?q?=C3=A1rselo=20al=20agente?=
 MIME-Version: 1.0
@@ -7325,7 +7325,7 @@ index 53b99a0..fde7b29 100644
 From fcb9a85a1600172b861b74e8260577e1017d50dd Mon Sep 17 00:00:00 2001
 From: Lucas <lucasgigli3@gmail.com>
 Date: Thu, 1 Oct 2026 22:07:16 -0300
-Subject: [PATCH 13/15] =?UTF-8?q?Pesta=C3=B1a=20Plata:=20las=20respuestas?=
+Subject: [PATCH 13/20] =?UTF-8?q?Pesta=C3=B1a=20Plata:=20las=20respuestas?=
  =?UTF-8?q?=20del=20agente=20con=20formato=20(tablas,=20negritas,=20listas?=
  =?UTF-8?q?)?=
 MIME-Version: 1.0
@@ -7694,7 +7694,7 @@ index fde7b29..09465b3 100644
 From 27d8a7472d2e8735e30bee24dd325d622251047c Mon Sep 17 00:00:00 2001
 From: Lucas <lucasgigli3@gmail.com>
 Date: Thu, 1 Oct 2026 22:26:24 -0300
-Subject: [PATCH 14/15] =?UTF-8?q?Buscar=20claude.exe=20tambi=C3=A9n=20en?=
+Subject: [PATCH 14/20] =?UTF-8?q?Buscar=20claude.exe=20tambi=C3=A9n=20en?=
  =?UTF-8?q?=20la=20carpeta=20del=20paquete=20de=20la=20app=20(MSIX)?=
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -7757,7 +7757,7 @@ index 3b73768..83bbfae 100644
 From 11810d3699dc676d109b16b76a1eed171f3fdcf7 Mon Sep 17 00:00:00 2001
 From: Lucas <lucasgigli3@gmail.com>
 Date: Thu, 1 Oct 2026 22:44:34 -0300
-Subject: [PATCH 15/15] Conciliar: de 8 minutos a 50 segundos, y el resultado
+Subject: [PATCH 15/20] Conciliar: de 8 minutos a 50 segundos, y el resultado
  le llega al agente
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -7931,6 +7931,2101 @@ index 09465b3..acf043e 100644
      pending = [];
      renderAttachments();
      clear(log);
+-- 
+2.53.0.windows.2
+
+
+From 3dec5c1ed16a1d07a0e8338f5cbe588e24f420f9 Mon Sep 17 00:00:00 2001
+From: Lucas <lucasgigli3@gmail.com>
+Date: Thu, 1 Oct 2026 23:00:01 -0300
+Subject: [PATCH 16/20] =?UTF-8?q?Pesta=C3=B1a=20Plata:=20bot=C3=B3n=20Modi?=
+ =?UTF-8?q?ficar=20en=20las=20propuestas?=
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+---
+ windows/src/views/plata.ts | 8 ++++++++
+ 1 file changed, 8 insertions(+)
+
+diff --git a/windows/src/views/plata.ts b/windows/src/views/plata.ts
+index acf043e..16d0deb 100644
+--- a/windows/src/views/plata.ts
++++ b/windows/src/views/plata.ts
+@@ -629,8 +629,16 @@ export function buildPlata(onSizeChange: () => void = () => {}): ViewHost {
+       actions.append(h("span", { class: "plata-decided", text: ok ? "Aprobada, aplicando…" : "Rechazada" }));
+       void submit(ok ? `Sí, aprobá la propuesta ${p.id}.` : `No, rechazá la propuesta ${p.id}.`);
+     };
++    // Modify: Lucas says what to change; the agent replaces the proposal with a
++    // new one (it rejects this one first), so nothing applies half-edited.
++    const modify = () => {
++      input.value = `Cambiá la propuesta #${p.id}: `;
++      input.focus();
++      input.setSelectionRange(input.value.length, input.value.length);
++    };
+     actions.append(
+       h("button", { class: "btn primary plata-btn", onclick: () => decide(true) }, h("span", { text: "Aprobar" })),
++      h("button", { class: "btn secondary plata-btn", onclick: modify }, h("span", { text: "Modificar" })),
+       h("button", { class: "btn secondary plata-btn", onclick: () => decide(false) }, h("span", { text: "Rechazar" })),
+     );
+     const card = h(
+-- 
+2.53.0.windows.2
+
+
+From 1b0ad6f6a36621bb06455d449e463461058979de Mon Sep 17 00:00:00 2001
+From: Lucas <lucasgigli3@gmail.com>
+Date: Thu, 1 Oct 2026 23:23:35 -0300
+Subject: [PATCH 17/20] =?UTF-8?q?Encontrar=20claude.exe=20con=20la=20estru?=
+ =?UTF-8?q?ctura=20nueva=20de=20la=20app=20(<versi=C3=B3n>\<hash>\)?=
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+La actualización 2.19675 de la app de Claude (1/10) guarda Claude Code en
+claude-code\<versión>\<hash>\claude.exe; la isla solo miraba
+<versión>\claude.exe y decía "No encuentro Claude Code".
+
+Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+---
+ windows/src-tauri/src/plata_agent.rs | 18 ++++++++++++++++--
+ 1 file changed, 16 insertions(+), 2 deletions(-)
+
+diff --git a/windows/src-tauri/src/plata_agent.rs b/windows/src-tauri/src/plata_agent.rs
+index 83bbfae..9858961 100644
+--- a/windows/src-tauri/src/plata_agent.rs
++++ b/windows/src-tauri/src/plata_agent.rs
+@@ -375,14 +375,28 @@ pub(crate) fn claude_exe() -> Option<PathBuf> {
+         .filter_map(|b| std::fs::read_dir(b).ok())
+         .flat_map(|dir| dir.flatten())
+         .filter_map(|e| {
+-            let exe = e.path().join("claude.exe");
+             let version: Vec<u64> = e.file_name().to_string_lossy().split('.').map(|n| n.parse().unwrap_or(0)).collect();
+-            exe.is_file().then_some((version, exe))
++            exe_in_version(&e.path()).map(|exe| (version, exe))
+         })
+         .max_by(|a, b| a.0.cmp(&b.0))
+         .map(|(_, exe)| exe)
+ }
+ 
++/// `<version>\claude.exe` (up to 2.1.284) or `<version>\<hash>\claude.exe`
++/// (the app's layout since its 2.19675 update, 1 Oct 2026).
++fn exe_in_version(dir: &std::path::Path) -> Option<PathBuf> {
++    let direct = dir.join("claude.exe");
++    if direct.is_file() {
++        return Some(direct);
++    }
++    std::fs::read_dir(dir)
++        .ok()?
++        .flatten()
++        .map(|e| e.path().join("claude.exe"))
++        .filter(|p| p.is_file())
++        .max_by_key(|p| std::fs::metadata(p).and_then(|m| m.modified()).ok())
++}
++
+ /// Opens a terminal in the Plata repo with Claude Code working on `pedido`.
+ /// The session shows up in the island through the hooks, and its permission
+ /// requests are answered there. Returns the folder it opened in.
+-- 
+2.53.0.windows.2
+
+
+From 6a9b62ffdb16422d645e272068e50b87b5d015fd Mon Sep 17 00:00:00 2001
+From: Lucas <lucasgigli3@gmail.com>
+Date: Sat, 3 Oct 2026 14:14:49 -0300
+Subject: [PATCH 18/20] Plata lista sola: chequeo de piezas y "Conectar Claude
+ Code" sin terminal
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Al abrir Coucou (y al abrir la pestaña) Rust revisa en segundo plano lo que
+usa la pestaña Plata: el agente (/salud), claude.exe de la app y su versión,
+la sesión de Claude Code en el plan (`auth status --json`), la skill
+conciliar-resumen y el script conciliar:leer de agentes. `plata_readiness`
+lo devuelve (cacheado un minuto) y también llega como `plata-readiness`.
+
+En la pestaña, una línea con un punto por pieza bajo el encabezado y, si
+falta algo, un solo botón: "Encender agente" o "Conectar Claude Code". Este
+corre `claude auth login --claudeai` oculto: el proceso abre el navegador
+solo y escucha en localhost, así que autorizar alcanza. Se sondea
+`auth status` cada 2 s (máx. 5 min) y avisa por `plata-login`. Si el
+navegador no abrió, la URL de respaldo y un campo para pegar el código.
+
+El error de login de una conciliación usa el mismo botón y, al conectar,
+la reintenta sola. Se va la terminal de `open_login`.
+
+Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+---
+ windows/src-tauri/src/claude_code.rs | 345 +++++++++++++++++++++++++--
+ windows/src-tauri/src/lib.rs         |  41 +++-
+ windows/src-tauri/src/plata_agent.rs |  24 ++
+ windows/src-tauri/src/plata_ready.rs | 221 +++++++++++++++++
+ windows/src/core/bridge.ts           |  33 ++-
+ windows/src/style.css                | 119 ++++++++-
+ windows/src/views/plata.ts           | 328 +++++++++++++++++++++++--
+ 7 files changed, 1055 insertions(+), 56 deletions(-)
+ create mode 100644 windows/src-tauri/src/plata_ready.rs
+
+diff --git a/windows/src-tauri/src/claude_code.rs b/windows/src-tauri/src/claude_code.rs
+index 15da981..59fd84e 100644
+--- a/windows/src-tauri/src/claude_code.rs
++++ b/windows/src-tauri/src/claude_code.rs
+@@ -10,7 +10,7 @@
+ // turned into short progress lines for the page (`plata-delegado`), then a
+ // final event with the parsed `datos.json`.
+ 
+-use std::io::{BufRead, BufReader, Write};
++use std::io::{BufRead, BufReader, Read, Write};
+ use std::os::windows::process::CommandExt;
+ use std::path::{Path, PathBuf};
+ use std::process::{Command, Stdio};
+@@ -97,6 +97,17 @@ const ENV_DROP: &[&str] = &[
+     "CLAUDE_CODE_MESSAGING_TOKEN",
+ ];
+ 
++/// `claude.exe` as every call here runs it: no console window, and none of the
++/// variables above, so it is Lucas's own login and nothing else.
++fn plain_command(exe: &Path) -> Command {
++    let mut cmd = Command::new(exe);
++    cmd.creation_flags(CREATE_NO_WINDOW);
++    for k in ENV_DROP {
++        cmd.env_remove(k);
++    }
++    cmd
++}
++
+ // ── Running jobs ────────────────────────────────────────────────────────────
+ 
+ const STOP_NONE: u8 = 0;
+@@ -305,7 +316,7 @@ pub(crate) fn final_event(st: &Stream, carpeta: &Path, secs: u64, stop: u8, exit
+     if st.auth_failed {
+         return json!({
+             "tipo": "error",
+-            "texto": "Claude Code no tiene la sesión iniciada en esta PC. Iniciala una vez (se abre una terminal: seguí los pasos para entrar con tu cuenta) y volvé a probar.",
++            "texto": "Claude Code no tiene la sesión iniciada en esta PC. Conectalo con tu cuenta (se abre el navegador para autorizar) y la conciliación se reintenta sola.",
+             "login": true,
+         });
+     }
+@@ -360,7 +371,7 @@ fn emit(app: &AppHandle, sesion_id: &str, ev: Value) {
+     let _ = app.emit_to(crate::island::WINDOW_LABEL, EVENT, Delegado { sesion_id: sesion_id.to_string(), ev });
+ }
+ 
+-fn skill_dir() -> Option<PathBuf> {
++pub(crate) fn skill_dir() -> Option<PathBuf> {
+     let p = PathBuf::from(std::env::var_os("USERPROFILE")?).join(".claude").join("skills").join(SKILL);
+     p.join("SKILL.md").is_file().then_some(p)
+ }
+@@ -387,16 +398,12 @@ pub fn delegate(app: AppHandle, sesion_id: String, texto: String, adjuntos: Vec<
+     plata_agent::transcript(&sesion_id, "delegado", &format!("{} [{}] → {}", texto.trim(), names.join(", "), carpeta.display()));
+ 
+     let stderr = std::fs::File::create(carpeta.join("claude-code.log")).map_err(|e| e.to_string())?;
+-    let mut cmd = Command::new(&exe);
++    let mut cmd = plain_command(&exe);
+     cmd.args(claude_args(&carpeta, &skill))
+         .current_dir(&cwd)
+         .stdin(Stdio::piped())
+         .stdout(Stdio::piped())
+-        .stderr(stderr)
+-        .creation_flags(CREATE_NO_WINDOW);
+-    for k in ENV_DROP {
+-        cmd.env_remove(k);
+-    }
++        .stderr(stderr);
+     let mut child = cmd.spawn().map_err(|e| format!("No pude arrancar Claude Code: {e}"))?;
+     if let Some(mut stdin) = child.stdin.take() {
+         // Closing stdin is what tells `-p` the prompt is complete.
+@@ -477,25 +484,274 @@ pub fn open_report(path: &str) -> Result<(), String> {
+     Ok(())
+ }
+ 
+-/// Claude Code needs to be logged in once on this PC for `-p` to work: opens it
+-/// in a terminal, where it walks Lucas through the login.
+-pub fn open_login() -> Result<(), String> {
+-    let exe = plata_agent::claude_exe().ok_or_else(|| "No encuentro Claude Code (viene con la app de escritorio de Claude).".to_string())?;
++// ── The login: is Claude Code on Lucas's plan, and connecting it ────────────
++//
++// `claude auth status --json` answers in under a second:
++//   {"loggedIn":true,"authMethod":"claude.ai","subscriptionType":"pro",...}
++// and exits 1 with `"loggedIn":false` when there is no login.
++//
++// `claude auth login --claudeai` needs no console (seen with 2.1.286, stdin a
++// pipe): it prints "Opening browser to sign in…", opens the default browser
++// itself (`rundll32 url,OpenURL`, or $BROWSER) on an authorize URL whose
++// redirect is http://localhost:<port>/callback, and listens on that port.
++// Authorizing there finishes the login with nothing else to do. It also prints
++// "If the browser didn't open, visit: <url>" — a second URL whose redirect is a
++// claude.com page that shows a code — and "Paste code here if prompted >",
++// reading that code from stdin. Both paths race; whichever lands first wins.
++
++/// Lucas's Claude Code login, as the Plata tab needs it.
++#[derive(Serialize, Clone, Debug, PartialEq, Default)]
++#[serde(rename_all = "camelCase")]
++pub struct Sesion {
++    /// Logged in with the subscription (what `-p` runs on), not an API key.
++    pub ok: bool,
++    /// `Pro`, `Max`… from `subscriptionType`.
++    pub plan: Option<String>,
++    /// Why it is not ok, when there is more to say than "no login".
++    pub detalle: Option<String>,
++}
++
++fn plan_name(sub: &str) -> String {
++    let mut c = sub.trim().chars();
++    c.next().map(|f| f.to_uppercase().chain(c).collect()).unwrap_or_default()
++}
++
++/// The JSON of `auth status --json`. None if it isn't that.
++pub(crate) fn parse_auth_status(out: &str) -> Option<Sesion> {
++    let (start, end) = (out.find('{')?, out.rfind('}')?);
++    let v: Value = serde_json::from_str(out.get(start..=end)?).ok()?;
++    let logged_in = v.get("loggedIn")?.as_bool()?;
++    let method = v.get("authMethod").and_then(Value::as_str).unwrap_or("");
++    let plan = v.get("subscriptionType").and_then(Value::as_str).filter(|s| !s.trim().is_empty()).map(plan_name);
++    if !logged_in {
++        return Some(Sesion::default());
++    }
++    // "claude.ai" is the subscription. A Console login or an API key would bill
++    // every reconciliation per token, the thing running in Claude Code avoids.
++    if method.starts_with("claude") || plan.is_some() {
++        return Some(Sesion { ok: true, plan, detalle: None });
++    }
++    Some(Sesion {
++        ok: false,
++        plan: None,
++        detalle: Some(format!("Claude Code está conectado con «{method}» (se cobra por uso), no con tu plan.")),
++    })
++}
++
++/// Runs `cmd` and returns its stdout, or gives up after `limit`.
++fn output_within(mut cmd: Command, limit: Duration) -> Result<String, String> {
++    let mut child = cmd
++        .stdin(Stdio::null())
++        .stdout(Stdio::piped())
++        .stderr(Stdio::null())
++        .spawn()
++        .map_err(|e| e.to_string())?;
++    let mut stdout = child.stdout.take().ok_or("sin salida")?;
++    let reader = std::thread::spawn(move || {
++        let mut s = String::new();
++        let _ = stdout.read_to_string(&mut s);
++        s
++    });
++    let started = Instant::now();
++    loop {
++        if child.try_wait().map_err(|e| e.to_string())?.is_some() {
++            break;
++        }
++        if started.elapsed() > limit {
++            kill_tree(child.id());
++            let _ = child.wait();
++            return Err(format!("no respondió en {} s", limit.as_secs()));
++        }
++        std::thread::sleep(Duration::from_millis(50));
++    }
++    reader.join().map_err(|_| "no pude leer la salida".to_string())
++}
++
++/// `claude auth status --json`, blocking (about half a second).
++pub(crate) fn auth_status(exe: &Path) -> Sesion {
++    let mut cmd = plain_command(exe);
++    cmd.args(["auth", "status", "--json"]);
++    match output_within(cmd, Duration::from_secs(20)) {
++        Ok(out) => parse_auth_status(&out).unwrap_or_else(|| Sesion {
++            detalle: Some("No entendí lo que respondió Claude Code sobre la sesión.".into()),
++            ..Sesion::default()
++        }),
++        Err(e) => Sesion { detalle: Some(format!("No pude revisar la sesión de Claude Code: {e}.")), ..Sesion::default() },
++    }
++}
++
++/// The event a connection reports on: `{estado, url?, plan?, texto?}`, where
++/// `estado` is `url` (the fallback URL is known), then one of `conectado`,
++/// `error`, `cancelado` or `vencido`.
++pub const LOGIN_EVENT: &str = "plata-login";
++/// Past this, nobody is authorizing: the login is stopped.
++const LOGIN_TIMEOUT: Duration = Duration::from_secs(5 * 60);
++const LOGIN_POLL: Duration = Duration::from_secs(2);
++
++struct Login {
++    pid: u32,
++    stdin: Option<std::process::ChildStdin>,
++    stop: Arc<AtomicU8>,
++}
++
++static LOGIN: Mutex<Option<Login>> = Mutex::new(None);
++
++#[derive(Serialize, Clone, Debug)]
++#[serde(rename_all = "camelCase")]
++pub struct Connect {
++    /// Already on the plan: nothing was started.
++    pub conectado: bool,
++    pub plan: Option<String>,
++}
++
++/// The "If the browser didn't open, visit: <url>" URL, once it is complete.
++pub(crate) fn manual_login_url(out: &str) -> Option<String> {
++    let rest = out[out.find("visit:")? + "visit:".len()..].trim_start();
++    let end = rest.find(char::is_whitespace)?; // not complete until the line ends
++    let url = &rest[..end];
++    url.starts_with("https://").then(|| url.to_string())
++}
++
++/// What a login that ended without connecting said, in a line.
++pub(crate) fn login_failure(out: &str) -> String {
++    let line = out
++        .lines()
++        .flat_map(|l| l.split(" > ")) // the error lands on the "Paste code here >" line
++        .map(str::trim)
++        .filter(|l| !l.is_empty() && !l.starts_with("Opening browser") && !l.starts_with("If the browser") && !l.starts_with("Paste code"))
++        .last();
++    match line {
++        Some(l) => format!("Claude Code no se pudo conectar: {}", l.chars().take(200).collect::<String>()),
++        None => "Claude Code terminó sin conectarse.".to_string(),
++    }
++}
++
++fn emit_login(app: &AppHandle, ev: Value) {
++    let _ = app.emit_to(crate::island::WINDOW_LABEL, LOGIN_EVENT, ev);
++}
++
++/// Connects Claude Code to Lucas's plan, with no terminal: `auth login
++/// --claudeai` hidden, which opens the browser by itself. Returns at once; the
++/// end arrives as `plata-login`, from polling `auth status` every 2 s.
++/// If it is already connected nothing starts and `conectado` says so.
++pub fn connect(app: AppHandle) -> Result<Connect, String> {
++    let exe = plata_agent::claude_exe()
++        .ok_or_else(|| "No encuentro Claude Code: abrí la app de Claude una vez para que lo descargue.".to_string())?;
++    let mut guard = LOGIN.lock().unwrap();
++    if guard.is_some() {
++        return Ok(Connect { conectado: false, plan: None }); // already waiting for the browser
++    }
++    let now = auth_status(&exe);
++    if now.ok {
++        crate::plata_ready::invalidate();
++        return Ok(Connect { conectado: true, plan: now.plan });
++    }
++
+     let home = std::env::var_os("USERPROFILE").map(PathBuf::from).unwrap_or_else(|| PathBuf::from("."));
+-    let mut wt = Command::new("wt");
+-    wt.args(["-d", &home.to_string_lossy(), "--title", "Claude Code · iniciar sesión"]).arg(&exe);
+-    for k in ENV_DROP {
+-        wt.env_remove(k);
++    let mut cmd = plain_command(&exe);
++    cmd.args(["auth", "login", "--claudeai"])
++        .current_dir(&home)
++        .stdin(Stdio::piped())
++        .stdout(Stdio::piped())
++        .stderr(Stdio::piped());
++    let mut child = cmd.spawn().map_err(|e| format!("No pude arrancar Claude Code: {e}"))?;
++    let pid = child.id();
++    let stop = Arc::new(AtomicU8::new(STOP_NONE));
++    *guard = Some(Login { pid, stdin: child.stdin.take(), stop: stop.clone() });
++    drop(guard);
++    crate::log::line("claude code login started");
++
++    // Both streams into one text: the URL is in stdout, an error may be in either.
++    let said = Arc::new(Mutex::new(String::new()));
++    let url_sent = Arc::new(std::sync::atomic::AtomicBool::new(false));
++    let readers: Vec<Box<dyn std::io::Read + Send>> = [
++        child.stdout.take().map(|s| Box::new(s) as Box<dyn std::io::Read + Send>),
++        child.stderr.take().map(|s| Box::new(s) as Box<dyn std::io::Read + Send>),
++    ]
++    .into_iter()
++    .flatten()
++    .collect();
++    for mut r in readers {
++        let (said, url_sent, app) = (said.clone(), url_sent.clone(), app.clone());
++        std::thread::spawn(move || {
++            let mut chunk = [0u8; 4096];
++            while let Ok(n) = r.read(&mut chunk) {
++                if n == 0 {
++                    break;
++                }
++                let mut s = said.lock().unwrap();
++                if s.len() < 64 * 1024 {
++                    s.push_str(&String::from_utf8_lossy(&chunk[..n]));
++                }
++                if !url_sent.load(Ordering::SeqCst) {
++                    if let Some(url) = manual_login_url(&s) {
++                        url_sent.store(true, Ordering::SeqCst);
++                        emit_login(&app, json!({ "estado": "url", "url": url }));
++                    }
++                }
++            }
++        });
+     }
+-    if wt.spawn().is_err() {
+-        let mut cmd = Command::new("cmd");
+-        cmd.args(["/C", "start", "Claude Code"]).arg(&exe).current_dir(&home).creation_flags(CREATE_NO_WINDOW);
+-        for k in ENV_DROP {
+-            cmd.env_remove(k);
++
++    std::thread::spawn(move || {
++        let started = Instant::now();
++        let ev = 'wait: loop {
++            // Short naps, so Cancel answers at once.
++            let nap = Instant::now();
++            while nap.elapsed() < LOGIN_POLL {
++                if stop.load(Ordering::SeqCst) == STOP_CANCEL {
++                    break 'wait json!({ "estado": "cancelado" });
++                }
++                std::thread::sleep(Duration::from_millis(100));
++            }
++            let exited = child.try_wait().ok().flatten().is_some();
++            let st = auth_status(&exe);
++            if st.ok {
++                break json!({ "estado": "conectado", "plan": st.plan });
++            }
++            if exited {
++                break json!({ "estado": "error", "texto": login_failure(&said.lock().unwrap()) });
++            }
++            if started.elapsed() > LOGIN_TIMEOUT {
++                break json!({
++                    "estado": "vencido",
++                    "texto": "Pasaron 5 minutos sin autorizar en el navegador: lo corté. Probá de nuevo cuando quieras.",
++                });
++            }
++        };
++        if child.try_wait().ok().flatten().is_none() {
++            kill_tree(pid);
+         }
+-        cmd.spawn().map_err(|e| format!("No pude abrir la terminal: {e}"))?;
++        let _ = child.wait();
++        LOGIN.lock().unwrap().take();
++        crate::plata_ready::invalidate();
++        crate::log::line(format!("claude code login ended: {ev}"));
++        emit_login(&app, ev);
++    });
++    Ok(Connect { conectado: false, plan: None })
++}
++
++/// The code the fallback page shows, typed into the waiting login.
++pub fn connect_code(code: &str) -> Result<(), String> {
++    let code = code.trim();
++    if code.is_empty() || code.len() > 4096 || code.contains(['\r', '\n']) {
++        return Err("Pegá el código tal como lo muestra la página.".into());
+     }
+-    Ok(())
++    let mut guard = LOGIN.lock().unwrap();
++    let stdin = guard
++        .as_mut()
++        .and_then(|l| l.stdin.as_mut())
++        .ok_or_else(|| "No hay una conexión esperando el código: tocá Conectar de nuevo.".to_string())?;
++    writeln!(stdin, "{code}").and_then(|_| stdin.flush()).map_err(|e| format!("No pude pasarle el código: {e}"))
++}
++
++/// Stops a login waiting for the browser. False if none was.
++pub fn connect_cancel() -> bool {
++    let guard = LOGIN.lock().unwrap();
++    let Some(login) = guard.as_ref() else { return false };
++    login.stop.store(STOP_CANCEL, Ordering::SeqCst);
++    kill_tree(login.pid);
++    true
+ }
+ 
+ #[cfg(test)]
+@@ -637,6 +893,47 @@ mod tests {
+         let _ = std::fs::remove_dir_all(&run);
+     }
+ 
++    // `claude auth status --json` (2.1.286), real output trimmed.
++    const STATUS_PRO: &str = "{\n  \"loggedIn\": true,\n  \"authMethod\": \"claude.ai\",\n  \"apiProvider\": \"firstParty\",\n  \"configDirectory\": \"C:\\\\Users\\\\g\\\\.claude\",\n  \"subscriptionType\": \"pro\"\n}\n";
++    const STATUS_OUT: &str = "{\n  \"loggedIn\": false,\n  \"authMethod\": \"none\",\n  \"apiProvider\": \"firstParty\",\n  \"configDirectory\": \"D:\\\\DevTools\\\\tmp\\\\cc-prueba\"\n}\n";
++
++    #[test]
++    fn auth_status_is_read_from_its_json() {
++        assert_eq!(parse_auth_status(STATUS_PRO), Some(Sesion { ok: true, plan: Some("Pro".into()), detalle: None }));
++        assert_eq!(parse_auth_status(STATUS_OUT), Some(Sesion::default()));
++        // A BOM or a warning line around it doesn't matter.
++        assert!(parse_auth_status(&format!("\u{feff}warning: x\n{STATUS_PRO}")).unwrap().ok);
++        let max = parse_auth_status(r#"{"loggedIn":true,"authMethod":"claude.ai","subscriptionType":"max"}"#).unwrap();
++        assert_eq!(max.plan.as_deref(), Some("Max"));
++        // Logged in on the subscription but no plan reported: still ok.
++        assert!(parse_auth_status(r#"{"loggedIn":true,"authMethod":"claude.ai"}"#).unwrap().ok);
++        // An API key bills per token: not what the Plata tab wants.
++        let key = parse_auth_status(r#"{"loggedIn":true,"authMethod":"api_key"}"#).unwrap();
++        assert!(!key.ok);
++        assert!(key.detalle.unwrap().contains("api_key"));
++        assert_eq!(parse_auth_status(""), None);
++        assert_eq!(parse_auth_status("Not logged in"), None);
++        assert_eq!(parse_auth_status(r#"{"authMethod":"claude.ai"}"#), None);
++    }
++
++    // `claude auth login --claudeai` with no console (2.1.286), state shortened.
++    const LOGIN_OUT: &str = "Opening browser to sign in\u{2026}\nIf the browser didn't open, visit: https://claude.com/cai/oauth/authorize?code=true&client_id=9d1c&response_type=code&redirect_uri=https%3A%2F%2Fplatform.claude.com%2Foauth%2Fcode%2Fcallback&state=iHmB\nPaste code here if prompted > ";
++
++    #[test]
++    fn the_login_fallback_url_and_its_failure() {
++        let url = manual_login_url(LOGIN_OUT).unwrap();
++        assert!(url.starts_with("https://claude.com/cai/oauth/authorize?code=true"));
++        assert!(url.ends_with("state=iHmB"));
++        // Half a line (a chunk cut mid-URL) isn't a URL yet.
++        assert_eq!(manual_login_url(&LOGIN_OUT[..120]), None);
++        assert_eq!(manual_login_url("Opening browser to sign in…\n"), None);
++
++        let failed = format!("{LOGIN_OUT}Login failed: Request failed with status code 400\n");
++        assert_eq!(login_failure(&failed), "Claude Code no se pudo conectar: Login failed: Request failed with status code 400");
++        assert_eq!(login_failure(LOGIN_OUT), "Claude Code terminó sin conectarse.");
++        assert_eq!(login_failure(""), "Claude Code terminó sin conectarse.");
++    }
++
+     #[test]
+     fn the_invocation_matches_the_contract() {
+         let a = claude_args(Path::new("D:\\run"), Path::new("C:\\s\\conciliar-resumen"));
+diff --git a/windows/src-tauri/src/lib.rs b/windows/src-tauri/src/lib.rs
+index b73a11f..78177a6 100644
+--- a/windows/src-tauri/src/lib.rs
++++ b/windows/src-tauri/src/lib.rs
+@@ -9,6 +9,7 @@ mod island;
+ mod log;
+ mod pipe;
+ mod plata_agent;
++mod plata_ready;
+ mod secrets;
+ mod settings;
+ mod tray;
+@@ -342,10 +343,29 @@ fn plata_open_report(path: String) -> Result<(), String> {
+     claude_code::open_report(&path)
+ }
+ 
+-/// Claude Code in a terminal, to log in once so headless runs work.
++/// Is everything the Plata tab uses ready: the agent, Claude Code, its login on
++/// Lucas's plan, the skill and the reader? Cached a minute unless `force`.
+ #[tauri::command]
+-fn plata_claude_login() -> Result<(), String> {
+-    claude_code::open_login()
++async fn plata_readiness(force: Option<bool>) -> plata_ready::Readiness {
++    plata_ready::readiness(force.unwrap_or(false)).await
++}
++
++/// Connects Claude Code to Lucas's plan without a terminal: the browser opens
++/// to authorize, and the end arrives as `plata-login`.
++#[tauri::command]
++async fn plata_claude_connect(app: AppHandle) -> Result<claude_code::Connect, String> {
++    tauri::async_runtime::spawn_blocking(move || claude_code::connect(app)).await.map_err(|e| e.to_string())?
++}
++
++/// The code the fallback page shows, for when the browser could not call back.
++#[tauri::command]
++fn plata_claude_connect_code(code: String) -> Result<(), String> {
++    claude_code::connect_code(&code)
++}
++
++#[tauri::command]
++async fn plata_claude_connect_cancel() -> bool {
++    tauri::async_runtime::spawn_blocking(claude_code::connect_cancel).await.unwrap_or(false)
+ }
+ 
+ /// Windows voice typing into the focused chat field.
+@@ -519,7 +539,10 @@ pub fn run() {
+             plata_delegate,
+             plata_delegate_cancel,
+             plata_open_report,
+-            plata_claude_login,
++            plata_readiness,
++            plata_claude_connect,
++            plata_claude_connect_code,
++            plata_claude_connect_cancel,
+             start_dictation,
+         ])
+         .setup(move |app| {
+@@ -541,7 +564,15 @@ pub fn run() {
+             hooks::ensure_hook_exe(&handle);
+             pipe::start(handle.clone());
+             integrations::start(handle.clone());
+-            tauri::async_runtime::spawn(plata_agent::ensure_running());
++            // The Plata tab ready before it is opened: the agent started if it
++            // was down, then every piece checked and the answer handed to the page.
++            let ready = handle.clone();
++            tauri::async_runtime::spawn(async move {
++                plata_agent::ensure_running().await;
++                let r = plata_ready::readiness(true).await;
++                log::line(format!("plata readiness at launch: falta {:?}", r.falta));
++                let _ = ready.emit_to(island::WINDOW_LABEL, plata_ready::EVENT, r);
++            });
+             Ok(())
+         })
+         .run(tauri::generate_context!())
+diff --git a/windows/src-tauri/src/plata_agent.rs b/windows/src-tauri/src/plata_agent.rs
+index 9858961..5aedbd3 100644
+--- a/windows/src-tauri/src/plata_agent.rs
++++ b/windows/src-tauri/src/plata_agent.rs
+@@ -70,6 +70,12 @@ pub async fn status() -> AgentStatus {
+     }
+ }
+ 
++/// A start is under way: `npm run servir` was launched less than a minute ago
++/// and the agent may not be listening yet.
++pub fn starting() -> bool {
++    LAST_START.lock().unwrap().is_some_and(|t| t.elapsed() < START_GRACE)
++}
++
+ /// Starts `npm run servir` in the `agentes` folder, detached and without a
+ /// console. Its output goes to %LOCALAPPDATA%\Coucou\plata-agent.log.
+ pub fn start() -> Result<(), String> {
+@@ -330,6 +336,16 @@ mod tests {
+         assert!(read_attachments(&[s(&txt)]).is_err());
+         let _ = std::fs::remove_dir_all(&dir);
+     }
++
++    #[test]
++    fn the_version_is_the_folder_under_claude_code() {
++        let v = |p: &str| claude_version(std::path::Path::new(p));
++        let pkg = r"C:\Users\g\AppData\Local\Packages\Claude_pzs8\LocalCache\Roaming\Claude\claude-code";
++        assert_eq!(v(&format!(r"{pkg}\2.1.286\635c1867224a\claude.exe")).as_deref(), Some("2.1.286"));
++        assert_eq!(v(r"C:\Users\g\AppData\Roaming\Claude\claude-code\2.1.284\claude.exe").as_deref(), Some("2.1.284"));
++        assert_eq!(v(r"C:\tools\claude.exe"), None);
++        assert_eq!(v(&format!(r"{pkg}\latest\claude.exe")), None);
++    }
+ }
+ 
+ // ── Changes to the app go to Claude Code, not to the agent ──────────────────
+@@ -382,6 +398,14 @@ pub(crate) fn claude_exe() -> Option<PathBuf> {
+         .map(|(_, exe)| exe)
+ }
+ 
++/// The version of a `claude.exe` found by `claude_exe`: the folder right under
++/// `claude-code` (`…\claude-code\2.1.286\635c1867224a\claude.exe` → 2.1.286).
++pub(crate) fn claude_version(exe: &std::path::Path) -> Option<String> {
++    let parts: Vec<String> = exe.components().map(|c| c.as_os_str().to_string_lossy().to_string()).collect();
++    let i = parts.iter().position(|p| p.eq_ignore_ascii_case("claude-code"))?;
++    parts.get(i + 1).filter(|v| v.chars().next().is_some_and(|c| c.is_ascii_digit())).cloned()
++}
++
+ /// `<version>\claude.exe` (up to 2.1.284) or `<version>\<hash>\claude.exe`
+ /// (the app's layout since its 2.19675 update, 1 Oct 2026).
+ fn exe_in_version(dir: &std::path::Path) -> Option<PathBuf> {
+diff --git a/windows/src-tauri/src/plata_ready.rs b/windows/src-tauri/src/plata_ready.rs
+new file mode 100644
+index 0000000..b7811f1
+--- /dev/null
++++ b/windows/src-tauri/src/plata_ready.rs
+@@ -0,0 +1,221 @@
++// Is the Plata tab ready? Checked in the background when Coucou starts and
++// whenever the tab opens, so a missing piece shows up before Lucas needs it,
++// with the one button that fixes it (plata.ts).
++//
++// The pieces:
++//   agente  the local agent answers /salud (plata_agent.rs; Coucou starts it)
++//   claude  the desktop app's claude.exe is on disk, and which version
++//   sesion  that Claude Code is logged in on Lucas's plan (`auth status`)
++//   skill   %USERPROFILE%\.claude\skills\conciliar-resumen\SKILL.md
++//   lector  `conciliar:leer` among the scripts of agentes\package.json
++//
++// The agent is asked every time (a local HTTP call). The rest runs a process
++// and reads files, so it is kept for a minute, or until a login changes it.
++
++use std::path::Path;
++use std::sync::atomic::{AtomicBool, Ordering};
++use std::time::{Duration, Instant};
++
++use serde::Serialize;
++use serde_json::Value;
++
++use crate::claude_code::{self, Sesion};
++use crate::plata_agent;
++
++/// The same answer, pushed to the page when the check at launch finishes.
++pub const EVENT: &str = "plata-readiness";
++const TTL: Duration = Duration::from_secs(60);
++
++#[derive(Serialize, Clone, Debug, PartialEq, Default)]
++#[serde(rename_all = "camelCase")]
++pub struct Agente {
++    pub ok: bool,
++    /// Started less than a minute ago and not listening yet.
++    pub arrancando: bool,
++    /// The agentes folder is on disk, so it can be started.
++    pub instalado: bool,
++}
++
++#[derive(Serialize, Clone, Debug, PartialEq, Default)]
++#[serde(rename_all = "camelCase")]
++pub struct Claude {
++    pub ok: bool,
++    pub version: Option<String>,
++}
++
++#[derive(Serialize, Clone, Debug, PartialEq, Default)]
++#[serde(rename_all = "camelCase")]
++pub struct Pieza {
++    pub ok: bool,
++}
++
++#[derive(Serialize, Clone, Debug, PartialEq, Default)]
++#[serde(rename_all = "camelCase")]
++pub struct Readiness {
++    pub agente: Agente,
++    pub claude: Claude,
++    pub sesion: Sesion,
++    pub skill: Pieza,
++    pub lector: Pieza,
++    /// The first piece missing, in the order they have to be fixed; None when
++    /// all is ready. The page shows the button for this one.
++    pub falta: Option<&'static str>,
++}
++
++/// Everything but the agent: what is cached.
++#[derive(Clone, Debug, PartialEq, Default)]
++struct Local {
++    claude: Claude,
++    sesion: Sesion,
++    skill: Pieza,
++    lector: Pieza,
++}
++
++static CACHE: tokio::sync::Mutex<Option<(Instant, Local)>> = tokio::sync::Mutex::const_new(None);
++static STALE: AtomicBool = AtomicBool::new(false);
++
++/// The next check runs everything again (after a login, say).
++pub fn invalidate() {
++    STALE.store(true, Ordering::SeqCst);
++}
++
++/// Does the agentes repo have the reader the skill calls (`npm run conciliar:leer`)?
++pub(crate) fn lector_ok(agentes: &Path) -> bool {
++    std::fs::read_to_string(agentes.join("package.json"))
++        .ok()
++        .and_then(|s| serde_json::from_str::<Value>(s.trim_start_matches('\u{feff}')).ok())
++        .and_then(|v| v.pointer("/scripts/conciliar:leer").and_then(Value::as_str).map(|s| !s.trim().is_empty()))
++        .unwrap_or(false)
++}
++
++/// Blocking: runs `claude auth status` when Claude Code is there.
++fn check_local() -> Local {
++    let exe = plata_agent::claude_exe();
++    let claude = Claude { ok: exe.is_some(), version: exe.as_deref().and_then(plata_agent::claude_version) };
++    let sesion = match &exe {
++        Some(exe) => claude_code::auth_status(exe),
++        None => Sesion::default(),
++    };
++    Local {
++        claude,
++        sesion,
++        skill: Pieza { ok: claude_code::skill_dir().is_some() },
++        lector: Pieza { ok: plata_agent::agent_dir().is_some_and(|d| lector_ok(&d)) },
++    }
++}
++
++/// Which piece to fix first: the agent (the chat needs it), then Claude Code,
++/// its login, and the two halves of the reconciliation recipe.
++fn first_missing(agente: &Agente, local: &Local) -> Option<&'static str> {
++    if !agente.ok {
++        Some("agente")
++    } else if !local.claude.ok {
++        Some("claude")
++    } else if !local.sesion.ok {
++        Some("sesion")
++    } else if !local.skill.ok {
++        Some("skill")
++    } else if !local.lector.ok {
++        Some("lector")
++    } else {
++        None
++    }
++}
++
++fn assemble(agente: Agente, local: Local) -> Readiness {
++    let falta = first_missing(&agente, &local);
++    Readiness { agente, claude: local.claude, sesion: local.sesion, skill: local.skill, lector: local.lector, falta }
++}
++
++/// The state of every piece. `force` skips the one-minute cache.
++pub async fn readiness(force: bool) -> Readiness {
++    let st = plata_agent::status().await;
++    let agente = Agente { ok: st.up, arrancando: !st.up && plata_agent::starting(), instalado: st.dir.is_some() };
++    // Held while checking: a second caller waits for this answer instead of
++    // running `auth status` again.
++    let mut cache = CACHE.lock().await;
++    let stale = STALE.swap(false, Ordering::SeqCst);
++    let fresh = cache.as_ref().filter(|(at, _)| !force && !stale && at.elapsed() < TTL).map(|(_, l)| l.clone());
++    let local = match fresh {
++        Some(l) => l,
++        None => {
++            let l = tauri::async_runtime::spawn_blocking(check_local).await.unwrap_or_default();
++            *cache = Some((Instant::now(), l.clone()));
++            l
++        }
++    };
++    assemble(agente, local)
++}
++
++#[cfg(test)]
++mod tests {
++    use super::*;
++
++    fn all_ok() -> (Agente, Local) {
++        (
++            Agente { ok: true, arrancando: false, instalado: true },
++            Local {
++                claude: Claude { ok: true, version: Some("2.1.286".into()) },
++                sesion: Sesion { ok: true, plan: Some("Pro".into()), detalle: None },
++                skill: Pieza { ok: true },
++                lector: Pieza { ok: true },
++            },
++        )
++    }
++
++    #[test]
++    fn the_first_missing_piece_is_the_one_to_fix() {
++        let (a, l) = all_ok();
++        assert_eq!(assemble(a.clone(), l.clone()).falta, None);
++
++        let mut off = a.clone();
++        off.ok = false;
++        off.arrancando = true;
++        // Everything is missing: the agent goes first.
++        assert_eq!(assemble(off, Local::default()).falta, Some("agente"));
++        assert_eq!(assemble(a.clone(), Local::default()).falta, Some("claude"));
++
++        let mut no_login = l.clone();
++        no_login.sesion = Sesion::default();
++        no_login.skill.ok = false;
++        assert_eq!(assemble(a.clone(), no_login).falta, Some("sesion"));
++
++        let mut no_skill = l.clone();
++        no_skill.skill.ok = false;
++        no_skill.lector.ok = false;
++        assert_eq!(assemble(a.clone(), no_skill).falta, Some("skill"));
++
++        let mut no_reader = l;
++        no_reader.lector.ok = false;
++        assert_eq!(assemble(a, no_reader).falta, Some("lector"));
++    }
++
++    #[test]
++    fn the_page_gets_the_shape_it_reads() {
++        let (a, l) = all_ok();
++        let v = serde_json::to_value(assemble(a, l)).unwrap();
++        assert_eq!(v["agente"], serde_json::json!({ "ok": true, "arrancando": false, "instalado": true }));
++        assert_eq!(v["claude"], serde_json::json!({ "ok": true, "version": "2.1.286" }));
++        assert_eq!(v["sesion"]["plan"], "Pro");
++        assert_eq!((v["skill"]["ok"].as_bool(), v["lector"]["ok"].as_bool()), (Some(true), Some(true)));
++        assert!(v["falta"].is_null());
++    }
++
++    #[test]
++    fn the_reader_is_a_script_of_agentes() {
++        let dir = std::env::temp_dir().join(format!("coucou-ready-test-{}", std::process::id()));
++        std::fs::create_dir_all(&dir).unwrap();
++        assert!(!lector_ok(&dir)); // no package.json
++        std::fs::write(dir.join("package.json"), r#"{"scripts":{"servir":"tsx plata/servir.ts"}}"#).unwrap();
++        assert!(!lector_ok(&dir));
++        std::fs::write(
++            dir.join("package.json"),
++            "\u{feff}{\"scripts\":{\"servir\":\"tsx plata/servir.ts\",\"conciliar:leer\":\"tsx plata/conciliar-leer.ts\"}}",
++        )
++        .unwrap();
++        assert!(lector_ok(&dir));
++        std::fs::write(dir.join("package.json"), "no es json").unwrap();
++        assert!(!lector_ok(&dir));
++        let _ = std::fs::remove_dir_all(&dir);
++    }
++}
+diff --git a/windows/src/core/bridge.ts b/windows/src/core/bridge.ts
+index 4bd5ed8..1e5a901 100644
+--- a/windows/src/core/bridge.ts
++++ b/windows/src/core/bridge.ts
+@@ -34,6 +34,23 @@ export interface PlataAgentStatus {
+   dir: string | null;
+ }
+ 
++/** plata_ready.rs: each piece the Plata tab uses, and the first one missing. */
++export interface PlataReadiness {
++  agente: { ok: boolean; arrancando: boolean; instalado: boolean };
++  claude: { ok: boolean; version: string | null };
++  sesion: { ok: boolean; plan: string | null; detalle: string | null };
++  skill: { ok: boolean };
++  lector: { ok: boolean };
++  falta: "agente" | "claude" | "sesion" | "skill" | "lector" | null;
++}
++
++/** `plata-login`: how a connection of Claude Code is going. */
++export type PlataLoginEvent =
++  | { estado: "url"; url: string }
++  | { estado: "conectado"; plan: string | null }
++  | { estado: "error" | "vencido"; texto: string }
++  | { estado: "cancelado" };
++
+ export interface PlataAttachmentInfo {
+   name: string;
+   size: number;
+@@ -94,8 +111,20 @@ export const Bridge = {
+   plataDelegateCancel: (sesionId: string) => call<boolean>("plata_delegate_cancel", { sesionId }),
+   /** Opens a reconciliation's informe.html in the default browser. */
+   plataOpenReport: (path: string) => callOrThrow<void>("plata_open_report", { path }),
+-  /** Claude Code in a terminal, to log in once so headless runs work. */
+-  plataClaudeLogin: () => callOrThrow<void>("plata_claude_login"),
++  /**
++   * Agent, Claude Code, its login, skill and reader: is the Plata tab ready?
++   * Cached a minute in Rust unless `force`. Also pushed as `plata-readiness`.
++   */
++  plataReadiness: (force = false) => call<PlataReadiness>("plata_readiness", { force }),
++  /**
++   * Connects Claude Code to Lucas's plan, no terminal: the browser opens to
++   * authorize. `conectado` when it already was; otherwise the end comes as
++   * `plata-login`.
++   */
++  plataClaudeConnect: () => callOrThrow<{ conectado: boolean; plan: string | null }>("plata_claude_connect"),
++  /** The code the fallback page shows, typed into the waiting login. */
++  plataClaudeConnectCode: (code: string) => callOrThrow<void>("plata_claude_connect_code", { code }),
++  plataClaudeConnectCancel: () => call<boolean>("plata_claude_connect_cancel"),
+ 
+   /** Give the window keyboard focus (chat field) and take it away again. */
+   focusWindow: (focused: boolean) => call<void>("focus_window", { focused }),
+diff --git a/windows/src/style.css b/windows/src/style.css
+index 52e41ff..b4eede0 100644
+--- a/windows/src/style.css
++++ b/windows/src/style.css
+@@ -1398,17 +1398,123 @@ input[type="range"]::-webkit-slider-thumb {
+   color: var(--dim-2, #9a9fa8);
+ }
+ 
+-.plata-dot {
+-  width: 7px;
+-  height: 7px;
++/* Ready? One dot per piece under the header; quiet when everything is. */
++.plata-ready {
++  display: flex;
++  flex-direction: column;
++  gap: 6px;
++  flex: none;
++}
++
++.plata-ready-line {
++  display: flex;
++  flex-wrap: wrap;
++  align-items: center;
++  gap: 2px 12px;
++  font: 400 10.5px var(--font);
++  color: var(--dim-2, #9a9fa8);
++}
++
++.plata-ready.all-ok .plata-ready-line {
++  color: var(--dim-3, #6b6b70);
++}
++
++.plata-ready-item {
++  display: inline-flex;
++  align-items: center;
++  gap: 5px;
++  white-space: nowrap;
++}
++
++.plata-ready-item i {
++  width: 6px;
++  height: 6px;
+   border-radius: 50%;
+   background: #6b6b70;
+   flex: none;
+ }
+ 
+-.plata-dot.up {
++.plata-ready-item.ok i {
+   background: #35e08a;
+-  box-shadow: 0 0 6px #35e08a;
++}
++
++.plata-ready-item.bad {
++  color: #ff8a84;
++}
++
++.plata-ready-item.bad i {
++  background: #ff5f57;
++}
++
++.plata-ready-item.wait {
++  color: #ffb84d;
++}
++
++.plata-ready-item.wait i {
++  background: #ff9e1b;
++  animation: plata-cc-pulse 1.2s ease-in-out infinite;
++}
++
++/* What fixes the missing piece: the message and its one button. */
++.plata-fix {
++  display: flex;
++  flex-wrap: wrap;
++  align-items: center;
++  gap: 6px 10px;
++  padding: 7px 10px;
++  border-radius: 10px;
++  background: rgba(255, 158, 27, 0.08);
++  border: 1px solid rgba(255, 158, 27, 0.32);
++  font: 400 11.5px var(--font);
++  color: var(--ink-2, #d6d8dc);
++}
++
++.plata-fix[hidden] {
++  display: none;
++}
++
++.plata-fix.ok {
++  background: rgba(53, 224, 138, 0.08);
++  border-color: rgba(53, 224, 138, 0.35);
++  color: #35e08a;
++}
++
++.plata-fix-msg {
++  flex: 1 1 200px;
++  min-width: 0;
++}
++
++.plata-fix .plata-btn {
++  flex: none;
++}
++
++.plata-fix-row {
++  display: flex;
++  gap: 8px;
++  flex: 1 0 100%;
++}
++
++.plata-fix-code {
++  flex: 1 1 auto;
++  min-width: 0;
++  height: 26px;
++  padding: 0 9px;
++  border-radius: 8px;
++  border: 1px solid rgba(255, 255, 255, 0.14);
++  background: rgba(0, 0, 0, 0.25);
++  color: var(--ink-2, #d6d8dc);
++  font: 400 11.5px var(--mono);
++  outline: none;
++  user-select: text;
++}
++
++.plata-fix-code:focus {
++  border-color: #ffb84d;
++}
++
++.plata-fix button:focus-visible {
++  outline: 2px solid #ffb84d;
++  outline-offset: 2px;
+ }
+ 
+ .plata-status-text {
+@@ -1817,7 +1923,8 @@ input[type="range"]::-webkit-slider-thumb {
+ }
+ 
+ @media (prefers-reduced-motion: reduce) {
+-  .plata-cc-pulse {
++  .plata-cc-pulse,
++  .plata-ready-item.wait i {
+     animation: none;
+   }
+ }
+diff --git a/windows/src/views/plata.ts b/windows/src/views/plata.ts
+index 16d0deb..4c6b4d0 100644
+--- a/windows/src/views/plata.ts
++++ b/windows/src/views/plata.ts
+@@ -16,10 +16,16 @@
+ // claude_code.rs). Its progress arrives as `plata-delegado` and the result is a
+ // card drawn from the `datos.json` it leaves. The agent can also suggest it
+ // (a `delegar` event); its "Hacerlo" reuses the last attachments, if any.
++//
++// Under the header, one dot per piece all this needs (plata_ready.rs: agent,
++// Claude Code, its login on Lucas's plan, the skill and its reader). When one
++// is missing there is one button for it: "Encender agente", or "Conectar
++// Claude Code", which logs in through the browser with no terminal and then
++// retries the reconciliation that was waiting for it.
+ 
+ import { h, svg, clear } from "./dom";
+ import { ICONS } from "./icons";
+-import { Bridge, onEvent, type PlataAgentStatus } from "../core/bridge";
++import { Bridge, onEvent, type PlataAgentStatus, type PlataLoginEvent, type PlataReadiness } from "../core/bridge";
+ import { Sound } from "../core/sound";
+ import { State } from "../core/state";
+ import { plataBigSize, setPlataBig } from "../core/layout";
+@@ -459,8 +465,19 @@ export function buildPlata(onSizeChange: () => void = () => {}): ViewHost {
+     atts: Attachment[];
+   } | null = null;
+   let lastAtts: { text: string; atts: Attachment[] } | null = null;
++  // Readiness (plata_ready.rs) and the fixes it offers.
++  let readiness: PlataReadiness | null = null;
++  let readyTimer: number | null = null;
++  let startingAgent = false;
++  /** Claude Code is being connected: the browser is open to authorize. */
++  let connecting: { url: string | null; codeOpen: boolean } | null = null;
++  /** Why the last connection didn't work; shown until the next try. */
++  let connectError: string | null = null;
++  /** "Claude Code conectado · plan Pro", for a few seconds. */
++  let connectedFlash: string | null = null;
++  /** A reconciliation that stopped for lack of a login: it runs again once connected. */
++  let afterLogin: { text: string; atts: Attachment[]; box: HTMLElement | null; btn: HTMLButtonElement | null } | null = null;
+ 
+-  const dotEl = h("i", { class: "plata-dot" });
+   const statusText = h("span", { class: "plata-status-text", text: "Plata" });
+   const resetBtn = h("button", { class: "plata-link", text: "Nueva", title: "Empezar otra conversación" });
+   const bigBtn = h(
+@@ -469,7 +486,14 @@ export function buildPlata(onSizeChange: () => void = () => {}): ViewHost {
+     svg(ICONS.expand, 13, { stroke: 2 }),
+     h("span", { text: "Agrandar" }),
+   );
+-  const head = h("div", { class: "plata-head" }, dotEl, statusText, resetBtn, bigBtn);
++  const head = h("div", { class: "plata-head" }, statusText, resetBtn, bigBtn);
++
++  // Under the header: one dot per piece the tab uses, and when one is
++  // missing, what fixes it (plata_ready.rs decides which goes first).
++  const readyLine = h("div", { class: "plata-ready-line", role: "status", "aria-live": "polite" });
++  const fixLine = h("div", { class: "plata-fix" });
++  fixLine.hidden = true;
++  const ready = h("div", { class: "plata-ready" }, readyLine, fixLine);
+ 
+   // ⤢: the chat takes most of the screen, and back. The size comes from the
+   // display the island is on, so it fits on a laptop as well as on 1080p.
+@@ -519,7 +543,7 @@ export function buildPlata(onSizeChange: () => void = () => {}): ViewHost {
+   const el = h(
+     "div",
+     { class: "view" },
+-    h("div", { class: "card wash chat-card plata-card" }, h("div", { class: "chat-body plata-body" }, head, log, attRow, bar)),
++    h("div", { class: "card wash chat-card plata-card" }, h("div", { class: "chat-body plata-body" }, head, ready, log, attRow, bar)),
+   );
+   const card = el.querySelector(".card") as HTMLElement;
+   card.style.setProperty("--wash", "rgba(255,158,27,0.30)");
+@@ -599,9 +623,7 @@ export function buildPlata(onSizeChange: () => void = () => {}): ViewHost {
+   }
+ 
+   function renderStatus() {
+-    const up = status?.up ?? false;
+-    dotEl.classList.toggle("up", up);
+-    statusText.textContent = up ? `Plata · ${status?.model ?? "agente"}` : "Plata · agente apagado";
++    statusText.textContent = status?.up && status.model ? `Plata · ${status.model}` : "Plata";
+   }
+ 
+   async function refreshStatus(): Promise<PlataAgentStatus> {
+@@ -613,6 +635,8 @@ export function buildPlata(onSizeChange: () => void = () => {}): ViewHost {
+     }
+     status = s;
+     renderStatus();
++    // The agent came up or went down since the last check: the dots follow.
++    if (readiness && readiness.agente.ok !== s.up) void refreshReady();
+     return s;
+   }
+ 
+@@ -726,6 +750,264 @@ export function buildPlata(onSizeChange: () => void = () => {}): ViewHost {
+     }
+   }
+ 
++  // ── Ready? One dot per piece, and the one button that fixes what's missing ──
++
++  type Dot = "ok" | "bad" | "wait";
++
++  function readyItem(state: Dot, label: string, title: string): HTMLElement {
++    return h("span", { class: `plata-ready-item ${state}`, title }, h("i"), h("span", { text: label }));
++  }
++
++  function renderReady() {
++    clear(readyLine);
++    const r = readiness;
++    if (!r) {
++      readyLine.append(readyItem("wait", "Revisando…", "Revisando el agente y Claude Code"));
++      fixLine.hidden = true;
++      return;
++    }
++    const agentWait = !r.agente.ok && (r.agente.arrancando || startingAgent);
++    readyLine.append(
++      readyItem(
++        r.agente.ok ? "ok" : agentWait ? "wait" : "bad",
++        r.agente.ok ? "Agente" : agentWait ? "Agente arrancando…" : "Agente apagado",
++        r.agente.ok
++          ? `El agente de Plata responde${status?.model ? ` (${status.model})` : ""}`
++          : "El agente de Plata (npm run servir) no responde",
++      ),
++    );
++    const cc: Dot = !r.claude.ok ? "bad" : r.sesion.ok ? "ok" : connecting ? "wait" : "bad";
++    const ccLabel = !r.claude.ok
++      ? "Claude Code"
++      : r.sesion.ok
++        ? `Claude Code${r.sesion.plan ? ` (${r.sesion.plan})` : ""}`
++        : connecting
++          ? "Claude Code · conectando…"
++          : "Claude Code · sin sesión";
++    readyLine.append(
++      readyItem(
++        cc,
++        ccLabel,
++        r.claude.ok ? `Claude Code ${r.claude.version ?? ""}, el de la app de Claude` : "No encuentro Claude Code",
++      ),
++    );
++    const conc = r.skill.ok && r.lector.ok;
++    readyLine.append(
++      readyItem(
++        conc ? "ok" : "bad",
++        "Conciliación",
++        conc ? "Están la skill conciliar-resumen y el lector de Plata" : "Falta una parte de la conciliación",
++      ),
++    );
++    ready.classList.toggle("all-ok", r.falta === null && !connecting && !connectedFlash);
++    renderFix(r);
++    retryButtonSync();
++  }
++
++  function fixMsg(text: string): HTMLElement {
++    return h("span", { class: "plata-fix-msg", text });
++  }
++
++  function fixLink(label: string, onClick: () => void, title = ""): HTMLButtonElement {
++    const b = h("button", { type: "button", class: "plata-link", text: label, title: title || undefined }) as HTMLButtonElement;
++    b.addEventListener("click", onClick);
++    return b;
++  }
++
++  const recheck = () => fixLink("Revisar de nuevo", () => void refreshReady(true));
++
++  function renderFix(r: PlataReadiness) {
++    clear(fixLine);
++    fixLine.classList.remove("ok");
++    fixLine.hidden = false;
++    if (connecting) {
++      const c = connecting;
++      fixLine.append(
++        h("i", { class: "plata-cc-pulse" }),
++        fixMsg("Autorizá en el navegador que se abrió: entrá con tu cuenta de Claude y tocá Autorizar."),
++        fixLink("Cancelar", () => void Bridge.plataClaudeConnectCancel()),
++      );
++      const url = c.url;
++      if (url && !c.codeOpen) {
++        fixLine.append(
++          fixLink(
++            "¿No se abrió?",
++            () => {
++              c.codeOpen = true;
++              void Bridge.openUrl(url);
++              renderReady();
++              fixLine.querySelector("input")?.focus();
++            },
++            "Abre la página de autorización de nuevo; al final te muestra un código para pegar acá",
++          ),
++        );
++      }
++      if (c.codeOpen) {
++        const code = h("input", {
++          type: "text",
++          class: "plata-fix-code",
++          placeholder: "Pegá el código que te muestra la página",
++          spellcheck: "false",
++        }) as HTMLInputElement;
++        const go = ccButton("Listo", true, () => {
++          const v = code.value.trim();
++          if (!v) return;
++          go.disabled = true;
++          Bridge.plataClaudeConnectCode(v).catch((e) => {
++            go.disabled = false;
++            note(errText(e), "plata-error");
++          });
++        });
++        code.addEventListener("keydown", (e) => {
++          if ((e as KeyboardEvent).key === "Enter") go.click();
++          e.stopPropagation(); // Escape closes the island, not this field
++        });
++        fixLine.append(h("div", { class: "plata-fix-row" }, code, go));
++      }
++      return;
++    }
++    if (r.falta === null) {
++      if (connectedFlash) {
++        fixLine.classList.add("ok");
++        fixLine.append(svg(ICONS.check, 12, { stroke: 2.2 }), fixMsg(connectedFlash));
++      } else {
++        fixLine.hidden = true;
++      }
++      return;
++    }
++    switch (r.falta) {
++      case "agente":
++        if (r.agente.arrancando || startingAgent) {
++          fixLine.append(h("i", { class: "plata-cc-pulse" }), fixMsg("Prendiendo el agente de Plata… tarda unos segundos."));
++        } else if (!r.agente.instalado) {
++          fixLine.append(fixMsg("No encuentro la carpeta del agente (agentes\\plata\\servir.ts) en esta PC."), recheck());
++        } else {
++          fixLine.append(
++            fixMsg("El agente de Plata está apagado."),
++            ccButton("Encender agente", true, () => void turnOnAgent(), "Arranca npm run servir en la carpeta agentes, sin ventana"),
++          );
++        }
++        break;
++      case "claude":
++        fixLine.append(fixMsg("No encuentro Claude Code. Abrí la app de Claude una vez para que lo descargue."), recheck());
++        break;
++      case "sesion":
++        fixLine.append(
++          fixMsg(connectError ?? r.sesion.detalle ?? "Claude Code no tiene la sesión iniciada: sin eso no puedo conciliar resúmenes."),
++          ccButton("Conectar Claude Code", true, () => void connectClaude(), "Se abre el navegador para autorizar con tu cuenta de Claude"),
++        );
++        break;
++      case "skill":
++      case "lector": {
++        const faltan = [
++          r.skill.ok ? "" : "la receta de conciliación (la skill conciliar-resumen en %USERPROFILE%\\.claude\\skills)",
++          r.lector.ok ? "" : "el lector de Plata (el script conciliar:leer en agentes\\package.json: actualizá el repo agentes)",
++        ].filter(Boolean);
++        fixLine.append(fixMsg(`Para conciliar falta ${faltan.join(" y ")}.`), recheck());
++        break;
++      }
++    }
++  }
++
++  function applyReady(r: PlataReadiness) {
++    readiness = r;
++    if (r.sesion.ok) ccNeedsLogin = false;
++    renderReady();
++    if (readyTimer !== null) window.clearTimeout(readyTimer);
++    readyTimer = null;
++    // Coucou is starting the agent: look again until it answers.
++    if (!r.agente.ok && r.agente.arrancando) readyTimer = window.setTimeout(() => void refreshReady(), 3000);
++  }
++
++  async function refreshReady(force = false) {
++    const r = await Bridge.plataReadiness(force);
++    if (r) applyReady(r);
++  }
++
++  async function turnOnAgent() {
++    if (startingAgent) return;
++    startingAgent = true;
++    renderReady();
++    const up = await startAndWait();
++    startingAgent = false;
++    await refreshReady();
++    if (!up) note("No pude prender el agente (mirá %LOCALAPPDATA%\\Coucou\\plata-agent.log).", "plata-error");
++  }
++
++  /** The "Conectar" button of a failed reconciliation follows the one above. */
++  function retryButtonSync() {
++    const b = afterLogin?.btn;
++    if (!b) return;
++    b.disabled = connecting !== null;
++    const label = b.querySelector("span");
++    if (label) label.textContent = connecting ? "Esperando que autorices…" : "Conectar Claude Code";
++  }
++
++  /** `auth login` hidden: the browser opens, and `plata-login` says how it ended. */
++  async function connectClaude() {
++    if (connecting) return;
++    connectError = null;
++    connectedFlash = null;
++    connecting = { url: null, codeOpen: false };
++    renderReady();
++    try {
++      const r = await Bridge.plataClaudeConnect();
++      if (r.conectado) onConnected(r.plan);
++    } catch (e) {
++      connecting = null;
++      connectError = errText(e);
++      renderReady();
++      Sound.play("error");
++    }
++  }
++
++  function onLogin(ev: PlataLoginEvent) {
++    if (ev.estado === "url") {
++      if (connecting) {
++        connecting.url = ev.url;
++        renderReady();
++      }
++      return;
++    }
++    connecting = null;
++    if (ev.estado === "conectado") {
++      onConnected(ev.plan);
++      return;
++    }
++    if (ev.estado !== "cancelado") {
++      connectError = ev.texto;
++      Sound.play("error");
++    }
++    renderReady();
++  }
++
++  function onConnected(plan: string | null) {
++    connecting = null;
++    connectError = null;
++    ccNeedsLogin = false;
++    const msg = `Claude Code conectado${plan ? ` · plan ${plan}` : ""}`;
++    connectedFlash = msg;
++    window.setTimeout(() => {
++      if (connectedFlash === msg) {
++        connectedFlash = null;
++        renderReady();
++      }
++    }, 6000);
++    Sound.play("finish");
++    void refreshReady(true);
++    // The reconciliation that was waiting for this runs again, on its own.
++    const pend = afterLogin;
++    afterLogin = null;
++    if (pend) {
++      if (pend.box) {
++        clear(pend.box);
++        pend.box.className = "plata-note";
++        pend.box.append(h("span", { text: `${msg}. Reintento la conciliación…` }));
++      }
++      if (pend.atts.length) void delegate(pend.text, pend.atts, { bubble: false });
++    }
++  }
++
+   // ── Claude Code (headless, on Lucas's plan) ────────────────────────────
+ 
+   function busy(): void {
+@@ -742,17 +1024,14 @@ export function buildPlata(onSizeChange: () => void = () => {}): ViewHost {
+     if (login) {
+       // No "send it to the agent" here: the agent hands it back to Claude Code
+       // (delegar), so it would only spend API to land on this same error.
+-      const retry = ccButton("Ya inicié sesión · Reintentar", false, () => {
+-        retry.disabled = true;
+-        void delegate(text, atts, { bubble: false });
+-      });
+-      box.append(
+-        ccButton("Iniciar sesión en Claude Code", true, () => {
+-          Bridge.plataClaudeLogin().catch((e) => note(errText(e), "plata-error"));
+-        }),
+-        retry,
+-      );
++      // Connecting is the same button as above; once it lands, this runs again.
++      const btn = ccButton("Conectar Claude Code", true, () => void connectClaude(), "Se abre el navegador para autorizar con tu cuenta de Claude");
++      box.append(btn);
++      afterLogin = { text, atts, box, btn };
+       row(box);
++      // The dots above learn about it now, not in a minute.
++      void refreshReady(true);
++      retryButtonSync();
+       return;
+     }
+     const toAgent = ccButton(
+@@ -935,7 +1214,10 @@ export function buildPlata(onSizeChange: () => void = () => {}): ViewHost {
+         return;
+       }
+       if (ccNeedsLogin) {
+-        note("Primero iniciá sesión en Claude Code (botón de arriba) y después tocá Reintentar.", "plata-error");
++        // Connect first; the reconciliation follows by itself.
++        if (lastAtts?.atts.length) afterLogin = { text: lastAtts.text, atts: lastAtts.atts, box: null, btn: null };
++        note("Primero hay que conectar Claude Code: autorizá en el navegador que se abre y sigo solo.");
++        void connectClaude();
+       } else if (lastAtts?.atts.length) {
+         void delegate(lastAtts.text, lastAtts.atts, { bubble: false });
+       } else {
+@@ -959,7 +1241,6 @@ export function buildPlata(onSizeChange: () => void = () => {}): ViewHost {
+     );
+   }
+ 
+-  /** The agent isn't listening: say so, and offer to start it. */
+   /**
+    * The agent isn't listening. Coucou starts it at launch, so this is a crash or
+    * a launch that is still warming up: start it (a no-op if it's already
+@@ -1093,6 +1374,14 @@ export function buildPlata(onSizeChange: () => void = () => {}): ViewHost {
+   void onEvent<{ sesionId: string; ev: Delegado }>("plata-delegado", (p) => {
+     if (ccRun && p.sesionId === ccRun.sesion) onDelegado(p.ev);
+   });
++  void onEvent<PlataReadiness>("plata-readiness", applyReady);
++  void onEvent<PlataLoginEvent>("plata-login", onLogin);
++  renderReady();
++  // The check Coucou runs at launch arrives as `plata-readiness`; this covers
++  // a page that loaded after it was sent.
++  window.setTimeout(() => {
++    if (!readiness) void refreshReady();
++  }, 2500);
+ 
+   const sendFromField = () => {
+     if (sending) return;
+@@ -1176,6 +1465,7 @@ export function buildPlata(onSizeChange: () => void = () => {}): ViewHost {
+     },
+     focus() {
+       void refreshStatus();
++      void refreshReady();
+       input.focus();
+     },
+   };
+-- 
+2.53.0.windows.2
+
+
+From cfdcd05d7dc9b6832c3b541c93d5181ac1c8bf98 Mon Sep 17 00:00:00 2001
+From: Lucas <lucasgigli3@gmail.com>
+Date: Sat, 3 Oct 2026 14:59:45 -0300
+Subject: [PATCH 19/20] =?UTF-8?q?Plata:=20conciliar=20tambi=C3=A9n=20el=20?=
+ =?UTF-8?q?extracto=20de=20la=20cuenta=20con=20Claude=20Code?=
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+- claude_code.rs: el pedido de modo isla le dice a Claude Code que elija conciliar-resumen
+  (tarjeta de crédito) o conciliar-extracto (cuenta bancaria) leyendo el archivo;
+  --allowedTools suma Bash(npm run -s conciliar:leer-cuenta*) y --add-dir la carpeta de la
+  skill nueva, si está en la PC. Tests actualizados.
+- plata.ts: delegar con conciliar_extracto se trata como conciliar_resumen; la tarjeta dice
+  "extracto" cuando plata_resumen.id es null, los montos con signo se muestran con su signo y
+  el mensaje de faltantes dice egreso/ingreso.
+
+Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+---
+ windows/src-tauri/src/claude_code.rs | 126 ++++++++++++++++++++-------
+ windows/src/views/plata.ts           |  55 ++++++++----
+ 2 files changed, 134 insertions(+), 47 deletions(-)
+
+diff --git a/windows/src-tauri/src/claude_code.rs b/windows/src-tauri/src/claude_code.rs
+index 59fd84e..48c950f 100644
+--- a/windows/src-tauri/src/claude_code.rs
++++ b/windows/src-tauri/src/claude_code.rs
+@@ -1,10 +1,13 @@
+-// Reconciling a card statement with Claude Code, headless, on Lucas's own plan.
++// Reconciling a card statement, or a bank-account statement, with Claude Code,
++// headless, on Lucas's own plan.
+ //
+ // The Plata agent (plata_agent.rs) runs on the API and is billed per token.
+ // Reconciling a statement is a long read of a PDF against many rows, so the
+ // island hands it to Claude Code instead: `claude -p` in the background, with
+-// the `conciliar-resumen` skill, which leaves `datos.json` and `informe.html`
+-// in a folder of its own. Nothing here writes to Plata.
++// the `conciliar-resumen` skill (a credit-card statement) or `conciliar-extracto`
++// (the bank account's statement; Claude Code reads the file and picks), which
++// leave `datos.json` and `informe.html` in a folder of their own. Both write the
++// same `datos.json` shape. Nothing here writes to Plata.
+ //
+ // One run per conversation. Its stream-json output is read line by line and
+ // turned into short progress lines for the page (`plata-delegado`), then a
+@@ -28,11 +31,16 @@ use crate::plata_agent::{self, CREATE_NO_WINDOW};
+ pub const EVENT: &str = "plata-delegado";
+ /// The skill writes and checks a few files; past this the run is stuck.
+ const TIMEOUT: Duration = Duration::from_secs(10 * 60);
++/// A credit card's statement. Required: without it nothing is delegated.
+ const SKILL: &str = "conciliar-resumen";
+-
+-/// The whole invocation in one place, so it can follow the skill's side of the
+-/// contract. The prompt goes in through stdin.
+-fn claude_args(carpeta: &Path, skill_dir: &Path) -> Vec<String> {
++/// The bank account's statement (03/10). Optional: an older PC without it
++/// still reconciles card statements.
++const SKILL_EXTRACTO: &str = "conciliar-extracto";
++
++/// The whole invocation in one place, so it can follow the skills' side of the
++/// contract. The prompt goes in through stdin. `skill_dirs`: the folder of each
++/// skill the run may use, readable with --add-dir.
++fn claude_args(carpeta: &Path, skill_dirs: &[PathBuf]) -> Vec<String> {
+     // --tools: only what the recipe uses (no PowerShell to wander into).
+     // dontAsk: anything not pre-approved is refused at once. In -p a permission
+     // prompt has nobody to answer it and waits until it times out: six of
+@@ -54,22 +62,46 @@ fn claude_args(carpeta: &Path, skill_dir: &Path) -> Vec<String> {
+         .map(|s| s.to_string())
+         .collect();
+     args.extend(
+-        ["Read", "Write", "Glob", "Skill", "Bash(npm run -s conciliar:leer*)", "Bash(node *llenar.mjs*)"]
+-            .iter()
+-            .map(|s| s.to_string()),
++        [
++            "Read",
++            "Write",
++            "Glob",
++            "Skill",
++            "Bash(npm run -s conciliar:leer*)",
++            "Bash(npm run -s conciliar:leer-cuenta*)",
++            "Bash(node *llenar.mjs*)",
++        ]
++        .iter()
++        .map(|s| s.to_string()),
+     );
+     args.push("--add-dir".into());
+     args.push(carpeta.to_string_lossy().to_string());
+-    args.push("--add-dir".into());
+-    args.push(skill_dir.to_string_lossy().to_string());
++    for dir in skill_dirs {
++        args.push("--add-dir".into());
++        args.push(dir.to_string_lossy().to_string());
++    }
+     args
+ }
+ 
+-fn prompt(resumen: &[PathBuf], carpeta: &Path, pedido: &str) -> String {
+-    let rutas: Vec<String> = resumen.iter().map(|p| p.to_string_lossy().to_string()).collect();
++/// `extracto`: the `conciliar-extracto` skill is there, so Claude Code picks
++/// between the two by reading the file.
++fn prompt(archivos: &[PathBuf], carpeta: &Path, pedido: &str, extracto: bool) -> String {
++    let rutas: Vec<String> = archivos.iter().map(|p| p.to_string_lossy().to_string()).collect();
++    let (skill, comandos) = if extracto {
++        (
++            format!(
++                "Leé el archivo y decidí: si es el resumen de una tarjeta de crédito, usá la skill {SKILL}; \
++                 si es el extracto de una cuenta bancaria (transferencias, débitos, saldo), usá la skill {SKILL_EXTRACTO}."
++            ),
++            "`npm run -s conciliar:leer -- ...`, `npm run -s conciliar:leer-cuenta -- ...` y `node <ruta de la skill>/llenar.mjs ...`",
++        )
++    } else {
++        (format!("Usá la skill {SKILL}."), "`npm run -s conciliar:leer -- ...` y `node <ruta de la skill>/llenar.mjs ...`")
++    };
+     let mut p = format!(
+-        "MODO ISLA. Usá la skill {SKILL}. Resumen: {}. Carpeta de salida: {}
+-         Comandos: solo con Bash, uno por llamada, sin cd, sin variables y sin encadenar          (el cwd ya es el repo agentes). Los únicos permitidos:          `npm run -s conciliar:leer -- ...` y `node <ruta de la skill>/llenar.mjs ...`.",
++        "MODO ISLA. {skill} Archivos: {}. Carpeta de salida: {}\n\
++         Comandos: solo con Bash, uno por llamada, sin cd, sin variables y sin encadenar \
++         (el cwd ya es el repo agentes). Los únicos permitidos: {comandos}.",
+         rutas.join(", "),
+         carpeta.display()
+     );
+@@ -195,7 +227,7 @@ fn stage_inputs(dir: &Path, adjuntos: &[String], pegado: Option<&str>) -> Result
+         out.push(target);
+     }
+     if out.is_empty() {
+-        return Err("No hay resumen: soltá el PDF o la captura, o pegá el texto.".into());
++        return Err("No hay nada que conciliar: soltá el PDF o la captura del resumen o del extracto, o pegá el texto.".into());
+     }
+     Ok(out)
+ }
+@@ -227,8 +259,10 @@ fn tool_phrase(name: &str, input: &Value) -> Option<String> {
+     let ext = lower.rsplit('.').next().unwrap_or("");
+     let phrase = match name {
+         "Skill" => "Usando la receta de conciliación".to_string(),
+-        "Read" if path.contains(&format!("/{SKILL}/")) => "Usando la receta de conciliación".to_string(),
+-        "Read" if ["pdf", "txt", "png", "jpg", "jpeg", "webp"].contains(&ext) => "Leyendo el resumen".to_string(),
++        "Read" if path.contains(&format!("/{SKILL}/")) || path.contains(&format!("/{SKILL_EXTRACTO}/")) => {
++            "Usando la receta de conciliación".to_string()
++        }
++        "Read" if ["pdf", "txt", "png", "jpg", "jpeg", "webp"].contains(&ext) => "Leyendo lo del banco".to_string(),
+         "Read" => format!("Leyendo {file}"),
+         "Bash" => {
+             let cmd = input.get("command").and_then(Value::as_str).unwrap_or("");
+@@ -371,11 +405,21 @@ fn emit(app: &AppHandle, sesion_id: &str, ev: Value) {
+     let _ = app.emit_to(crate::island::WINDOW_LABEL, EVENT, Delegado { sesion_id: sesion_id.to_string(), ev });
+ }
+ 
+-pub(crate) fn skill_dir() -> Option<PathBuf> {
+-    let p = PathBuf::from(std::env::var_os("USERPROFILE")?).join(".claude").join("skills").join(SKILL);
++fn skill_dir_named(name: &str) -> Option<PathBuf> {
++    let p = PathBuf::from(std::env::var_os("USERPROFILE")?).join(".claude").join("skills").join(name);
+     p.join("SKILL.md").is_file().then_some(p)
+ }
+ 
++/// The card statement's skill: the one the Plata tab checks for.
++pub(crate) fn skill_dir() -> Option<PathBuf> {
++    skill_dir_named(SKILL)
++}
++
++/// The bank account statement's skill, if this PC has it.
++pub(crate) fn skill_extracto_dir() -> Option<PathBuf> {
++    skill_dir_named(SKILL_EXTRACTO)
++}
++
+ /// Starts the run and returns once Claude Code is up; everything after that
+ /// arrives as `plata-delegado` events. An error here means it never started.
+ pub fn delegate(app: AppHandle, sesion_id: String, texto: String, adjuntos: Vec<String>, pegado: Option<String>) -> Result<Started, String> {
+@@ -385,6 +429,8 @@ pub fn delegate(app: AppHandle, sesion_id: String, texto: String, adjuntos: Vec<
+     let exe = plata_agent::claude_exe().ok_or_else(|| "No encuentro Claude Code (viene con la app de escritorio de Claude).".to_string())?;
+     let cwd = plata_agent::agent_dir().ok_or_else(|| "No encuentro la carpeta agentes, que es donde corre la conciliación.".to_string())?;
+     let skill = skill_dir().ok_or_else(|| format!("No encuentro la skill {SKILL} en .claude\\skills."))?;
++    let extracto = skill_extracto_dir();
++    let skills: Vec<PathBuf> = std::iter::once(skill).chain(extracto.clone()).collect();
+ 
+     let carpeta = new_run_dir()?;
+     let inputs = match stage_inputs(&carpeta, &adjuntos, pegado.as_deref()) {
+@@ -399,7 +445,7 @@ pub fn delegate(app: AppHandle, sesion_id: String, texto: String, adjuntos: Vec<
+ 
+     let stderr = std::fs::File::create(carpeta.join("claude-code.log")).map_err(|e| e.to_string())?;
+     let mut cmd = plain_command(&exe);
+-    cmd.args(claude_args(&carpeta, &skill))
++    cmd.args(claude_args(&carpeta, &skills))
+         .current_dir(&cwd)
+         .stdin(Stdio::piped())
+         .stdout(Stdio::piped())
+@@ -407,7 +453,7 @@ pub fn delegate(app: AppHandle, sesion_id: String, texto: String, adjuntos: Vec<
+     let mut child = cmd.spawn().map_err(|e| format!("No pude arrancar Claude Code: {e}"))?;
+     if let Some(mut stdin) = child.stdin.take() {
+         // Closing stdin is what tells `-p` the prompt is complete.
+-        let _ = stdin.write_all(prompt(&inputs, &carpeta, &texto).as_bytes());
++        let _ = stdin.write_all(prompt(&inputs, &carpeta, &texto, extracto.is_some()).as_bytes());
+     }
+     let stdout = child.stdout.take().ok_or("Claude Code no dio salida.")?;
+     let stop_flag = Arc::new(AtomicU8::new(STOP_NONE));
+@@ -791,7 +837,7 @@ mod tests {
+             [
+                 "Claude Code arrancó",
+                 "Usando la receta de conciliación",
+-                "Leyendo el resumen",
++                "Leyendo lo del banco",
+                 "Consultando Plata",
+                 "Comparando línea por línea",
+                 "Armando el informe",
+@@ -806,8 +852,11 @@ mod tests {
+     fn tool_phrases() {
+         let p = |name: &str, input: Value| tool_phrase(name, &input);
+         assert_eq!(p("Read", json!({"file_path": "C:\\Users\\g\\.claude\\skills\\conciliar-resumen\\SKILL.md"})).unwrap(), "Usando la receta de conciliación");
+-        assert_eq!(p("Read", json!({"file_path": "D:\\run\\resumen.txt"})).unwrap(), "Leyendo el resumen");
+-        assert_eq!(p("Read", json!({"file_path": "D:\\run\\captura.PNG"})).unwrap(), "Leyendo el resumen");
++        assert_eq!(p("Read", json!({"file_path": "D:\\run\\resumen.txt"})).unwrap(), "Leyendo lo del banco");
++        assert_eq!(p("Read", json!({"file_path": "D:\\run\\captura.PNG"})).unwrap(), "Leyendo lo del banco");
++        assert_eq!(p("Read", json!({"file_path": "C:\\Users\\g\\.claude\\skills\\conciliar-extracto\\SKILL.md"})).unwrap(), "Usando la receta de conciliación");
++        let leer_cuenta = json!({"command": "npm run -s conciliar:leer-cuenta -- --desde 2026-09-01 --hasta 2026-09-30"});
++        assert_eq!(p("Bash", leer_cuenta).unwrap(), "Consultando Plata");
+         assert_eq!(p("Read", json!({"file_path": "D:\\a\\package.json"})).unwrap(), "Leyendo package.json");
+         assert_eq!(p("Write", json!({"file_path": "D:\\run\\informe.html"})).unwrap(), "Armando el informe");
+         assert_eq!(p("Bash", json!({"command": "dir"})).unwrap(), "Corriendo un comando");
+@@ -884,11 +933,21 @@ mod tests {
+         std::fs::write(&txt, b"no soy pdf").unwrap();
+         assert!(stage_inputs(&run, &[txt.to_string_lossy().to_string()], None).is_err());
+ 
+-        let p = prompt(&out[..1], &run, " fijate las cuotas ");
+-        assert!(p.starts_with("MODO ISLA. Usá la skill conciliar-resumen. Resumen: "));
++        // Without the extracto skill on this PC: the card statement's, as before.
++        let p = prompt(&out[..1], &run, " fijate las cuotas ", false);
++        assert!(p.starts_with("MODO ISLA. Usá la skill conciliar-resumen. Archivos: "));
+         assert!(p.contains("visa sept.pdf. Carpeta de salida: "));
++        assert!(!p.contains("conciliar-extracto") && !p.contains("conciliar:leer-cuenta"));
+         assert!(p.ends_with("\nPedido de Lucas: fijate las cuotas"));
+-        assert!(!prompt(&out[..1], &run, "").contains("Pedido"));
++        assert!(!prompt(&out[..1], &run, "", false).contains("Pedido"));
++        // With it: Claude Code reads the file and picks the skill.
++        let p = prompt(&out[..1], &run, "", true);
++        assert!(p.starts_with(
++            "MODO ISLA. Leé el archivo y decidí: si es el resumen de una tarjeta de crédito, usá la skill conciliar-resumen; "
++        ));
++        assert!(p.contains("si es el extracto de una cuenta bancaria (transferencias, débitos, saldo), usá la skill conciliar-extracto."));
++        assert!(p.contains("`npm run -s conciliar:leer -- ...`, `npm run -s conciliar:leer-cuenta -- ...` y `node <ruta de la skill>/llenar.mjs ...`."));
++        assert!(p.contains("visa sept.pdf. Carpeta de salida: "));
+         let _ = std::fs::remove_dir_all(&src);
+         let _ = std::fs::remove_dir_all(&run);
+     }
+@@ -936,11 +995,16 @@ mod tests {
+ 
+     #[test]
+     fn the_invocation_matches_the_contract() {
+-        let a = claude_args(Path::new("D:\\run"), Path::new("C:\\s\\conciliar-resumen"));
++        let skills = [PathBuf::from("C:\\s\\conciliar-resumen"), PathBuf::from("C:\\s\\conciliar-extracto")];
++        let a = claude_args(Path::new("D:\\run"), &skills);
+         let joined = a.join(" ");
+         assert!(joined.starts_with("-p --output-format stream-json --verbose --model sonnet --permission-mode dontAsk --tools Read,Write,Glob,Skill,Bash --allowedTools Read Write Glob Skill"));
+         assert!(a.contains(&"Bash(npm run -s conciliar:leer*)".to_string()));
+         assert!(a.contains(&"Bash(node *llenar.mjs*)".to_string()));
+-        assert!(joined.ends_with("--add-dir D:\\run --add-dir C:\\s\\conciliar-resumen"));
++        assert!(a.contains(&"Bash(npm run -s conciliar:leer-cuenta*)".to_string()));
++        assert!(joined.ends_with("--add-dir D:\\run --add-dir C:\\s\\conciliar-resumen --add-dir C:\\s\\conciliar-extracto"));
++        // Only the card statement's skill on this PC: one --add-dir less.
++        let solo = claude_args(Path::new("D:\\run"), &skills[..1]).join(" ");
++        assert!(solo.ends_with("--add-dir D:\\run --add-dir C:\\s\\conciliar-resumen"));
+     }
+ }
+diff --git a/windows/src/views/plata.ts b/windows/src/views/plata.ts
+index 4c6b4d0..245e97c 100644
+--- a/windows/src/views/plata.ts
++++ b/windows/src/views/plata.ts
+@@ -75,14 +75,14 @@ const PASTE_AS_ATTACHMENT = 600;
+ /** The agent's limits (CONTRATOS §9 in agentes): 3 files, 60,000 characters of text. */
+ const MAX_FILES = 3;
+ const MAX_TEXT = 60_000;
+-const DEFAULT_ASK = "Compará este resumen con lo que tengo en Plata y decime las diferencias.";
++const DEFAULT_ASK = "Compará esto del banco (resumen de tarjeta o extracto de la cuenta) con lo que tengo en Plata y decime las diferencias.";
+ 
+ type FileAttachment = { kind: "file"; path: string; name: string; size: number };
+ type TextAttachment = { kind: "text"; text: string; lines: number };
+ type Attachment = FileAttachment | TextAttachment;
+ 
+ function attachmentLabel(a: Attachment): string {
+-  if (a.kind === "text") return `Resumen pegado · ${a.lines} ${a.lines === 1 ? "línea" : "líneas"}`;
++  if (a.kind === "text") return `Texto pegado ·${a.lines} ${a.lines === 1 ? "línea" : "líneas"}`;
+   const kb = a.size / 1024;
+   return `${a.name} · ${kb < 1024 ? `${Math.max(1, Math.round(kb))} KB` : `${ars.format(Math.round(kb / 102.4) / 10)} MB`}`;
+ }
+@@ -236,16 +236,23 @@ function cardFor(nombre: string, datos: unknown): HTMLElement | null {
+ }
+ 
+ // ── The reconciliation, as Claude Code left it in datos.json ──────────────
+-// Same shape as the DATOS object of the skill's informe (conciliar-resumen).
++// Same shape as the DATOS object of the skills' informe: conciliar-resumen, and
++// conciliar-extracto for the bank account's statement (`plata_resumen.id` null,
++// `last4` maybe "", every amount signed: negative = out of the account).
+ 
+ const dec2 = new Intl.NumberFormat("es-AR", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+ /** Money the way the informe writes it, so the copied message matches it. */
+ const money2 = (n: number | null, moneda: string) =>
+   n === null
+     ? "—"
+-    : `${moneda === "USD" ? "US$ " : moneda === "ARS" ? "$ " : ""}${dec2.format(n)}${moneda && moneda !== "ARS" && moneda !== "USD" ? ` ${moneda}` : ""}`;
++    : `${n < 0 ? "−" : ""}${moneda === "USD" ? "US$ " : moneda === "ARS" ? "$ " : ""}${dec2.format(Math.abs(n))}${moneda && moneda !== "ARS" && moneda !== "USD" ? ` ${moneda}` : ""}`;
+ const str = (v: unknown) => (v === null || v === undefined ? "" : String(v));
+ 
++/** A bank account's statement (conciliar-extracto): no Plata statement behind it. */
++const esExtracto = (d: Obj) => obj(d.plata_resumen).id == null;
++/** «resumen» or «extracto», for the texts that name the document. */
++const docName = (d: Obj) => (esExtracto(d) ? "extracto" : "resumen");
++
+ /** Each kind of difference keeps the color it has in the informe. */
+ const DIF_COLOR: Record<string, string> = {
+   "falta en Plata": "#ff8a84",
+@@ -268,6 +275,21 @@ function faltantesMensaje(d: Obj): string | null {
+   const faltan = arr(d.diferencias).filter((x) => x.tipo === "falta en Plata" && x.banco);
+   if (!faltan.length) return null;
+   const periodo = str(obj(d.plata_resumen).periodo);
++  if (esExtracto(d)) {
++    // Signed amounts: the sign becomes a word, as the extracto's informe writes it.
++    const cuenta = `${str(d.tarjeta)}${d.last4 ? ` (··${str(d.last4)})` : ""}`;
++    return (
++      `Cargá estos movimientos de la cuenta ${cuenta}, del extracto ${periodo}, como propuesta:\n` +
++      faltan
++        .map((x) => {
++          const b = obj(x.banco);
++          const monto = num(b.monto);
++          const sentido = monto !== null && monto < 0 ? "egreso" : "ingreso";
++          return `- ${str(x.fecha)} · ${str(x.comercio)} · ${sentido} ${money2(monto === null ? null : Math.abs(monto), str(b.moneda))}`;
++        })
++        .join("\n")
++    );
++  }
+   return (
+     `Cargá estos consumos de la tarjeta ${str(d.tarjeta)} (··${str(d.last4)}), del resumen ${periodo}, como propuesta:\n` +
+     faltan
+@@ -310,13 +332,14 @@ function conciliacionContexto(d: Obj): string {
+   return `${CONC_HEAD}\n${json}\n--- fin de la conciliación ---`;
+ }
+ 
+-const PEDIDO_CORREGIR =
+-  "Corregí en Plata lo que se pueda para igualar el resumen del banco: armá una sola propuesta para que la apruebe, y lo dudoso preguntámelo.";
++const pedidoCorregir = (d: Obj) =>
++  `Corregí en Plata lo que se pueda para igualar el ${docName(d)} del banco: armá una sola propuesta para que la apruebe, y lo dudoso preguntámelo.`;
+ 
+ /** Totals per currency, counts per kind, the first differences, and what to do next. */
+ function conciliacionCard(d: Obj, informe: string | null, act: CardActions): HTMLElement {
+   const resumen = obj(d.plata_resumen);
+-  const titulo = [str(d.tarjeta) || "Tarjeta", d.last4 ? `··${str(d.last4)}` : ""].filter(Boolean).join(" ");
++  const doc = docName(d);
++  const titulo = [str(d.tarjeta) || (esExtracto(d) ? "Cuenta" : "Tarjeta"), d.last4 ? `··${str(d.last4)}` : ""].filter(Boolean).join(" ");
+   const card = h(
+     "div",
+     { class: "plata-data plata-cc-result" },
+@@ -324,10 +347,10 @@ function conciliacionCard(d: Obj, informe: string | null, act: CardActions): HTM
+       "div",
+       { class: "plata-prop-head" },
+       h("span", { class: "plata-data-kind", text: `Conciliación · ${titulo}` }),
+-      h("span", { class: "plata-prop-exp", text: resumen.periodo ? `resumen ${str(resumen.periodo)}` : str(d.banco) }),
++      h("span", { class: "plata-prop-exp", text: resumen.periodo ? `${doc} ${str(resumen.periodo)}` : esExtracto(d) ? "Extracto" : str(d.banco) }),
+     ),
+   );
+-  if (d.ejemplo) card.append(h("div", { class: "plata-note", text: "Datos de ejemplo, no de tu resumen." }));
++  if (d.ejemplo) card.append(h("div", { class: "plata-note", text: `Datos de ejemplo, no de tu ${doc}.` }));
+ 
+   const totales = arr(d.totales);
+   if (totales.length) {
+@@ -371,7 +394,7 @@ function conciliacionCard(d: Obj, informe: string | null, act: CardActions): HTM
+   card.append(chips);
+ 
+   if (!difs.length) {
+-    card.append(h("div", { class: "plata-cc-clean", text: "Sin diferencias: todo lo del resumen está en Plata." }));
++    card.append(h("div", { class: "plata-cc-clean", text: `Sin diferencias: todo lo del ${doc} está en Plata.` }));
+   } else {
+     const list = h("ul", { class: "plata-cc-difs" });
+     for (const x of difs.slice(0, DIFS_SHOWN)) {
+@@ -1053,7 +1076,7 @@ export function buildPlata(onSizeChange: () => void = () => {}): ViewHost {
+    */
+   async function delegate(text: string, atts: Attachment[], opts: { bubble?: boolean } = {}) {
+     if (ccRun) {
+-      note("Ya estoy conciliando un resumen con Claude Code: esperá que termine o cancelalo.", "plata-error");
++      note("Ya estoy conciliando con Claude Code: esperá que termine o cancelalo.", "plata-error");
+       pending = [...atts, ...pending];
+       renderAttachments();
+       return;
+@@ -1160,7 +1183,7 @@ export function buildPlata(onSizeChange: () => void = () => {}): ViewHost {
+           },
+           copy: (msg, btn) => void copyText(msg, btn),
+           load: (msg) => void submit(msg),
+-          fix: () => void submit(PEDIDO_CORREGIR, { contexto }),
++          fix: () => void submit(pedidoCorregir(datos), { contexto }),
+         }),
+         "chat-row plata-prop-row",
+       );
+@@ -1206,7 +1229,7 @@ export function buildPlata(onSizeChange: () => void = () => {}): ViewHost {
+       clear(actions);
+       actions.append(h("span", { class: "plata-decided", text: ok ? "Se lo paso a Claude Code" : "Sigue con Plata" }));
+       if (!ok) return;
+-      if (tarea !== "conciliar_resumen") {
++      if (tarea !== "conciliar_resumen" && tarea !== "conciliar_extracto") {
+         // Anything else is a change to the app: the same as the terminal button.
+         Bridge.openClaudeCode(detalle)
+           .then((repo) => note(`Se lo pasé a Claude Code en ${repo || "el repo de Plata"}: se abrió una terminal.`))
+@@ -1221,7 +1244,7 @@ export function buildPlata(onSizeChange: () => void = () => {}): ViewHost {
+       } else if (lastAtts?.atts.length) {
+         void delegate(lastAtts.text, lastAtts.atts, { bubble: false });
+       } else {
+-        note("Soltá el resumen o pegalo acá: lo hago con Claude Code.");
++        note(`Soltá ${tarea === "conciliar_extracto" ? "el extracto de la cuenta" : "el resumen"} o pegalo acá: lo hago con Claude Code.`);
+         input.focus();
+       }
+     };
+@@ -1387,7 +1410,7 @@ export function buildPlata(onSizeChange: () => void = () => {}): ViewHost {
+     if (sending) return;
+     // While Claude Code reconciles, questions still go to the agent; another statement waits.
+     if (ccRun && pending.length) {
+-      note("Ya estoy conciliando un resumen con Claude Code: esperá que termine o cancelalo.");
++      note("Ya estoy conciliando con Claude Code: esperá que termine o cancelalo.");
+       return;
+     }
+     const text = input.value;
+@@ -1447,7 +1470,7 @@ export function buildPlata(onSizeChange: () => void = () => {}): ViewHost {
+     note("Conversación nueva.");
+   });
+ 
+-  note("Preguntale por tus saldos, gastos o deudas, o pedile que registre algo. Lo que cambie datos te lo muestra antes, para que lo apruebes. Para cambios en la app, escribilos y tocá el botón de la terminal. Para revisar un resumen de tarjeta, soltá acá el PDF o la captura, o pegá el texto: lo hace Claude Code, incluido en tu plan.");
++  note("Preguntale por tus saldos, gastos o deudas, o pedile que registre algo. Lo que cambie datos te lo muestra antes, para que lo apruebes. Para cambios en la app, escribilos y tocá el botón de la terminal. Para revisar un resumen de tarjeta o el extracto de tu cuenta, soltá acá el PDF o la captura, o pegá el texto: lo hace Claude Code, incluido en tu plan.");
+ 
+   function sync() {
+     input.disabled = sending;
+-- 
+2.53.0.windows.2
+
+
+From c38875cbd5d8d5e110965e8de38f95f1e291c1fb Mon Sep 17 00:00:00 2001
+From: Lucas <lucasgigli3@gmail.com>
+Date: Sat, 3 Oct 2026 18:51:21 -0300
+Subject: [PATCH 20/20] Listo: el extracto de la cuenta como pieza opcional del
+ chequeo
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Un punto más en la línea de estado ("Extracto"): la skill
+conciliar-extracto y el script conciliar:leer-cuenta. Si falta, no bloquea
+la conciliación de tarjetas (no entra en `falta`).
+
+Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+---
+ windows/src-tauri/src/plata_ready.rs | 46 ++++++++++++++++++++++++++--
+ windows/src/core/bridge.ts           |  2 ++
+ windows/src/views/plata.ts           | 12 ++++++++
+ 3 files changed, 58 insertions(+), 2 deletions(-)
+
+diff --git a/windows/src-tauri/src/plata_ready.rs b/windows/src-tauri/src/plata_ready.rs
+index b7811f1..f6aee34 100644
+--- a/windows/src-tauri/src/plata_ready.rs
++++ b/windows/src-tauri/src/plata_ready.rs
+@@ -57,6 +57,9 @@ pub struct Readiness {
+     pub sesion: Sesion,
+     pub skill: Pieza,
+     pub lector: Pieza,
++    /// Optional: the bank account statement (skill conciliar-extracto and the
++    /// conciliar:leer-cuenta reader). Missing it never blocks card statements.
++    pub extracto: Pieza,
+     /// The first piece missing, in the order they have to be fixed; None when
+     /// all is ready. The page shows the button for this one.
+     pub falta: Option<&'static str>,
+@@ -69,6 +72,7 @@ struct Local {
+     sesion: Sesion,
+     skill: Pieza,
+     lector: Pieza,
++    extracto: Pieza,
+ }
+ 
+ static CACHE: tokio::sync::Mutex<Option<(Instant, Local)>> = tokio::sync::Mutex::const_new(None);
+@@ -81,10 +85,15 @@ pub fn invalidate() {
+ 
+ /// Does the agentes repo have the reader the skill calls (`npm run conciliar:leer`)?
+ pub(crate) fn lector_ok(agentes: &Path) -> bool {
++    script_ok(agentes, "conciliar:leer")
++}
++
++/// Does agentes\package.json have this npm script?
++fn script_ok(agentes: &Path, name: &str) -> bool {
+     std::fs::read_to_string(agentes.join("package.json"))
+         .ok()
+         .and_then(|s| serde_json::from_str::<Value>(s.trim_start_matches('\u{feff}')).ok())
+-        .and_then(|v| v.pointer("/scripts/conciliar:leer").and_then(Value::as_str).map(|s| !s.trim().is_empty()))
++        .and_then(|v| v.get("scripts").and_then(|s| s.get(name)).and_then(Value::as_str).map(|s| !s.trim().is_empty()))
+         .unwrap_or(false)
+ }
+ 
+@@ -101,6 +110,10 @@ fn check_local() -> Local {
+         sesion,
+         skill: Pieza { ok: claude_code::skill_dir().is_some() },
+         lector: Pieza { ok: plata_agent::agent_dir().is_some_and(|d| lector_ok(&d)) },
++        extracto: Pieza {
++            ok: claude_code::skill_extracto_dir().is_some()
++                && plata_agent::agent_dir().is_some_and(|d| script_ok(&d, "conciliar:leer-cuenta")),
++        },
+     }
+ }
+ 
+@@ -124,7 +137,15 @@ fn first_missing(agente: &Agente, local: &Local) -> Option<&'static str> {
+ 
+ fn assemble(agente: Agente, local: Local) -> Readiness {
+     let falta = first_missing(&agente, &local);
+-    Readiness { agente, claude: local.claude, sesion: local.sesion, skill: local.skill, lector: local.lector, falta }
++    Readiness {
++        agente,
++        claude: local.claude,
++        sesion: local.sesion,
++        skill: local.skill,
++        lector: local.lector,
++        extracto: local.extracto,
++        falta,
++    }
+ }
+ 
+ /// The state of every piece. `force` skips the one-minute cache.
+@@ -159,10 +180,31 @@ mod tests {
+                 sesion: Sesion { ok: true, plan: Some("Pro".into()), detalle: None },
+                 skill: Pieza { ok: true },
+                 lector: Pieza { ok: true },
++                extracto: Pieza { ok: true },
+             },
+         )
+     }
+ 
++    #[test]
++    fn a_missing_statement_skill_never_blocks() {
++        let (a, mut l) = all_ok();
++        l.extracto.ok = false;
++        let r = assemble(a, l);
++        assert_eq!(r.falta, None);
++        assert!(!r.extracto.ok);
++    }
++
++    #[test]
++    fn the_account_reader_is_its_own_script() {
++        let dir = std::env::temp_dir().join(format!("coucou-extracto-{}", std::process::id()));
++        std::fs::create_dir_all(&dir).unwrap();
++        std::fs::write(dir.join("package.json"), r#"{"scripts":{"conciliar:leer":"x"}}"#).unwrap();
++        assert!(lector_ok(&dir) && !script_ok(&dir, "conciliar:leer-cuenta"));
++        std::fs::write(dir.join("package.json"), r#"{"scripts":{"conciliar:leer":"x","conciliar:leer-cuenta":"y"}}"#).unwrap();
++        assert!(script_ok(&dir, "conciliar:leer-cuenta"));
++        let _ = std::fs::remove_dir_all(&dir);
++    }
++
+     #[test]
+     fn the_first_missing_piece_is_the_one_to_fix() {
+         let (a, l) = all_ok();
+diff --git a/windows/src/core/bridge.ts b/windows/src/core/bridge.ts
+index 1e5a901..b0a0c29 100644
+--- a/windows/src/core/bridge.ts
++++ b/windows/src/core/bridge.ts
+@@ -41,6 +41,8 @@ export interface PlataReadiness {
+   sesion: { ok: boolean; plan: string | null; detalle: string | null };
+   skill: { ok: boolean };
+   lector: { ok: boolean };
++  /** Optional: the bank account statement's skill and reader. */
++  extracto: { ok: boolean };
+   falta: "agente" | "claude" | "sesion" | "skill" | "lector" | null;
+ }
+ 
+diff --git a/windows/src/views/plata.ts b/windows/src/views/plata.ts
+index 245e97c..dee20eb 100644
+--- a/windows/src/views/plata.ts
++++ b/windows/src/views/plata.ts
+@@ -822,6 +822,18 @@ export function buildPlata(onSizeChange: () => void = () => {}): ViewHost {
+         conc ? "Están la skill conciliar-resumen y el lector de Plata" : "Falta una parte de la conciliación",
+       ),
+     );
++    // Optional: without it, card statements still reconcile.
++    if (r.extracto) {
++      readyLine.append(
++        readyItem(
++          r.extracto.ok ? "ok" : "bad",
++          "Extracto",
++          r.extracto.ok
++            ? "Están la skill conciliar-extracto y el lector de la cuenta"
++            : "Falta la skill conciliar-extracto o el script conciliar:leer-cuenta del repo agentes",
++        ),
++      );
++    }
+     ready.classList.toggle("all-ok", r.falta === null && !connecting && !connectedFlash);
+     renderFix(r);
+     retryButtonSync();
 -- 
 2.53.0.windows.2
 
