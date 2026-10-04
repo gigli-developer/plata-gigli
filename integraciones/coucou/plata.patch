@@ -1,7 +1,7 @@
-From bf23fee13525f8df5d2dc1210a7a3c7710c5d01a Mon Sep 17 00:00:00 2001
+From 2ee6ca870ad516c6d16cfcaaf6b96beff13d5bf3 Mon Sep 17 00:00:00 2001
 From: Lucas Gigli <giglilangonelucas@gmail.com>
 Date: Wed, 30 Sep 2026 20:56:49 +0000
-Subject: [PATCH 01/24] Pills de Plata y Railway
+Subject: [PATCH 01/25] Pills de Plata y Railway
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -685,10 +685,10 @@ index b8ad73c..1e394d3 100644
 2.55.0.windows.5
 
 
-From f86004129a7b60c66d651d40fefdd87ee03d11e3 Mon Sep 17 00:00:00 2001
+From 00f30011a5dc6a76d879c784aef62af8aed3bb2a Mon Sep 17 00:00:00 2001
 From: Lucas <lucasgigli3@gmail.com>
 Date: Wed, 30 Sep 2026 19:26:42 -0300
-Subject: [PATCH 02/24] Isla movible y chat con el agente de Plata
+Subject: [PATCH 02/25] Isla movible y chat con el agente de Plata
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -2047,10 +2047,10 @@ index ac0ac7b..b0aea0d 100644
 2.55.0.windows.5
 
 
-From 678f053b1075864a2c48ce3aae79e03b16ce9325 Mon Sep 17 00:00:00 2001
+From c3d26f11e0572c34d9ac2df8cc9a70a6be69ff15 Mon Sep 17 00:00:00 2001
 From: Lucas <lucasgigli3@gmail.com>
 Date: Wed, 30 Sep 2026 19:41:15 -0300
-Subject: [PATCH 03/24] Plata en la isla: tarjetas, pedidos a Claude Code y voz
+Subject: [PATCH 03/25] Plata en la isla: tarjetas, pedidos a Claude Code y voz
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -2645,10 +2645,10 @@ index 6c6bb30..668ec54 100644
 2.55.0.windows.5
 
 
-From d03c8258aed0373986b7518d9d92ede57f70a077 Mon Sep 17 00:00:00 2001
+From 98ae4835e9c728d61922169693390cc9f95f49b0 Mon Sep 17 00:00:00 2001
 From: Lucas <lucasgigli3@gmail.com>
 Date: Wed, 30 Sep 2026 20:58:44 -0300
-Subject: [PATCH 04/24] El agente de Plata se prende solo
+Subject: [PATCH 04/25] El agente de Plata se prende solo
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -2834,10 +2834,10 @@ index 668ec54..6de96d2 100644
 2.55.0.windows.5
 
 
-From 930da55ef63d4d0c6a3691a3aeea9a6942c79b9d Mon Sep 17 00:00:00 2001
+From c98e6121d176b353e5314800fdf4b23f2c56c347 Mon Sep 17 00:00:00 2001
 From: Lucas <lucasgigli3@gmail.com>
 Date: Wed, 30 Sep 2026 21:19:44 -0300
-Subject: [PATCH 05/24] La isla se ancla en cualquier monitor
+Subject: [PATCH 05/25] La isla se ancla en cualquier monitor
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -2992,10 +2992,10 @@ index 96367bd..4a31905 100644
 2.55.0.windows.5
 
 
-From a69eea2d80cb5659e5bd0415fa1253b15a25dbfd Mon Sep 17 00:00:00 2001
+From 30550db251e38cf24452165927729004cb03ef00 Mon Sep 17 00:00:00 2001
 From: Lucas <lucasgigli3@gmail.com>
 Date: Wed, 30 Sep 2026 22:32:46 -0300
-Subject: [PATCH 06/24] Plata tab: attach a card statement (drop a
+Subject: [PATCH 06/25] Plata tab: attach a card statement (drop a
  PDF/screenshot or paste it) to reconcile
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -3680,10 +3680,10 @@ index b0aea0d..791ea8a 100644
 2.55.0.windows.5
 
 
-From 146ce18cdb031b6c8e648fd640e56d6af6425b2c Mon Sep 17 00:00:00 2001
+From e22ce275fd3f147911bb5066683a73cdef5a06ad Mon Sep 17 00:00:00 2001
 From: Lucas <lucasgigli3@gmail.com>
 Date: Wed, 30 Sep 2026 22:56:17 -0300
-Subject: [PATCH 07/24] =?UTF-8?q?Pesta=C3=B1a=20Plata:=20agrandar=20el=20c?=
+Subject: [PATCH 07/25] =?UTF-8?q?Pesta=C3=B1a=20Plata:=20agrandar=20el=20c?=
  =?UTF-8?q?hat=20e=20historial=20local=20de=20la=20conversaci=C3=B3n?=
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -4096,10 +4096,10 @@ index 791ea8a..2cee61f 100644
 2.55.0.windows.5
 
 
-From 84e1db45c4bf6d7adcfc157865b7bc286066d394 Mon Sep 17 00:00:00 2001
+From dedd7c78f125f00d7e73e702aa825f4d3ed86cda Mon Sep 17 00:00:00 2001
 From: Lucas <lucasgigli3@gmail.com>
 Date: Wed, 30 Sep 2026 23:13:01 -0300
-Subject: [PATCH 08/24] =?UTF-8?q?Pesta=C3=B1a=20Plata:=20el=20bot=C3=B3n?=
+Subject: [PATCH 08/25] =?UTF-8?q?Pesta=C3=B1a=20Plata:=20el=20bot=C3=B3n?=
  =?UTF-8?q?=20de=20agrandar=20con=20texto=20y=20en=20naranja?=
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -4174,10 +4174,10 @@ index b487a5e..e983567 100644
 2.55.0.windows.5
 
 
-From 038124b17ab1c955be09cb04ccf0586817eea359 Mon Sep 17 00:00:00 2001
+From 12322d84a7d0c38f687550c6c3c9563cc7a4a98e Mon Sep 17 00:00:00 2001
 From: Lucas <lucasgigli3@gmail.com>
 Date: Wed, 30 Sep 2026 23:17:23 -0300
-Subject: [PATCH 09/24] =?UTF-8?q?Bot=C3=B3n=20en=20el=20encabezado=20de=20?=
+Subject: [PATCH 09/25] =?UTF-8?q?Bot=C3=B3n=20en=20el=20encabezado=20de=20?=
  =?UTF-8?q?la=20isla:=20abre=20el=20chat=20de=20Plata=20en=20grande?=
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -4276,10 +4276,10 @@ index 2cee61f..416788e 100644
 2.55.0.windows.5
 
 
-From 4c070fd8d8c6143d204d832069a72c4c3d44b268 Mon Sep 17 00:00:00 2001
+From 1644d131b2fca550b2ebf7c4351ea69f6cf092f0 Mon Sep 17 00:00:00 2001
 From: Lucas <lucasgigli3@gmail.com>
 Date: Thu, 1 Oct 2026 21:31:50 -0300
-Subject: [PATCH 10/24] =?UTF-8?q?Isla=20m=C3=A1s=20fluida:=20ventana=20de?=
+Subject: [PATCH 10/25] =?UTF-8?q?Isla=20m=C3=A1s=20fluida:=20ventana=20de?=
  =?UTF-8?q?=20tama=C3=B1o=20fijo,=20anclaje=20y=20deslizamiento=20al=20sol?=
  =?UTF-8?q?tar?=
 MIME-Version: 1.0
@@ -5583,10 +5583,10 @@ index 416788e..debb686 100644
 2.55.0.windows.5
 
 
-From 3196e5b675b4e0bc347098db20cbdc3eee4bbd34 Mon Sep 17 00:00:00 2001
+From 25327285fe67db4c373021fc019445cdaf8a0366 Mon Sep 17 00:00:00 2001
 From: Lucas <lucasgigli3@gmail.com>
 Date: Thu, 1 Oct 2026 21:32:36 -0300
-Subject: [PATCH 11/24] =?UTF-8?q?Pesta=C3=B1a=20Plata:=20conciliar=20un=20?=
+Subject: [PATCH 11/25] =?UTF-8?q?Pesta=C3=B1a=20Plata:=20conciliar=20un=20?=
  =?UTF-8?q?resumen=20con=20Claude=20Code,=20con=20el=20plan=20y=20no=20la?=
  =?UTF-8?q?=20API?=
 MIME-Version: 1.0
@@ -7225,10 +7225,10 @@ index 851e6da..53b99a0 100644
 2.55.0.windows.5
 
 
-From 2d929dbb5215248252e3930273d1aa9a7290156f Mon Sep 17 00:00:00 2001
+From e0f357c04caec3c8c23fd59c09d27f11041551cb Mon Sep 17 00:00:00 2001
 From: Lucas <lucasgigli3@gmail.com>
 Date: Thu, 1 Oct 2026 22:01:26 -0300
-Subject: [PATCH 12/24] =?UTF-8?q?Pesta=C3=B1a=20Plata:=20sin=20sesi=C3=B3n?=
+Subject: [PATCH 12/25] =?UTF-8?q?Pesta=C3=B1a=20Plata:=20sin=20sesi=C3=B3n?=
  =?UTF-8?q?=20de=20Claude=20Code,=20Reintentar=20en=20vez=20de=20mand?=
  =?UTF-8?q?=C3=A1rselo=20al=20agente?=
 MIME-Version: 1.0
@@ -7322,10 +7322,10 @@ index 53b99a0..fde7b29 100644
 2.55.0.windows.5
 
 
-From a441bd88e83f8351065d6d8978cac61d9d861aa8 Mon Sep 17 00:00:00 2001
+From d23b34597ad78f4c82bc1ffa0225f6c2c7931af6 Mon Sep 17 00:00:00 2001
 From: Lucas <lucasgigli3@gmail.com>
 Date: Thu, 1 Oct 2026 22:07:16 -0300
-Subject: [PATCH 13/24] =?UTF-8?q?Pesta=C3=B1a=20Plata:=20las=20respuestas?=
+Subject: [PATCH 13/25] =?UTF-8?q?Pesta=C3=B1a=20Plata:=20las=20respuestas?=
  =?UTF-8?q?=20del=20agente=20con=20formato=20(tablas,=20negritas,=20listas?=
  =?UTF-8?q?)?=
 MIME-Version: 1.0
@@ -7691,10 +7691,10 @@ index fde7b29..09465b3 100644
 2.55.0.windows.5
 
 
-From ed319fb351ad9143ede9b96a85aa8f9d46dc4e8d Mon Sep 17 00:00:00 2001
+From 70180a683723f78636384140964aa6455ab9f56d Mon Sep 17 00:00:00 2001
 From: Lucas <lucasgigli3@gmail.com>
 Date: Thu, 1 Oct 2026 22:26:24 -0300
-Subject: [PATCH 14/24] =?UTF-8?q?Buscar=20claude.exe=20tambi=C3=A9n=20en?=
+Subject: [PATCH 14/25] =?UTF-8?q?Buscar=20claude.exe=20tambi=C3=A9n=20en?=
  =?UTF-8?q?=20la=20carpeta=20del=20paquete=20de=20la=20app=20(MSIX)?=
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -7754,10 +7754,10 @@ index 3b73768..83bbfae 100644
 2.55.0.windows.5
 
 
-From 8c6cf820cd3ff65949c0ff81e09b8013dae27c2c Mon Sep 17 00:00:00 2001
+From 922f47ee6e629409a6af3fd7f151bfa9fbb9c76a Mon Sep 17 00:00:00 2001
 From: Lucas <lucasgigli3@gmail.com>
 Date: Thu, 1 Oct 2026 22:44:34 -0300
-Subject: [PATCH 15/24] Conciliar: de 8 minutos a 50 segundos, y el resultado
+Subject: [PATCH 15/25] Conciliar: de 8 minutos a 50 segundos, y el resultado
  le llega al agente
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -7935,10 +7935,10 @@ index 09465b3..acf043e 100644
 2.55.0.windows.5
 
 
-From 4ca6414996371db357f3c56afa075d036142b443 Mon Sep 17 00:00:00 2001
+From 2f85ba620f8d28c96aa75201f25b1fbd83bf10dc Mon Sep 17 00:00:00 2001
 From: Lucas <lucasgigli3@gmail.com>
 Date: Thu, 1 Oct 2026 23:00:01 -0300
-Subject: [PATCH 16/24] =?UTF-8?q?Pesta=C3=B1a=20Plata:=20bot=C3=B3n=20Modi?=
+Subject: [PATCH 16/25] =?UTF-8?q?Pesta=C3=B1a=20Plata:=20bot=C3=B3n=20Modi?=
  =?UTF-8?q?ficar=20en=20las=20propuestas?=
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -7974,10 +7974,10 @@ index acf043e..16d0deb 100644
 2.55.0.windows.5
 
 
-From 992de945a3a1a24cfcb65dc3f5e470dc41bcdece Mon Sep 17 00:00:00 2001
+From 54e41ed6628f8e1ee6a523ae85b510d65817f651 Mon Sep 17 00:00:00 2001
 From: Lucas <lucasgigli3@gmail.com>
 Date: Thu, 1 Oct 2026 23:23:35 -0300
-Subject: [PATCH 17/24] =?UTF-8?q?Encontrar=20claude.exe=20con=20la=20estru?=
+Subject: [PATCH 17/25] =?UTF-8?q?Encontrar=20claude.exe=20con=20la=20estru?=
  =?UTF-8?q?ctura=20nueva=20de=20la=20app=20(<versi=C3=B3n>\<hash>\)?=
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -8031,10 +8031,10 @@ index 83bbfae..9858961 100644
 2.55.0.windows.5
 
 
-From 5e19fb8b242974195311e91b45e071cf5a02fc8d Mon Sep 17 00:00:00 2001
+From a2c58be9cd1089c194cd778c4864a2db455cf0d2 Mon Sep 17 00:00:00 2001
 From: Lucas <lucasgigli3@gmail.com>
 Date: Sat, 3 Oct 2026 14:14:49 -0300
-Subject: [PATCH 18/24] Plata lista sola: chequeo de piezas y "Conectar Claude
+Subject: [PATCH 18/25] Plata lista sola: chequeo de piezas y "Conectar Claude
  Code" sin terminal
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -9443,10 +9443,10 @@ index 16d0deb..4c6b4d0 100644
 2.55.0.windows.5
 
 
-From 085df1b9ff653c2a7b533d6bcd5232cbdc3453ec Mon Sep 17 00:00:00 2001
+From f23170d54b3d025986d0d346613d5d9c50a12640 Mon Sep 17 00:00:00 2001
 From: Lucas <lucasgigli3@gmail.com>
 Date: Sat, 3 Oct 2026 14:59:45 -0300
-Subject: [PATCH 19/24] =?UTF-8?q?Plata:=20conciliar=20tambi=C3=A9n=20el=20?=
+Subject: [PATCH 19/25] =?UTF-8?q?Plata:=20conciliar=20tambi=C3=A9n=20el=20?=
  =?UTF-8?q?extracto=20de=20la=20cuenta=20con=20Claude=20Code?=
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -9871,10 +9871,10 @@ index 4c6b4d0..245e97c 100644
 2.55.0.windows.5
 
 
-From d410851a52f07ab81fc0ae005dc94825181ff1ba Mon Sep 17 00:00:00 2001
+From 0b6c8c82333ae0a80f5f11809974f38f9862a148 Mon Sep 17 00:00:00 2001
 From: Lucas <lucasgigli3@gmail.com>
 Date: Sat, 3 Oct 2026 18:51:21 -0300
-Subject: [PATCH 20/24] Listo: el extracto de la cuenta como pieza opcional del
+Subject: [PATCH 20/25] Listo: el extracto de la cuenta como pieza opcional del
  chequeo
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -10030,10 +10030,10 @@ index 245e97c..dee20eb 100644
 2.55.0.windows.5
 
 
-From 5c3f5ef4348e38b3d6a040d607fe04e6848159f7 Mon Sep 17 00:00:00 2001
+From 45524cd65cb7bcc4b4b31ee0f8069c13e37acff7 Mon Sep 17 00:00:00 2001
 From: Lucas <lucasgigli3@gmail.com>
 Date: Sat, 3 Oct 2026 22:02:25 -0300
-Subject: [PATCH 21/24] =?UTF-8?q?Pesta=C3=B1a=20Plata:=20varias=20l=C3=ADn?=
+Subject: [PATCH 21/25] =?UTF-8?q?Pesta=C3=B1a=20Plata:=20varias=20l=C3=ADn?=
  =?UTF-8?q?eas=20con=20Shift+Enter,=20y=20el=20micr=C3=B3fono=20dice=20por?=
  =?UTF-8?q?=20qu=C3=A9=20no=20dicta?=
 MIME-Version: 1.0
@@ -10279,10 +10279,10 @@ index dee20eb..cc37dad 100644
 2.55.0.windows.5
 
 
-From 7a47dac5755b4145f5d413cab0a2d0f939deea63 Mon Sep 17 00:00:00 2001
+From ecc30727d2245114d710fddfde4c61d84c97379f Mon Sep 17 00:00:00 2001
 From: Lucas <lucasgigli3@gmail.com>
 Date: Sat, 3 Oct 2026 23:37:25 -0300
-Subject: [PATCH 22/24] Panel grande para los chats: lista a la izquierda, chat
+Subject: [PATCH 22/25] Panel grande para los chats: lista a la izquierda, chat
  a la derecha
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -11887,10 +11887,10 @@ index debb686..791ea8a 100644
 2.55.0.windows.5
 
 
-From cb7c895dbdf8918eabffbd525e7488ca209307e5 Mon Sep 17 00:00:00 2001
+From cb82b95dab98427af766e7a72aff4e9cbe716e24 Mon Sep 17 00:00:00 2001
 From: Lucas <lucasgigli3@gmail.com>
 Date: Sun, 4 Oct 2026 18:21:47 -0300
-Subject: [PATCH 23/24] =?UTF-8?q?Archivos=20a=20Plata:=20"Mandar=20a=20Pla?=
+Subject: [PATCH 23/25] =?UTF-8?q?Archivos=20a=20Plata:=20"Mandar=20a=20Pla?=
  =?UTF-8?q?ta"=20despu=C3=A9s=20de=20soltar,=20y=20el=20clip?=
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -12329,10 +12329,10 @@ index 791ea8a..6f662fe 100644
 2.55.0.windows.5
 
 
-From 656edff2eb789db567de215417118dbcb0dbf5f2 Mon Sep 17 00:00:00 2001
+From a9a7169c54d09c0200d8ddb83160276daa0ba9ac Mon Sep 17 00:00:00 2001
 From: Lucas <lucasgigli3@gmail.com>
 Date: Sun, 4 Oct 2026 18:21:48 -0300
-Subject: [PATCH 24/24] Chats: las caritas se mueven
+Subject: [PATCH 24/25] Chats: las caritas se mueven
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -12550,6 +12550,145 @@ index 7e58f71..8abc0b9 100644
  /**
   * A chat's header: avatar (shown in the panel) + name + a dim detail, the
   * chat's own links, and the size button, always last.
+-- 
+2.55.0.windows.5
+
+
+From a92e51505cdf580f7a9dfd46d24c059de682ae11 Mon Sep 17 00:00:00 2001
+From: Lucas <lucasgigli3@gmail.com>
+Date: Sun, 4 Oct 2026 18:55:14 -0300
+Subject: [PATCH 25/25] La isla se actualiza sola
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+A los 5 minutos de arrancar y después cada 3 horas, la isla lanza
+integraciones\coucou\actualizar.ps1 del repo de Plata (por actualizar.vbs,
+sin ventana). El script trae main, y si plata.patch cambió recompila
+Coucou en esta PC, lo reinstala en silencio y lo vuelve a abrir; también
+baja el repo agentes. Nada para hacer a mano en cada PC.
+
+Lo dispara la isla y no una tarea programada porque en algunas PCs el
+Programador de tareas deja las tareas del usuario en cola para siempre
+(verificado: hasta un `cmd /c echo` queda "Queued" con resultado 0). El
+proceso sale desacoplado (DETACHED + BREAKAWAY_FROM_JOB) para sobrevivir
+al instalador, que cierra la isla. En `tauri dev` no corre.
+
+Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+---
+ windows/src-tauri/src/actualizar.rs  | 69 ++++++++++++++++++++++++++++
+ windows/src-tauri/src/lib.rs         |  2 +
+ windows/src-tauri/src/plata_agent.rs |  2 +-
+ 3 files changed, 72 insertions(+), 1 deletion(-)
+ create mode 100644 windows/src-tauri/src/actualizar.rs
+
+diff --git a/windows/src-tauri/src/actualizar.rs b/windows/src-tauri/src/actualizar.rs
+new file mode 100644
+index 0000000..77ab056
+--- /dev/null
++++ b/windows/src-tauri/src/actualizar.rs
+@@ -0,0 +1,69 @@
++// Keeping this PC's Coucou up to date, without opening Claude Code.
++//
++// The work is done by `integraciones\coucou\actualizar.ps1` in the Plata repo:
++// it fetches main, rebuilds Coucou from plata.patch when the patch changed,
++// installs it silently and starts it again (closing this process on the way),
++// and pulls the `agentes` repo. The island only starts it: five minutes after
++// launch, then every three hours. A scheduled task could do the same, but on
++// some PCs Task Scheduler leaves user tasks queued forever, and the island is
++// running whenever there is something to update.
++//
++// The script runs detached through wscript (no console window) and outlives
++// this process when the installer closes it. It holds its own lock, so two
++// launches never build at the same time.
++
++use std::os::windows::process::CommandExt;
++use std::path::PathBuf;
++use std::process::Command;
++use std::time::Duration;
++
++const FIRST: Duration = Duration::from_secs(5 * 60);
++const EVERY: Duration = Duration::from_secs(3 * 60 * 60);
++
++const DETACHED_PROCESS: u32 = 0x0000_0008;
++const CREATE_NEW_PROCESS_GROUP: u32 = 0x0000_0200;
++const CREATE_BREAKAWAY_FROM_JOB: u32 = 0x0100_0000;
++
++/// `actualizar.vbs` next to the script, in the Plata repo this PC uses.
++fn launcher() -> Option<PathBuf> {
++    let p = crate::plata_agent::plata_repo_dir()?
++        .join("integraciones")
++        .join("coucou")
++        .join("actualizar.vbs");
++    p.is_file().then_some(p)
++}
++
++fn run_once() {
++    let Some(vbs) = launcher() else {
++        crate::log::line("actualizar: no está integraciones\\coucou\\actualizar.vbs en el repo de Plata".to_string());
++        return;
++    };
++    let spawn = |flags: u32| {
++        Command::new("wscript.exe")
++            .args(["//B", "//Nologo"])
++            .arg(&vbs)
++            .creation_flags(flags)
++            .spawn()
++    };
++    let flags = DETACHED_PROCESS | CREATE_NEW_PROCESS_GROUP;
++    // Out of any job this process sits in, so the update survives it. A job
++    // that forbids breaking away refuses the flag: then without it.
++    match spawn(flags | CREATE_BREAKAWAY_FROM_JOB).or_else(|_| spawn(flags)) {
++        Ok(_) => crate::log::line("actualizar: buscando actualizaciones".to_string()),
++        Err(e) => crate::log::line(format!("actualizar: no pude lanzar wscript: {e}")),
++    }
++}
++
++pub fn start() {
++    // `tauri dev` is a checkout being worked on: it must not rebuild itself.
++    if cfg!(debug_assertions) {
++        return;
++    }
++    std::thread::spawn(|| {
++        std::thread::sleep(FIRST);
++        loop {
++            run_once();
++            std::thread::sleep(EVERY);
++        }
++    });
++}
+diff --git a/windows/src-tauri/src/lib.rs b/windows/src-tauri/src/lib.rs
+index 5bf9e3e..a312a5f 100644
+--- a/windows/src-tauri/src/lib.rs
++++ b/windows/src-tauri/src/lib.rs
+@@ -1,5 +1,6 @@
+ // Coucou for Windows — app wiring and the commands the island calls.
+ 
++mod actualizar;
+ mod claude;
+ mod claude_code;
+ mod files;
+@@ -599,6 +600,7 @@ pub fn run() {
+             hooks::ensure_hook_exe(&handle);
+             pipe::start(handle.clone());
+             integrations::start(handle.clone());
++            actualizar::start();
+             // The Plata tab ready before it is opened: the agent started if it
+             // was down, then every piece checked and the answer handed to the page.
+             let ready = handle.clone();
+diff --git a/windows/src-tauri/src/plata_agent.rs b/windows/src-tauri/src/plata_agent.rs
+index 5aedbd3..f905946 100644
+--- a/windows/src-tauri/src/plata_agent.rs
++++ b/windows/src-tauri/src/plata_agent.rs
+@@ -351,7 +351,7 @@ mod tests {
+ // ── Changes to the app go to Claude Code, not to the agent ──────────────────
+ 
+ /// The Plata checkout: a folder whose git remote is plata-gigli.
+-fn plata_repo_dir() -> Option<PathBuf> {
++pub(crate) fn plata_repo_dir() -> Option<PathBuf> {
+     let home = PathBuf::from(std::env::var_os("USERPROFILE")?);
+     [
+         home.join("OneDrive").join("Desktop").join("Claude").join("finanzas-app"),
 -- 
 2.55.0.windows.5
 

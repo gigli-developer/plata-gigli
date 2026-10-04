@@ -7,6 +7,8 @@
   2. Clona Coucou en $Destino, fijado al commit contra el que se escribió el parche.
   3. Aplica plata.patch en la rama `plata` (una sola vez; si ya está, la reusa).
   4. `npm install` + `npm run pack` → deja el instalador en windows\release\ y lo abre.
+  5. Anota de qué parche salió: de ahí en más la isla se actualiza sola (actualizar.ps1) cuando
+     cambia el parche en main.
 
   Correrlo de nuevo es seguro: si el clon y la rama ya existen, solo recompila.
 
@@ -94,9 +96,13 @@ try {
     }
     Correr git am --3way $Parche
     Write-Host "Parche aplicado en la rama 'plata'." -ForegroundColor Green
+    # Para actualizar.ps1: qué parche quedó compilado (el blob, como lo ve git).
+    $parcheCompilado = (git -C $PSScriptRoot hash-object $Parche) -join ""
   } else {
     Correr git checkout -q plata
     Write-Host "La rama 'plata' ya existía: se recompila tal cual está." -ForegroundColor Yellow
+    # No se sabe de qué parche salió: la primera pasada de actualizar.ps1 lo recompila desde main.
+    $parcheCompilado = "desconocido"
   }
 
   Set-Location windows
@@ -114,6 +120,10 @@ try {
       Write-Host "`nListo: $instalador" -ForegroundColor Green
       Write-Host "Se instala solo para tu usuario, sin pedir administrador."
       Start-Process $instalador
+
+      # Actualizaciones automáticas: la isla corre actualizar.ps1 y recompila cuando cambia el parche
+      # en main. Le dejamos anotado de qué parche salió esta compilación.
+      & powershell.exe -NoProfile -ExecutionPolicy Bypass -File (Join-Path $PSScriptRoot "actualizar.ps1") -MarcarInstalado $parcheCompilado
     } else {
       Write-Host "`nCompiló, pero no encuentro el instalador. Mirá windows\release\ o usá src-tauri\target\release\coucou.exe" -ForegroundColor Yellow
     }

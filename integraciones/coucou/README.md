@@ -49,7 +49,26 @@ El script hace esto:
 2. Aplica `plata.patch` en una rama `plata`.
 3. Compila y abre el instalador. Se instala solo para tu usuario, sin pedir administrador.
 
-Si lo corrés otra vez, solo recompila. **Ojo:** si ya tenías el clon de antes, la rama `plata` no recibe los commits nuevos del parche. Para actualizarla, desde `%USERPROFILE%\coucou`: `git checkout plata && git reset --hard 5ae7bd9 && git am --3way <repo-plata>\integraciones\coucou\plata.patch`, y después corré el instalador de nuevo. Con `-Dev` abre la app con recarga en vivo (`npm run tauri dev`), en lugar de generar el instalador.
+Si lo corrés otra vez, solo recompila. Para traer un parche nuevo no hace falta: la isla se actualiza sola (ver [Actualizaciones automáticas](#actualizaciones-automáticas)). Con `-Dev` abre la app con recarga en vivo (`npm run tauri dev`), en lugar de generar el instalador.
+
+## Actualizaciones automáticas
+
+Cada PC con la isla se mantiene al día sola, sin abrir Claude Code. A los 5 minutos de arrancar y después cada 3 horas, la isla lanza `actualizar.ps1` sin ventana. El script hace esto:
+
+1. Trae `main` de este repo. Sin red, no hace nada.
+2. Si `plata.patch` cambió desde la última instalación, recompila Coucou **en esa PC** con el parche nuevo, lo reinstala en silencio y lo vuelve a abrir. La isla desaparece unos segundos. La compilación corre con prioridad baja.
+3. Si el repo `agentes` tiene commits nuevos, los baja (solo si avanza limpio, nunca pisa cambios locales) y reinicia la isla, que vuelve a levantar el agente.
+
+Para publicar una versión, alcanza con que el parche nuevo llegue a `main`. Cada PC lo toma en la próxima pasada.
+
+- **No pisa trabajo a medias.** Si en `%USERPROFILE%\coucou` hay cambios sin commitear o commits que no salieron de un parche (la PC donde se desarrolla), no recompila y lo anota.
+- **El script se actualiza a sí mismo.** Si en `main` hay otra versión de `actualizar.ps1`, corre esa.
+- **Compila en cada PC a propósito.** No baja un instalador de GitHub, por lo de Defender que se explica arriba.
+- **Lo dispara la isla, no el Programador de tareas.** En esta PC hasta un `cmd /c echo` programado quedaba "en cola" para siempre, sin error.
+- Log: `%LOCALAPPDATA%\Coucou\actualizar.log`. Lo instalado: `%LOCALAPPDATA%\Coucou\actualizacion.json`.
+- A mano, para no esperar: `powershell -ExecutionPolicy Bypass -File integraciones\coucou\actualizar.ps1`. Con `-Forzar`, recompila aunque esté al día.
+
+**Una sola vez por PC**, para que tome el mecanismo, la isla tiene que tener la versión que lo incluye: `git pull` en el repo de Plata y `instalar.ps1`. De ahí en más se actualiza sola.
 
 > ¿Por qué compilarlo? El instalador oficial está bajado porque Defender lo marcaba como troyano. El autor dice que es un falso positivo, pero hasta que lo firme, compilarlo vos es lo más seguro: el código se puede leer entero.
 
@@ -126,12 +145,13 @@ poll_railway ── cada 30 s ────────────────�
 - Fuentes versionadas en este repo:
   - `supabase/functions/coucou-health/index.ts`: se deploya con el MCP de Supabase, `verify_jwt=false`.
   - `supabase/sql/coucou_health.sql`: se aplica con `execute_sql`.
-- Del lado de Coucou, todo lo propio está en `plata.patch` (veinticuatro commits):
+- Del lado de Coucou, todo lo propio está en `plata.patch` (veinticinco commits):
   - `windows/src-tauri/src/integrations.rs`: `poll_plata` y `poll_railway`.
   - `windows/src/views/integrations.ts`: las tarjetas.
   - `state.ts`, `settings/main.ts`, `secrets.rs`, `settings.rs`, `island.ts`: el registro de las dos pills.
   - `windows/src-tauri/src/island.rs` (`drag_loop`, `apply_geometry`) y `layout.ts` (`islandX`, `islandRadius`): mover y anclar la isla.
   - `windows/src-tauri/src/plata_agent.rs` y `windows/src/views/plata.ts`: el chat con el agente, las tarjetas y el pase a Claude Code. `island.rs` (`start_dictation`): la voz.
+  - `windows/src-tauri/src/actualizar.rs`: lanza `actualizar.ps1` cada 3 horas.
 
 ## Actualizar Coucou
 
@@ -148,10 +168,11 @@ Si el rebase choca, es el momento de abrir Claude Code **local** en esa carpeta 
 git format-patch origin/main --stdout > <repo-plata>\integraciones\coucou\plata.patch
 ```
 
-Y actualizá `$Commit` en `instalar.ps1` con el resultado de `git rev-parse origin/main`.
+Y actualizá `$Commit` en `instalar.ps1` con el resultado de `git rev-parse origin/main`. Con eso en `main`, cada PC recompila sobre la base nueva en su próxima pasada.
 
 ## Problemas
 
+- **Una PC no se actualiza**: mirá `%LOCALAPPDATA%\Coucou\actualizar.log`. La línea dice por qué: sin red, trabajo local en el clon, el parche no aplica o falló la compilación. Mientras tanto queda instalada la versión anterior.
 - **Log de Coucou**: `%LOCALAPPDATA%\Coucou\coucou.log`. Ahí aparecen las líneas `plata HTTP …`, `plata problems: …` y `railway <servicio> <estado>`.
 - **La pill de Plata dice "Wrong secret (401)"**: el secreto no coincide con `app_secrets.COUCOU_SECRET`.
 - **"Token de Gmail vencido"**: el procedimiento de siempre (`node scripts/gmail-auth.mjs` y actualizar `GOOGLE_REFRESH_TOKEN`). Ver *Automatización de emails* en `CLAUDE.md`.
