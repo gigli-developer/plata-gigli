@@ -1,7 +1,7 @@
-From 53af6ff9039749f61d676f5864632357da50180d Mon Sep 17 00:00:00 2001
+From bf23fee13525f8df5d2dc1210a7a3c7710c5d01a Mon Sep 17 00:00:00 2001
 From: Lucas Gigli <giglilangonelucas@gmail.com>
 Date: Wed, 30 Sep 2026 20:56:49 +0000
-Subject: [PATCH 01/22] Pills de Plata y Railway
+Subject: [PATCH 01/24] Pills de Plata y Railway
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -682,13 +682,13 @@ index b8ad73c..1e394d3 100644
  
    switch (task.id) {
 -- 
-2.43.0
+2.55.0.windows.5
 
 
-From 97f2ab1e22352664b432dafb20ca373488500e44 Mon Sep 17 00:00:00 2001
+From f86004129a7b60c66d651d40fefdd87ee03d11e3 Mon Sep 17 00:00:00 2001
 From: Lucas <lucasgigli3@gmail.com>
 Date: Wed, 30 Sep 2026 19:26:42 -0300
-Subject: [PATCH 02/22] Isla movible y chat con el agente de Plata
+Subject: [PATCH 02/24] Isla movible y chat con el agente de Plata
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -2044,13 +2044,13 @@ index ac0ac7b..b0aea0d 100644
    map.set("uploading", buildUploading());
    map.set("choose", buildChoose(actions));
 -- 
-2.43.0
+2.55.0.windows.5
 
 
-From 31fd0b8231d03a3a1f9bac00274926dbeb2d4ffb Mon Sep 17 00:00:00 2001
+From 678f053b1075864a2c48ce3aae79e03b16ce9325 Mon Sep 17 00:00:00 2001
 From: Lucas <lucasgigli3@gmail.com>
 Date: Wed, 30 Sep 2026 19:41:15 -0300
-Subject: [PATCH 03/22] Plata en la isla: tarjetas, pedidos a Claude Code y voz
+Subject: [PATCH 03/24] Plata en la isla: tarjetas, pedidos a Claude Code y voz
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -2642,13 +2642,13 @@ index 6c6bb30..668ec54 100644
    return {
      el,
 -- 
-2.43.0
+2.55.0.windows.5
 
 
-From 5710148c0eb116f4f7b5404db22d52b6c783aa20 Mon Sep 17 00:00:00 2001
+From d03c8258aed0373986b7518d9d92ede57f70a077 Mon Sep 17 00:00:00 2001
 From: Lucas <lucasgigli3@gmail.com>
 Date: Wed, 30 Sep 2026 20:58:44 -0300
-Subject: [PATCH 04/22] El agente de Plata se prende solo
+Subject: [PATCH 04/24] El agente de Plata se prende solo
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -2831,13 +2831,13 @@ index 668ec54..6de96d2 100644
          note(msg, "plata-error");
        }
 -- 
-2.43.0
+2.55.0.windows.5
 
 
-From cc86555d0cfdd542a881fadc46f77abc05824d86 Mon Sep 17 00:00:00 2001
+From 930da55ef63d4d0c6a3691a3aeea9a6942c79b9d Mon Sep 17 00:00:00 2001
 From: Lucas <lucasgigli3@gmail.com>
 Date: Wed, 30 Sep 2026 21:19:44 -0300
-Subject: [PATCH 05/22] La isla se ancla en cualquier monitor
+Subject: [PATCH 05/24] La isla se ancla en cualquier monitor
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -2989,13 +2989,13 @@ index 96367bd..4a31905 100644
  
  type Listener = () => void;
 -- 
-2.43.0
+2.55.0.windows.5
 
 
-From ee98536f6606d80c782770fd409d73cce81d1c2b Mon Sep 17 00:00:00 2001
+From a69eea2d80cb5659e5bd0415fa1253b15a25dbfd Mon Sep 17 00:00:00 2001
 From: Lucas <lucasgigli3@gmail.com>
 Date: Wed, 30 Sep 2026 22:32:46 -0300
-Subject: [PATCH 06/22] Plata tab: attach a card statement (drop a
+Subject: [PATCH 06/24] Plata tab: attach a card statement (drop a
  PDF/screenshot or paste it) to reconcile
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -3677,13 +3677,13 @@ index b0aea0d..791ea8a 100644
  
  // ── Shared pieces ─────────────────────────────────────────────────────────────
 -- 
-2.43.0
+2.55.0.windows.5
 
 
-From 18f35058a0459e494edc1aaa7c08ce5835a8505b Mon Sep 17 00:00:00 2001
+From 146ce18cdb031b6c8e648fd640e56d6af6425b2c Mon Sep 17 00:00:00 2001
 From: Lucas <lucasgigli3@gmail.com>
 Date: Wed, 30 Sep 2026 22:56:17 -0300
-Subject: [PATCH 07/22] =?UTF-8?q?Pesta=C3=B1a=20Plata:=20agrandar=20el=20c?=
+Subject: [PATCH 07/24] =?UTF-8?q?Pesta=C3=B1a=20Plata:=20agrandar=20el=20c?=
  =?UTF-8?q?hat=20e=20historial=20local=20de=20la=20conversaci=C3=B3n?=
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -4093,13 +4093,13 @@ index 791ea8a..2cee61f 100644
    map.set("uploading", buildUploading());
    map.set("choose", buildChoose(actions));
 -- 
-2.43.0
+2.55.0.windows.5
 
 
-From 0f1cf834413a1d590a7b1d05fd2850d15d887a74 Mon Sep 17 00:00:00 2001
+From 84e1db45c4bf6d7adcfc157865b7bc286066d394 Mon Sep 17 00:00:00 2001
 From: Lucas <lucasgigli3@gmail.com>
 Date: Wed, 30 Sep 2026 23:13:01 -0300
-Subject: [PATCH 08/22] =?UTF-8?q?Pesta=C3=B1a=20Plata:=20el=20bot=C3=B3n?=
+Subject: [PATCH 08/24] =?UTF-8?q?Pesta=C3=B1a=20Plata:=20el=20bot=C3=B3n?=
  =?UTF-8?q?=20de=20agrandar=20con=20texto=20y=20en=20naranja?=
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -4171,13 +4171,13 @@ index b487a5e..e983567 100644
      try {
        localStorage.setItem("plata-big", on ? "1" : "0");
 -- 
-2.43.0
+2.55.0.windows.5
 
 
-From af65109661958e545844e8f60b9f7898c5e3fb0e Mon Sep 17 00:00:00 2001
+From 038124b17ab1c955be09cb04ccf0586817eea359 Mon Sep 17 00:00:00 2001
 From: Lucas <lucasgigli3@gmail.com>
 Date: Wed, 30 Sep 2026 23:17:23 -0300
-Subject: [PATCH 09/22] =?UTF-8?q?Bot=C3=B3n=20en=20el=20encabezado=20de=20?=
+Subject: [PATCH 09/24] =?UTF-8?q?Bot=C3=B3n=20en=20el=20encabezado=20de=20?=
  =?UTF-8?q?la=20isla:=20abre=20el=20chat=20de=20Plata=20en=20grande?=
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -4273,13 +4273,13 @@ index 2cee61f..416788e 100644
  
    return {
 -- 
-2.43.0
+2.55.0.windows.5
 
 
-From 7a3b8ec6c3e69dfd49792d264db16a0061cb198c Mon Sep 17 00:00:00 2001
+From 4c070fd8d8c6143d204d832069a72c4c3d44b268 Mon Sep 17 00:00:00 2001
 From: Lucas <lucasgigli3@gmail.com>
 Date: Thu, 1 Oct 2026 21:31:50 -0300
-Subject: [PATCH 10/22] =?UTF-8?q?Isla=20m=C3=A1s=20fluida:=20ventana=20de?=
+Subject: [PATCH 10/24] =?UTF-8?q?Isla=20m=C3=A1s=20fluida:=20ventana=20de?=
  =?UTF-8?q?=20tama=C3=B1o=20fijo,=20anclaje=20y=20deslizamiento=20al=20sol?=
  =?UTF-8?q?tar?=
 MIME-Version: 1.0
@@ -5580,13 +5580,13 @@ index 416788e..debb686 100644
      },
      svg(ICONS.expand, 14, { stroke: 1.9 }),
 -- 
-2.43.0
+2.55.0.windows.5
 
 
-From 8135db861abbf23eea5e78569b778720bad1ad22 Mon Sep 17 00:00:00 2001
+From 3196e5b675b4e0bc347098db20cbdc3eee4bbd34 Mon Sep 17 00:00:00 2001
 From: Lucas <lucasgigli3@gmail.com>
 Date: Thu, 1 Oct 2026 21:32:36 -0300
-Subject: [PATCH 11/22] =?UTF-8?q?Pesta=C3=B1a=20Plata:=20conciliar=20un=20?=
+Subject: [PATCH 11/24] =?UTF-8?q?Pesta=C3=B1a=20Plata:=20conciliar=20un=20?=
  =?UTF-8?q?resumen=20con=20Claude=20Code,=20con=20el=20plan=20y=20no=20la?=
  =?UTF-8?q?=20API?=
 MIME-Version: 1.0
@@ -7222,13 +7222,13 @@ index 851e6da..53b99a0 100644
        void addFiles(paths);
      },
 -- 
-2.43.0
+2.55.0.windows.5
 
 
-From 0f7d6194e421889359d5a7131442ab6b6fc6c680 Mon Sep 17 00:00:00 2001
+From 2d929dbb5215248252e3930273d1aa9a7290156f Mon Sep 17 00:00:00 2001
 From: Lucas <lucasgigli3@gmail.com>
 Date: Thu, 1 Oct 2026 22:01:26 -0300
-Subject: [PATCH 12/22] =?UTF-8?q?Pesta=C3=B1a=20Plata:=20sin=20sesi=C3=B3n?=
+Subject: [PATCH 12/24] =?UTF-8?q?Pesta=C3=B1a=20Plata:=20sin=20sesi=C3=B3n?=
  =?UTF-8?q?=20de=20Claude=20Code,=20Reintentar=20en=20vez=20de=20mand?=
  =?UTF-8?q?=C3=A1rselo=20al=20agente?=
 MIME-Version: 1.0
@@ -7319,13 +7319,13 @@ index 53b99a0..fde7b29 100644
        note(
          `Lo pegado es demasiado largo para el agente (${ars0.format(texto.length)} caracteres; hasta ${ars0.format(MAX_TEXT)}). ` +
 -- 
-2.43.0
+2.55.0.windows.5
 
 
-From 9aaf67e6f34fedcd0f94070cd9228c40d158a9af Mon Sep 17 00:00:00 2001
+From a441bd88e83f8351065d6d8978cac61d9d861aa8 Mon Sep 17 00:00:00 2001
 From: Lucas <lucasgigli3@gmail.com>
 Date: Thu, 1 Oct 2026 22:07:16 -0300
-Subject: [PATCH 13/22] =?UTF-8?q?Pesta=C3=B1a=20Plata:=20las=20respuestas?=
+Subject: [PATCH 13/24] =?UTF-8?q?Pesta=C3=B1a=20Plata:=20las=20respuestas?=
  =?UTF-8?q?=20del=20agente=20con=20formato=20(tablas,=20negritas,=20listas?=
  =?UTF-8?q?)?=
 MIME-Version: 1.0
@@ -7688,13 +7688,13 @@ index fde7b29..09465b3 100644
          typing(sending);
          break;
 -- 
-2.43.0
+2.55.0.windows.5
 
 
-From 6a177785f66e8f3a239fde22ab25e24bd3381ead Mon Sep 17 00:00:00 2001
+From ed319fb351ad9143ede9b96a85aa8f9d46dc4e8d Mon Sep 17 00:00:00 2001
 From: Lucas <lucasgigli3@gmail.com>
 Date: Thu, 1 Oct 2026 22:26:24 -0300
-Subject: [PATCH 14/22] =?UTF-8?q?Buscar=20claude.exe=20tambi=C3=A9n=20en?=
+Subject: [PATCH 14/24] =?UTF-8?q?Buscar=20claude.exe=20tambi=C3=A9n=20en?=
  =?UTF-8?q?=20la=20carpeta=20del=20paquete=20de=20la=20app=20(MSIX)?=
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -7751,13 +7751,13 @@ index 3b73768..83bbfae 100644
              let exe = e.path().join("claude.exe");
              let version: Vec<u64> = e.file_name().to_string_lossy().split('.').map(|n| n.parse().unwrap_or(0)).collect();
 -- 
-2.43.0
+2.55.0.windows.5
 
 
-From 5665ab419f9aabbebc2000f1d9d1c34bfd14e969 Mon Sep 17 00:00:00 2001
+From 8c6cf820cd3ff65949c0ff81e09b8013dae27c2c Mon Sep 17 00:00:00 2001
 From: Lucas <lucasgigli3@gmail.com>
 Date: Thu, 1 Oct 2026 22:44:34 -0300
-Subject: [PATCH 15/22] Conciliar: de 8 minutos a 50 segundos, y el resultado
+Subject: [PATCH 15/24] Conciliar: de 8 minutos a 50 segundos, y el resultado
  le llega al agente
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -7932,13 +7932,13 @@ index 09465b3..acf043e 100644
      renderAttachments();
      clear(log);
 -- 
-2.43.0
+2.55.0.windows.5
 
 
-From 888d7a46fd0436e7b603d39e7e903cafb8948ec3 Mon Sep 17 00:00:00 2001
+From 4ca6414996371db357f3c56afa075d036142b443 Mon Sep 17 00:00:00 2001
 From: Lucas <lucasgigli3@gmail.com>
 Date: Thu, 1 Oct 2026 23:00:01 -0300
-Subject: [PATCH 16/22] =?UTF-8?q?Pesta=C3=B1a=20Plata:=20bot=C3=B3n=20Modi?=
+Subject: [PATCH 16/24] =?UTF-8?q?Pesta=C3=B1a=20Plata:=20bot=C3=B3n=20Modi?=
  =?UTF-8?q?ficar=20en=20las=20propuestas?=
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -7971,13 +7971,13 @@ index acf043e..16d0deb 100644
      );
      const card = h(
 -- 
-2.43.0
+2.55.0.windows.5
 
 
-From 68e88d21068d598057c7f107f4ab6c8495008dba Mon Sep 17 00:00:00 2001
+From 992de945a3a1a24cfcb65dc3f5e470dc41bcdece Mon Sep 17 00:00:00 2001
 From: Lucas <lucasgigli3@gmail.com>
 Date: Thu, 1 Oct 2026 23:23:35 -0300
-Subject: [PATCH 17/22] =?UTF-8?q?Encontrar=20claude.exe=20con=20la=20estru?=
+Subject: [PATCH 17/24] =?UTF-8?q?Encontrar=20claude.exe=20con=20la=20estru?=
  =?UTF-8?q?ctura=20nueva=20de=20la=20app=20(<versi=C3=B3n>\<hash>\)?=
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -8028,13 +8028,13 @@ index 83bbfae..9858961 100644
  /// The session shows up in the island through the hooks, and its permission
  /// requests are answered there. Returns the folder it opened in.
 -- 
-2.43.0
+2.55.0.windows.5
 
 
-From 3a2f7fe2f1fe60a70f788222ef6bac59d75a1b39 Mon Sep 17 00:00:00 2001
+From 5e19fb8b242974195311e91b45e071cf5a02fc8d Mon Sep 17 00:00:00 2001
 From: Lucas <lucasgigli3@gmail.com>
 Date: Sat, 3 Oct 2026 14:14:49 -0300
-Subject: [PATCH 18/22] Plata lista sola: chequeo de piezas y "Conectar Claude
+Subject: [PATCH 18/24] Plata lista sola: chequeo de piezas y "Conectar Claude
  Code" sin terminal
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -9440,13 +9440,13 @@ index 16d0deb..4c6b4d0 100644
      },
    };
 -- 
-2.43.0
+2.55.0.windows.5
 
 
-From e1cec76df38199b6bc5f0826962e15e92fc4880e Mon Sep 17 00:00:00 2001
+From 085df1b9ff653c2a7b533d6bcd5232cbdc3453ec Mon Sep 17 00:00:00 2001
 From: Lucas <lucasgigli3@gmail.com>
 Date: Sat, 3 Oct 2026 14:59:45 -0300
-Subject: [PATCH 19/22] =?UTF-8?q?Plata:=20conciliar=20tambi=C3=A9n=20el=20?=
+Subject: [PATCH 19/24] =?UTF-8?q?Plata:=20conciliar=20tambi=C3=A9n=20el=20?=
  =?UTF-8?q?extracto=20de=20la=20cuenta=20con=20Claude=20Code?=
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -9868,13 +9868,13 @@ index 4c6b4d0..245e97c 100644
    function sync() {
      input.disabled = sending;
 -- 
-2.43.0
+2.55.0.windows.5
 
 
-From b83f621c4d8d08f64351b23859c23bb70f08e25e Mon Sep 17 00:00:00 2001
+From d410851a52f07ab81fc0ae005dc94825181ff1ba Mon Sep 17 00:00:00 2001
 From: Lucas <lucasgigli3@gmail.com>
 Date: Sat, 3 Oct 2026 18:51:21 -0300
-Subject: [PATCH 20/22] Listo: el extracto de la cuenta como pieza opcional del
+Subject: [PATCH 20/24] Listo: el extracto de la cuenta como pieza opcional del
  chequeo
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -10027,13 +10027,13 @@ index 245e97c..dee20eb 100644
      renderFix(r);
      retryButtonSync();
 -- 
-2.43.0
+2.55.0.windows.5
 
 
-From 3a222c1bcfab5f7dc3b7a8e33734cd6913222416 Mon Sep 17 00:00:00 2001
+From 5c3f5ef4348e38b3d6a040d607fe04e6848159f7 Mon Sep 17 00:00:00 2001
 From: Lucas <lucasgigli3@gmail.com>
 Date: Sat, 3 Oct 2026 22:02:25 -0300
-Subject: [PATCH 21/22] =?UTF-8?q?Pesta=C3=B1a=20Plata:=20varias=20l=C3=ADn?=
+Subject: [PATCH 21/24] =?UTF-8?q?Pesta=C3=B1a=20Plata:=20varias=20l=C3=ADn?=
  =?UTF-8?q?eas=20con=20Shift+Enter,=20y=20el=20micr=C3=B3fono=20dice=20por?=
  =?UTF-8?q?=20qu=C3=A9=20no=20dicta?=
 MIME-Version: 1.0
@@ -10276,13 +10276,13 @@ index dee20eb..cc37dad 100644
    toCode.addEventListener("click", async () => {
      const pedido = input.value.trim();
 -- 
-2.43.0
+2.55.0.windows.5
 
 
-From e91fe16ad3f3e44e2b5a0c82ec28b368b7928d85 Mon Sep 17 00:00:00 2001
+From 7a47dac5755b4145f5d413cab0a2d0f939deea63 Mon Sep 17 00:00:00 2001
 From: Lucas <lucasgigli3@gmail.com>
 Date: Sat, 3 Oct 2026 23:37:25 -0300
-Subject: [PATCH 22/22] Panel grande para los chats: lista a la izquierda, chat
+Subject: [PATCH 22/24] Panel grande para los chats: lista a la izquierda, chat
  a la derecha
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -11884,5 +11884,672 @@ index debb686..791ea8a 100644
    map.set("uploading", buildUploading());
    map.set("choose", buildChoose(actions));
 -- 
-2.43.0
+2.55.0.windows.5
+
+
+From cb7c895dbdf8918eabffbd525e7488ca209307e5 Mon Sep 17 00:00:00 2001
+From: Lucas <lucasgigli3@gmail.com>
+Date: Sun, 4 Oct 2026 18:21:47 -0300
+Subject: [PATCH 23/24] =?UTF-8?q?Archivos=20a=20Plata:=20"Mandar=20a=20Pla?=
+ =?UTF-8?q?ta"=20despu=C3=A9s=20de=20soltar,=20y=20el=20clip?=
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Un archivo soltado con la isla cerrada, o en otra pestaña, lo come Mochi y
+la tarjeta de después solo ofrecía preguntarle a Claude: el resumen del
+banco terminaba en el chat equivocado. Ahora la tarjeta ofrece primero
+"Mandar a Plata" (queda como adjunto del próximo mensaje, igual que si se
+hubiera soltado en la pestaña), después Claude y Cancelar.
+
+La pestaña Plata suma un clip en la barra: abre el selector de archivos de
+Windows (tauri-plugin-dialog, llamado desde Rust) con PDF e imágenes, para
+cuando arrastrar no es cómodo. La isla queda fija mientras el selector está
+abierto, así no se cierra sola. El log anota adónde fue cada arrastre.
+
+Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+---
+ windows/Cargo.lock           | 68 ++++++++++++++++++++++++++++++++++++
+ windows/src-tauri/Cargo.toml |  1 +
+ windows/src-tauri/src/lib.rs | 22 ++++++++++++
+ windows/src/core/bridge.ts   |  2 ++
+ windows/src/island/island.ts | 22 ++++++++++--
+ windows/src/upload/canvas.ts | 39 ++++++++++++++-------
+ windows/src/views/icons.ts   |  2 ++
+ windows/src/views/plata.ts   | 21 ++++++++++-
+ windows/src/views/upload.ts  | 13 ++++---
+ windows/src/views/views.ts   |  2 ++
+ 10 files changed, 172 insertions(+), 20 deletions(-)
+
+diff --git a/windows/Cargo.lock b/windows/Cargo.lock
+index ac0c600..58b325a 100644
+--- a/windows/Cargo.lock
++++ b/windows/Cargo.lock
+@@ -580,6 +580,7 @@ dependencies = [
+  "tauri",
+  "tauri-build",
+  "tauri-plugin-autostart",
++ "tauri-plugin-dialog",
+  "tauri-plugin-single-instance",
+  "tokio",
+  "windows 0.61.3",
+@@ -2373,6 +2374,7 @@ checksum = "e3e0adef53c21f888deb4fa59fc59f7eb17404926ee8a6f59f5df0fd7f9f3272"
+ dependencies = [
+  "bitflags 2.13.2",
+  "block2",
++ "libc",
+  "objc2",
+  "objc2-core-foundation",
+ ]
+@@ -3023,6 +3025,30 @@ dependencies = [
+  "web-sys",
+ ]
+ 
++[[package]]
++name = "rfd"
++version = "0.16.0"
++source = "registry+https://github.com/rust-lang/crates.io-index"
++checksum = "a15ad77d9e70a92437d8f74c35d99b4e4691128df018833e99f90bcd36152672"
++dependencies = [
++ "block2",
++ "dispatch2",
++ "glib-sys",
++ "gobject-sys",
++ "gtk-sys",
++ "js-sys",
++ "log",
++ "objc2",
++ "objc2-app-kit",
++ "objc2-core-foundation",
++ "objc2-foundation",
++ "raw-window-handle",
++ "wasm-bindgen",
++ "wasm-bindgen-futures",
++ "web-sys",
++ "windows-sys 0.60.2",
++]
++
+ [[package]]
+ name = "ring"
+ version = "0.17.14"
+@@ -3806,6 +3832,48 @@ dependencies = [
+  "thiserror 2.0.21",
+ ]
+ 
++[[package]]
++name = "tauri-plugin-dialog"
++version = "2.8.0"
++source = "registry+https://github.com/rust-lang/crates.io-index"
++checksum = "7527c5fd1678032d116c1a82e5d609c67370e56f858ae6cfd376bbca37fe0490"
++dependencies = [
++ "log",
++ "raw-window-handle",
++ "rfd",
++ "serde",
++ "serde_json",
++ "tauri",
++ "tauri-plugin",
++ "tauri-plugin-fs",
++ "thiserror 2.0.21",
++ "url",
++]
++
++[[package]]
++name = "tauri-plugin-fs"
++version = "2.6.0"
++source = "registry+https://github.com/rust-lang/crates.io-index"
++checksum = "466eb32466fe5021b6728b06862f9ff14a9f7e1af890047654e03a96d7c0e1bb"
++dependencies = [
++ "anyhow",
++ "dunce",
++ "glob",
++ "log",
++ "objc2-foundation",
++ "percent-encoding",
++ "schemars 0.8.22",
++ "serde",
++ "serde_json",
++ "serde_repr",
++ "tauri",
++ "tauri-plugin",
++ "tauri-utils",
++ "thiserror 2.0.21",
++ "toml 1.1.6+spec-1.1.0",
++ "url",
++]
++
+ [[package]]
+ name = "tauri-plugin-single-instance"
+ version = "2.5.0"
+diff --git a/windows/src-tauri/Cargo.toml b/windows/src-tauri/Cargo.toml
+index a341ae6..0db1258 100644
+--- a/windows/src-tauri/Cargo.toml
++++ b/windows/src-tauri/Cargo.toml
+@@ -17,6 +17,7 @@ tauri-build = { version = "2", features = [] }
+ tauri = { version = "2", features = ["tray-icon"] }
+ tauri-plugin-single-instance = "2"
+ tauri-plugin-autostart = "2"
++tauri-plugin-dialog = "2"
+ serde = { version = "1", features = ["derive"] }
+ serde_json = { version = "1", features = ["preserve_order"] }
+ tokio = { version = "1", features = ["net", "io-util", "sync", "time", "rt"] }
+diff --git a/windows/src-tauri/src/lib.rs b/windows/src-tauri/src/lib.rs
+index bac6317..5bf9e3e 100644
+--- a/windows/src-tauri/src/lib.rs
++++ b/windows/src-tauri/src/lib.rs
+@@ -307,6 +307,26 @@ fn plata_attachment_info(path: String) -> Result<plata_agent::AttachmentInfo, St
+     plata_agent::attachment_info(&path)
+ }
+ 
++/// The paperclip on the Plata tab: Windows' own file picker, for when dragging
++/// a file onto the island is not an option. Returns the chosen paths (none if
++/// cancelled); each still goes through plata_attachment_info.
++#[tauri::command]
++async fn plata_pick_files(window: tauri::WebviewWindow) -> Vec<String> {
++    use tauri_plugin_dialog::DialogExt;
++    window
++        .dialog()
++        .file()
++        .set_parent(&window)
++        .set_title("Adjuntar a Plata")
++        .add_filter("PDF o imagen", &["pdf", "png", "jpg", "jpeg", "webp", "gif"])
++        .blocking_pick_files()
++        .unwrap_or_default()
++        .into_iter()
++        .filter_map(|p| p.into_path().ok())
++        .map(|p| p.to_string_lossy().into_owned())
++        .collect()
++}
++
+ /// A change to the app: Claude Code in a terminal, in the Plata repo.
+ #[tauri::command]
+ fn open_claude_code(pedido: String) -> Result<String, String> {
+@@ -508,6 +528,7 @@ pub fn run() {
+             let _ = app.emit_to(island::WINDOW_LABEL, "tray", "open".to_string());
+         }))
+         .plugin(tauri_plugin_autostart::init(MacosLauncher::LaunchAgent, None))
++        .plugin(tauri_plugin_dialog::init())
+         .manage(Shared {
+             settings: Mutex::new(loaded.clone()),
+             gate: gate.clone(),
+@@ -547,6 +568,7 @@ pub fn run() {
+             plata_start,
+             plata_send,
+             plata_attachment_info,
++            plata_pick_files,
+             open_claude_code,
+             plata_delegate,
+             plata_delegate_cancel,
+diff --git a/windows/src/core/bridge.ts b/windows/src/core/bridge.ts
+index 6ee7376..8bed38d 100644
+--- a/windows/src/core/bridge.ts
++++ b/windows/src/core/bridge.ts
+@@ -104,6 +104,8 @@ export const Bridge = {
+     callOrThrow<void>("plata_send", { texto, sesionId, adjuntos }),
+   /** Can the agent read this dropped file (PDF or image, within the size limit)? */
+   plataAttachmentInfo: (path: string) => callOrThrow<PlataAttachmentInfo>("plata_attachment_info", { path }),
++  /** The paperclip: Windows' file picker. Empty when cancelled. */
++  plataPickFiles: () => callOrThrow<string[]>("plata_pick_files"),
+ 
+   /**
+    * A card statement to reconcile, done by Claude Code headless on Lucas's plan
+diff --git a/windows/src/island/island.ts b/windows/src/island/island.ts
+index ebcfb8b..73a7dcf 100644
+--- a/windows/src/island/island.ts
++++ b/windows/src/island/island.ts
+@@ -192,6 +192,7 @@ export class Island {
+       },
+       openSettingsWindow: () => void Bridge.openSettingsWindow(),
+       blip: () => Sound.play("blip"),
++      fileToPlata: () => this.fileToPlata(),
+     };
+ 
+     this.wakeStrip = h("div", { id: "wake-strip" });
+@@ -224,6 +225,7 @@ export class Island {
+           : null;
+         this.setView("prompt");
+       },
++      plata: () => this.fileToPlata(),
+       cancel: () => this.setView(State.defaultView()),
+     });
+ 
+@@ -424,6 +426,7 @@ export class Island {
+       if (State.fileDragOver || State.mode !== "expanded") return false;
+       const view = this.views.get(State.view);
+       if (!view?.dropFiles) return false;
++      void Bridge.log(`drag → ${State.view}`);
+       this.dropView = view;
+       view.dragHover?.(true);
+       State.lastActivity = performance.now();
+@@ -444,6 +447,17 @@ export class Island {
+     return true;
+   }
+ 
++  /**
++   * "Mandar a Plata" on the choose card: the file Mochi ate becomes an
++   * attachment of the next Plata message, as if it had been dropped on the tab.
++   */
++  private fileToPlata() {
++    const file = State.droppedFile;
++    State.promptContext = null;
++    this.setView("plata");
++    if (file) this.views.get("plata")?.dropFiles?.([file.path]);
++  }
++
+   /**
+    * Mochi eats the file. Nothing here waits on the file system: the copy into
+    * the inbox runs in the background and swaps the path in when it lands, so a
+@@ -849,7 +863,7 @@ export class Island {
+     this.uploadCanvas.el.classList.toggle("on", uploadActive);
+     this.viewsEl.classList.toggle("hidden-by-upload", uploadActive);
+ 
+-    tickMiniBots(dt);
++    const minis = tickMiniBots(dt);
+     this.views.get(State.view)?.tick?.(nowMs);
+     if (UploadSeq.isActive) this.stepSequence();
+     this.updateCountdown(nowMs);
+@@ -866,7 +880,11 @@ export class Island {
+       ? settling
+       : settling ||
+         !this.botCx.settled || !this.botCy.settled || !this.botSize.settled ||
+-        greetingActive || this.engine.busy || UploadSeq.isActive;
++        greetingActive || this.engine.busy || UploadSeq.isActive ||
++        // The mini Mochis (pills, the chats' avatars) breathe and blink on their
++        // own, but only while this loop runs: an idle island Mochi used to stop
++        // it and freeze them all. Only while open, so a compact island still sleeps.
++        (State.mode === "expanded" && minis > 0);
+ 
+     if (busy) {
+       requestAnimationFrame(this.frame);
+diff --git a/windows/src/upload/canvas.ts b/windows/src/upload/canvas.ts
+index 64b54f6..c11d339 100644
+--- a/windows/src/upload/canvas.ts
++++ b/windows/src/upload/canvas.ts
+@@ -57,8 +57,17 @@ function text(
+   ctx.fillText(s, x, y);
+ }
+ 
++/** The choose card's buttons: Plata first, it is what the island is mostly for. */
++const BTN = {
++  plata: { x: 114, w: 128, label: "Mandar a Plata" },
++  ask: { x: 250, w: 150, label: "Preguntarle a Claude" },
++  cancel: { x: 408, w: 90, label: "Cancelar" },
++};
++
+ export interface UploadCanvasActions {
+-  /** Primary button — hand the file to the chat. */
++  /** Primary button — hand the file to the Plata chat. */
++  plata(): void;
++  /** Hand the file to the Claude chat. */
+   ask(): void;
+   /** Secondary button. */
+   cancel(): void;
+@@ -91,7 +100,11 @@ export class UploadCanvas {
+     };
+     this.overlay = document.createElement("div");
+     this.overlay.id = "upload-overlay";
+-    this.overlay.append(mk(114, 168, actions.ask), mk(290, 120, actions.cancel));
++    this.overlay.append(
++      mk(BTN.plata.x, BTN.plata.w, actions.plata),
++      mk(BTN.ask.x, BTN.ask.w, actions.ask),
++      mk(BTN.cancel.x, BTN.cancel.w, actions.cancel),
++    );
+ 
+     this.el = document.createElement("div");
+     this.el.id = "upload-layer";
+@@ -273,18 +286,18 @@ export class UploadCanvas {
+     ctx.translate(0, (1 - f.chooseAlpha) * 4);
+ 
+     const name = State.droppedFile?.name ?? "file";
+-    text(ctx, `${name} is ready.`, 114, 80, `600 14px ${FONT}`, "#F5F6F8");
+-    text(ctx, "What do you want to do with it?", 114, 100, `400 12.5px ${FONT}`, "#9398A1");
+-
+-    ctx.fillStyle = "#F5F6F8";
+-    rr(ctx, 114, 113, 168, 26, 13);
+-    ctx.fill();
+-    text(ctx, "Ask a question about it", 198, 126, `500 12.5px ${FONT}`, "#0B0C0E", "center");
++    text(ctx, `${name} está listo.`, 114, 80, `600 14px ${FONT}`, "#F5F6F8");
++    text(ctx, "¿Qué hacemos con él?", 114, 100, `400 12.5px ${FONT}`, "#9398A1");
+ 
+-    ctx.fillStyle = "rgba(255,255,255,0.09)";
+-    rr(ctx, 290, 113, 120, 26, 13);
+-    ctx.fill();
+-    text(ctx, "Cancel", 350, 126, `500 12.5px ${FONT}`, "#F1F2F4", "center");
++    const button = (b: { x: number; w: number; label: string }, fill: string, ink: string) => {
++      ctx.fillStyle = fill;
++      rr(ctx, b.x, 113, b.w, 26, 13);
++      ctx.fill();
++      text(ctx, b.label, b.x + b.w / 2, 126, `500 12.5px ${FONT}`, ink, "center");
++    };
++    button(BTN.plata, "#FF9E1B", "#0B0C0E");
++    button(BTN.ask, "#F5F6F8", "#0B0C0E");
++    button(BTN.cancel, "rgba(255,255,255,0.09)", "#F1F2F4");
+     ctx.restore();
+   }
+ 
+diff --git a/windows/src/views/icons.ts b/windows/src/views/icons.ts
+index da754b8..99d04f3 100644
+--- a/windows/src/views/icons.ts
++++ b/windows/src/views/icons.ts
+@@ -11,6 +11,8 @@ export const ICONS = {
+   mic: "M12 3.5a2.8 2.8 0 0 0-2.8 2.8v5.4a2.8 2.8 0 0 0 5.6 0V6.3A2.8 2.8 0 0 0 12 3.5zM6.5 11.2a5.5 5.5 0 0 0 11 0M12 16.8v3.7",
+   // terminal prompt (hand a change to Claude Code), stroke
+   terminal: "M4 6.5 9.5 12 4 17.5M12 18h8",
++  // Stroke icon, like mic and terminal.
++  clip: "M19.5 11.2l-7.6 7.6a5 5 0 0 1-7.1-7.1l7.9-7.9a3.4 3.4 0 0 1 4.8 4.8l-7.9 7.9a1.7 1.7 0 0 1-2.4-2.4l7.3-7.3",
+   // Plata: a coin with a peso sign, drawn as a stroke (see the Plata tab)
+   coin: "M12 3.5a8.5 8.5 0 1 0 0 17 8.5 8.5 0 0 0 0-17zM14.8 9.3c-.3-1-1.3-1.7-2.8-1.7-1.6 0-2.7.8-2.7 2 0 2.6 5.6 1.4 5.6 4.3 0 1.2-1.2 2.1-2.9 2.1-1.6 0-2.7-.7-3-1.8M12 5.9v1.7M12 16v1.9",
+   // house.fill
+diff --git a/windows/src/views/plata.ts b/windows/src/views/plata.ts
+index d5ae687..453423a 100644
+--- a/windows/src/views/plata.ts
++++ b/windows/src/views/plata.ts
+@@ -532,7 +532,26 @@ export function buildPlata(): ViewHost {
+     { class: "plata-icon-btn", title: "Es un cambio en la app: mandárselo a Claude Code" },
+     svg(ICONS.terminal, 15, { stroke: 1.9 }),
+   );
+-  const bar = h("div", { class: "chat-bar" }, mic, input, toCode, send);
++  const clip = h(
++    "button",
++    { class: "plata-icon-btn", title: "Adjuntar un PDF o una imagen (o soltalo acá)" },
++    svg(ICONS.clip, 15, { stroke: 1.7 }),
++  );
++  clip.addEventListener("click", async () => {
++    // The picker takes the cursor away from the island: keep it open meanwhile.
++    const wasPinned = State.isPinned;
++    State.isPinned = true;
++    try {
++      const paths = await Bridge.plataPickFiles();
++      if (paths.length) await addFiles(paths);
++      else input.focus();
++    } catch (e) {
++      note(String(e).replace(/^Error:\s*/, ""), "plata-error");
++    } finally {
++      State.isPinned = wasPinned;
++    }
++  });
++  const bar = h("div", { class: "chat-bar" }, clip, mic, input, toCode, send);
+   // Attachments waiting for the next message, as chips above the field.
+   let pending: Attachment[] = [];
+   const attRow = h("div", { class: "plata-atts" });
+diff --git a/windows/src/views/upload.ts b/windows/src/views/upload.ts
+index 714060f..ceaa49f 100644
+--- a/windows/src/views/upload.ts
++++ b/windows/src/views/upload.ts
+@@ -85,18 +85,23 @@ export function buildUploading(): ViewHost {
+ 
+ export function buildChoose(actions: ViewActions): ViewHost {
+   const title = h("div", { class: "title" });
+-  const sub = h("div", { class: "sub", text: "What do you want to do with it?" });
++  const sub = h("div", { class: "sub", text: "¿Qué hacemos con él?" });
+   const row = h(
+     "div",
+     { class: "actions" },
+     h("button", {
+       class: "btn primary",
+-      text: "Ask a question",
++      text: "Mandar a Plata",
++      onclick: () => actions.fileToPlata(),
++    }),
++    h("button", {
++      class: "btn secondary",
++      text: "Preguntarle a Claude",
+       onclick: () => actions.setView("prompt"),
+     }),
+     h("button", {
+       class: "btn secondary",
+-      text: "Cancel",
++      text: "Cancelar",
+       onclick: () => actions.setView(State.defaultView()),
+     }),
+   );
+@@ -116,7 +121,7 @@ export function buildChoose(actions: ViewActions): ViewHost {
+       clear(title);
+       title.append(
+         h("b", { text: State.droppedFile?.name ?? "file" }),
+-        document.createTextNode(" is ready."),
++        document.createTextNode(" está listo."),
+       );
+     },
+   };
+diff --git a/windows/src/views/views.ts b/windows/src/views/views.ts
+index 791ea8a..6f662fe 100644
+--- a/windows/src/views/views.ts
++++ b/windows/src/views/views.ts
+@@ -27,6 +27,8 @@ export interface ViewActions {
+   setAutoClose(seconds: number): void;
+   openSettingsWindow(): void;
+   blip(): void;
++  /** The file Mochi just ate goes to the Plata chat as an attachment. */
++  fileToPlata(): void;
+ }
+ 
+ export interface ViewHost {
+-- 
+2.55.0.windows.5
+
+
+From 656edff2eb789db567de215417118dbcb0dbf5f2 Mon Sep 17 00:00:00 2001
+From: Lucas <lucasgigli3@gmail.com>
+Date: Sun, 4 Oct 2026 18:21:48 -0300
+Subject: [PATCH 24/24] Chats: las caritas se mueven
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Los avatares del panel grande eran un círculo con dos ojos en CSS. Ahora
+son Mochis chicos de verdad (el mismo motor que las pills): respiran,
+parpadean y miran; piensan mientras el chat espera respuesta, esperan
+cuando hay propuestas por aprobar y se alegran cuando llega la respuesta.
+
+Dos arreglos de paso que afectaban a todos los Mochis chicos:
+- El loop de la isla se dormía apenas el Mochi grande quedaba quieto, y con
+  él se congelaban todos los chicos. Ahora sigue mientras la isla está
+  abierta y hay alguno a la vista; cerrada, se duerme como antes.
+- Al pasar a un monitor con otra escala el canvas no se redimensionaba y el
+  Mochi salía recortado. Ahora sigue a devicePixelRatio.
+
+Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+---
+ windows/src/mochi/minibots.ts | 50 +++++++++++++++++++++++++++--------
+ windows/src/style.css         | 28 +++++---------------
+ windows/src/views/chats.ts    | 27 ++++++++++++++++---
+ 3 files changed, 69 insertions(+), 36 deletions(-)
+
+diff --git a/windows/src/mochi/minibots.ts b/windows/src/mochi/minibots.ts
+index fbf2e03..dcae541 100644
+--- a/windows/src/mochi/minibots.ts
++++ b/windows/src/mochi/minibots.ts
+@@ -23,6 +23,28 @@ const live = new Map<HTMLCanvasElement, MiniBot>();
+  * whole drawing to 60 %, which is what used to happen.
+  */
+ export function createMiniBot(task: AgentTask, bodySize: number): HTMLElement {
++  const { slot, engine } = makeBot(task.color, bodySize, task.id);
++  engine.setState(task.state, true);
++  if (task.emote) engine.setPermanentEmote(task.emote);
++  if (task.miniEye) {
++    engine.permanentEye = task.miniEye;
++    engine.eyeOverride = task.miniEye;
++    engine.eyeOverrideUntil = Number.POSITIVE_INFINITY;
++  }
++  return slot;
++}
++
++/**
++ * A mini Mochi that belongs to no task: the chats' avatars (chats.ts). The
++ * caller drives its engine; syncMiniBotStates leaves it alone.
++ */
++export function createChatBot(color: string, bodySize: number): { el: HTMLElement; engine: BotEngine } {
++  const { slot, engine } = makeBot(color, bodySize, "");
++  engine.setState("idle", true);
++  return { el: slot, engine };
++}
++
++function makeBot(color: string, bodySize: number, taskId: string): { slot: HTMLElement; engine: BotEngine } {
+   const slot = document.createElement("span");
+   slot.className = "mini";
+   slot.style.width = `${bodySize}px`;
+@@ -39,17 +61,10 @@ export function createMiniBot(task: AgentTask, bodySize: number): HTMLElement {
+ 
+   const engine = new BotEngine();
+   engine.isMini = true;
+-  engine.bodyColor = hexToRGB(task.color);
+-  engine.setState(task.state, true);
+-  if (task.emote) engine.setPermanentEmote(task.emote);
+-  if (task.miniEye) {
+-    engine.permanentEye = task.miniEye;
+-    engine.eyeOverride = task.miniEye;
+-    engine.eyeOverrideUntil = Number.POSITIVE_INFINITY;
+-  }
++  engine.bodyColor = hexToRGB(color);
+ 
+-  live.set(canvas, { canvas, engine, cssSize: engineSize, taskId: task.id });
+-  return slot;
++  live.set(canvas, { canvas, engine, cssSize: engineSize, taskId });
++  return { slot, engine };
+ }
+ 
+ export function releaseMiniBot(canvas: HTMLCanvasElement) {
+@@ -72,16 +87,29 @@ export function syncMiniBotStates(tasks: AgentTask[]) {
+   }
+ }
+ 
+-export function tickMiniBots(dt: number) {
++/** Draws every mini Mochi on screen; returns how many it drew. */
++export function tickMiniBots(dt: number): number {
+   const dpr = Math.min(2, window.devicePixelRatio || 1);
++  let drawn = 0;
+   for (const mb of live.values()) {
++    // The chats' avatars live in the large panel, hidden most of the time.
++    if (!mb.taskId && !mb.canvas.checkVisibility()) continue;
++    // The island can move to a display with another scale: resize the backing
++    // store with it, or the drawing would come out at the wrong size, cropped.
++    const px = Math.round(mb.cssSize * dpr);
++    if (mb.canvas.width !== px) {
++      mb.canvas.width = px;
++      mb.canvas.height = px;
++    }
+     const ctx = mb.canvas.getContext("2d");
+     if (!ctx) continue;
+     mb.engine.update(dt);
+     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+     ctx.clearRect(0, 0, mb.cssSize, mb.cssSize);
+     mb.engine.draw(ctx, mb.cssSize, mb.cssSize);
++    drawn++;
+   }
++  return drawn;
+ }
+ 
+ export const miniBotCount = () => live.size;
+diff --git a/windows/src/style.css b/windows/src/style.css
+index e851969..b65caf4 100644
+--- a/windows/src/style.css
++++ b/windows/src/style.css
+@@ -1886,33 +1886,17 @@ input[type="range"]::-webkit-slider-thumb {
+   outline-offset: 2px;
+ }
+ 
+-/* Mochi's face as a round avatar (chats.ts avatar): Plata orange, Claude white. */
++/* A live mini Mochi as the chat's avatar (chats.ts avatar): Plata orange,
++   Claude white. The engine draws it; this only gives it its slot. */
+ .chat-av {
+   --s: 34px;
+   position: relative;
+-  display: block;
++  display: flex;
++  align-items: center;
++  justify-content: center;
+   flex: 0 0 var(--s);
+   width: var(--s);
+   height: var(--s);
+-  border-radius: 50%;
+-  background: radial-gradient(circle at 35% 30%, rgba(255, 255, 255, 0.35), rgba(255, 255, 255, 0) 60%), var(--av);
+-}
+-
+-.chat-av i {
+-  position: absolute;
+-  top: 34%;
+-  width: 13%;
+-  height: 25%;
+-  border-radius: 99px;
+-  background: #101114;
+-}
+-
+-.chat-av i:first-child {
+-  left: 30%;
+-}
+-
+-.chat-av i:last-child {
+-  right: 30%;
+ }
+ 
+ /* ── Large chat panel: the list on the left, the chat on the right ─────── */
+@@ -2154,7 +2138,7 @@ input[type="range"]::-webkit-slider-thumb {
+ }
+ 
+ #island.chat-big .chat-head .chat-av {
+-  display: block;
++  display: flex;
+ }
+ 
+ #island.chat-big .chat-head-title {
+diff --git a/windows/src/views/chats.ts b/windows/src/views/chats.ts
+index 7e58f71..8abc0b9 100644
+--- a/windows/src/views/chats.ts
++++ b/windows/src/views/chats.ts
+@@ -15,6 +15,8 @@ import { State } from "../core/state";
+ import { chatBigSize, setChatBig, type IslandViewName } from "../core/layout";
+ import { plainLine } from "./markdown";
+ import type { ViewActions } from "./views";
++import { createChatBot } from "../mochi/minibots";
++import type { BotEngine } from "../mochi/engine";
+ 
+ export type ChatId = "plata" | "prompt";
+ 
+@@ -56,6 +58,7 @@ const meta: Record<ChatId, ChatMeta> = {
+ 
+ export function reportChat(id: ChatId, patch: Partial<ChatMeta>): void {
+   Object.assign(meta[id], patch);
++  syncBots(id);
+   State.notify();
+ }
+ 
+@@ -160,14 +163,32 @@ function sizeButton(id: ChatId): HTMLButtonElement {
+ 
+ // ── Pieces ──────────────────────────────────────────────────────────────────
+ 
+-/** A round avatar in the chat's colour, with Mochi's eyes. */
++/** Every avatar's Mochi, per chat: the row in the list and the chat's header. */
++const bots: Record<ChatId, BotEngine[]> = { plata: [], prompt: [] };
++const botWasBusy: Record<ChatId, boolean> = { plata: false, prompt: false };
++
++/** A live Mochi in the chat's colour: it breathes, blinks and looks around like the others. */
+ export function avatar(id: ChatId, size: number): HTMLElement {
+-  const el = h("span", { class: "chat-av", "aria-hidden": "true" }, h("i"), h("i"));
+-  el.style.setProperty("--av", CHAT_INFO[id].color);
++  const bot = createChatBot(CHAT_INFO[id].color, Math.round(size * 0.86));
++  bots[id].push(bot.engine);
++  const el = h("span", { class: "chat-av", "aria-hidden": "true" }, bot.el);
+   el.style.setProperty("--s", `${size}px`);
++  syncBots(id);
+   return el;
+ }
+ 
++/** The avatars show what the chat is doing; a fresh answer gets a little joy. */
++function syncBots(id: ChatId): void {
++  const m = metaFor(id);
++  const state = m.busy ? "thinking" : m.waiting > 0 ? "approval" : "idle";
++  const answered = botWasBusy[id] && !m.busy;
++  botWasBusy[id] = m.busy;
++  for (const engine of bots[id]) {
++    engine.setState(state);
++    if (answered) engine.triggerEmote("happy");
++  }
++}
++
+ /**
+  * A chat's header: avatar (shown in the panel) + name + a dim detail, the
+  * chat's own links, and the size button, always last.
+-- 
+2.55.0.windows.5
 
