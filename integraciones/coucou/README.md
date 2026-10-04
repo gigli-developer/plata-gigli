@@ -14,6 +14,22 @@ Además, el parche suma dos cosas a la isla:
 - **Pestaña Plata** (la moneda, en el encabezado de la isla): un chat con el [agente de Plata](https://github.com/gigli-developer/agentes). Ver [Chat con Plata](#chat-con-plata).
 - **La isla se mueve.** Agarrala de cualquier parte que no sea un botón y arrastrala. Ver [Mover la isla](#mover-la-isla).
 
+## PC nueva, de cero
+
+Para dejar otra PC como la de siempre (isla + agente + skills) sin instalar nada a mano:
+
+1. **En la PC vieja**, desde este repo: `powershell -ExecutionPolicy Bypass -File integraciones\coucou\exportar-skills.ps1`. Deja `skills-claude.zip` en el Escritorio, con las skills de `%USERPROFILE%\.claude\skills` (`conciliar-resumen`, `conciliar-extracto`, `informe-mensual`), que no están en git. Llevalo a la PC nueva.
+2. **En la PC nueva**, en PowerShell:
+   ```powershell
+   winget install --id Git.Git -e
+   # cerrá y abrí PowerShell para que aparezca git
+   git clone https://github.com/gigli-developer/plata-gigli $HOME\plata-gigli
+   cd $HOME\plata-gigli
+   powershell -ExecutionPolicy Bypass -File integraciones\coucou\pc-nueva.ps1 -Skills $HOME\Downloads\skills-claude.zip
+   ```
+
+`pc-nueva.ps1` instala con winget lo que falte (Node, Rust, Build Tools de C++: pide admin una vez), clona `agentes` en `%USERPROFILE%\agentes`, corre `npm install`, arma el `.env` (te pide la anon key de Supabase y la API key del agente), hace `npm run login` y al final corre `instalar.ps1`. Si lo cortás, correrlo de nuevo sigue desde donde quedó. Las carpetas no son caprichosas: la isla busca los repos en `%USERPROFILE%\plata-gigli` y `%USERPROFILE%\agentes` (o en `Escritorio\Claude\finanzas-app` y `Escritorio\Claude\agentes`).
+
 ## Instalar (Windows 10/11)
 
 Requisitos, una sola vez:
