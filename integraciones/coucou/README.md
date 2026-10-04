@@ -83,6 +83,9 @@ La pestaña de la moneda abre un chat con el agente de Plata del repo `agentes`:
 - **Fluidez:** mientras la isla está visible la ventana queda en su tamaño máximo y todos los cambios de tamaño son animaciones dentro de la página; al soltarla se desliza hasta el ancla.
 - **Listo solo:** al abrir la isla y la pestaña Plata se revisan el agente, Claude Code (versión y sesión con el plan), la skill de conciliar y el lector; si falta algo aparece un botón que lo resuelve (Encender agente, Conectar Claude Code con login en el navegador, sin terminal). El extracto de la cuenta es una pieza opcional.
 - **Extracto de la cuenta:** soltar o pegar el extracto del Galicia lo concilia Claude Code con la skill `conciliar-extracto` y `npm run conciliar:leer-cuenta`; misma tarjeta de diferencias.
+- **Panel grande:** el botón Agrandar de cada chat (Plata y Claude, mismo lugar) abre un panel con la lista de chats a la izquierda (buscador, "+", avatar, última línea, hora, aviso de propuestas) y el chat activo a la derecha. El ⤢ del encabezado global se sacó.
+- **Acciones sugeridas:** el agente termina algunas respuestas con un bloque ```acciones; la isla lo esconde y muestra hasta 3 botones que mandan el pedido.
+- **Varias líneas y dictado:** Shift+Enter baja de renglón; el micrófono avisa si falta el reconocimiento de voz en línea de Windows.
 - **Historial local:** cada mensaje y cada respuesta del agente quedan en `%LOCALAPPDATA%\Coucou\plata-chat.log` (solo en tu PC; se reinicia al pasar 5 MB), para poder revisar un turno que salió mal: el agente guarda las conversaciones solo en memoria.
 - **Nueva** arranca otra conversación. Cada una vive en el agente hasta 30 minutos sin mensajes.
 - Mientras el chat está abierto, la ventana de la isla crece de 720×320 a 720×480. Es transparente y deja pasar los clics fuera de la isla, pero toma el mouse mientras hay un botón apretado encima (para poder soltar archivos), así que vuelve a su tamaño apenas se cierra el chat.
@@ -106,7 +109,7 @@ poll_railway ── cada 30 s ────────────────�
 - Fuentes versionadas en este repo:
   - `supabase/functions/coucou-health/index.ts`: se deploya con el MCP de Supabase, `verify_jwt=false`.
   - `supabase/sql/coucou_health.sql`: se aplica con `execute_sql`.
-- Del lado de Coucou, todo lo propio está en `plata.patch` (veinte commits):
+- Del lado de Coucou, todo lo propio está en `plata.patch` (veintitrés commits):
   - `windows/src-tauri/src/integrations.rs`: `poll_plata` y `poll_railway`.
   - `windows/src/views/integrations.ts`: las tarjetas.
   - `state.ts`, `settings/main.ts`, `secrets.rs`, `settings.rs`, `island.ts`: el registro de las dos pills.

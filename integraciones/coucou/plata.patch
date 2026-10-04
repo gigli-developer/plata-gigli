@@ -1,7 +1,7 @@
 From 680c133ae9c577ce390172fe712e22debc666756 Mon Sep 17 00:00:00 2001
 From: Lucas Gigli <giglilangonelucas@gmail.com>
 Date: Wed, 30 Sep 2026 20:56:49 +0000
-Subject: [PATCH 01/20] Pills de Plata y Railway
+Subject: [PATCH 01/22] Pills de Plata y Railway
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -688,7 +688,7 @@ index b8ad73c..1e394d3 100644
 From 300ffc9f910104c945e4bac87f07652ff76cdef8 Mon Sep 17 00:00:00 2001
 From: Lucas <lucasgigli3@gmail.com>
 Date: Wed, 30 Sep 2026 19:26:42 -0300
-Subject: [PATCH 02/20] Isla movible y chat con el agente de Plata
+Subject: [PATCH 02/22] Isla movible y chat con el agente de Plata
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -2050,7 +2050,7 @@ index ac0ac7b..b0aea0d 100644
 From bc47f21c9aebad91c668224113e757e8621898c3 Mon Sep 17 00:00:00 2001
 From: Lucas <lucasgigli3@gmail.com>
 Date: Wed, 30 Sep 2026 19:41:15 -0300
-Subject: [PATCH 03/20] Plata en la isla: tarjetas, pedidos a Claude Code y voz
+Subject: [PATCH 03/22] Plata en la isla: tarjetas, pedidos a Claude Code y voz
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -2648,7 +2648,7 @@ index 6c6bb30..668ec54 100644
 From a651a03795654c762b61b66dd6906f0a9d326a3b Mon Sep 17 00:00:00 2001
 From: Lucas <lucasgigli3@gmail.com>
 Date: Wed, 30 Sep 2026 20:58:44 -0300
-Subject: [PATCH 04/20] El agente de Plata se prende solo
+Subject: [PATCH 04/22] El agente de Plata se prende solo
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -2837,7 +2837,7 @@ index 668ec54..6de96d2 100644
 From 6b35f453bdc19dd5a88bfaf5147cac5d4aadd88f Mon Sep 17 00:00:00 2001
 From: Lucas <lucasgigli3@gmail.com>
 Date: Wed, 30 Sep 2026 21:19:44 -0300
-Subject: [PATCH 05/20] La isla se ancla en cualquier monitor
+Subject: [PATCH 05/22] La isla se ancla en cualquier monitor
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -2995,7 +2995,7 @@ index 96367bd..4a31905 100644
 From 10df29a346632a6204e9d3e29485cd1ca4f1449d Mon Sep 17 00:00:00 2001
 From: Lucas <lucasgigli3@gmail.com>
 Date: Wed, 30 Sep 2026 22:32:46 -0300
-Subject: [PATCH 06/20] Plata tab: attach a card statement (drop a
+Subject: [PATCH 06/22] Plata tab: attach a card statement (drop a
  PDF/screenshot or paste it) to reconcile
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -3683,7 +3683,7 @@ index b0aea0d..791ea8a 100644
 From cc3b3a857b5ae6eb024de26bd9e1b2493dbc2e65 Mon Sep 17 00:00:00 2001
 From: Lucas <lucasgigli3@gmail.com>
 Date: Wed, 30 Sep 2026 22:56:17 -0300
-Subject: [PATCH 07/20] =?UTF-8?q?Pesta=C3=B1a=20Plata:=20agrandar=20el=20c?=
+Subject: [PATCH 07/22] =?UTF-8?q?Pesta=C3=B1a=20Plata:=20agrandar=20el=20c?=
  =?UTF-8?q?hat=20e=20historial=20local=20de=20la=20conversaci=C3=B3n?=
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -4099,7 +4099,7 @@ index 791ea8a..2cee61f 100644
 From 05b9ad0894d7422a3123551b89b309777eda2aba Mon Sep 17 00:00:00 2001
 From: Lucas <lucasgigli3@gmail.com>
 Date: Wed, 30 Sep 2026 23:13:01 -0300
-Subject: [PATCH 08/20] =?UTF-8?q?Pesta=C3=B1a=20Plata:=20el=20bot=C3=B3n?=
+Subject: [PATCH 08/22] =?UTF-8?q?Pesta=C3=B1a=20Plata:=20el=20bot=C3=B3n?=
  =?UTF-8?q?=20de=20agrandar=20con=20texto=20y=20en=20naranja?=
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -4177,7 +4177,7 @@ index b487a5e..e983567 100644
 From dc4ab4cf9f001e33e42b79fdfafc937da0cce072 Mon Sep 17 00:00:00 2001
 From: Lucas <lucasgigli3@gmail.com>
 Date: Wed, 30 Sep 2026 23:17:23 -0300
-Subject: [PATCH 09/20] =?UTF-8?q?Bot=C3=B3n=20en=20el=20encabezado=20de=20?=
+Subject: [PATCH 09/22] =?UTF-8?q?Bot=C3=B3n=20en=20el=20encabezado=20de=20?=
  =?UTF-8?q?la=20isla:=20abre=20el=20chat=20de=20Plata=20en=20grande?=
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -4279,7 +4279,7 @@ index 2cee61f..416788e 100644
 From d168c3b1df9f0d0e0a178a2bec6ddec99f877c28 Mon Sep 17 00:00:00 2001
 From: Lucas <lucasgigli3@gmail.com>
 Date: Thu, 1 Oct 2026 21:31:50 -0300
-Subject: [PATCH 10/20] =?UTF-8?q?Isla=20m=C3=A1s=20fluida:=20ventana=20de?=
+Subject: [PATCH 10/22] =?UTF-8?q?Isla=20m=C3=A1s=20fluida:=20ventana=20de?=
  =?UTF-8?q?=20tama=C3=B1o=20fijo,=20anclaje=20y=20deslizamiento=20al=20sol?=
  =?UTF-8?q?tar?=
 MIME-Version: 1.0
@@ -5586,7 +5586,7 @@ index 416788e..debb686 100644
 From 42a905cac32e14abd26643bf18e8ae15e8d46deb Mon Sep 17 00:00:00 2001
 From: Lucas <lucasgigli3@gmail.com>
 Date: Thu, 1 Oct 2026 21:32:36 -0300
-Subject: [PATCH 11/20] =?UTF-8?q?Pesta=C3=B1a=20Plata:=20conciliar=20un=20?=
+Subject: [PATCH 11/22] =?UTF-8?q?Pesta=C3=B1a=20Plata:=20conciliar=20un=20?=
  =?UTF-8?q?resumen=20con=20Claude=20Code,=20con=20el=20plan=20y=20no=20la?=
  =?UTF-8?q?=20API?=
 MIME-Version: 1.0
@@ -7228,7 +7228,7 @@ index 851e6da..53b99a0 100644
 From 71fb67002d30c12e7808bbb1548cbe9eec850477 Mon Sep 17 00:00:00 2001
 From: Lucas <lucasgigli3@gmail.com>
 Date: Thu, 1 Oct 2026 22:01:26 -0300
-Subject: [PATCH 12/20] =?UTF-8?q?Pesta=C3=B1a=20Plata:=20sin=20sesi=C3=B3n?=
+Subject: [PATCH 12/22] =?UTF-8?q?Pesta=C3=B1a=20Plata:=20sin=20sesi=C3=B3n?=
  =?UTF-8?q?=20de=20Claude=20Code,=20Reintentar=20en=20vez=20de=20mand?=
  =?UTF-8?q?=C3=A1rselo=20al=20agente?=
 MIME-Version: 1.0
@@ -7325,7 +7325,7 @@ index 53b99a0..fde7b29 100644
 From fcb9a85a1600172b861b74e8260577e1017d50dd Mon Sep 17 00:00:00 2001
 From: Lucas <lucasgigli3@gmail.com>
 Date: Thu, 1 Oct 2026 22:07:16 -0300
-Subject: [PATCH 13/20] =?UTF-8?q?Pesta=C3=B1a=20Plata:=20las=20respuestas?=
+Subject: [PATCH 13/22] =?UTF-8?q?Pesta=C3=B1a=20Plata:=20las=20respuestas?=
  =?UTF-8?q?=20del=20agente=20con=20formato=20(tablas,=20negritas,=20listas?=
  =?UTF-8?q?)?=
 MIME-Version: 1.0
@@ -7694,7 +7694,7 @@ index fde7b29..09465b3 100644
 From 27d8a7472d2e8735e30bee24dd325d622251047c Mon Sep 17 00:00:00 2001
 From: Lucas <lucasgigli3@gmail.com>
 Date: Thu, 1 Oct 2026 22:26:24 -0300
-Subject: [PATCH 14/20] =?UTF-8?q?Buscar=20claude.exe=20tambi=C3=A9n=20en?=
+Subject: [PATCH 14/22] =?UTF-8?q?Buscar=20claude.exe=20tambi=C3=A9n=20en?=
  =?UTF-8?q?=20la=20carpeta=20del=20paquete=20de=20la=20app=20(MSIX)?=
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -7757,7 +7757,7 @@ index 3b73768..83bbfae 100644
 From 11810d3699dc676d109b16b76a1eed171f3fdcf7 Mon Sep 17 00:00:00 2001
 From: Lucas <lucasgigli3@gmail.com>
 Date: Thu, 1 Oct 2026 22:44:34 -0300
-Subject: [PATCH 15/20] Conciliar: de 8 minutos a 50 segundos, y el resultado
+Subject: [PATCH 15/22] Conciliar: de 8 minutos a 50 segundos, y el resultado
  le llega al agente
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -7938,7 +7938,7 @@ index 09465b3..acf043e 100644
 From 3dec5c1ed16a1d07a0e8338f5cbe588e24f420f9 Mon Sep 17 00:00:00 2001
 From: Lucas <lucasgigli3@gmail.com>
 Date: Thu, 1 Oct 2026 23:00:01 -0300
-Subject: [PATCH 16/20] =?UTF-8?q?Pesta=C3=B1a=20Plata:=20bot=C3=B3n=20Modi?=
+Subject: [PATCH 16/22] =?UTF-8?q?Pesta=C3=B1a=20Plata:=20bot=C3=B3n=20Modi?=
  =?UTF-8?q?ficar=20en=20las=20propuestas?=
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -7977,7 +7977,7 @@ index acf043e..16d0deb 100644
 From 1b0ad6f6a36621bb06455d449e463461058979de Mon Sep 17 00:00:00 2001
 From: Lucas <lucasgigli3@gmail.com>
 Date: Thu, 1 Oct 2026 23:23:35 -0300
-Subject: [PATCH 17/20] =?UTF-8?q?Encontrar=20claude.exe=20con=20la=20estru?=
+Subject: [PATCH 17/22] =?UTF-8?q?Encontrar=20claude.exe=20con=20la=20estru?=
  =?UTF-8?q?ctura=20nueva=20de=20la=20app=20(<versi=C3=B3n>\<hash>\)?=
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -8034,7 +8034,7 @@ index 83bbfae..9858961 100644
 From 6a9b62ffdb16422d645e272068e50b87b5d015fd Mon Sep 17 00:00:00 2001
 From: Lucas <lucasgigli3@gmail.com>
 Date: Sat, 3 Oct 2026 14:14:49 -0300
-Subject: [PATCH 18/20] Plata lista sola: chequeo de piezas y "Conectar Claude
+Subject: [PATCH 18/22] Plata lista sola: chequeo de piezas y "Conectar Claude
  Code" sin terminal
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -9446,7 +9446,7 @@ index 16d0deb..4c6b4d0 100644
 From cfdcd05d7dc9b6832c3b541c93d5181ac1c8bf98 Mon Sep 17 00:00:00 2001
 From: Lucas <lucasgigli3@gmail.com>
 Date: Sat, 3 Oct 2026 14:59:45 -0300
-Subject: [PATCH 19/20] =?UTF-8?q?Plata:=20conciliar=20tambi=C3=A9n=20el=20?=
+Subject: [PATCH 19/22] =?UTF-8?q?Plata:=20conciliar=20tambi=C3=A9n=20el=20?=
  =?UTF-8?q?extracto=20de=20la=20cuenta=20con=20Claude=20Code?=
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -9874,7 +9874,7 @@ index 4c6b4d0..245e97c 100644
 From c38875cbd5d8d5e110965e8de38f95f1e291c1fb Mon Sep 17 00:00:00 2001
 From: Lucas <lucasgigli3@gmail.com>
 Date: Sat, 3 Oct 2026 18:51:21 -0300
-Subject: [PATCH 20/20] Listo: el extracto de la cuenta como pieza opcional del
+Subject: [PATCH 20/22] Listo: el extracto de la cuenta como pieza opcional del
  chequeo
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -10026,6 +10026,1863 @@ index 245e97c..dee20eb 100644
      ready.classList.toggle("all-ok", r.falta === null && !connecting && !connectedFlash);
      renderFix(r);
      retryButtonSync();
+-- 
+2.53.0.windows.2
+
+
+From 8111e04537d8477f2fe96f5c87abfb4485da512d Mon Sep 17 00:00:00 2001
+From: Lucas <lucasgigli3@gmail.com>
+Date: Sat, 3 Oct 2026 22:02:25 -0300
+Subject: [PATCH 21/22] =?UTF-8?q?Pesta=C3=B1a=20Plata:=20varias=20l=C3=ADn?=
+ =?UTF-8?q?eas=20con=20Shift+Enter,=20y=20el=20micr=C3=B3fono=20dice=20por?=
+ =?UTF-8?q?=20qu=C3=A9=20no=20dicta?=
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+- El campo es un textarea: Enter envía, Shift+Enter baja de renglón, crece
+  hasta seis líneas y vuelve a una al enviar.
+- El micrófono abre el dictado de Windows (Win+H), que necesita el
+  "Reconocimiento de voz en línea". En la PC de Lucas está apagado (la clave
+  OnlineSpeechPrivacy ni existe) y el botón no hacía nada visible. Ahora lo
+  revisa antes y, si falta, muestra "Activar voz en línea" (abre
+  ms-settings:privacy-speech) y "Probar igual".
+
+Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+---
+ windows/src-tauri/src/island.rs | 28 +++++++++++++++++
+ windows/src-tauri/src/lib.rs    | 17 +++++++++--
+ windows/src/core/bridge.ts      |  5 ++-
+ windows/src/style.css           | 18 +++++++++++
+ windows/src/views/plata.ts      | 54 ++++++++++++++++++++++++++++-----
+ 5 files changed, 111 insertions(+), 11 deletions(-)
+
+diff --git a/windows/src-tauri/src/island.rs b/windows/src-tauri/src/island.rs
+index ca957ad..3821d89 100644
+--- a/windows/src-tauri/src/island.rs
++++ b/windows/src-tauri/src/island.rs
+@@ -817,6 +817,26 @@ pub fn set_ignore_cursor(app: &AppHandle, ignore: bool) {
+     }
+ }
+ 
++/// Is Windows online speech recognition on? Voice typing (Win+H) needs it:
++/// HKCU\Software\Microsoft\Speech_OneCore\Settings\OnlineSpeechPrivacy, HasAccepted = 1.
++pub fn online_speech_on() -> bool {
++    use std::os::windows::process::CommandExt;
++    std::process::Command::new("reg")
++        .args(["query", r"HKCU\Software\Microsoft\Speech_OneCore\Settings\OnlineSpeechPrivacy", "/v", "HasAccepted"])
++        .creation_flags(0x0800_0000) // CREATE_NO_WINDOW
++        .output()
++        .map(|o| online_speech_accepted(&String::from_utf8_lossy(&o.stdout)))
++        .unwrap_or(false)
++}
++
++/// `reg query` output → HasAccepted is 1.
++fn online_speech_accepted(out: &str) -> bool {
++    out.lines()
++        .find(|l| l.trim_start().starts_with("HasAccepted"))
++        .and_then(|l| l.split_whitespace().last())
++        .is_some_and(|v| v.eq_ignore_ascii_case("0x1"))
++}
++
+ /// Windows voice typing (Win+H) into the island's focused text field. The page
+ /// focuses the field first; this lets the window take focus and presses the keys.
+ pub fn start_dictation(app: &AppHandle) {
+@@ -853,6 +873,14 @@ pub fn start_dictation(app: &AppHandle) {
+ mod tests {
+     use super::*;
+ 
++    #[test]
++    fn online_speech_reads_reg_output() {
++        let on = "\r\nHKEY_CURRENT_USER\\Software\\Microsoft\\Speech_OneCore\\Settings\\OnlineSpeechPrivacy\r\n    HasAccepted    REG_DWORD    0x1\r\n";
++        assert!(online_speech_accepted(on));
++        assert!(!online_speech_accepted(&on.replace("0x1", "0x0")));
++        assert!(!online_speech_accepted(""));
++    }
++
+     const MON: Area = Area { x: 0, y: 0, w: 1920, h: 1080 };
+     const WA: Area = Area { x: 0, y: 0, w: 1920, h: 1032 };
+     const PW: i32 = 1140;
+diff --git a/windows/src-tauri/src/lib.rs b/windows/src-tauri/src/lib.rs
+index 78177a6..bac6317 100644
+--- a/windows/src-tauri/src/lib.rs
++++ b/windows/src-tauri/src/lib.rs
+@@ -368,10 +368,22 @@ async fn plata_claude_connect_cancel() -> bool {
+     tauri::async_runtime::spawn_blocking(claude_code::connect_cancel).await.unwrap_or(false)
+ }
+ 
+-/// Windows voice typing into the focused chat field.
++/// Windows voice typing into the focused chat field. Win+H needs online speech
++/// recognition: with it off, Windows opens nothing useful, so say so instead.
+ #[tauri::command]
+-fn start_dictation(app: AppHandle) {
++fn start_dictation(app: AppHandle, force: Option<bool>) -> Result<(), String> {
++    // force: "Probar igual", in case this Windows keeps the setting elsewhere.
++    if !force.unwrap_or(false) && !island::online_speech_on() {
++        return Err("sin_voz_en_linea".into());
++    }
+     island::start_dictation(&app);
++    Ok(())
++}
++
++/// Settings → Privacy & security → Speech, where online speech recognition is turned on.
++#[tauri::command]
++fn open_speech_settings() {
++    let _ = Command::new("explorer").arg("ms-settings:privacy-speech").spawn();
+ }
+ 
+ #[tauri::command]
+@@ -544,6 +556,7 @@ pub fn run() {
+             plata_claude_connect_code,
+             plata_claude_connect_cancel,
+             start_dictation,
++            open_speech_settings,
+         ])
+         .setup(move |app| {
+             let handle = app.handle().clone();
+diff --git a/windows/src/core/bridge.ts b/windows/src/core/bridge.ts
+index b0a0c29..6ee7376 100644
+--- a/windows/src/core/bridge.ts
++++ b/windows/src/core/bridge.ts
+@@ -84,7 +84,10 @@ export const Bridge = {
+   /** A change to the app: opens Claude Code in the Plata repo with the request. */
+   openClaudeCode: (pedido: string) => callOrThrow<string>("open_claude_code", { pedido }),
+   /** Windows voice typing (Win+H) into the focused field. */
+-  startDictation: () => call<void>("start_dictation"),
++  /** Rejects with "sin_voz_en_linea" when Windows online speech recognition is off. */
++  startDictation: (force = false) => callOrThrow<void>("start_dictation", { force }),
++  /** Windows Settings → Privacy → Speech (to turn on online speech recognition). */
++  openSpeechSettings: () => call<void>("open_speech_settings"),
+ 
+   /** Window size for the Plata chat (tall or enlarged); 0 x 0 = the usual size. */
+   setPanel: (width: number, height: number) => call<void>("set_panel", { width, height }),
+diff --git a/windows/src/style.css b/windows/src/style.css
+index b4eede0..b9758c9 100644
+--- a/windows/src/style.css
++++ b/windows/src/style.css
+@@ -2252,3 +2252,21 @@ input[type="range"]::-webkit-slider-thumb {
+   padding-top: 6px;
+   border-top: 1px solid rgba(255, 255, 255, 0.06);
+ }
++
++/* Plata: a multi-line field (Shift+Enter) that grows up to six lines. */
++.chat-bar:has(.plata-input) {
++  align-items: flex-end;
++}
++
++.plata-input {
++  resize: none;
++  height: 18px;
++  max-height: 132px;
++  line-height: 18px;
++  padding: 0;
++  margin-block: 5px;
++  overflow-y: auto;
++  white-space: pre-wrap;
++  word-break: break-word;
++  scrollbar-width: thin;
++}
+diff --git a/windows/src/views/plata.ts b/windows/src/views/plata.ts
+index dee20eb..cc37dad 100644
+--- a/windows/src/views/plata.ts
++++ b/windows/src/views/plata.ts
+@@ -545,12 +545,18 @@ export function buildPlata(onSizeChange: () => void = () => {}): ViewHost {
+   setBigFromOutside = setBig;
+ 
+   const log = h("div", { class: "chat-log plata-log" });
+-  const input = h("input", {
+-    type: "text",
+-    class: "chat-input",
+-    placeholder: "Preguntale o pedile algo a Plata…",
++  // A textarea: Enter sends, Shift+Enter is a new line, and it grows with the text.
++  const input = h("textarea", {
++    class: "chat-input plata-input",
++    rows: "1",
++    placeholder: "Preguntale o pedile algo a Plata…  (Shift+Enter: otra línea)",
+     spellcheck: "false",
+-  }) as HTMLInputElement;
++  }) as HTMLTextAreaElement;
++  const autosize = () => {
++    input.style.height = "auto";
++    input.style.height = `${Math.min(input.scrollHeight, 132)}px`;
++  };
++  input.addEventListener("input", autosize);
+   const send = h("button", { class: "send-btn plata-send", title: "Enviar a Plata" }, svg(ICONS.arrowUp, 11));
+   const mic = h("button", { class: "plata-icon-btn", title: "Dictar (voz de Windows, Win+H)" }, svg(ICONS.mic, 15, { stroke: 1.7 }));
+   const toCode = h(
+@@ -680,6 +686,7 @@ export function buildPlata(onSizeChange: () => void = () => {}): ViewHost {
+     // new one (it rejects this one first), so nothing applies half-edited.
+     const modify = () => {
+       input.value = `Cambiá la propuesta #${p.id}: `;
++      autosize();
+       input.focus();
+       input.setSelectionRange(input.value.length, input.value.length);
+     };
+@@ -1428,6 +1435,7 @@ export function buildPlata(onSizeChange: () => void = () => {}): ViewHost {
+     const text = input.value;
+     if (!text.trim() && !pending.length) return;
+     input.value = "";
++    autosize();
+     void submit(text, { atts: takeAttachments() });
+   };
+   send.addEventListener("click", sendFromField);
+@@ -1441,15 +1449,45 @@ export function buildPlata(onSizeChange: () => void = () => {}): ViewHost {
+     renderAttachments();
+   });
+   input.addEventListener("keydown", (e) => {
+-    if ((e as KeyboardEvent).key === "Enter") {
++    const k = e as KeyboardEvent;
++    // Enter sends; Shift+Enter (the textarea's default) adds a line. Not while an
++    // IME composes, so an accented letter never sends half a word.
++    if (k.key === "Enter" && !k.shiftKey && !k.isComposing) {
+       e.preventDefault();
+       sendFromField();
+     }
+     e.stopPropagation(); // Escape closes the island, not the chat
+   });
+-  mic.addEventListener("click", () => {
++  mic.addEventListener("click", async () => {
+     input.focus();
+-    void Bridge.startDictation();
++    try {
++      await Bridge.startDictation();
++    } catch (e) {
++      if (!String(e).includes("sin_voz_en_linea")) {
++        note(errText(e), "plata-error");
++        return;
++      }
++      // Windows voice typing (Win+H) needs online speech recognition, which is off.
++      const box = h(
++        "div",
++        { class: "plata-error plata-cc-error" },
++        h("span", {
++          text:
++            "El dictado de Windows necesita el «Reconocimiento de voz en línea», que está apagado. " +
++            "Activalo en la página que se abre y volvé a tocar el micrófono.",
++        }),
++      );
++      box.append(
++        ccButton("Activar voz en línea", true, () => {
++          void Bridge.openSpeechSettings();
++        }),
++        ccButton("Probar igual", false, () => {
++          input.focus();
++          void Bridge.startDictation(true).catch(() => {});
++        }),
++      );
++      row(box);
++    }
+   });
+   toCode.addEventListener("click", async () => {
+     const pedido = input.value.trim();
+-- 
+2.53.0.windows.2
+
+
+From 835105498e4e2be708cf58cfb1dcde7e4727355d Mon Sep 17 00:00:00 2001
+From: Lucas <lucasgigli3@gmail.com>
+Date: Sat, 3 Oct 2026 23:37:25 -0300
+Subject: [PATCH 22/22] Panel grande para los chats: lista a la izquierda, chat
+ a la derecha
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+- El modo grande ya no es solo de Plata: cada chat (Plata y Claude) tiene
+  su botón Agrandar/Achicar en el mismo lugar de su encabezado. Agrandado,
+  la isla muestra a la izquierda la lista de chats (buscador, "+" para una
+  conversación nueva, avatar con los ojitos de Mochi, nombre, última línea
+  sin Markdown, hora relativa, punto si está trabajando y aviso si Plata
+  tiene una propuesta esperando) y a la derecha el chat activo, que es la
+  misma vista de siempre. Cambiar de chat desde la lista no mueve la isla:
+  solo hace un crossfade corto del panel derecho.
+- En el panel se oculta el encabezado global; ajustes y sonido quedan al
+  pie de la lista, junto a Mochi.
+- Se saca el botón del encabezado que abría Plata en grande.
+- La preferencia se guarda en "chat-big" (toma la vieja "plata-big").
+- Plata: las respuestas pueden terminar con un bloque ```acciones
+  (etiqueta => mensaje, hasta 3): no se dibuja, ni a medias mientras
+  llega, y al fin del turno se vuelve una fila de chips bajo la respuesta.
+  Un chip manda su mensaje; cualquier mensaje nuevo deshabilita las filas
+  anteriores.
+
+Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+---
+ windows/src/core/layout.ts    |  36 ++-
+ windows/src/core/state.ts     |   2 +
+ windows/src/island/island.ts  |  26 +-
+ windows/src/style.css         | 435 ++++++++++++++++++++++++++++++++--
+ windows/src/views/chat.ts     |  33 ++-
+ windows/src/views/chats.ts    | 358 ++++++++++++++++++++++++++++
+ windows/src/views/icons.ts    |   4 +-
+ windows/src/views/markdown.ts |  79 +++++-
+ windows/src/views/plata.ts    | 141 ++++++-----
+ windows/src/views/views.ts    |  21 +-
+ 10 files changed, 1023 insertions(+), 112 deletions(-)
+ create mode 100644 windows/src/views/chats.ts
+
+diff --git a/windows/src/core/layout.ts b/windows/src/core/layout.ts
+index 2edb8ea..cae43af 100644
+--- a/windows/src/core/layout.ts
++++ b/windows/src/core/layout.ts
+@@ -117,14 +117,31 @@ export function islandY(h: number, dock: Dock): number {
+   return Math.min(Math.max(a.y, 0), Math.max(0, a.h - h));
+ }
+ 
+-/** Size of the enlarged Plata chat (the ⤢ button), or null when it is normal. */
+-let plataBig: { w: number; h: number } | null = null;
+-export function setPlataBig(size: { w: number; h: number } | null): void {
+-  plataBig = size;
++/** The views that are chats: they get a size button and the large panel. */
++export const CHAT_VIEWS: ReadonlySet<IslandViewName> = new Set<IslandViewName>(["plata", "prompt"]);
++export function isChatView(v: IslandViewName): boolean {
++  return CHAT_VIEWS.has(v);
+ }
+-export function plataBigSize(): { w: number; h: number } | null {
+-  return plataBig;
++
++/**
++ * Size of the large chat panel (the size button of any chat), or null when the
++ * chats are normal. One setting for every chat: switching chats from the
++ * panel's list keeps the island where it is.
++ */
++let chatBig: { w: number; h: number } | null = null;
++export function setChatBig(size: { w: number; h: number } | null): void {
++  chatBig = size;
++}
++export function chatBigSize(): { w: number; h: number } | null {
++  return chatBig;
+ }
++/** True when this view is drawn as the large panel (list on the left, chat on the right). */
++export function isBigLayout(mode: IslandMode, view: IslandViewName): boolean {
++  return mode === "expanded" && chatBig !== null && CHAT_VIEWS.has(view);
++}
++
++/** Width of the chat list on the left of the large panel (style.css #chat-side). */
++export const CHAT_SIDE_W = 240;
+ 
+ /** Square the corners that touch the screen edge, round the rest. */
+ export function islandRadius(r: number, dock: Dock): string {
+@@ -193,7 +210,7 @@ export function islandSize(
+     case "compact":
+       return { w: COMPACT_W, h: NOTCH_H };
+     case "expanded": {
+-      if (view === "plata" && plataBig) return { ...plataBig };
++      if (chatBig && CHAT_VIEWS.has(view)) return { ...chatBig };
+       const h = view === "prompt" ? chatPromptHeight(chatCount) : VIEW_LAYOUTS[view].height;
+       return { w: EXPANDED_W, h };
+     }
+@@ -221,6 +238,11 @@ export function botPosition(
+       return { cx: 40, cy: 16, diameter: 20, opacity: 1 };
+     case "expanded": {
+       const layout = VIEW_LAYOUTS[view];
++      // Large panel: Mochi sits in the foot of the chat list, next to the
++      // settings and sound buttons (style.css .chat-side-foot).
++      if (isBigLayout(mode, view)) {
++        return { cx: 10 + 22, cy: islandH - 10 - 22, diameter: 26, opacity: 1 };
++      }
+       if (view === "uploading") {
+         return {
+           cx: 36 + uploadProgress * 526,
+diff --git a/windows/src/core/state.ts b/windows/src/core/state.ts
+index 4a31905..612a6b7 100644
+--- a/windows/src/core/state.ts
++++ b/windows/src/core/state.ts
+@@ -32,6 +32,8 @@ export interface ChatMessage {
+   id: number;
+   role: "user" | "assistant";
+   content: string;
++  /** When it was sent or arrived (ms since epoch): the chat list shows it. */
++  at?: number;
+ }
+ 
+ export type PromptContext =
+diff --git a/windows/src/island/island.ts b/windows/src/island/island.ts
+index 44ae79d..ebcfb8b 100644
+--- a/windows/src/island/island.ts
++++ b/windows/src/island/island.ts
+@@ -6,7 +6,7 @@ import { Bridge, IS_TAURI, onDragDrop, onEvent } from "../core/bridge";
+ import {
+   EXPANDED_CORNER, EXPANDED_W, GROW_DAMPING, GROW_RESPONSE, NOTCH_W, PANEL_H, PANEL_W, SHRINK_MS,
+   ROUNDED_CORNER, botGlowColor, botGlowOpacity, botPosition, chatPromptHeight,
+-  islandRadius, islandSize, islandX, islandY, layoutDock, reducedMotion, setAnchor,
++  isBigLayout, islandRadius, islandSize, islandX, islandY, layoutDock, reducedMotion, setAnchor,
+   type Anchor, type IslandMode, type IslandViewName,
+ } from "../core/layout";
+ import { Sound } from "../core/sound";
+@@ -17,6 +17,7 @@ import { createMiniBot, pruneMiniBots, syncMiniBotStates, tickMiniBots } from ".
+ import { UploadCanvas } from "../upload/canvas";
+ import { USC, UploadSeq } from "../upload/sequence";
+ import { buildHeader, buildViews, type ViewActions, type ViewHost } from "../views/views";
++import { buildChatSide, onBigChange, restoreBig } from "../views/chats";
+ import { h } from "../views/dom";
+ import { IslandStateMachine } from "./fsm";
+ 
+@@ -46,6 +47,8 @@ export class Island {
+   private wakeStrip!: HTMLElement;
+ 
+   private header!: ViewHost;
++  /** The chat list on the left of the large panel (views/chats.ts). */
++  private chatSide!: { el: HTMLElement; sync(): void };
+   private views!: Map<IslandViewName, ViewHost>;
+   private uploadCanvas!: UploadCanvas;
+ 
+@@ -103,6 +106,9 @@ export class Island {
+     this.build();
+     this.wireFsm();
+     this.wireInput();
++    // Any chat's size button: the island animates to the panel and back.
++    onBigChange(() => this.animateGeometry());
++    restoreBig();
+     this.engine.onDizzy = () => this.handleDizzy();
+     this.greeting.onComplete = () => this.fsm.greetComplete();
+     State.subscribe(() => {
+@@ -199,7 +205,15 @@ export class Island {
+     this.views = buildViews(actions, () => this.animateGeometry());
+     this.viewsEl = h("div", { id: "views" });
+     for (const v of this.views.values()) this.viewsEl.append(v.el);
+-    this.contentEl = h("div", { id: "content" }, this.header.el, this.viewsEl);
++    // Large panel: the chat list on the left, the active chat's view on the
++    // right. In normal size the list is not displayed and the views fill it.
++    this.chatSide = buildChatSide(actions);
++    this.contentEl = h(
++      "div",
++      { id: "content" },
++      this.header.el,
++      h("div", { id: "main" }, this.chatSide.el, this.viewsEl),
++    );
+ 
+     // The drop sequence draws the card, the bar and its own Mochi. It sits under
+     // the header, which stays visible on top of it exactly as on macOS.
+@@ -959,6 +973,14 @@ export class Island {
+     this.contentEl.style.pointerEvents = expanded && !greetingActive ? "auto" : "none";
+     this.greetingCanvas.style.display = greetingActive ? "block" : "none";
+ 
++    // The large panel (list + chat) only while a chat is open enlarged. While
++    // the island closes the content keeps its layout as it fades out.
++    if (expanded) {
++      const big = isBigLayout(State.mode, State.view);
++      this.islandEl.classList.toggle("chat-big", big);
++      if (big) this.chatSide.sync();
++    }
++
+     this.header.sync();
+     for (const [name, view] of this.views) {
+       const on = name === State.view;
+diff --git a/windows/src/style.css b/windows/src/style.css
+index b9758c9..e851969 100644
+--- a/windows/src/style.css
++++ b/windows/src/style.css
+@@ -266,9 +266,18 @@ body {
+   color: var(--ink);
+ }
+ 
++/* Header, then the views; in the large panel the chat list sits left of them. */
++#main {
++  flex: 1 1 auto;
++  min-height: 0;
++  display: flex;
++  gap: 10px;
++}
++
+ #views {
+   position: relative;
+   flex: 1 1 auto;
++  min-width: 0;
+   min-height: 0;
+ }
+ 
+@@ -1386,18 +1395,51 @@ input[type="range"]::-webkit-slider-thumb {
+   color: #ff9e1b;
+ }
+ 
+-.plata-body {
+-  padding-top: 10px;
+-}
+-
+-.plata-head {
++/* A chat's header (chats.ts chatHead): the same in Plata and Claude, with the
++   size button always last, in the same place. */
++.chat-head {
+   display: flex;
+   align-items: center;
+   gap: 7px;
++  flex: none;
++  min-height: 24px;
+   font: 500 11.5px var(--font);
+   color: var(--dim-2, #9a9fa8);
+ }
+ 
++.chat-head .chat-av {
++  display: none;
++}
++
++.chat-head-title {
++  flex: 1 1 auto;
++  min-width: 0;
++  display: flex;
++  align-items: baseline;
++  gap: 5px;
++  white-space: nowrap;
++  overflow: hidden;
++}
++
++.chat-head-name {
++  flex: none;
++}
++
++.chat-head-sub {
++  min-width: 0;
++  overflow: hidden;
++  text-overflow: ellipsis;
++  color: var(--dim-3);
++}
++
++.chat-head-sub:not(:empty)::before {
++  content: "· ";
++}
++
++.chat-reset[hidden] {
++  display: none;
++}
++
+ /* Ready? One dot per piece under the header; quiet when everything is. */
+ .plata-ready {
+   display: flex;
+@@ -1517,14 +1559,6 @@ input[type="range"]::-webkit-slider-thumb {
+   outline-offset: 2px;
+ }
+ 
+-.plata-status-text {
+-  flex: 1 1 auto;
+-  min-width: 0;
+-  white-space: nowrap;
+-  overflow: hidden;
+-  text-overflow: ellipsis;
+-}
+-
+ .plata-link {
+   border: 0;
+   background: none;
+@@ -1822,28 +1856,383 @@ input[type="range"]::-webkit-slider-thumb {
+   background: rgba(255, 67, 61, 0.7);
+ }
+ 
+-/* The enlarge button: labelled and in Plata's orange, so it reads as a control. */
+-.plata-big-btn {
++/* The size button of every chat: labelled, so it reads as a control, in the
++   chat's own tint (--accent-rgb: Plata orange, Claude white). */
++.chat-size-btn {
++  --accent-rgb: 255, 158, 27;
+   display: inline-flex;
+   align-items: center;
+   gap: 5px;
++  flex: none;
+   height: 24px;
+   padding: 0 10px;
+   border-radius: 99px;
+-  border: 1px solid rgba(255, 158, 27, 0.55);
+-  background: rgba(255, 158, 27, 0.12);
+-  color: #ffb84d;
++  border: 1px solid rgba(var(--accent-rgb), 0.5);
++  background: rgba(var(--accent-rgb), 0.11);
++  color: rgb(var(--accent-rgb));
+   font: 500 11.5px var(--font);
+   cursor: default;
+ }
+ 
+-.plata-big-btn:hover {
+-  background: rgba(255, 158, 27, 0.22);
++.chat-size-btn:hover {
++  background: rgba(var(--accent-rgb), 0.2);
++}
++
++.chat-size-btn:focus-visible,
++.side-row:focus-visible,
++.side-icon-btn:focus-visible,
++.plata-act:focus-visible {
++  outline: 2px solid rgba(255, 255, 255, 0.55);
++  outline-offset: 2px;
++}
++
++/* Mochi's face as a round avatar (chats.ts avatar): Plata orange, Claude white. */
++.chat-av {
++  --s: 34px;
++  position: relative;
++  display: block;
++  flex: 0 0 var(--s);
++  width: var(--s);
++  height: var(--s);
++  border-radius: 50%;
++  background: radial-gradient(circle at 35% 30%, rgba(255, 255, 255, 0.35), rgba(255, 255, 255, 0) 60%), var(--av);
++}
++
++.chat-av i {
++  position: absolute;
++  top: 34%;
++  width: 13%;
++  height: 25%;
++  border-radius: 99px;
++  background: #101114;
++}
++
++.chat-av i:first-child {
++  left: 30%;
++}
++
++.chat-av i:last-child {
++  right: 30%;
++}
++
++/* ── Large chat panel: the list on the left, the chat on the right ─────── */
++
++#chat-side {
++  display: none;
++}
++
++#island.chat-big #header {
++  display: none;
++}
++
++#island.chat-big #content {
++  padding: 10px;
++}
++
++#island.chat-big #chat-side {
++  display: flex;
++  flex-direction: column;
++  flex: 0 0 240px;
++  width: 240px;
++  min-height: 0;
++  gap: 8px;
++}
++
++.side-top {
++  display: flex;
++  align-items: center;
++  gap: 6px;
++  padding: 2px 2px 4px;
++}
++
++.side-search-wrap {
++  flex: 1 1 auto;
++  min-width: 0;
++  display: flex;
++  align-items: center;
++  gap: 7px;
++  height: 32px;
++  padding: 0 10px;
++  border-radius: 12px;
++  background: rgba(255, 255, 255, 0.07);
++  color: var(--dim-3);
++}
++
++.side-search-wrap:focus-within {
++  background: rgba(255, 255, 255, 0.1);
++  color: var(--dim-2);
++}
++
++.side-search {
++  flex: 1 1 auto;
++  min-width: 0;
++  border: 0;
++  background: transparent;
++  color: var(--ink);
++  font: 400 12.5px var(--font);
++  outline: none;
++  cursor: text;
++}
++
++.side-search::placeholder {
++  color: var(--dim-3);
++}
++
++.side-search::-webkit-search-cancel-button {
++  display: none;
++}
++
++.side-icon-btn {
++  flex: none;
++  width: 30px;
++  height: 30px;
++  display: grid;
++  place-items: center;
++  border: 0;
++  border-radius: 10px;
++  background: transparent;
++  color: var(--dim-2);
++  cursor: default;
++}
++
++.side-icon-btn:hover {
++  background: rgba(255, 255, 255, 0.07);
++  color: var(--ink);
++}
++
++.side-list {
++  flex: 1 1 auto;
++  min-height: 0;
++  overflow-y: auto;
++  display: flex;
++  flex-direction: column;
++  gap: 2px;
++  scrollbar-width: thin;
++  scrollbar-color: rgba(255, 255, 255, 0.18) transparent;
++}
++
++.side-row {
++  display: flex;
++  align-items: center;
++  gap: 10px;
++  width: 100%;
++  padding: 9px 10px;
++  border: 0;
++  border-radius: 14px;
++  background: transparent;
++  color: inherit;
++  text-align: left;
++  font: inherit;
++  cursor: default;
++}
++
++.side-row[hidden] {
++  display: none;
++}
++
++.side-row:hover {
++  background: rgba(255, 255, 255, 0.04);
++}
++
++.side-row.on {
++  background: rgba(255, 255, 255, 0.07);
++}
++
++.side-text {
++  flex: 1 1 auto;
++  min-width: 0;
++  display: flex;
++  flex-direction: column;
++  gap: 3px;
++}
++
++.side-line {
++  display: flex;
++  align-items: center;
++  gap: 6px;
++  min-width: 0;
++}
++
++.side-name {
++  flex: 1 1 auto;
++  min-width: 0;
++  font: 600 13px var(--font);
++  color: var(--ink);
++  white-space: nowrap;
++  overflow: hidden;
++  text-overflow: ellipsis;
++}
++
++.side-time {
++  flex: none;
++  font: 400 11px var(--font);
++  color: var(--dim-3);
++  font-variant-numeric: tabular-nums;
++}
++
++.side-last {
++  flex: 1 1 auto;
++  min-width: 0;
++  font: 400 12px var(--font);
++  color: var(--dim);
++  white-space: nowrap;
++  overflow: hidden;
++  text-overflow: ellipsis;
++}
++
++.side-row.placeholder .side-last {
++  color: var(--dim-4);
++}
++
++/* Working: a breathing dot. Waiting for approval: an amber badge. */
++.side-busy {
++  flex: none;
++  width: 7px;
++  height: 7px;
++  border-radius: 50%;
++  background: #3b9eff;
++  box-shadow: 0 0 6px rgba(59, 158, 255, 0.7);
++  animation: pulse 1.2s ease-in-out infinite;
++}
++
++.side-badge {
++  flex: none;
++  min-width: 16px;
++  height: 16px;
++  padding: 0 4px;
++  border-radius: 99px;
++  background: var(--amber);
++  color: #1a1204;
++  font: 700 10px/16px var(--font);
++  text-align: center;
++}
++
++.side-busy[hidden],
++.side-badge[hidden],
++.side-empty[hidden] {
++  display: none;
++}
++
++.side-empty {
++  padding: 10px 12px;
++  font: 400 12px var(--font);
++  color: var(--dim-3);
++}
++
++/* The foot: Mochi (drawn by the island, layout.ts botPosition), settings, sound. */
++.chat-side-foot {
++  flex: none;
++  display: flex;
++  align-items: center;
++  gap: 4px;
++  height: 44px;
++  padding: 0 2px 0 0;
++}
++
++.side-mochi-slot {
++  flex: 0 0 48px;
++}
++
++.side-brand {
++  flex: 1 1 auto;
++  font: 500 12px var(--font);
++  color: var(--dim-3);
++}
++
++/* The chat on the right: the same view, laid out for the room it has. */
++#island.chat-big .chat-body {
++  padding: 14px 22px 16px;
++  gap: 8px;
++}
++
++#island.chat-big .chat-head {
++  min-height: 34px;
++  gap: 10px;
++  padding-bottom: 8px;
++  margin-bottom: 2px;
++  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
++}
++
++#island.chat-big .chat-head .chat-av {
++  display: block;
++}
++
++#island.chat-big .chat-head-title {
++  font-size: 12px;
++}
++
++#island.chat-big .chat-head-name {
++  font: 600 14px var(--font);
++  color: var(--ink);
++}
++
++#island.chat-big .chat-reset {
++  display: none;
++}
++
++#island.chat-big .card.wash::after {
++  background: radial-gradient(520px 360px at 50% 120%, var(--wash) 0%, rgba(0, 0, 0, 0) 70%);
++}
++
++/* Switching chats from the list: a short crossfade, nothing scales. */
++#island.chat-big .view {
++  transform: none;
++  transition: opacity 110ms var(--ease-out);
++}
++
++#island.chat-big .view.on {
++  transition: opacity 170ms var(--ease-out) 30ms;
++}
++
++/* ── Plata · the answer's suggested actions (an `acciones` block) ──────── */
++
++.plata-acts-row {
++  padding: 0 8px 2px 0;
++}
++
++.plata-acts {
++  display: flex;
++  flex-wrap: wrap;
++  gap: 6px;
++}
++
++.plata-act {
++  height: 26px;
++  padding: 0 11px;
++  border-radius: 99px;
++  border: 1px solid rgba(255, 255, 255, 0.16);
++  background: rgba(255, 255, 255, 0.04);
++  color: #d4d7dc;
++  font: 500 12px var(--font);
++  cursor: default;
++  white-space: nowrap;
++  max-width: 100%;
++  overflow: hidden;
++  text-overflow: ellipsis;
++}
++
++.plata-act:hover:not(:disabled) {
++  background: rgba(255, 255, 255, 0.09);
++  color: var(--ink);
++}
++
++.plata-act.first {
++  border-color: rgba(255, 158, 27, 0.5);
++  background: rgba(255, 158, 27, 0.1);
++  color: #ffb84d;
++}
++
++.plata-act.first:hover:not(:disabled) {
++  background: rgba(255, 158, 27, 0.18);
+   color: #ffd08a;
+ }
+ 
+-.header-plata-big {
+-  color: #ffb84d !important;
++.plata-act:disabled {
++  opacity: 0.4;
++}
++
++.plata-act.picked:disabled {
++  opacity: 0.75;
+ }
+ 
+ /* Windows' "Show animations" off: nothing moves inside the island either (its
+@@ -2053,7 +2442,7 @@ input[type="range"]::-webkit-slider-thumb {
+   gap: 6px;
+ }
+ 
+-.plata-is-big .plata-cc-difs {
++#island.chat-big .plata-cc-difs {
+   grid-template-columns: repeat(2, minmax(0, 1fr));
+ }
+ 
+diff --git a/windows/src/views/chat.ts b/windows/src/views/chat.ts
+index 2cd253f..4855a15 100644
+--- a/windows/src/views/chat.ts
++++ b/windows/src/views/chat.ts
+@@ -7,6 +7,7 @@ import { Bridge, type ChatContext } from "../core/bridge";
+ import { Sound } from "../core/sound";
+ import { State, type ChatMessage } from "../core/state";
+ import type { ViewHost } from "./views";
++import { chatHead, onBigChange, registerReset, reportChat } from "./chats";
+ 
+ let nextId = 1;
+ 
+@@ -48,24 +49,46 @@ export function buildPrompt(onHeightChange: () => void): ViewHost {
+   const send = h("button", { class: "send-btn", title: "Send" }, svg(ICONS.arrowUp, 11));
+   const bar = h("div", { class: "chat-bar" }, input, send);
+ 
++  // Same header as Plata's: name, "Nueva", and the size button in the same place.
++  const resetBtn = h("button", { type: "button", class: "plata-link chat-reset", text: "Nueva", title: "Empezar otra conversación" });
++  const head = chatHead("prompt", resetBtn);
++
+   const el = h(
+     "div",
+     { class: "view" },
+-    h("div", { class: "card wash chat-card" }, h("div", { class: "chat-body" }, chipRow, log, bar)),
++    h("div", { class: "card wash chat-card" }, h("div", { class: "chat-body" }, head.el, chipRow, log, bar)),
+   );
+   (el.querySelector(".card") as HTMLElement).style.setProperty("--wash", "rgba(99,102,241,0.5)");
+ 
+   let sending = false;
+   let renderedCount = -1;
+ 
++  /** A new conversation: the history, the dropped file it was about, and Claude's side. */
++  function reset() {
++    if (sending) return;
++    State.chatHistory = [];
++    State.droppedFile = null;
++    State.promptContext = null;
++    void Bridge.chatReset();
++    State.notify();
++    onHeightChange();
++    input.focus();
++  }
++  resetBtn.addEventListener("click", reset);
++  registerReset("prompt", reset);
++  onBigChange(() => {
++    log.scrollTop = log.scrollHeight;
++  });
++
+   async function submit() {
+     const query = input.value.trim();
+     if (!query || sending) return;
+     input.value = "";
+     sending = true;
++    reportChat("prompt", { busy: true });
+     Sound.play("send");
+ 
+-    State.chatHistory.push({ id: nextId++, role: "user", content: query });
++    State.chatHistory.push({ id: nextId++, role: "user", content: query, at: Date.now() });
+     State.stateOverride = "thinking";
+     State.notify();
+     onHeightChange();
+@@ -76,7 +99,7 @@ export function buildPrompt(onHeightChange: () => void): ViewHost {
+ 
+     try {
+       const reply = await Bridge.chatSend(query, context);
+-      State.chatHistory.push({ id: nextId++, role: "assistant", content: reply.text });
++      State.chatHistory.push({ id: nextId++, role: "assistant", content: reply.text, at: Date.now() });
+       State.stateOverride = null;
+       Sound.play("finish");
+     } catch (err) {
+@@ -86,7 +109,7 @@ export function buildPrompt(onHeightChange: () => void): ViewHost {
+       Sound.play("error");
+     } finally {
+       sending = false;
+-      State.notify();
++      reportChat("prompt", { busy: false });
+       onHeightChange();
+       input.focus();
+     }
+@@ -124,6 +147,8 @@ export function buildPrompt(onHeightChange: () => void): ViewHost {
+ 
+       input.placeholder = State.chatHistory.length === 0 ? "Ask me anything…" : "Continue…";
+       input.disabled = sending;
++      head.sub.textContent = State.settings.model.replace(/^claude-/, "");
++      resetBtn.hidden = State.chatHistory.length === 0 && !State.droppedFile;
+     },
+     focus() {
+       input.focus();
+diff --git a/windows/src/views/chats.ts b/windows/src/views/chats.ts
+new file mode 100644
+index 0000000..7e58f71
+--- /dev/null
++++ b/windows/src/views/chats.ts
+@@ -0,0 +1,358 @@
++// The island's chats (Plata and Claude) and the large panel they share.
++//
++// Every chat has a size button in its header. Enlarged, the island becomes a
++// messaging app: the list of chats on the left (search, "+", one row per chat
++// with its last line, time and state) and the active chat on the right. The
++// chat views themselves are the same ones as in normal size: the panel only
++// lays them out (style.css #island.chat-big). Picking another chat in the list
++// switches the view; both have the same size, so the island stays put and only
++// the right side crossfades. Only the chats are listed: the Claude Code
++// sessions the hooks follow stay in the overview.
++
++import { h, svg, clear } from "./dom";
++import { ICONS } from "./icons";
++import { State } from "../core/state";
++import { chatBigSize, setChatBig, type IslandViewName } from "../core/layout";
++import { plainLine } from "./markdown";
++import type { ViewActions } from "./views";
++
++export type ChatId = "plata" | "prompt";
++
++interface ChatInfo {
++  name: string;
++  /** Avatar body: Plata's orange, the island's white Mochi for Claude. */
++  color: string;
++  /** The size button's tint, as "r,g,b". */
++  accent: string;
++}
++
++const CHAT_INFO: Record<ChatId, ChatInfo> = {
++  plata: { name: "Plata", color: "#ff9e1b", accent: "255,158,27" },
++  prompt: { name: "Claude", color: "#f5f6f8", accent: "245,246,248" },
++};
++
++/** Order of the list: Plata first, it is the one the panel is mostly for. */
++const ORDER: ChatId[] = ["plata", "prompt"];
++
++// ── What each chat reports for the list ────────────────────────────────────
++
++export interface ChatMeta {
++  /** Last real message, as one line of plain text ("" = none yet). */
++  last: string;
++  /** The last message was Lucas's. */
++  mine: boolean;
++  /** When it was sent or arrived (ms since epoch). */
++  at: number | null;
++  /** Waiting for an answer. */
++  busy: boolean;
++  /** Plata: proposals waiting for Approve / Reject. */
++  waiting: number;
++}
++
++const meta: Record<ChatId, ChatMeta> = {
++  plata: { last: "", mine: false, at: null, busy: false, waiting: 0 },
++  prompt: { last: "", mine: false, at: null, busy: false, waiting: 0 },
++};
++
++export function reportChat(id: ChatId, patch: Partial<ChatMeta>): void {
++  Object.assign(meta[id], patch);
++  State.notify();
++}
++
++/** A message for the list: Markdown and `acciones` blocks dropped. */
++export function reportMessage(id: ChatId, text: string, mine: boolean): void {
++  const last = plainLine(text);
++  if (!last) return;
++  reportChat(id, { last, mine, at: Date.now() });
++}
++
++/** Claude's chat lives in State.chatHistory, which a file drop also resets. */
++function metaFor(id: ChatId): ChatMeta {
++  if (id !== "prompt") return meta[id];
++  const m = State.chatHistory.at(-1);
++  return {
++    ...meta.prompt,
++    last: m ? plainLine(m.content) : "",
++    mine: m?.role === "user",
++    at: m?.at ?? null,
++  };
++}
++
++/** "+" in the list and "Nueva" in each header: each chat says how it starts over. */
++const resets: Partial<Record<ChatId, () => void>> = {};
++export function registerReset(id: ChatId, fn: () => void): void {
++  resets[id] = fn;
++}
++
++// ── Large panel on / off ───────────────────────────────────────────────────
++
++const BIG_KEY = "chat-big";
++const OLD_BIG_KEY = "plata-big";
++
++const bigListeners = new Set<(on: boolean) => void>();
++export function onBigChange(fn: (on: boolean) => void): void {
++  bigListeners.add(fn);
++}
++
++export function isBig(): boolean {
++  return chatBigSize() !== null;
++}
++
++const sizeButtons: HTMLButtonElement[] = [];
++
++function syncSizeButtons() {
++  const on = isBig();
++  for (const b of sizeButtons) {
++    clear(b);
++    b.append(svg(on ? ICONS.collapse : ICONS.expand, 13, { stroke: 2 }), h("span", { text: on ? "Achicar" : "Agrandar" }));
++    b.title = on ? "Volver al tamaño normal" : "Agrandar el chat";
++    b.setAttribute("aria-label", b.title);
++    b.setAttribute("aria-pressed", on ? "true" : "false");
++  }
++}
++
++/**
++ * The panel takes most of the screen, and back. The size comes from the
++ * display the island is on, so it fits a laptop as well as 1080p; the window
++ * already has room for it (island.rs WINDOW_W/H), so this only animates the
++ * island inside the page.
++ */
++export function setBig(on: boolean): void {
++  if (on !== isBig()) {
++    if (on) {
++      const w = Math.min(1100, Math.max(640, window.screen.availWidth - 120));
++      const hh = Math.min(900, Math.max(440, window.screen.availHeight - 120));
++      setChatBig({ w, h: hh });
++    } else {
++      setChatBig(null);
++    }
++    try {
++      localStorage.setItem(BIG_KEY, on ? "1" : "0");
++    } catch {
++      // A preference, not data: nothing to do if storage is unavailable.
++    }
++  }
++  syncSizeButtons();
++  for (const fn of bigListeners) fn(on);
++  State.notify();
++}
++
++/** The last choice, kept across launches (and the old Plata-only one). */
++export function restoreBig(): void {
++  let v: string | null = null;
++  try {
++    v = localStorage.getItem(BIG_KEY) ?? localStorage.getItem(OLD_BIG_KEY);
++  } catch {
++    // Starts normal.
++  }
++  if (v === "1") setBig(true);
++}
++
++/** The chat's size button: same place and look in every chat, in its tint. */
++function sizeButton(id: ChatId): HTMLButtonElement {
++  const b = h("button", { type: "button", class: "chat-size-btn" }) as HTMLButtonElement;
++  b.style.setProperty("--accent-rgb", CHAT_INFO[id].accent);
++  b.addEventListener("click", () => setBig(!isBig()));
++  sizeButtons.push(b);
++  syncSizeButtons();
++  return b;
++}
++
++// ── Pieces ──────────────────────────────────────────────────────────────────
++
++/** A round avatar in the chat's colour, with Mochi's eyes. */
++export function avatar(id: ChatId, size: number): HTMLElement {
++  const el = h("span", { class: "chat-av", "aria-hidden": "true" }, h("i"), h("i"));
++  el.style.setProperty("--av", CHAT_INFO[id].color);
++  el.style.setProperty("--s", `${size}px`);
++  return el;
++}
++
++/**
++ * A chat's header: avatar (shown in the panel) + name + a dim detail, the
++ * chat's own links, and the size button, always last.
++ */
++export function chatHead(id: ChatId, ...extras: Node[]): { el: HTMLElement; sub: HTMLElement } {
++  const sub = h("span", { class: "chat-head-sub" });
++  const el = h(
++    "div",
++    { class: "chat-head" },
++    avatar(id, 30),
++    h("div", { class: "chat-head-title" }, h("span", { class: "chat-head-name", text: CHAT_INFO[id].name }), sub),
++    ...extras,
++    sizeButton(id),
++  );
++  return { el, sub };
++}
++
++const hhmm = new Intl.DateTimeFormat("es-AR", { hour: "2-digit", minute: "2-digit", hour12: false });
++const weekday = new Intl.DateTimeFormat("es-AR", { weekday: "short" });
++
++/** "14:32" today, "Ayer", the weekday this week, then the date. */
++export function relTime(at: number, now = Date.now()): string {
++  const d = new Date(at);
++  const today = new Date(now);
++  today.setHours(0, 0, 0, 0);
++  const day = new Date(at);
++  day.setHours(0, 0, 0, 0);
++  const days = Math.round((today.getTime() - day.getTime()) / 86_400_000);
++  if (days <= 0) return hhmm.format(d);
++  if (days === 1) return "Ayer";
++  if (days < 7) return weekday.format(d).replace(".", "");
++  return `${d.getDate()}/${d.getMonth() + 1}`;
++}
++
++// ── The list on the left ───────────────────────────────────────────────────
++
++interface Row {
++  el: HTMLButtonElement;
++  name: HTMLElement;
++  time: HTMLElement;
++  last: HTMLElement;
++  busy: HTMLElement;
++  badge: HTMLElement;
++}
++
++function makeRow(av: HTMLElement): Row {
++  const name = h("span", { class: "side-name" });
++  const time = h("span", { class: "side-time" });
++  const last = h("span", { class: "side-last" });
++  const busy = h("i", { class: "side-busy", title: "Trabajando" });
++  const badge = h("span", { class: "side-badge" });
++  const el = h(
++    "button",
++    { type: "button", class: "side-row" },
++    av,
++    h(
++      "span",
++      { class: "side-text" },
++      h("span", { class: "side-line" }, name, time),
++      h("span", { class: "side-line" }, last, busy, badge),
++    ),
++  ) as HTMLButtonElement;
++  return { el, name, time, last, busy, badge };
++}
++
++export function buildChatSide(actions: ViewActions): { el: HTMLElement; sync(): void } {
++  const search = h("input", {
++    type: "search",
++    class: "side-search",
++    placeholder: "Buscar",
++    spellcheck: "false",
++    "aria-label": "Buscar en los chats",
++  }) as HTMLInputElement;
++  const newBtn = h(
++    "button",
++    { type: "button", class: "side-icon-btn", title: "Conversación nueva", "aria-label": "Conversación nueva" },
++    svg(ICONS.plus, 13),
++  );
++  const list = h("nav", { class: "side-list", "aria-label": "Chats" });
++  const empty = h("div", { class: "side-empty", text: "Nada con eso." });
++
++  const rows = new Map<ChatId, Row>();
++  for (const id of ORDER) {
++    const row = makeRow(avatar(id, 36));
++    row.name.textContent = CHAT_INFO[id].name;
++    row.el.addEventListener("click", () => {
++      if (State.view !== id) {
++        actions.blip();
++        actions.setView(id);
++      }
++    });
++    rows.set(id, row);
++    list.append(row.el);
++  }
++  list.append(empty);
++
++  const gear = h(
++    "button",
++    { type: "button", class: "side-icon-btn", title: "Ajustes", "aria-label": "Ajustes", onclick: () => go("settings") },
++    svg(ICONS.gear, 14),
++  );
++  const sound = h("button", {
++    type: "button",
++    class: "side-icon-btn",
++    onclick: () => actions.toggleSound(),
++  });
++
++  function go(v: IslandViewName) {
++    actions.blip();
++    actions.setView(v);
++  }
++
++  const el = h(
++    "aside",
++    { id: "chat-side" },
++    h("div", { class: "side-top" }, h("div", { class: "side-search-wrap" }, svg(ICONS.search, 12, { stroke: 2 }), search), newBtn),
++    list,
++    // Mochi sits at the left of the foot (layout.ts botPosition).
++    h("div", { class: "chat-side-foot" }, h("span", { class: "side-mochi-slot" }), h("span", { class: "side-brand", text: "Coucou" }), gear, sound),
++  );
++
++  newBtn.addEventListener("click", () => {
++    const id = State.view as ChatId;
++    resets[id]?.();
++  });
++  search.addEventListener("input", () => sync());
++  search.addEventListener("keydown", (e) => {
++    const k = e as KeyboardEvent;
++    if (k.key === "Escape" && search.value) {
++      // Escape clears the search first; a second one closes the island.
++      search.value = "";
++      sync();
++      e.stopPropagation();
++    } else if (k.key === "Enter") {
++      // Enter opens the first chat that matches.
++      const first = ORDER.find((id) => !rows.get(id)!.el.hidden);
++      if (first) {
++        actions.setView(first);
++        search.blur();
++      }
++    } else if (k.key !== "Escape") {
++      e.stopPropagation();
++    }
++  });
++
++  function sync() {
++    const q = search.value.trim().toLocaleLowerCase("es");
++    const match = (...texts: string[]) => !q || texts.some((t) => t.toLocaleLowerCase("es").includes(q));
++    const now = Date.now();
++    let shown = 0;
++
++    for (const id of ORDER) {
++      const row = rows.get(id)!;
++      const m = metaFor(id);
++      const active = State.view === id;
++      const lastText = m.last ? `${m.mine ? "Vos: " : ""}${m.last}` : id === "plata" ? "Saldos, gastos, resúmenes…" : "Preguntale lo que quieras";
++      row.el.hidden = !match(CHAT_INFO[id].name, m.last);
++      if (!row.el.hidden) shown++;
++      row.el.classList.toggle("on", active);
++      if (active) row.el.setAttribute("aria-current", "page");
++      else row.el.removeAttribute("aria-current");
++      row.el.classList.toggle("placeholder", !m.last);
++      if (row.last.textContent !== lastText) row.last.textContent = lastText;
++      row.last.title = m.last;
++      row.time.textContent = m.at ? relTime(m.at, now) : "";
++      row.busy.hidden = !m.busy;
++      row.badge.hidden = m.waiting === 0;
++      row.badge.textContent = m.waiting > 1 ? String(m.waiting) : "!";
++      row.badge.title = m.waiting === 1 ? "Una propuesta espera tu aprobación" : `${m.waiting} propuestas esperan tu aprobación`;
++      const parts = [
++        CHAT_INFO[id].name,
++        m.waiting ? (m.waiting === 1 ? "propuesta esperando aprobación" : `${m.waiting} propuestas esperando aprobación`) : "",
++        m.busy ? "trabajando" : "",
++      ].filter(Boolean);
++      row.el.setAttribute("aria-label", `${parts.join(", ")}${m.last ? `. ${lastText}` : ""}`);
++    }
++
++    empty.hidden = shown > 0;
++
++    clear(sound);
++    sound.append(svg(State.settings.soundEnabled ? ICONS.speakerOn : ICONS.speakerOff, 14));
++    const soundLabel = State.settings.soundEnabled ? "Silenciar" : "Activar el sonido";
++    sound.title = soundLabel;
++    sound.setAttribute("aria-label", soundLabel);
++  }
++
++  return { el, sync };
++}
+diff --git a/windows/src/views/icons.ts b/windows/src/views/icons.ts
+index ce18a09..da754b8 100644
+--- a/windows/src/views/icons.ts
++++ b/windows/src/views/icons.ts
+@@ -2,9 +2,11 @@
+ // Drawn on a 24×24 grid so they read at the same optical size.
+ 
+ export const ICONS = {
+-  // enlarge / shrink the Plata chat, stroke
++  // enlarge / shrink a chat (the large panel), stroke
+   expand: "M14 4h6v6M10 20H4v-6M20 4l-7 7M4 20l7-7",
+   collapse: "M20 4l-6 6M14 4v6h6M4 20l6-6M10 20v-6H4",
++  // magnifying glass (search the chat list), stroke
++  search: "M10.5 4a6.5 6.5 0 1 0 0 13 6.5 6.5 0 0 0 0-13zM15.3 15.3 20 20",
+   // microphone (voice typing), stroke
+   mic: "M12 3.5a2.8 2.8 0 0 0-2.8 2.8v5.4a2.8 2.8 0 0 0 5.6 0V6.3A2.8 2.8 0 0 0 12 3.5zM6.5 11.2a5.5 5.5 0 0 0 11 0M12 16.8v3.7",
+   // terminal prompt (hand a change to Claude Code), stroke
+diff --git a/windows/src/views/markdown.ts b/windows/src/views/markdown.ts
+index ce4fffb..b540a8e 100644
+--- a/windows/src/views/markdown.ts
++++ b/windows/src/views/markdown.ts
+@@ -19,6 +19,83 @@ const NUMBERED = /^\s*\d+[.)]\s+(.*)$/;
+ // A money or plain number cell: right-aligned, tabular figures.
+ const NUMERIC = /^[\s(+−-]*(US\$|U\$S|\$|USD|ARS)?\s*[−-]?[\d.,]+(\s*(%|USD|ARS))?\)?\s*$/;
+ 
++// ── Suggested actions ─────────────────────────────────────────────────────
++// The agent may end an answer with a fenced block in the `acciones` language,
++// one `label => message` per line. It is never drawn as text: Plata turns it
++// into buttons (plata.ts) once the turn ends.
++
++const ACC_OPEN = /^\s*`{3,}\s*acciones\s*$/i;
++const FENCE_CLOSE = /^\s*`{3,}\s*$/;
++/** A fence still arriving: ``` followed by the start of "acciones". */
++const ACC_PARTIAL = /^\s*`{3,}\s*([a-z]+)$/i;
++
++export interface Accion {
++  label: string;
++  message: string;
++}
++
++const MAX_ACCIONES = 3;
++const MAX_LABEL = 40;
++const MAX_MESSAGE = 300;
++
++/**
++ * Splits the `acciones` blocks off an answer. An unclosed block (the answer
++ * still streaming) is cut from its fence to the end, so it never flashes.
++ */
++export function splitAcciones(text: string): { body: string; acciones: Accion[] } {
++  const lines = text.replace(/\r\n?/g, "\n").split("\n");
++  const body: string[] = [];
++  const acciones: Accion[] = [];
++  let inBlock = false;
++  for (let i = 0; i < lines.length; i++) {
++    const line = lines[i];
++    if (inBlock) {
++      if (FENCE_CLOSE.test(line)) {
++        inBlock = false;
++        continue;
++      }
++      const at = line.indexOf("=>");
++      if (at < 0) continue;
++      const label = line.slice(0, at).trim();
++      const message = line.slice(at + 2).trim();
++      if (!label || !message || label.length > MAX_LABEL || message.length > MAX_MESSAGE) continue;
++      if (acciones.length < MAX_ACCIONES) acciones.push({ label, message });
++      continue;
++    }
++    if (ACC_OPEN.test(line)) {
++      inBlock = true;
++      continue;
++    }
++    // The last line may be the fence itself, half-written.
++    const partial = i === lines.length - 1 ? ACC_PARTIAL.exec(line) : null;
++    if (partial && "acciones".startsWith(partial[1].toLowerCase())) continue;
++    body.push(line);
++  }
++  return { body: body.join("\n").trimEnd(), acciones };
++}
++
++/** The answer as one line of plain text, for previews (the chat list). */
++export function plainLine(text: string): string {
++  return splitAcciones(text)
++    .body.split("\n")
++    .filter((l) => !TABLE_SEP.test(l) && !/^\s*`{3,}/.test(l))
++    .map((l) =>
++      l
++        .replace(/^\s*#{1,6}\s+/, "")
++        .replace(/^\s*>\s?/, "")
++        .replace(/^\s*([-*•]|\d+[.)])\s+/, "")
++        .replace(/\|/g, " ")
++        .replace(/\[([^\]]+)\]\([^)]*\)/g, "$1")
++        .replace(/\*\*([^*]+)\*\*/g, "$1")
++        .replace(/`([^`]+)`/g, "$1")
++        .replace(/(^|[^\w*])\*([^*\s][^*]*)\*(?![\w*])/g, "$1$2")
++        .replace(/(^|[^\w_])_([^_\s][^_]*)_(?![\w_])/g, "$1$2"),
++    )
++    .join(" ")
++    .replace(/\s+/g, " ")
++    .trim();
++}
++
+ function cells(line: string): string[] {
+   let s = line.trim();
+   if (s.startsWith("|")) s = s.slice(1);
+@@ -122,7 +199,7 @@ function withInline<T extends HTMLElement>(el: T, text: string): T {
+ /** The agent's Markdown as elements, ready to put in a `.md` container. */
+ export function renderMarkdown(text: string): DocumentFragment {
+   const frag = document.createDocumentFragment();
+-  for (const b of parse(text)) {
++  for (const b of parse(splitAcciones(text).body)) {
+     switch (b.kind) {
+       case "p": {
+         const p = h("p");
+diff --git a/windows/src/views/plata.ts b/windows/src/views/plata.ts
+index cc37dad..d5ae687 100644
+--- a/windows/src/views/plata.ts
++++ b/windows/src/views/plata.ts
+@@ -28,9 +28,9 @@ import { ICONS } from "./icons";
+ import { Bridge, onEvent, type PlataAgentStatus, type PlataLoginEvent, type PlataReadiness } from "../core/bridge";
+ import { Sound } from "../core/sound";
+ import { State } from "../core/state";
+-import { plataBigSize, setPlataBig } from "../core/layout";
+-import { renderMarkdown } from "./markdown";
++import { renderMarkdown, splitAcciones, type Accion } from "./markdown";
+ import type { ViewHost } from "./views";
++import { chatHead, onBigChange, registerReset, reportChat, reportMessage } from "./chats";
+ 
+ type Propuesta = {
+   id: number;
+@@ -454,16 +454,10 @@ function hhmm(iso: string | null): string {
+   return d.toLocaleTimeString("es-AR", { hour: "2-digit", minute: "2-digit" });
+ }
+ 
+-/** Set by the Plata view once built: lets the island header open it enlarged. */
+-let setBigFromOutside: ((on: boolean) => void) | null = null;
+-export function plataSetBig(on: boolean): void {
+-  setBigFromOutside?.(on);
+-}
+-
+ /** Prefix for a request Claude Code could not do: the agent does it itself. */
+ const NO_DELEGAR = "Hacelo vos, sin delegar a Claude Code (no pudo).";
+ 
+-export function buildPlata(onSizeChange: () => void = () => {}): ViewHost {
++export function buildPlata(): ViewHost {
+   let sesionId = newSession();
+   let sending = false;
+   /** The last Claude Code run failed for lack of a login. */
+@@ -474,6 +468,8 @@ export function buildPlata(onSizeChange: () => void = () => {}): ViewHost {
+   let status: PlataAgentStatus | null = null;
+   // Per turn: the reply paragraph being filled and the running tools line.
+   let replyEl: HTMLElement | null = null;
++  /** The turn's last answer paragraph: its `acciones` become chips at `fin`. */
++  let turnReply: HTMLElement | null = null;
+   let toolsEl: HTMLElement | null = null;
+   let toolsSeen: string[] = [];
+   // Claude Code: the run in progress (one at a time) and the last attachments
+@@ -501,15 +497,10 @@ export function buildPlata(onSizeChange: () => void = () => {}): ViewHost {
+   /** A reconciliation that stopped for lack of a login: it runs again once connected. */
+   let afterLogin: { text: string; atts: Attachment[]; box: HTMLElement | null; btn: HTMLButtonElement | null } | null = null;
+ 
+-  const statusText = h("span", { class: "plata-status-text", text: "Plata" });
+-  const resetBtn = h("button", { class: "plata-link", text: "Nueva", title: "Empezar otra conversación" });
+-  const bigBtn = h(
+-    "button",
+-    { class: "plata-big-btn", title: "Agrandar el chat" },
+-    svg(ICONS.expand, 13, { stroke: 2 }),
+-    h("span", { text: "Agrandar" }),
+-  );
+-  const head = h("div", { class: "plata-head" }, statusText, resetBtn, bigBtn);
++  const resetBtn = h("button", { type: "button", class: "plata-link chat-reset", text: "Nueva", title: "Empezar otra conversación" });
++  // Name and model, "Nueva", and the size button (chats.ts: the same in every chat).
++  const head = chatHead("plata", resetBtn);
++  head.el.classList.add("plata-head");
+ 
+   // Under the header: one dot per piece the tab uses, and when one is
+   // missing, what fixes it (plata_ready.rs decides which goes first).
+@@ -518,31 +509,8 @@ export function buildPlata(onSizeChange: () => void = () => {}): ViewHost {
+   fixLine.hidden = true;
+   const ready = h("div", { class: "plata-ready" }, readyLine, fixLine);
+ 
+-  // ⤢: the chat takes most of the screen, and back. The size comes from the
+-  // display the island is on, so it fits on a laptop as well as on 1080p.
+-  function setBig(on: boolean) {
+-    if (on) {
+-      const w = Math.min(1100, Math.max(640, window.screen.availWidth - 120));
+-      const h = Math.min(900, Math.max(440, window.screen.availHeight - 120));
+-      setPlataBig({ w, h });
+-    } else {
+-      setPlataBig(null);
+-    }
+-    clear(bigBtn);
+-    bigBtn.append(svg(on ? ICONS.collapse : ICONS.expand, 13, { stroke: 2 }), h("span", { text: on ? "Achicar" : "Agrandar" }));
+-    bigBtn.title = on ? "Volver al tamaño normal" : "Agrandar el chat";
+-    el.classList.toggle("plata-is-big", on);
+-    try {
+-      localStorage.setItem("plata-big", on ? "1" : "0");
+-    } catch {
+-      // A preference, not data: nothing to do if storage is unavailable.
+-    }
+-    onSizeChange();
+-    State.notify();
+-    scroll();
+-  }
+-  bigBtn.addEventListener("click", () => setBig(plataBigSize() === null));
+-  setBigFromOutside = setBig;
++  // Enlarged or back (chats.ts setBig): the island resizes, the log stays at its end.
++  onBigChange(() => scroll());
+ 
+   const log = h("div", { class: "chat-log plata-log" });
+   // A textarea: Enter sends, Shift+Enter is a new line, and it grows with the text.
+@@ -572,15 +540,10 @@ export function buildPlata(onSizeChange: () => void = () => {}): ViewHost {
+   const el = h(
+     "div",
+     { class: "view" },
+-    h("div", { class: "card wash chat-card plata-card" }, h("div", { class: "chat-body plata-body" }, head, ready, log, attRow, bar)),
++    h("div", { class: "card wash chat-card plata-card" }, h("div", { class: "chat-body plata-body" }, head.el, ready, log, attRow, bar)),
+   );
+   const card = el.querySelector(".card") as HTMLElement;
+   card.style.setProperty("--wash", "rgba(255,158,27,0.30)");
+-  try {
+-    if (localStorage.getItem("plata-big") === "1") window.setTimeout(() => setBig(true), 0);
+-  } catch {
+-    // Starts normal.
+-  }
+ 
+   function placeholder(): string {
+     return pending.length ? "Enter manda: compará con Plata…" : lastText ? "Seguí…" : "Preguntale o pedile algo a Plata…";
+@@ -652,7 +615,7 @@ export function buildPlata(onSizeChange: () => void = () => {}): ViewHost {
+   }
+ 
+   function renderStatus() {
+-    statusText.textContent = status?.up && status.model ? `Plata · ${status.model}` : "Plata";
++    head.sub.textContent = status?.up && status.model ? status.model : "";
+   }
+ 
+   async function refreshStatus(): Promise<PlataAgentStatus> {
+@@ -673,11 +636,21 @@ export function buildPlata(onSizeChange: () => void = () => {}): ViewHost {
+     row(h("div", { class: cls, text }));
+   }
+ 
++  /** Proposals on screen still waiting for Approve / Reject: the chat list flags them. */
++  const waiting = new Set<number>();
++  function reportWaiting() {
++    reportChat("plata", { waiting: waiting.size });
++  }
++
+   /** Card for a proposal: what it does, and the two answers. */
+   function proposalCard(p: Propuesta) {
+     const amount = p.monto_ars != null ? `$ ${ars.format(Number(p.monto_ars))}` : "";
+     const actions = h("div", { class: "plata-actions" });
++    waiting.add(p.id);
++    reportWaiting();
+     const decide = (ok: boolean) => {
++      waiting.delete(p.id);
++      reportWaiting();
+       clear(actions);
+       actions.append(h("span", { class: "plata-decided", text: ok ? "Aprobada, aplicando…" : "Rechazada" }));
+       void submit(ok ? `Sí, aprobá la propuesta ${p.id}.` : `No, rechazá la propuesta ${p.id}.`);
+@@ -712,17 +685,51 @@ export function buildPlata(onSizeChange: () => void = () => {}): ViewHost {
+     row(card, "chat-row plata-prop-row");
+   }
+ 
++  /**
++   * The `acciones` block of an answer: one chip per action, under it. A chip
++   * sends its message as if Lucas had typed it; any message sent retires every
++   * row of chips (they stay, disabled, as a record).
++   */
++  function actionChips(reply: HTMLElement, acciones: Accion[]) {
++    const chips = h("div", { class: "plata-acts", role: "group", "aria-label": "Acciones sugeridas" });
++    acciones.forEach((a, i) => {
++      const b = h("button", {
++        type: "button",
++        class: i === 0 ? "plata-act first" : "plata-act",
++        text: a.label,
++        title: a.message,
++      }) as HTMLButtonElement;
++      b.addEventListener("click", () => {
++        if (sending || b.disabled) return;
++        b.classList.add("picked");
++        void submit(a.message);
++      });
++      chips.append(b);
++    });
++    const at = reply.closest(".chat-row");
++    const r = h("div", { class: "chat-row plata-acts-row" }, chips);
++    if (at) at.after(r);
++    else log.append(r);
++    scroll();
++  }
++
++  function retireActionChips() {
++    for (const b of log.querySelectorAll<HTMLButtonElement>(".plata-act")) b.disabled = true;
++  }
++
+   function onEvento(ev: Evento) {
+     switch (ev.tipo) {
+       case "texto": {
+         typing(false);
+         toolsEl = null;
+         if (!replyEl) replyEl = row(h("div", { class: "reply md" })).firstElementChild as HTMLElement;
++        turnReply = replyEl;
+         // Markdown, drawn: tables, bold, lists. The raw text is kept to append to.
+         const md = `${replyEl.dataset.raw ? replyEl.dataset.raw + "\n\n" : ""}${ev.texto}`;
+         replyEl.dataset.raw = md;
+         clear(replyEl);
+         replyEl.append(renderMarkdown(md));
++        reportMessage("plata", md, false);
+         scroll();
+         typing(sending);
+         break;
+@@ -775,6 +782,12 @@ export function buildPlata(onSizeChange: () => void = () => {}): ViewHost {
+         const secs = Math.round((ev.duracionMs ?? 0) / 1000);
+         const cost = known ? `US$ ${usd.format(total)}` : "costo sin precio";
+         row(h("div", { class: "plata-cost", text: `${cost} · ${secs} s` }), "chat-row plata-cost-row");
++        // The answer's suggested next steps, as buttons under it.
++        if (turnReply?.dataset.raw) {
++          const { acciones } = splitAcciones(turnReply.dataset.raw);
++          if (acciones.length) actionChips(turnReply, acciones);
++        }
++        turnReply = null;
+         break;
+       }
+     }
+@@ -1054,7 +1067,7 @@ export function buildPlata(onSizeChange: () => void = () => {}): ViewHost {
+ 
+   function busy(): void {
+     State.stateOverride = sending || ccRun ? "thinking" : null;
+-    State.notify();
++    reportChat("plata", { busy: sending || ccRun !== null });
+   }
+ 
+   const errText = (e: unknown) => String(e).replace(/^Error:\s*/, "");
+@@ -1101,7 +1114,9 @@ export function buildPlata(onSizeChange: () => void = () => {}): ViewHost {
+       return;
+     }
+     lastAtts = { text, atts };
++    retireActionChips();
+     if (opts.bubble !== false) {
++      reportMessage("plata", text.trim() || DEFAULT_ASK, true);
+       const bubble = h("div", { class: "bubble", text: text.trim() || DEFAULT_ASK });
+       bubble.append(h("div", { class: "plata-bubble-atts", text: atts.map(attachmentLabel).join(" · ") }));
+       row(bubble, "chat-row user");
+@@ -1209,7 +1224,10 @@ export function buildPlata(onSizeChange: () => void = () => {}): ViewHost {
+       Sound.play("finish");
+     } else {
+       // No datos.json: Claude Code answered something else (a question, a problem).
+-      if (ev.mensaje) row(h("div", { class: "reply", text: plain(ev.mensaje) }));
++      if (ev.mensaje) {
++        row(h("div", { class: "reply", text: plain(ev.mensaje) }));
++        reportMessage("plata", ev.mensaje, false);
++      }
+       else note("Claude Code terminó sin dejar el resultado.", "plata-error");
+       const informe = ev.informe;
+       if (informe) {
+@@ -1376,16 +1394,18 @@ export function buildPlata(onSizeChange: () => void = () => {}): ViewHost {
+     sending = true;
+     lastText = query;
+     replyEl = null;
++    turnReply = null;
+     toolsEl = null;
+     toolsSeen = [];
++    retireActionChips();
+     if (!opts.retry) {
++      reportMessage("plata", query, true);
+       const bubble = h("div", { class: "bubble", text: query });
+       if (atts.length) bubble.append(h("div", { class: "plata-bubble-atts", text: atts.map(attachmentLabel).join(" · ") }));
+       row(bubble, "chat-row user");
+     }
+     Sound.play("send");
+-    State.stateOverride = "thinking";
+-    State.notify();
++    busy();
+     typing(true);
+     try {
+       await Bridge.plataSend(texto, sesionId, files);
+@@ -1496,6 +1516,9 @@ export function buildPlata(onSizeChange: () => void = () => {}): ViewHost {
+       return;
+     }
+     input.value = "";
++    autosize();
++    retireActionChips();
++    reportMessage("plata", `→ Claude Code: ${pedido}`, true);
+     row(h("div", { class: "bubble", text: `→ Claude Code: ${pedido}` }), "chat-row user");
+     try {
+       const repo = await Bridge.openClaudeCode(pedido);
+@@ -1508,17 +1531,23 @@ export function buildPlata(onSizeChange: () => void = () => {}): ViewHost {
+       note(String(e).replace(/^Error:\s*/, ""), "plata-error");
+     }
+   });
+-  resetBtn.addEventListener("click", () => {
++  function reset() {
+     if (sending || ccRun) return;
+     sesionId = newSession();
+     lastText = "";
+     lastAtts = null;
+     pendingConc = null;
+     pending = [];
++    turnReply = null;
++    waiting.clear();
+     renderAttachments();
+     clear(log);
+     note("Conversación nueva.");
+-  });
++    reportChat("plata", { last: "", mine: false, at: null, waiting: 0 });
++    input.focus();
++  }
++  resetBtn.addEventListener("click", reset);
++  registerReset("plata", reset);
+ 
+   note("Preguntale por tus saldos, gastos o deudas, o pedile que registre algo. Lo que cambie datos te lo muestra antes, para que lo apruebes. Para cambios en la app, escribilos y tocá el botón de la terminal. Para revisar un resumen de tarjeta o el extracto de tu cuenta, soltá acá el PDF o la captura, o pegá el texto: lo hace Claude Code, incluido en tu plan.");
+ 
+diff --git a/windows/src/views/views.ts b/windows/src/views/views.ts
+index debb686..791ea8a 100644
+--- a/windows/src/views/views.ts
++++ b/windows/src/views/views.ts
+@@ -9,7 +9,7 @@ import { State, type AgentTask } from "../core/state";
+ import { washRGBA, type IslandViewName, type Wash } from "../core/layout";
+ import { createMiniBot, pruneMiniBots } from "../mochi/minibots";
+ import { buildPrompt } from "./chat";
+-import { buildPlata, plataSetBig } from "./plata";
++import { buildPlata } from "./plata";
+ import { buildChoose, buildUpload, buildUploading } from "./upload";
+ import { renderIntegrationCard, type IntegrationCardHooks } from "./integrations";
+ 
+@@ -91,21 +91,6 @@ export function buildHeader(actions: ViewActions): ViewHost {
+   const tabPlata = h("button", { class: "tab tab-plata", title: "Plata", onclick: () => go("plata") }, svg(ICONS.coin, 14, { stroke: 1.7 }));
+ 
+   const gearBtn = h("button", { title: "Settings", onclick: () => go("settings") }, svg(ICONS.gear, 14));
+-  // Straight to the Plata chat, enlarged, from any view. Enlarged first, then
+-  // the view: the island gets a single target and opens in one movement
+-  // instead of heading for the normal chat and then growing again.
+-  const bigChatBtn = h(
+-    "button",
+-    {
+-      class: "header-plata-big",
+-      title: "Chat de Plata en grande",
+-      onclick: () => {
+-        plataSetBig(true);
+-        go("plata");
+-      },
+-    },
+-    svg(ICONS.expand, 14, { stroke: 1.9 }),
+-  );
+   const soundBtn = h("button", { title: "Mute", onclick: () => actions.toggleSound() }, svg(ICONS.speakerOn, 14));
+ 
+   function go(v: IslandViewName) {
+@@ -117,7 +102,7 @@ export function buildHeader(actions: ViewActions): ViewHost {
+     "div",
+     { id: "header" },
+     h("div", { class: "tabs" }, tabHome, tabChat, tabPlata, tabDrop),
+-    h("div", { class: "header-actions" }, bigChatBtn, gearBtn, soundBtn),
++    h("div", { class: "header-actions" }, gearBtn, soundBtn),
+   );
+ 
+   return {
+@@ -522,7 +507,7 @@ export function buildViews(
+   map.set("note", buildNote());
+   map.set("settings", buildSettings(actions));
+   map.set("prompt", buildPrompt(onChatHeightChange));
+-  map.set("plata", buildPlata(onChatHeightChange));
++  map.set("plata", buildPlata());
+   map.set("upload", buildUpload());
+   map.set("uploading", buildUploading());
+   map.set("choose", buildChoose(actions));
 -- 
 2.53.0.windows.2
 
