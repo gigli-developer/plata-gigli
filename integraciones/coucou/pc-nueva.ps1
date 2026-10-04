@@ -51,10 +51,11 @@ function RefrescarPath {
 
 function Tiene($cmd) { [bool](Get-Command $cmd -ErrorAction SilentlyContinue) }
 
-function Winget($id, $extra) {
+# No puede llamarse "Winget": PowerShell no distingue mayúsculas y la función se llamaría a sí misma.
+function Instalar($id, $extra) {
   Write-Host "    winget install $id"
   $argumentos = @("install", "--id", $id, "-e", "--accept-source-agreements", "--accept-package-agreements") + $extra
-  & winget @argumentos
+  & winget.exe @argumentos
   # -1978335189 / -1978335135 = "ya está instalado" / "no hay versión nueva": no son errores.
   if ($LASTEXITCODE -ne 0 -and $LASTEXITCODE -ne -1978335189 -and $LASTEXITCODE -ne -1978335135) { Falla "winget no pudo instalar $id (código $LASTEXITCODE)." }
   RefrescarPath
@@ -87,24 +88,24 @@ function ValorEnv($archivo, $clave) {
 # ── 1. Requisitos ────────────────────────────────────────────────────────────
 Paso "Requisitos (Git, Node, Rust, Build Tools de C++)"
 RefrescarPath
-if (-not (Tiene winget)) {
+if (-not (Tiene winget.exe)) {
   Falla "No encuentro winget. Instalá 'App Installer' desde Microsoft Store y volvé a correr el script."
 }
 
-if (Tiene git) { Ok "Git ya está." } else { Winget "Git.Git" @() }
+if (Tiene git) { Ok "Git ya está." } else { Instalar "Git.Git" @() }
 
 $nodeOk = $false
 if (Tiene node) { $nodeOk = [int]((node -v).TrimStart("v").Split(".")[0]) -ge 20 }
-if ($nodeOk) { Ok "Node $(node -v) ya está." } else { Winget "OpenJS.NodeJS.LTS" @() }
+if ($nodeOk) { Ok "Node $(node -v) ya está." } else { Instalar "OpenJS.NodeJS.LTS" @() }
 
 if (Tiene cargo) { Ok "Rust ya está." } else {
-  Winget "Rustlang.Rustup" @()
+  Instalar "Rustlang.Rustup" @()
   if (-not (Tiene cargo) -and (Tiene rustup)) { Correr rustup default stable-msvc }
 }
 
 if (TieneMsvc) { Ok "Build Tools de C++ ya están." } else {
   Aviso "Las Build Tools pesan unos 3 GB y tardan. Windows va a pedir permiso de administrador."
-  Winget "Microsoft.VisualStudio.2022.BuildTools" @("--override",
+  Instalar "Microsoft.VisualStudio.2022.BuildTools" @("--override",
     "--passive --wait --norestart --add Microsoft.VisualStudio.Workload.VCTools --includeRecommended")
   if (-not (TieneMsvc)) { Falla "Las Build Tools no quedaron instaladas. Reiniciá la PC y volvé a correr el script." }
 }
