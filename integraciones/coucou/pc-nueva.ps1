@@ -69,7 +69,7 @@ function TieneMsvc {
 
 # Pone CLAVE=valor en el .env, reemplazando la línea si ya existe.
 function EscribirEnv($archivo, $clave, $valor) {
-  $lineas = @(Get-Content $archivo)
+  $lineas = @(Get-Content $archivo -Encoding UTF8)
   $hay = $false
   $lineas = $lineas | ForEach-Object {
     if ($_ -match "^$clave=") { $hay = $true; "$clave=$valor" } else { $_ }
@@ -80,7 +80,7 @@ function EscribirEnv($archivo, $clave, $valor) {
 }
 
 function ValorEnv($archivo, $clave) {
-  $linea = Get-Content $archivo | Where-Object { $_ -match "^$clave=" } | Select-Object -First 1
+  $linea = Get-Content $archivo -Encoding UTF8 | Where-Object { $_ -match "^$clave=" } | Select-Object -First 1
   if ($linea) { return $linea.Substring($clave.Length + 1).Trim() }
   return ""
 }
@@ -141,19 +141,32 @@ try {
   $envFile = Join-Path $Agentes ".env"
   if (-not (Test-Path $envFile)) { Copy-Item (Join-Path $Agentes ".env.example") $envFile }
 
-  if (-not (ValorEnv $envFile "SUPABASE_ANON_KEY")) {
-    Write-Host "    Falta SUPABASE_ANON_KEY: Supabase → proyecto dsocdpxlvcufitvovydr → Settings → API → anon public."
-    Write-Host "    (También está como NEXT_PUBLIC_SUPABASE_ANON_KEY en el .env.local de Plata de la PC vieja.)"
-    $anon = (Read-Host "    Pegala acá").Trim()
-    if ($anon) { EscribirEnv $envFile "SUPABASE_ANON_KEY" $anon } else { Aviso "Quedó vacía: el agente no va a arrancar hasta que la completes en $envFile." }
+  # Valida la forma: el dashboard de Supabase muestra la key tapada con puntitos (eyJhbGci••••) hasta
+  # que tocás "Reveal", y copiar eso deja basura en el .env que recién explota en el login.
+  $formaAnon = '^(eyJ[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+|sb_publishable_[A-Za-z0-9_-]+)$'
+  $formaAnthropic = '^sk-ant-[A-Za-z0-9_-]+$'
+
+  if ((ValorEnv $envFile "SUPABASE_ANON_KEY") -notmatch $formaAnon) {
+    Write-Host "    Falta SUPABASE_ANON_KEY: Supabase → proyecto dsocdpxlvcufitvovydr → Settings → API → anon public"
+    Write-Host "    (tocá Reveal/Copy: si se ve con puntitos, está tapada). Empieza con eyJ y es una sola línea larga."
+    while ($true) {
+      $anon = (Read-Host "    Pegala acá").Trim()
+      if (-not $anon) { Aviso "Quedó vacía: el agente no va a arrancar hasta que la completes en $envFile."; break }
+      if ($anon -match $formaAnon) { EscribirEnv $envFile "SUPABASE_ANON_KEY" $anon; Ok "Guardada."; break }
+      Aviso "Eso no parece la key (tiene espacios, puntitos u otros caracteres raros). Probá de nuevo, o Enter para saltear."
+    }
   } else { Ok "SUPABASE_ANON_KEY ya está." }
 
-  if (-not (ValorEnv $envFile "ANTHROPIC_API_KEY") -and -not (ValorEnv $envFile "OPENROUTER_API_KEY")) {
+  if ((ValorEnv $envFile "ANTHROPIC_API_KEY") -notmatch $formaAnthropic -and -not (ValorEnv $envFile "OPENROUTER_API_KEY")) {
     Write-Host "    Falta ANTHROPIC_API_KEY (la del agente, NO la de app_secrets). Copiala del .env de agentes de la PC vieja"
     Write-Host "    o creá una en https://console.anthropic.com/settings/keys"
-    $seguro = Read-Host "    Pegala acá (no se ve al escribir)" -AsSecureString
-    $clave = [Runtime.InteropServices.Marshal]::PtrToStringAuto([Runtime.InteropServices.Marshal]::SecureStringToBSTR($seguro)).Trim()
-    if ($clave) { EscribirEnv $envFile "ANTHROPIC_API_KEY" $clave } else { Aviso "Quedó vacía: completala en $envFile." }
+    while ($true) {
+      $seguro = Read-Host "    Pegala acá (no se ve al escribir)" -AsSecureString
+      $clave = [Runtime.InteropServices.Marshal]::PtrToStringAuto([Runtime.InteropServices.Marshal]::SecureStringToBSTR($seguro)).Trim()
+      if (-not $clave) { Aviso "Quedó vacía: completala en $envFile."; break }
+      if ($clave -match $formaAnthropic) { EscribirEnv $envFile "ANTHROPIC_API_KEY" $clave; Ok "Guardada ($($clave.Length) caracteres, empieza con sk-ant-)."; break }
+      Aviso "Recibí $($clave.Length) caracteres que no empiezan con sk-ant-. Probá de nuevo, o Enter para saltear."
+    }
   } else { Ok "La key del modelo ya está." }
 
   $sesion = Join-Path $Agentes ".sesion\supabase.json"
