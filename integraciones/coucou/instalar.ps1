@@ -1,4 +1,4 @@
-<#
+﻿<#
 .SYNOPSIS
   Instala Coucou (la isla de escritorio de Claude Code) con las pills de Plata y Railway.
 
@@ -75,6 +75,15 @@ if (Test-Path (Join-Path $Destino ".git")) {
 
 Push-Location $Destino
 try {
+  # Un `git am` que quedó a medias (el parche chocó en una corrida anterior) deja la rama `plata`
+  # incompleta: se descarta y se vuelve a aplicar entera.
+  if (Test-Path (Join-Path $Destino ".git\rebase-apply")) {
+    Write-Host "Había un parche a medio aplicar de una corrida anterior: lo descarto y empiezo de nuevo." -ForegroundColor Yellow
+    git am --abort
+    Correr git checkout -q -f $Commit
+    git branch -D plata
+  }
+
   $tieneRama = git branch --list plata
   if (-not $tieneRama) {
     Correr git checkout -q -b plata $Commit
