@@ -126,6 +126,23 @@ La pestaña de la moneda abre un chat con el agente de Plata del repo `agentes`:
 - **Nueva** arranca otra conversación. Cada una vive en el agente hasta 30 minutos sin mensajes.
 - Mientras el chat está abierto, la ventana de la isla crece de 720×320 a 720×480. Es transparente y deja pasar los clics fuera de la isla, pero toma el mouse mientras hay un botón apretado encima (para poder soltar archivos), así que vuelve a su tamaño apenas se cierra el chat.
 
+## Atajos de la isla
+
+Una tecla (**F8** por defecto; se cambia en Ajustes → **Atajos**) abre la isla en un lanzador **ya escuchando**: el dictado de Windows escribe lo que decís y, a un segundo de silencio, un portero elige la skill y abre su tarjeta. También se escribe y Enter. No hay chat: cada skill contesta con una tarjeta que Mochi presenta, con sus botones (Enter = el principal, Esc = volver).
+
+| Centro de Control (celeste, solo lectura por ahora) | Plata (naranja) |
+|---|---|
+| Mi día · ¿Qué hago ahora? · Avisos de Mochi · Cerrar el día · Planificar mañana · Lo que vence · Huecos de la semana · Tarea rápida (guardar llega en la próxima entrega) | Registrar gasto · Contar una situación · ¿Cuánto tengo? · ¿Cómo voy este mes? · Resúmenes de tarjeta · Me pagaron / pagué · Dólar hoy · Conciliar un resumen |
+
+- **El portero:** primero reglas fijas ("gasté…" → Registrar gasto, "¿qué tengo mañana?" → Planificar mañana, "recordame…" → Tarea rápida). Si ninguna aplica, decide Haiku (necesita la API key de Anthropic en Ajustes → Claude). Si duda, ofrece tres opciones.
+- **Sin modelo, salvo donde hace falta:** las skills de Plata leen rutas directas del agente (`/agentes/plata/rapido/*`, repo `agentes`, CONTRATOS §9), y Registrar gasto arma la propuesta con un parser fijo. Aprobar o rechazar va directo, sin turno de IA. Solo "Contar una situación" pasa por el agente con IA.
+- **El Centro de Control** se lee de la función `coucou-foco` del proyecto `cqnlceqghqqrlacbjhzj` (ver [`centro-de-control/`](centro-de-control/README.md)), y el calendario de las direcciones **iCal secretas** de Google Calendar (Configuración → tu calendario → "Dirección secreta en formato iCal").
+
+**Para que ande, una vez, en Ajustes:**
+1. **Centro de Control → Secret:** el valor de `select decrypted_secret from vault.decrypted_secrets where name='cdc_coucou_secret';` en el editor SQL del proyecto del Centro de Control.
+2. **Centro de Control → Calendarios:** las direcciones iCal secretas, una por línea.
+3. **El agente de Plata con sesión** (`npm run login` en `agentes`, una vez por PC).
+
 ## Cómo está armado
 
 ```
@@ -145,13 +162,14 @@ poll_railway ── cada 30 s ────────────────�
 - Fuentes versionadas en este repo:
   - `supabase/functions/coucou-health/index.ts`: se deploya con el MCP de Supabase, `verify_jwt=false`.
   - `supabase/sql/coucou_health.sql`: se aplica con `execute_sql`.
-- Del lado de Coucou, todo lo propio está en `plata.patch` (veinticinco commits):
+- Del lado de Coucou, todo lo propio está en `plata.patch` (veintisiete commits):
   - `windows/src-tauri/src/integrations.rs`: `poll_plata` y `poll_railway`.
   - `windows/src/views/integrations.ts`: las tarjetas.
   - `state.ts`, `settings/main.ts`, `secrets.rs`, `settings.rs`, `island.ts`: el registro de las dos pills.
   - `windows/src-tauri/src/island.rs` (`drag_loop`, `apply_geometry`) y `layout.ts` (`islandX`, `islandRadius`): mover y anclar la isla.
   - `windows/src-tauri/src/plata_agent.rs` y `windows/src/views/plata.ts`: el chat con el agente, las tarjetas y el pase a Claude Code. `island.rs` (`start_dictation`): la voz.
   - `windows/src-tauri/src/actualizar.rs`: lanza `actualizar.ps1` cada 3 horas.
+  - `windows/src-tauri/src/atajos.rs` y `windows/src/views/atajos/`: la tecla global, sus comandos y el lanzador con las 16 skills. Pruebas: `npm test` en `windows/` y `cargo test`.
 
 ## Actualizar Coucou
 
