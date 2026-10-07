@@ -1,7 +1,7 @@
-From f9372314d1c95cb6886d01efc0bfead2649a7c5e Mon Sep 17 00:00:00 2001
+From 59fd434c147189f2771f83496f86e8f2b54faee7 Mon Sep 17 00:00:00 2001
 From: Lucas Gigli <giglilangonelucas@gmail.com>
 Date: Wed, 30 Sep 2026 20:56:49 +0000
-Subject: [PATCH 01/27] Pills de Plata y Railway
+Subject: [PATCH 01/28] Pills de Plata y Railway
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -685,10 +685,10 @@ index b8ad73c..1e394d3 100644
 2.55.0.windows.5
 
 
-From 3a32bb4fa61c2b4e6f5a49cebd4a0a9968f38023 Mon Sep 17 00:00:00 2001
+From cd2b94c9651b19f8e0ad37e506896d3022e25a15 Mon Sep 17 00:00:00 2001
 From: Lucas <lucasgigli3@gmail.com>
 Date: Wed, 30 Sep 2026 19:26:42 -0300
-Subject: [PATCH 02/27] Isla movible y chat con el agente de Plata
+Subject: [PATCH 02/28] Isla movible y chat con el agente de Plata
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -2047,10 +2047,10 @@ index ac0ac7b..b0aea0d 100644
 2.55.0.windows.5
 
 
-From b87c95615080d37725077b162fc81f4e43af7126 Mon Sep 17 00:00:00 2001
+From 482fecbe3cad8c417ab6c4cd64a510b4708fe6c0 Mon Sep 17 00:00:00 2001
 From: Lucas <lucasgigli3@gmail.com>
 Date: Wed, 30 Sep 2026 19:41:15 -0300
-Subject: [PATCH 03/27] Plata en la isla: tarjetas, pedidos a Claude Code y voz
+Subject: [PATCH 03/28] Plata en la isla: tarjetas, pedidos a Claude Code y voz
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -2645,10 +2645,10 @@ index 6c6bb30..668ec54 100644
 2.55.0.windows.5
 
 
-From 753d73505fbf9924b5eb0d67d34516f186294cfa Mon Sep 17 00:00:00 2001
+From 76d63a9584e1111ee715e200f51c1463a512d8f6 Mon Sep 17 00:00:00 2001
 From: Lucas <lucasgigli3@gmail.com>
 Date: Wed, 30 Sep 2026 20:58:44 -0300
-Subject: [PATCH 04/27] El agente de Plata se prende solo
+Subject: [PATCH 04/28] El agente de Plata se prende solo
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -2834,10 +2834,10 @@ index 668ec54..6de96d2 100644
 2.55.0.windows.5
 
 
-From 2a0f6817cf7e182ad6b3c689f4230eea8d53cc68 Mon Sep 17 00:00:00 2001
+From d1dd31b49d6cfecd820bdb0b3805f63e7a4f11e9 Mon Sep 17 00:00:00 2001
 From: Lucas <lucasgigli3@gmail.com>
 Date: Wed, 30 Sep 2026 21:19:44 -0300
-Subject: [PATCH 05/27] La isla se ancla en cualquier monitor
+Subject: [PATCH 05/28] La isla se ancla en cualquier monitor
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -2992,10 +2992,10 @@ index 96367bd..4a31905 100644
 2.55.0.windows.5
 
 
-From e9c56e4fc8c01be40ba897121748dea66d1a5284 Mon Sep 17 00:00:00 2001
+From e525400e302d202ae4e7ab5f5409241dedf39f3e Mon Sep 17 00:00:00 2001
 From: Lucas <lucasgigli3@gmail.com>
 Date: Wed, 30 Sep 2026 22:32:46 -0300
-Subject: [PATCH 06/27] Plata tab: attach a card statement (drop a
+Subject: [PATCH 06/28] Plata tab: attach a card statement (drop a
  PDF/screenshot or paste it) to reconcile
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -3680,10 +3680,10 @@ index b0aea0d..791ea8a 100644
 2.55.0.windows.5
 
 
-From 6fa3d0c373169bed165e666f75ffaa3301b40f82 Mon Sep 17 00:00:00 2001
+From 34e9a6003ea00fce4e537565bac27db7e0f1299d Mon Sep 17 00:00:00 2001
 From: Lucas <lucasgigli3@gmail.com>
 Date: Wed, 30 Sep 2026 22:56:17 -0300
-Subject: [PATCH 07/27] =?UTF-8?q?Pesta=C3=B1a=20Plata:=20agrandar=20el=20c?=
+Subject: [PATCH 07/28] =?UTF-8?q?Pesta=C3=B1a=20Plata:=20agrandar=20el=20c?=
  =?UTF-8?q?hat=20e=20historial=20local=20de=20la=20conversaci=C3=B3n?=
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -4096,10 +4096,10 @@ index 791ea8a..2cee61f 100644
 2.55.0.windows.5
 
 
-From fd7ba40cd77f6a9e3b88c8e0de1f3aaccd9c2b31 Mon Sep 17 00:00:00 2001
+From 5e20e76919ec6b3950bf834ffb0eba63e8f3d73a Mon Sep 17 00:00:00 2001
 From: Lucas <lucasgigli3@gmail.com>
 Date: Wed, 30 Sep 2026 23:13:01 -0300
-Subject: [PATCH 08/27] =?UTF-8?q?Pesta=C3=B1a=20Plata:=20el=20bot=C3=B3n?=
+Subject: [PATCH 08/28] =?UTF-8?q?Pesta=C3=B1a=20Plata:=20el=20bot=C3=B3n?=
  =?UTF-8?q?=20de=20agrandar=20con=20texto=20y=20en=20naranja?=
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -4174,10 +4174,10 @@ index b487a5e..e983567 100644
 2.55.0.windows.5
 
 
-From f2bf0bfd5129c700ca2305cca3b9134bec4b0bbc Mon Sep 17 00:00:00 2001
+From c333618cffb6f69d444a2e0fe1ee25b21ec4fcb7 Mon Sep 17 00:00:00 2001
 From: Lucas <lucasgigli3@gmail.com>
 Date: Wed, 30 Sep 2026 23:17:23 -0300
-Subject: [PATCH 09/27] =?UTF-8?q?Bot=C3=B3n=20en=20el=20encabezado=20de=20?=
+Subject: [PATCH 09/28] =?UTF-8?q?Bot=C3=B3n=20en=20el=20encabezado=20de=20?=
  =?UTF-8?q?la=20isla:=20abre=20el=20chat=20de=20Plata=20en=20grande?=
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -4276,10 +4276,10 @@ index 2cee61f..416788e 100644
 2.55.0.windows.5
 
 
-From b954768ea1bf6bc00e00f2c5cda1d50ace1d9da2 Mon Sep 17 00:00:00 2001
+From f3f5507c627f778199460d925e8663bb4e720dbe Mon Sep 17 00:00:00 2001
 From: Lucas <lucasgigli3@gmail.com>
 Date: Thu, 1 Oct 2026 21:31:50 -0300
-Subject: [PATCH 10/27] =?UTF-8?q?Isla=20m=C3=A1s=20fluida:=20ventana=20de?=
+Subject: [PATCH 10/28] =?UTF-8?q?Isla=20m=C3=A1s=20fluida:=20ventana=20de?=
  =?UTF-8?q?=20tama=C3=B1o=20fijo,=20anclaje=20y=20deslizamiento=20al=20sol?=
  =?UTF-8?q?tar?=
 MIME-Version: 1.0
@@ -5583,10 +5583,10 @@ index 416788e..debb686 100644
 2.55.0.windows.5
 
 
-From e85d3fc37021910c0076a1b69c546b98b71f011c Mon Sep 17 00:00:00 2001
+From 42c0f6eae9472c3c78c64106e7fd7b84c9e02556 Mon Sep 17 00:00:00 2001
 From: Lucas <lucasgigli3@gmail.com>
 Date: Thu, 1 Oct 2026 21:32:36 -0300
-Subject: [PATCH 11/27] =?UTF-8?q?Pesta=C3=B1a=20Plata:=20conciliar=20un=20?=
+Subject: [PATCH 11/28] =?UTF-8?q?Pesta=C3=B1a=20Plata:=20conciliar=20un=20?=
  =?UTF-8?q?resumen=20con=20Claude=20Code,=20con=20el=20plan=20y=20no=20la?=
  =?UTF-8?q?=20API?=
 MIME-Version: 1.0
@@ -7225,10 +7225,10 @@ index 851e6da..53b99a0 100644
 2.55.0.windows.5
 
 
-From 1730c22bf70d264067600cb3ae63adfc485a3d9c Mon Sep 17 00:00:00 2001
+From 05545361cc829ee3755f8140a4813d93fa3c8828 Mon Sep 17 00:00:00 2001
 From: Lucas <lucasgigli3@gmail.com>
 Date: Thu, 1 Oct 2026 22:01:26 -0300
-Subject: [PATCH 12/27] =?UTF-8?q?Pesta=C3=B1a=20Plata:=20sin=20sesi=C3=B3n?=
+Subject: [PATCH 12/28] =?UTF-8?q?Pesta=C3=B1a=20Plata:=20sin=20sesi=C3=B3n?=
  =?UTF-8?q?=20de=20Claude=20Code,=20Reintentar=20en=20vez=20de=20mand?=
  =?UTF-8?q?=C3=A1rselo=20al=20agente?=
 MIME-Version: 1.0
@@ -7322,10 +7322,10 @@ index 53b99a0..fde7b29 100644
 2.55.0.windows.5
 
 
-From 2650b95885346ab1420177e004b73249d8316eda Mon Sep 17 00:00:00 2001
+From 1e78f3e1cd27021224d454c03c7ad4b8e46f74ad Mon Sep 17 00:00:00 2001
 From: Lucas <lucasgigli3@gmail.com>
 Date: Thu, 1 Oct 2026 22:07:16 -0300
-Subject: [PATCH 13/27] =?UTF-8?q?Pesta=C3=B1a=20Plata:=20las=20respuestas?=
+Subject: [PATCH 13/28] =?UTF-8?q?Pesta=C3=B1a=20Plata:=20las=20respuestas?=
  =?UTF-8?q?=20del=20agente=20con=20formato=20(tablas,=20negritas,=20listas?=
  =?UTF-8?q?)?=
 MIME-Version: 1.0
@@ -7691,10 +7691,10 @@ index fde7b29..09465b3 100644
 2.55.0.windows.5
 
 
-From e40e7fa2d2aa865a45e439b7a625df1380624224 Mon Sep 17 00:00:00 2001
+From 87b93f0111206d56f0d05180459f9828a0f72222 Mon Sep 17 00:00:00 2001
 From: Lucas <lucasgigli3@gmail.com>
 Date: Thu, 1 Oct 2026 22:26:24 -0300
-Subject: [PATCH 14/27] =?UTF-8?q?Buscar=20claude.exe=20tambi=C3=A9n=20en?=
+Subject: [PATCH 14/28] =?UTF-8?q?Buscar=20claude.exe=20tambi=C3=A9n=20en?=
  =?UTF-8?q?=20la=20carpeta=20del=20paquete=20de=20la=20app=20(MSIX)?=
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -7754,10 +7754,10 @@ index 3b73768..83bbfae 100644
 2.55.0.windows.5
 
 
-From 912aa6930aed3ba590935c4d1e7658eeeff9507a Mon Sep 17 00:00:00 2001
+From 11786d1411608285963dcc190488499084740479 Mon Sep 17 00:00:00 2001
 From: Lucas <lucasgigli3@gmail.com>
 Date: Thu, 1 Oct 2026 22:44:34 -0300
-Subject: [PATCH 15/27] Conciliar: de 8 minutos a 50 segundos, y el resultado
+Subject: [PATCH 15/28] Conciliar: de 8 minutos a 50 segundos, y el resultado
  le llega al agente
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -7935,10 +7935,10 @@ index 09465b3..acf043e 100644
 2.55.0.windows.5
 
 
-From a33cfbb9763a07a8337c32645db04edc48c5881d Mon Sep 17 00:00:00 2001
+From 74e64e4d4ff7ba25409360e38f75279fc8c547d1 Mon Sep 17 00:00:00 2001
 From: Lucas <lucasgigli3@gmail.com>
 Date: Thu, 1 Oct 2026 23:00:01 -0300
-Subject: [PATCH 16/27] =?UTF-8?q?Pesta=C3=B1a=20Plata:=20bot=C3=B3n=20Modi?=
+Subject: [PATCH 16/28] =?UTF-8?q?Pesta=C3=B1a=20Plata:=20bot=C3=B3n=20Modi?=
  =?UTF-8?q?ficar=20en=20las=20propuestas?=
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -7974,10 +7974,10 @@ index acf043e..16d0deb 100644
 2.55.0.windows.5
 
 
-From 3371e59bd450e3e2264253bdfeca4375d204d3f0 Mon Sep 17 00:00:00 2001
+From 23110cb041050e4dc20c827dafb3a690fa82c573 Mon Sep 17 00:00:00 2001
 From: Lucas <lucasgigli3@gmail.com>
 Date: Thu, 1 Oct 2026 23:23:35 -0300
-Subject: [PATCH 17/27] =?UTF-8?q?Encontrar=20claude.exe=20con=20la=20estru?=
+Subject: [PATCH 17/28] =?UTF-8?q?Encontrar=20claude.exe=20con=20la=20estru?=
  =?UTF-8?q?ctura=20nueva=20de=20la=20app=20(<versi=C3=B3n>\<hash>\)?=
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -8031,10 +8031,10 @@ index 83bbfae..9858961 100644
 2.55.0.windows.5
 
 
-From 36a101f4ec8b27d305f130b528271db10d248ee6 Mon Sep 17 00:00:00 2001
+From 4f3c40d9f5aa18d8e95679a17e1ebe80ff8488ac Mon Sep 17 00:00:00 2001
 From: Lucas <lucasgigli3@gmail.com>
 Date: Sat, 3 Oct 2026 14:14:49 -0300
-Subject: [PATCH 18/27] Plata lista sola: chequeo de piezas y "Conectar Claude
+Subject: [PATCH 18/28] Plata lista sola: chequeo de piezas y "Conectar Claude
  Code" sin terminal
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -9443,10 +9443,10 @@ index 16d0deb..4c6b4d0 100644
 2.55.0.windows.5
 
 
-From fa5d051032fd04e96889a18040d7827219bbce41 Mon Sep 17 00:00:00 2001
+From a271a0cdf5022aa48dc855344df8d2f857e8f9a0 Mon Sep 17 00:00:00 2001
 From: Lucas <lucasgigli3@gmail.com>
 Date: Sat, 3 Oct 2026 14:59:45 -0300
-Subject: [PATCH 19/27] =?UTF-8?q?Plata:=20conciliar=20tambi=C3=A9n=20el=20?=
+Subject: [PATCH 19/28] =?UTF-8?q?Plata:=20conciliar=20tambi=C3=A9n=20el=20?=
  =?UTF-8?q?extracto=20de=20la=20cuenta=20con=20Claude=20Code?=
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -9871,10 +9871,10 @@ index 4c6b4d0..245e97c 100644
 2.55.0.windows.5
 
 
-From e9911eb964a853b24e4c40b7ab8fcca99d96fd15 Mon Sep 17 00:00:00 2001
+From 903d2ed8a3b717e44265076c84579edc44a30dbe Mon Sep 17 00:00:00 2001
 From: Lucas <lucasgigli3@gmail.com>
 Date: Sat, 3 Oct 2026 18:51:21 -0300
-Subject: [PATCH 20/27] Listo: el extracto de la cuenta como pieza opcional del
+Subject: [PATCH 20/28] Listo: el extracto de la cuenta como pieza opcional del
  chequeo
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -10030,10 +10030,10 @@ index 245e97c..dee20eb 100644
 2.55.0.windows.5
 
 
-From a6c6baec4488723680ecef44b3b0d8a44ca9b49a Mon Sep 17 00:00:00 2001
+From 48d76bf27063c1c3e9af48aa6ff2883b673cb706 Mon Sep 17 00:00:00 2001
 From: Lucas <lucasgigli3@gmail.com>
 Date: Sat, 3 Oct 2026 22:02:25 -0300
-Subject: [PATCH 21/27] =?UTF-8?q?Pesta=C3=B1a=20Plata:=20varias=20l=C3=ADn?=
+Subject: [PATCH 21/28] =?UTF-8?q?Pesta=C3=B1a=20Plata:=20varias=20l=C3=ADn?=
  =?UTF-8?q?eas=20con=20Shift+Enter,=20y=20el=20micr=C3=B3fono=20dice=20por?=
  =?UTF-8?q?=20qu=C3=A9=20no=20dicta?=
 MIME-Version: 1.0
@@ -10279,10 +10279,10 @@ index dee20eb..cc37dad 100644
 2.55.0.windows.5
 
 
-From cb13eb42374a57d05a6b7e246880c9155c96a739 Mon Sep 17 00:00:00 2001
+From ac9b0f33d0a6d5cac21f366fa0fa00210f370f06 Mon Sep 17 00:00:00 2001
 From: Lucas <lucasgigli3@gmail.com>
 Date: Sat, 3 Oct 2026 23:37:25 -0300
-Subject: [PATCH 22/27] Panel grande para los chats: lista a la izquierda, chat
+Subject: [PATCH 22/28] Panel grande para los chats: lista a la izquierda, chat
  a la derecha
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -11887,10 +11887,10 @@ index debb686..791ea8a 100644
 2.55.0.windows.5
 
 
-From 75210e98485080cdd58179080689f84eaf28ee73 Mon Sep 17 00:00:00 2001
+From d01991f93f6112268f07d05ed0896363c9e6d1c9 Mon Sep 17 00:00:00 2001
 From: Lucas <lucasgigli3@gmail.com>
 Date: Sun, 4 Oct 2026 18:21:47 -0300
-Subject: [PATCH 23/27] =?UTF-8?q?Archivos=20a=20Plata:=20"Mandar=20a=20Pla?=
+Subject: [PATCH 23/28] =?UTF-8?q?Archivos=20a=20Plata:=20"Mandar=20a=20Pla?=
  =?UTF-8?q?ta"=20despu=C3=A9s=20de=20soltar,=20y=20el=20clip?=
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -12329,10 +12329,10 @@ index 791ea8a..6f662fe 100644
 2.55.0.windows.5
 
 
-From 151eefa0d3a67f219e2765284bf3aa88a4c11236 Mon Sep 17 00:00:00 2001
+From a94d16ee932818c1a9b8c0ed75152333dbfa57ae Mon Sep 17 00:00:00 2001
 From: Lucas <lucasgigli3@gmail.com>
 Date: Sun, 4 Oct 2026 18:21:48 -0300
-Subject: [PATCH 24/27] Chats: las caritas se mueven
+Subject: [PATCH 24/28] Chats: las caritas se mueven
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -12554,10 +12554,10 @@ index 7e58f71..8abc0b9 100644
 2.55.0.windows.5
 
 
-From 48dd17591a93a9b108a379ef9acd1db7888f31d9 Mon Sep 17 00:00:00 2001
+From bbee462af3492f8f97497a070ecd43923f6b0302 Mon Sep 17 00:00:00 2001
 From: Lucas <lucasgigli3@gmail.com>
 Date: Sun, 4 Oct 2026 18:55:14 -0300
-Subject: [PATCH 25/27] La isla se actualiza sola
+Subject: [PATCH 25/28] La isla se actualiza sola
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -12693,10 +12693,10 @@ index 5aedbd3..f905946 100644
 2.55.0.windows.5
 
 
-From e59cc4d12acd70e5462e16446581cfb8a9f5a99f Mon Sep 17 00:00:00 2001
+From a613661ccd2482b69c786e8941e1cd75ca9b0ea2 Mon Sep 17 00:00:00 2001
 From: Lucas <lucasgigli3@gmail.com>
 Date: Wed, 7 Oct 2026 18:51:50 -0300
-Subject: [PATCH 26/27] Atajos: tecla global, comandos y Ajustes
+Subject: [PATCH 26/28] Atajos: tecla global, comandos y Ajustes
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -14625,10 +14625,10 @@ index 605b820..1f22b80 100644
 2.55.0.windows.5
 
 
-From da17015034ad423562adc90555cb196186b4789c Mon Sep 17 00:00:00 2001
+From c4c158f24a0229016e76f3d2229f4c9fe12801ab Mon Sep 17 00:00:00 2001
 From: Lucas <lucasgigli3@gmail.com>
 Date: Wed, 7 Oct 2026 18:51:50 -0300
-Subject: [PATCH 27/27] Atajos: el lanzador de la isla y las 16 skills
+Subject: [PATCH 27/28] Atajos: el lanzador de la isla y las 16 skills
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -19202,6 +19202,1078 @@ index 0000000..54d04b3
 +  // Wednesday's free time: 17 to 21:30 and nothing else long enough.
 +  const day = arMs("2026-10-07");
 +  assert.deepEqual(freeSlots(dayBusy(evs, day)), [{ s: 17 * 60, e: 21 * 60 + 30 }, { s: 22 * 60, e: 23 * 60 }]);
++});
+-- 
+2.55.0.windows.5
+
+
+From 5d208fab625d45755a988ceb6b5a2cf61de85a93 Mon Sep 17 00:00:00 2001
+From: Lucas <lucasgigli3@gmail.com>
+Date: Wed, 7 Oct 2026 19:16:53 -0300
+Subject: [PATCH 28/28] Atajos de la isla, entrega 2: acciones del Centro de
+ Control
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Las tarjetas del Centro dejan de ser de solo lectura. Todo pasa por el
+comando centro_accion (coucou-foco con {accion, args}):
+
+- ¿Qué hago ahora?: Empezar / Seguir (cronómetro), Hecha, Mañana, La suelto.
+  Con el cronómetro corriendo: Listo, Pausar, Hecha.
+- Mi día: pausar el cronómetro que corre y "Hoy no trabajo" (con confirmación).
+- Cerrar el día: los hábitos se marcan tocándolos; "Pasar a mañana" lo atrasado
+  y lo de hoy.
+- Planificar mañana: "Ponerlas para mañana" a las sugeridas.
+- Lo que vence: ✓ y → en cada fila.
+- Tarea rápida: guarda de verdad; entiende hoy, mañana, el viernes, el 15,
+  15/10, 10 de noviembre, en 3 días (parseTareaRapida, con tests).
+
+Cada acción ofrece Deshacer cuando se puede.
+
+Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+---
+ windows/src-tauri/src/atajos.rs           |  27 +-
+ windows/src-tauri/src/lib.rs              |   7 +
+ windows/src/core/bridge.ts                |   9 +
+ windows/src/style.css                     | 101 ++++-
+ windows/src/views/atajos/data.ts          |  14 +-
+ windows/src/views/atajos/plan.ts          | 105 +++++
+ windows/src/views/atajos/skills-centro.ts | 473 +++++++++++++++++++---
+ windows/tests/atajos.test.ts              |  38 +-
+ 8 files changed, 701 insertions(+), 73 deletions(-)
+
+diff --git a/windows/src-tauri/src/atajos.rs b/windows/src-tauri/src/atajos.rs
+index 831b071..2e6ea7f 100644
+--- a/windows/src-tauri/src/atajos.rs
++++ b/windows/src-tauri/src/atajos.rs
+@@ -461,6 +461,31 @@ pub async fn proposal_decide(id: i64, approve: bool) -> Result<Value, String> {
+ const FOCO_URL: &str = "https://cqnlceqghqqrlacbjhzj.supabase.co/functions/v1/coucou-foco";
+ 
+ pub async fn centro_foco() -> Result<Value, String> {
++    centro_post(json!({})).await
++}
++
++/// The actions the island can take on the Centro de Control: the same endpoint
++/// with `{accion, args}`. Answers `{ok, ...}` or `{ok:false, error}`; an
++/// `ok:false` becomes an Err with that text, so the card can show it as is.
++pub const CENTRO_ACCIONES: &[&str] = &["hecha", "reabrir", "por_hacer", "empezar", "pausar", "mover", "nueva", "habito", "no_trabajo", "borrar_nueva"];
++
++pub async fn centro_accion(accion: &str, args: Value) -> Result<Value, String> {
++    if !CENTRO_ACCIONES.contains(&accion) {
++        return Err(format!("Acción desconocida: {accion}"));
++    }
++    let args = if args.is_object() { args } else { json!({}) };
++    let answer = centro_post(json!({ "accion": accion, "args": args })).await?;
++    if answer.get("ok").and_then(Value::as_bool) == Some(true) {
++        return Ok(answer);
++    }
++    Err(answer
++        .get("error")
++        .and_then(Value::as_str)
++        .map(str::to_string)
++        .unwrap_or_else(|| "El Centro de Control no pudo hacerlo.".into()))
++}
++
++async fn centro_post(body: Value) -> Result<Value, String> {
+     let secret = secrets::get("cdc-secret")
+         .ok_or_else(|| "Falta el secreto del Centro de Control: cargalo en Ajustes → Centro de Control.".to_string())?;
+     let client = reqwest::Client::builder()
+@@ -471,7 +496,7 @@ pub async fn centro_foco() -> Result<Value, String> {
+     let response = client
+         .post(FOCO_URL)
+         .header("x-coucou-secret", secret)
+-        .json(&json!({}))
++        .json(&body)
+         .send()
+         .await
+         .map_err(|e| {
+diff --git a/windows/src-tauri/src/lib.rs b/windows/src-tauri/src/lib.rs
+index ae057f7..f250543 100644
+--- a/windows/src-tauri/src/lib.rs
++++ b/windows/src-tauri/src/lib.rs
+@@ -507,6 +507,12 @@ async fn centro_foco() -> Result<Value, String> {
+     atajos::centro_foco().await
+ }
+ 
++/// One action on the Centro de Control (tildar, empezar, pausar, mover, nueva…).
++#[tauri::command]
++async fn centro_accion(accion: String, args: Option<Value>) -> Result<Value, String> {
++    atajos::centro_accion(&accion, args.unwrap_or(Value::Null)).await
++}
++
+ /// The stored iCal calendars, as .ics text; the page parses them.
+ #[tauri::command]
+ async fn calendar_ics() -> Result<Vec<String>, String> {
+@@ -652,6 +658,7 @@ pub fn run() {
+             quick_gasto,
+             proposal_decide,
+             centro_foco,
++            centro_accion,
+             calendar_ics,
+             route_skill,
+         ])
+diff --git a/windows/src/core/bridge.ts b/windows/src/core/bridge.ts
+index 78180e3..cf6a23a 100644
+--- a/windows/src/core/bridge.ts
++++ b/windows/src/core/bridge.ts
+@@ -200,6 +200,12 @@ export const Bridge = {
+     callOrThrow<ProposalDecision>("proposal_decide", { id, approve }),
+   /** The Centro de Control's day (coucou-foco), read only. Rejects if the secret is missing or wrong. */
+   centroFoco: () => callOrThrow<CentroFoco>("centro_foco"),
++  /**
++   * One write on the Centro de Control (coucou-foco with {accion, args}). Resolves
++   * {ok:true, ...}; rejects with a sentence to show when it couldn't (ok:false too).
++   */
++  centroAccion: (accion: CentroAccion, args: Record<string, unknown> = {}) =>
++    callOrThrow<Record<string, unknown>>("centro_accion", { accion, args }),
+   /** The raw .ics text of every configured calendar. Rejects if none is configured or none could be read. */
+   calendarIcs: () => callOrThrow<string[]>("calendar_ics"),
+   /**
+@@ -325,6 +331,9 @@ export interface CentroTarea {
+   proyecto?: string | null;
+ }
+ 
++/** What the island can do on the Centro de Control (coucou_accion.sql). */
++export type CentroAccion = "hecha" | "reabrir" | "por_hacer" | "empezar" | "pausar" | "mover" | "nueva" | "habito" | "no_trabajo" | "borrar_nueva";
++
+ export interface CentroFoco {
+   hoy: string;
+   dia_semana: string;
+diff --git a/windows/src/style.css b/windows/src/style.css
+index 675c0b9..7030ff4 100644
+--- a/windows/src/style.css
++++ b/windows/src/style.css
+@@ -3355,7 +3355,7 @@ input[type="range"]::-webkit-slider-thumb {
+   background: var(--red);
+ }
+ 
+-/* Habits (read-only in the first delivery) */
++/* Habits: toggles (Cerrar el día) */
+ .lz-habits {
+   display: flex;
+   gap: 6px;
+@@ -3381,6 +3381,27 @@ input[type="range"]::-webkit-slider-thumb {
+   border: 1.5px solid var(--hc, rgb(var(--rgb)));
+ }
+ 
++button.lz-habit {
++  cursor: default;
++  transition: background 0.12s, transform 0.08s, opacity 0.15s;
++}
++
++button.lz-habit:hover:not(:disabled) {
++  background: rgba(255, 255, 255, 0.09);
++}
++
++button.lz-habit:active:not(:disabled) {
++  transform: scale(0.95);
++}
++
++button.lz-habit:disabled {
++  opacity: 0.6;
++}
++
++.lz-habits .lz-pstatus {
++  align-self: center;
++}
++
+ .lz-habit[aria-pressed="true"] i {
+   background: var(--hc, rgb(var(--rgb)));
+ }
+@@ -3668,32 +3689,74 @@ input[type="range"]::-webkit-slider-thumb {
+   background: rgba(var(--rgb), 0.04);
+ }
+ 
+-.lz-soon {
+-  display: grid;
+-  grid-template-columns: auto 1fr;
+-  gap: 10px;
+-  align-items: center;
+-  padding: 9px 12px;
+-  border-radius: 12px;
+-  background: rgba(245, 165, 36, 0.08);
+-  border: 1px solid rgba(245, 165, 36, 0.25);
+-  font-size: 12px;
+-  color: var(--ink-2);
++/* Entrega 2: writing to the Centro — row actions, confirm, the live hint */
++.lz-li.lz-li-act {
++  grid-template-columns: auto 1fr auto auto;
+ }
+ 
+-.lz-soon.flash {
+-  animation: lz-flash 0.6s var(--ease-out);
++.lz-li.lz-li-act > span:nth-child(2) {
++  white-space: nowrap;
++  overflow: hidden;
++  text-overflow: ellipsis;
++  min-width: 0;
++  transition: opacity 0.2s, color 0.2s;
+ }
+ 
+-@keyframes lz-flash {
+-  0%, 100% { background: rgba(245, 165, 36, 0.08); }
+-  40% { background: rgba(245, 165, 36, 0.25); }
++.lz-li.gone > span:nth-child(2) {
++  text-decoration: line-through;
++  color: var(--dim-3);
+ }
+ 
+-.lz-soon-ic {
+-  color: #ffc65c;
++.lz-li.gone .lz-pill,
++.lz-li.gone .lz-bar4 {
++  opacity: 0.4;
++}
++
++.lz-minis {
++  display: inline-flex;
++  gap: 4px;
++}
++
++.lz-mini {
+   display: grid;
+   place-items: center;
++  width: 22px;
++  height: 22px;
++  border: 0;
++  border-radius: 7px;
++  background: rgba(255, 255, 255, 0.06);
++  color: var(--dim-2);
++  cursor: default;
++  transition: background 0.12s, color 0.12s, transform 0.08s;
++}
++
++.lz-mini:hover:not(:disabled) {
++  background: rgba(var(--rgb), 0.18);
++  color: rgb(var(--rgb));
++}
++
++.lz-mini:active:not(:disabled) {
++  transform: scale(0.9);
++}
++
++.lz-mini:disabled {
++  opacity: 0.4;
++}
++
++.lz-mini.txt {
++  width: auto;
++  padding: 0 8px;
++  font: 500 11px var(--font);
++}
++
++.lz-btn.sec.armed {
++  background: rgba(245, 165, 36, 0.18);
++  color: #ffc65c;
++}
++
++.lz-hint b {
++  color: var(--ink-2);
++  font-weight: 600;
+ }
+ 
+ @media (prefers-reduced-motion: reduce) {
+diff --git a/windows/src/views/atajos/data.ts b/windows/src/views/atajos/data.ts
+index 7bfe8eb..76dac55 100644
+--- a/windows/src/views/atajos/data.ts
++++ b/windows/src/views/atajos/data.ts
+@@ -2,7 +2,7 @@
+ // launcher's group lines and the card opened right after share one request.
+ // Nothing here makes up a value: a failed read rejects, and the card says so.
+ 
+-import { Bridge, type QuickPlataKind } from "../../core/bridge";
++import { Bridge, type CentroAccion, type QuickPlataKind } from "../../core/bridge";
+ import { parseCalendars, occurrences, type Calendar } from "./calendar";
+ import { parseFoco, type CalEvent, type Foco } from "./plan";
+ 
+@@ -47,6 +47,18 @@ export function foco(fresh = false): Promise<Foco> {
+   }, fresh);
+ }
+ 
++/**
++ * One write on the Centro de Control. Whatever happens, the cached day is
++ * dropped: the next card reads it again.
++ */
++export async function accion(nombre: CentroAccion, args: Record<string, unknown> = {}): Promise<Record<string, unknown>> {
++  try {
++    return await Bridge.centroAccion(nombre, args);
++  } finally {
++    cache.delete("foco");
++  }
++}
++
+ /** Thrown when there is no iCal address saved: the card offers "Configurar". */
+ export class NoCalendarError extends Error {
+   constructor() {
+diff --git a/windows/src/views/atajos/plan.ts b/windows/src/views/atajos/plan.ts
+index a039db1..fbfbd95 100644
+--- a/windows/src/views/atajos/plan.ts
++++ b/windows/src/views/atajos/plan.ts
+@@ -267,3 +267,108 @@ export function horaDe(v: string): string {
+   const m = /(\d{1,2}):(\d{2})/.exec(v.includes("T") ? v.split("T")[1] : v);
+   return m ? `${Number(m[1])}:${m[2]}` : v;
+ }
++
++// ── Tarea rápida ────────────────────────────────────────────────────────────
++
++export interface TareaRapida {
++  titulo: string;
++  /** "YYYY-MM-DD", or null when the text says no day. */
++  vence: string | null;
++}
++
++const WEEKDAYS: Record<string, number> = { domingo: 0, lunes: 1, martes: 2, miercoles: 3, jueves: 4, viernes: 5, sabado: 6 };
++const MONTHS = ["enero", "febrero", "marzo", "abril", "mayo", "junio", "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre"];
++const NUM_WORDS:Record<string, number> = { un: 1, una: 1, dos: 2, tres: 3, cuatro: 4, cinco: 5, seis: 6, siete: 7, ocho: 8, nueve: 9, diez: 10 };
++// Word edges that work with accents and ñ (\b doesn't): the text is padded with spaces.
++const B = "(?<=[\\s,.;:¡¿(])";
++const E = "(?=[\\s,.;:!?)])";
++const word = (body: string) => new RegExp(`${B}(?:${body})${E}`, "i");
++const plain = (s: string) => s.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
++
++function ymd(y: number, m: number, d: number): string | null {
++  const t = new Date(Date.UTC(y, m - 1, d));
++  if (t.getUTCFullYear() !== y || t.getUTCMonth() !== m - 1 || t.getUTCDate() !== d) return null;
++  return `${y}-${String(m).padStart(2, "0")}-${String(d).padStart(2, "0")}`;
++}
++
++function plusDays(date: string, n: number): string {
++  const [y, m, d] = date.split("-").map(Number);
++  const t = new Date(Date.UTC(y, m - 1, d + n));
++  return ymd(t.getUTCFullYear(), t.getUTCMonth() + 1, t.getUTCDate())!;
++}
++
++/**
++ * "mañana a la noche llamar al contador" → { titulo: "Llamar al contador a la noche",
++ * vence: tomorrow }. Understands hoy, mañana, pasado mañana, a weekday (the next
++ * one; said on that same day, next week's), "el 15", "15/10", "en 3 días" and
++ * "la semana que viene". `hoy` is today in Buenos Aires ("YYYY-MM-DD").
++ * Everything else stays in the title as it was written.
++ */
++export function parseTareaRapida(text: string, hoy: string): TareaRapida {
++  let t = ` ${text.trim()} `;
++  let vence: string | null = null;
++  const [hy, hm, hd] = hoy.split("-").map(Number);
++  const take = (re: RegExp, f: (m: RegExpExecArray) => string | null) => {
++    if (vence !== null) return;
++    const m = re.exec(t);
++    if (!m) return;
++    const v = f(m);
++    if (v === null) return;
++    vence = v;
++    t = `${t.slice(0, m.index)} ${t.slice(m.index + m[0].length)}`;
++  };
++
++  // "recordame…", "anotá…": how it was asked, not the task.
++  t = t.replace(/^\s*(?:record[aá](?:me)?|anot[aá](?:me)?|agend[aá](?:me)?|nueva tarea|tarea)\s*:?\s*(?:que\s+)?/i, " ");
++
++  take(word("(?:para\\s+)?pasado\\s+ma[ñn]ana"), () => plusDays(hoy, 2));
++  // Not "a la mañana" / "esta mañana": that's a time of day.
++  take(new RegExp(`${B}(?<!(?:la|esta|de|por)\\s)(?:para\\s+)?ma[ñn]ana${E}`, "i"), () => plusDays(hoy, 1));
++  take(word("(?:para\\s+)?hoy"), () => hoy);
++  take(word("(?:para\\s+)?(?:el\\s+|este\\s+)?(?:pr[óo]ximo\\s+)?(lunes|martes|mi[ée]rcoles|jueves|viernes|s[áa]bado|domingo)"), (m) => {
++    const wd = WEEKDAYS[plain(m[1])];
++    const today = new Date(Date.UTC(hy, hm - 1, hd)).getUTCDay();
++    return plusDays(hoy, (wd - today + 7) % 7 || 7);
++  });
++  take(word("(?:para\\s+)?(?:el\\s+)?(\\d{1,2})[/-](\\d{1,2})(?:[/-](\\d{2}|\\d{4}))?"), (m) => {
++    const d = Number(m[1]);
++    const mo = Number(m[2]);
++    if (m[3]) return ymd(m[3].length === 2 ? 2000 + Number(m[3]) : Number(m[3]), mo, d);
++    const thisYear = ymd(hy, mo, d);
++    if (!thisYear) return null;
++    return thisYear >= hoy ? thisYear : ymd(hy + 1, mo, d);
++  });
++  take(word("(?:para\\s+)?(?:el\\s+)?(\\d{1,2})\\s+de\\s+(enero|febrero|marzo|abril|mayo|junio|julio|agosto|septiembre|setiembre|octubre|noviembre|diciembre)"), (m) => {
++    const mo = MONTHS.indexOf(plain(m[2]).replace("setiembre", "septiembre")) + 1;
++    const thisYear = ymd(hy, mo, Number(m[1]));
++    if (!thisYear) return null;
++    return thisYear >= hoy ? thisYear : ymd(hy + 1, mo, Number(m[1]));
++  });
++  take(word("(?:para\\s+)?el\\s+(\\d{1,2})(?!\\s*(?:hs|h|:|\\d|de\\s))"), (m) => {
++    const d = Number(m[1]);
++    if (d < 1 || d > 31) return null;
++    for (let k = 0; k < 3; k++) {
++      const mo0 = hm - 1 + k;
++      const v = ymd(hy + Math.floor(mo0 / 12), (mo0 % 12) + 1, d);
++      if (v && v >= hoy) return v;
++    }
++    return null;
++  });
++  take(word("(?:dentro\\s+de|en)\\s+(\\d{1,2}|un|una|dos|tres|cuatro|cinco|seis|siete|ocho|nueve|diez)\\s+d[ií]as?"), (m) => {
++    const n = /^\d+$/.test(m[1]) ? Number(m[1]) : NUM_WORDS[plain(m[1])];
++    return n ? plusDays(hoy, n) : null;
++  });
++  take(word("(?:para\\s+)?(?:la\\s+)?(?:semana\\s+que\\s+viene|pr[óo]xima\\s+semana|semana\\s+pr[óo]xima)"), () => plusDays(hoy, 7));
++
++  let titulo = t.replace(/\s+/g, " ").trim();
++  // What was left in front of the day ("que llame…", ", comprar…").
++  for (let prev = ""; prev !== titulo; ) {
++    prev = titulo;
++    titulo = titulo.replace(/^(?:[,.;:\-–]+\s*|(?:que|de)\s+)/i, "").replace(/\s*[,;:\-–]+$/, "").trim();
++  }
++  // "a la noche llamar al contador" reads better with the time at the end.
++  const tod = /^(a la (?:mañana|manana|tarde|noche)|al mediod[ií]a|a las? \d{1,2}(?::\d{2})?(?:\s*(?:hs|h))?)\s+(.+)$/i.exec(titulo);
++  if (tod) titulo = `${tod[2]} ${tod[1]}`;
++  if (titulo) titulo = titulo.charAt(0).toUpperCase() + titulo.slice(1);
++  return { titulo, vence };
++}
+diff --git a/windows/src/views/atajos/skills-centro.ts b/windows/src/views/atajos/skills-centro.ts
+index 0ad783e..cae9789 100644
+--- a/windows/src/views/atajos/skills-centro.ts
++++ b/windows/src/views/atajos/skills-centro.ts
+@@ -1,20 +1,23 @@
+-// Atajos — the eight Centro de Control skills, read only (entrega 1). Data:
+-// Bridge.centroFoco() (coucou-foco, contract §2) and Lucas's calendars
+-// (Bridge.calendarIcs, expanded with ical.js in calendar.ts). Actions that
+-// would write to the Centro arrive in entrega 2: until then a card offers
+-// "Abrir en la app" (when coucou-foco says where the app lives) or nothing.
++// Atajos — the eight Centro de Control skills. Data: Bridge.centroFoco()
++// (coucou-foco, contract §2) and Lucas's calendars (Bridge.calendarIcs,
++// expanded with ical.js in calendar.ts). Writes (entrega 2) go through
++// data.accion → coucou-foco with {accion, args} (coucou_accion.sql): tildar,
++// empezar / pausar el cronómetro, mover de día, soltar, hábitos, "hoy no
++// trabajo" y la tarea rápida. Each one offers "Deshacer" when it can.
+ 
+ import { h } from "../dom";
++import { Sound } from "../../core/sound";
++import type { CentroAccion } from "../../core/bridge";
+ import { Card, errLine, errorBlock, note } from "./card";
+ import * as data from "./data";
+ import {
+   DIAS, addDays, arClock, arMs, classifyError, duracion, enDias, fechaCorta, fechaLarga, hm, hhmm, palabra, plural, type ArClock,
+ } from "./format";
+ import {
+-  DAY_FROM, DAY_TO, dayBusy, freeSlots, groupAvisos, horaDe, longest, nextHalfHour, pickTasks, suggestTomorrow, total,
++  DAY_FROM, DAY_TO, dayBusy, freeSlots, groupAvisos, horaDe, longest, nextHalfHour, parseTareaRapida, pickTasks, suggestTomorrow, total,
+   type CalEvent, type Candidate, type Foco, type Span,
+ } from "./plan";
+-import { DEFAULT_EVENT_COLOR, ICON, acts, box, btn, li, pill, row, stat, timeline, type TlEvent } from "./ui";
++import { DEFAULT_EVENT_COLOR, acts, box, btn, li, pill, row, stat, timeline, type TlEvent } from "./ui";
+ import type { Runner } from "./skills-plata";
+ 
+ const DAY_MS = 86_400_000;
+@@ -93,6 +96,189 @@ function appButton(c: Card, f: Foco | null, kind: "prim" | "sec" = "sec"): HTMLB
+ 
+ const capital = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
+ 
++// ── Writing to the Centro ───────────────────────────────────────────────────
++
++type Args = Record<string, unknown>;
++
++const CHECK_SVG = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg>';
++const LATER_SVG = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h13M13 6l6 6-6 6"/></svg>';
++
++const manana1 = () => addDays(arClock().date, 1);
++
++/** The line next to the buttons: "Guardando…", then nothing, ok or the error. */
++function statusEl(): HTMLElement {
++  return h("span", { class: "lz-pstatus", role: "status" });
++}
++
++function tell(st: HTMLElement, text: string, tone: "" | "ok" | "bad" = "") {
++  st.className = `lz-pstatus${tone ? ` ${tone}` : ""}`;
++  st.textContent = text;
++}
++
++/**
++ * One write: `lock` is disabled while it goes and `st` says how it ended.
++ * Resolves the answer, or null when it failed (the reason is already on screen).
++ */
++async function hacer(c: Card, st: HTMLElement, lock: Array<HTMLButtonElement | null>, nombre: CentroAccion, args: Args, working: string): Promise<Args | null> {
++  const bs = lock.filter((b): b is HTMLButtonElement => !!b);
++  bs.forEach((b) => (b.disabled = true));
++  tell(st, working);
++  try {
++    const r = await data.accion(nombre, args);
++    if (c.alive()) tell(st, "");
++    return r;
++  } catch (err) {
++    if (c.alive()) {
++      tell(st, classifyError(err, "el Centro de Control").text.replace(/^No pude leer el Centro de Control/, "No pude guardarlo"), "bad");
++      Sound.play("error");
++    }
++    return null;
++  } finally {
++    bs.forEach((b) => (b.disabled = false));
++  }
++}
++
++/** A button that asks once more ("¿Seguro?") before doing it; it forgets after 4 s. */
++function confirmBtn(label: string, ask: string, onYes: () => void): HTMLButtonElement {
++  let armed = false;
++  let timer = 0;
++  const b = btn(label, "sec", () => {
++    if (!armed) {
++      armed = true;
++      b.classList.add("armed");
++      text.textContent = ask;
++      timer = window.setTimeout(disarm, 4000);
++      return;
++    }
++    disarm();
++    onYes();
++  });
++  const text = b.querySelector<HTMLElement>("span:not(.lz-btn-ic)")!;
++  const disarm = () => {
++    window.clearTimeout(timer);
++    armed = false;
++    b.classList.remove("armed");
++    text.textContent = label;
++  };
++  return b;
++}
++
++/**
++ * A task row with its two quick actions: tildarla (✓) and pasarla a mañana (→).
++ * Once done, the row dims and offers "Deshacer" instead.
++ */
++function taskRow(c: Card, st: HTMLElement, t: { id: string; titulo: string; color: string | null }, tag: HTMLElement): HTMLElement {
++  const bar = h("span", { class: "lz-bar4" });
++  bar.style.setProperty("--c", t.color || CDC);
++  const name = h("span", { text: t.titulo });
++  const tools = h("span", { class: "lz-minis" });
++  const el = h("div", { class: "lz-li lz-li-act" }, bar, name, tag, tools);
++  if (!t.id) return el;
++  const mini = (svg: string, title: string, on: () => void) => {
++    const b = h("button", { type: "button", class: "lz-mini", title, "aria-label": `${title}: ${t.titulo}`, html: svg }) as HTMLButtonElement;
++    b.addEventListener("click", (e) => {
++      e.stopPropagation();
++      if (!b.disabled) on();
++    });
++    return b;
++  };
++  const idle = () => {
++    el.classList.remove("gone");
++    tools.replaceChildren(ok, later);
++  };
++  const gone = (line: string, nombre: CentroAccion, args: Args) => {
++    el.classList.add("gone");
++    tell(st, line, "ok");
++    const undo = h("button", { type: "button", class: "lz-mini txt", text: "Deshacer" }) as HTMLButtonElement;
++    undo.addEventListener("click", async (e) => {
++      e.stopPropagation();
++      if (await hacer(c, st, [undo], nombre, args, "Deshaciendo…")) {
++        idle();
++        tell(st, "Listo, como estaba.");
++      }
++    });
++    tools.replaceChildren(undo);
++  };
++  const ok = mini(CHECK_SVG, "Hecha", async () => {
++    const r = await hacer(c, st, [ok, later], "hecha", { id: t.id }, "Tildando…");
++    if (!r || !c.alive()) return;
++    c.happy();
++    gone(`Hecha: ${t.titulo}.`, "reabrir", { id: t.id, estado: r.antes === "in_progress" ? "in_progress" : "not_started" });
++  });
++  const later = mini(LATER_SVG, "Para mañana", async () => {
++    const r = await hacer(c, st, [ok, later], "mover", { id: t.id, vence: manana1() }, "Moviendo…");
++    if (!r || !c.alive()) return;
++    gone(`${t.titulo}: para mañana.`, "mover", { id: t.id, vence: r.antes ?? null });
++  });
++  idle();
++  return el;
++}
++
++/**
++ * Moves several tasks to `vence`, one by one. Stops at the first that fails;
++ * resolves what moved (with where each was) so "Deshacer" can put them back.
++ */
++async function moverVarias(ts: ReadonlyArray<{ id: string }>, vence: string | null): Promise<{ moved: Array<{ id: string; antes: unknown }>; err: unknown }> {
++  const moved: Array<{ id: string; antes: unknown }> = [];
++  for (const t of ts) {
++    try {
++      const r = await data.accion("mover", { id: t.id, vence });
++      moved.push({ id: t.id, antes: r.antes ?? null });
++    } catch (err) {
++      return { moved, err };
++    }
++  }
++  return { moved, err: null };
++}
++
++async function devolver(moved: ReadonlyArray<{ id: string; antes: unknown }>): Promise<void> {
++  for (const m of moved) await data.accion("mover", { id: m.id, vence: m.antes ?? null });
++}
++
++/**
++ * "Pasar a mañana" for a group of tasks, with its confirmation, its result
++ * line and its "Deshacer". `label` is the button's text.
++ */
++function moverGrupo(c: Card, ts: ReadonlyArray<{ id: string }>, label: string, opts: { confirm?: boolean } = {}): HTMLElement {
++  const st = statusEl();
++  const wrap = h("div", { class: "lz-acts" });
++  const n = ts.length;
++  const run = async () => {
++    go.disabled = true;
++    tell(st, "Moviendo…");
++    const { moved, err } = await moverVarias(ts, manana1());
++    if (!c.alive()) return;
++    go.disabled = false;
++    if (err) {
++      tell(st, `${moved.length ? `Moví ${moved.length} de ${n}; ` : ""}${classifyError(err, "el Centro de Control").text}`, "bad");
++      Sound.play("error");
++    } else {
++      c.happy();
++      tell(st, `Listo: ${n === 1 ? "una tarea pasó" : `${palabra(n, true)} tareas pasaron`} a mañana.`, "ok");
++    }
++    if (!moved.length) return;
++    go.remove();
++    const undo = btn("Deshacer", "sec", async () => {
++      undo.disabled = true;
++      tell(st, "Deshaciendo…");
++      try {
++        await devolver(moved);
++        if (c.alive()) {
++          tell(st, "Listo, como estaban.");
++          undo.remove();
++        }
++      } catch (e) {
++        undo.disabled = false;
++        tell(st, classifyError(e, "el Centro de Control").text, "bad");
++      }
++    });
++    wrap.prepend(undo);
++  };
++  const go = opts.confirm === false ? btn(label, "sec", () => void run()) : confirmBtn(label, `¿Muevo ${n === 1 ? "una" : palabra(n, true)}? Sí`, () => void run());
++  wrap.append(go, st);
++  return wrap;
++}
++
+ /** "6 atrasadas" for the launcher's group line; empty when nothing stands out. */
+ export function centroLine(f: Foco): string {
+   const a = f.atrasadas?.length ?? 0;
+@@ -123,13 +309,36 @@ async function dia(c: Card) {
+   const atr = f.atrasadas;
+   if (atr && atr.length) parts.push(`Lo urgente: **${palabra(atr.length, true)} ${plural(atr.length, "atrasada", "atrasadas")}**.`);
+   else if (f.paraHoy?.length) parts.push(`Para hoy tenés **${palabra(f.paraHoy.length, true)} ${plural(f.paraHoy.length, "tarea", "tareas")}**.`);
++  const enCurso = f.enCurso;
++  const running = enCurso?.find((t) => t.cronometro_desde);
++  if (running) {
++    const since = Date.parse(running.cronometro_desde ?? "");
++    const mins = Number.isFinite(since) ? Math.max(0, Math.round((Date.now() - since) / 60_000)) : null;
++    parts.push(`Corre el cronómetro de **${running.titulo}**${mins !== null ? ` hace ${duracion(mins)}` : ""}.`);
++  }
+   c.says(parts.join(" "));
+ 
+   const oldest = atr?.length ? Math.max(...atr.map((t) => t.dias_atraso)) : 0;
+-  const enCurso = f.enCurso;
+   const quiet = enCurso?.find((t) => t.quieta_dias > 0);
+   const habitos = f.habitos;
+   const hechos = habitos?.filter((x) => x.hecho_hoy).length ?? 0;
++
++  const st = statusEl();
++  const pause: HTMLButtonElement | null = running
++    ? btn("Pausar cronómetro", "sec", async () => {
++        if (!(await hacer(c, st, [pause], "pausar", {}, "Pausando…")) || !c.alive()) return;
++        tell(st, `Pausé ${running.titulo}.`, "ok");
++        pause?.remove();
++      })
++    : null;
++  const libre: HTMLButtonElement | null = f.noTrabaja
++    ? null
++    : confirmBtn("Hoy no trabajo", "¿Seguro? Sí, hoy no", async () => {
++        if (!(await hacer(c, st, [libre], "no_trabajo", { motivo: "dia_libre" }, "Anotando…")) || !c.alive()) return;
++        c.happy();
++        tell(st, "Anotado: hoy no trabajás.", "ok");
++        libre?.remove();
++      });
+   c.set(
+     dayBox(c, "Hoy", cal, now.date, now.min, "dia"),
+     row(
+@@ -143,6 +352,7 @@ async function dia(c: Card) {
+       btn("¿Qué hago ahora?", "sec", () => c.host.open("ahora")),
+       btn("Ver los avisos", "sec", () => c.host.open("avisos")),
+     ),
++    pause || libre ? acts(pause, libre, st) : null,
+   );
+ }
+ 
+@@ -190,20 +400,98 @@ async function ahora(c: Card) {
+     else lead = "Tenés el resto del día libre. Una sola cosa:";
+   }
+   let i = 0;
+-  const paint = () => {
+-    const t = opts[i];
+-    c.says(lead);
++  const taskBox = (t: Candidate) => {
+     const meta = [t.area ?? "Sin área", t.vence && t.why !== "proxima" ? `vence ${fechaCorta(t.vence)}` : null].filter(Boolean).join(" · ");
+     const card = box(null, null, h("span", { class: "lz-sub", text: meta }), h("div", { class: "lz-task", text: t.titulo }), h("span", { class: "lz-sub", text: whyLine(t) }));
+     card.classList.add("lz-one");
+     if (t.color) card.style.setProperty("--tc", t.color);
++    return card;
++  };
++
++  /** After an action: the line, "Siguiente" (or "Cerrar") and maybe "Deshacer". */
++  const after = (t: Candidate, at: number, line: string, undo: { nombre: CentroAccion; args: Args } | null) => {
++    c.says(line);
++    const st = statusEl();
++    const next = opts.length
++      ? btn("Siguiente", "prim", () => paint(), { enter: true })
++      : btn("Cerrar", "prim", () => c.host.collapse(), { enter: true });
++    const back: HTMLButtonElement | null = undo
++      ? btn("Deshacer", "sec", async () => {
++          if (!(await hacer(c, st, [next, back], undo.nombre, undo.args, "Deshaciendo…")) || !c.alive()) return;
++          opts.splice(at, 0, t);
++          i = at;
++          paint();
++        })
++      : null;
++    c.set(acts(next, back, st));
++  };
++
++  const hecha = async (t: Candidate, st: HTMLElement, lock: Array<HTMLButtonElement | null>) => {
++    const r = await hacer(c, st, lock, "hecha", { id: t.id }, "Tildando…");
++    if (!r || !c.alive()) return;
++    c.happy();
++    const at = opts.indexOf(t);
++    if (at >= 0) opts.splice(at, 1);
++    i = Math.max(0, at);
++    after(t, Math.max(0, at), `Listo: **${t.titulo}**, hecha.${opts.length ? " ¿Seguimos?" : " No te queda nada pendiente."}`, {
++      nombre: "reabrir",
++      args: { id: t.id, estado: r.antes === "in_progress" ? "in_progress" : "not_started" },
++    });
++  };
++
++  /** The timer runs: let Lucas work. Pausar / Hecha stay at hand. */
++  const corriendo = (t: Candidate) => {
++    c.says(`Corre el cronómetro de **${t.titulo}**. Te dejo trabajar.`);
++    const st = statusEl();
++    const listo = btn("Listo", "prim", () => c.host.collapse(), { enter: true, title: "Cierra la isla" });
++    const pausa: HTMLButtonElement = btn("Pausar", "sec", async () => {
++      if (!(await hacer(c, st, [listo, pausa, fin], "pausar", {}, "Pausando…")) || !c.alive()) return;
++      tell(st, "Pausado.", "ok");
++      pausa.remove();
++    });
++    const fin: HTMLButtonElement = btn("Hecha", "sec", () => void hecha(t, st, [listo, pausa, fin]));
++    c.set(taskBox(t), acts(listo, pausa, fin, st));
++  };
++
++  const paint = () => {
++    if (!opts.length) {
++      c.says("No te queda nada pendiente. **Aprovechá.**");
++      c.set(acts(btn("Mi día", "prim", () => c.host.open("dia"), { enter: true }), appButton(c, f)));
++      return;
++    }
++    i = ((i % opts.length) + opts.length) % opts.length;
++    const t = opts[i];
++    c.says(lead);
++    const st = statusEl();
++    const started = t.why === "quieta" || t.why === "en_curso";
++    const go: HTMLButtonElement = btn(started ? "Seguir" : "Empezar", "prim", async () => {
++      if (!(await hacer(c, st, lock, "empezar", { id: t.id }, "Arrancando…")) || !c.alive()) return;
++      c.happy();
++      corriendo(t);
++    }, { enter: true, title: "Arranca el cronómetro" });
++    const done: HTMLButtonElement = btn("Hecha", "sec", () => void hecha(t, st, lock));
++    const later: HTMLButtonElement = started
++      ? btn("La suelto", "sec", async () => {
++          if (!(await hacer(c, st, lock, "por_hacer", { id: t.id }, "Soltando…")) || !c.alive()) return;
++          const at = opts.indexOf(t);
++          if (at >= 0) opts.splice(at, 1);
++          i = Math.max(0, at);
++          after(t, Math.max(0, at), `Solté **${t.titulo}**: volvió a Por hacer.`, null);
++        }, { title: "Vuelve a Por hacer y para el cronómetro" })
++      : btn("Mañana", "sec", async () => {
++          const r = await hacer(c, st, lock, "mover", { id: t.id, vence: manana1() }, "Moviendo…");
++          if (!r || !c.alive()) return;
++          const at = opts.indexOf(t);
++          if (at >= 0) opts.splice(at, 1);
++          i = Math.max(0, at);
++          after(t, Math.max(0, at), `Pasé **${t.titulo}** para mañana.`, { nombre: "mover", args: { id: t.id, vence: r.antes ?? null } });
++        }, { title: "La pasa para mañana" });
++    const other = opts.length > 1 ? btn("Otra", "sec", () => { i += 1; paint(); }) : null;
++    const lock = [go, done, later, other];
++    if (!t.id) [go, done, later].forEach((b) => (b.disabled = true));
+     c.set(
+-      card,
+-      acts(
+-        opts.length > 1 ? btn("Otra", "prim", () => { i = (i + 1) % opts.length; paint(); }, { enter: true }) : null,
+-        appButton(c, f, opts.length > 1 ? "sec" : "prim"),
+-        h("span", { class: "lz-sub lz-push", text: `${i + 1} de ${opts.length}` }),
+-      ),
++      taskBox(t),
++      acts(go, done, later, other, st, opts.length > 1 ? h("span", { class: "lz-sub lz-push", text: `${i + 1} de ${opts.length}` }) : null),
+     );
+   };
+   paint();
+@@ -258,26 +546,49 @@ async function cierre(c: Card) {
+   const { f, cal } = r;
+   const now = arClock();
+   const habitos = f.habitos;
+-  const hechos = habitos?.filter((x) => x.hecho_hoy).length ?? 0;
+-  const parts = [`Cierre del ${DIAS[now.weekday]}.`];
+-  if (f.hechasHoy !== null) parts.push(`**${palabra(f.hechasHoy, true)} ${plural(f.hechasHoy, "tarea hecha", "tareas hechas")}**`);
+-  if (habitos?.length) parts.push(`${f.hechasHoy !== null ? "y " : ""}${hechos === 0 ? "ningún hábito marcado" : `${hechos} de ${habitos.length} hábitos marcados`}.`);
+-  else if (f.hechasHoy !== null) parts[parts.length - 1] += ".";
+-  c.says(parts.join(" "));
++  const sayLine = () => {
++    const hechos = habitos?.filter((x) => x.hecho_hoy).length ?? 0;
++    const parts = [`Cierre del ${DIAS[now.weekday]}.`];
++    if (f.hechasHoy !== null) parts.push(`**${palabra(f.hechasHoy, true)} ${plural(f.hechasHoy, "tarea hecha", "tareas hechas")}**`);
++    if (habitos?.length) parts.push(`${f.hechasHoy !== null ? "y " : ""}${hechos === 0 ? "ningún hábito marcado" : `${hechos} de ${habitos.length} hábitos marcados`}.`);
++    else if (f.hechasHoy !== null) parts[parts.length - 1] += ".";
++    c.says(parts.join(" "));
++  };
++  sayLine();
+ 
++  // Each habit is a toggle: it changes right away and goes back if the write fails.
++  const habSt = statusEl();
+   const habBox = habitos
+     ? box(
+         "Hábitos de hoy",
+-        null,
++        habitos.length ? "tocá para marcar" : null,
+         habitos.length
+           ? h(
+               "div",
+               { class: "lz-habits" },
+               ...habitos.map((x) => {
+-                const b = h("span", { class: "lz-habit", "aria-pressed": String(x.hecho_hoy), title: x.hecho_hoy ? "Hecho" : "Sin marcar" }, h("i"), x.nombre);
++                const b = h("button", { type: "button", class: "lz-habit", "aria-pressed": String(x.hecho_hoy), title: x.hecho_hoy ? "Hecho: tocá para desmarcar" : "Tocá para marcarlo" }, h("i"), x.nombre) as HTMLButtonElement;
+                 b.style.setProperty("--hc", x.color ?? CDC);
++                b.disabled = !x.id;
++                b.addEventListener("click", async (e) => {
++                  e.stopPropagation();
++                  if (b.disabled) return;
++                  const want = !x.hecho_hoy;
++                  b.setAttribute("aria-pressed", String(want));
++                  const r = await hacer(c, habSt, [b], "habito", { id: x.id, hecho: want }, want ? "Marcando…" : "Desmarcando…");
++                  if (!c.alive()) return;
++                  if (!r) {
++                    b.setAttribute("aria-pressed", String(x.hecho_hoy));
++                    return;
++                  }
++                  x.hecho_hoy = want;
++                  b.title = want ? "Hecho: tocá para desmarcar" : "Tocá para marcarlo";
++                  if (want) c.happy();
++                  sayLine();
++                });
+                 return b;
+               }),
++              habSt,
+             )
+           : h("div", { class: "lz-sub", text: "No tenés hábitos cargados." }),
+       )
+@@ -291,11 +602,16 @@ async function cierre(c: Card) {
+     count(f.paraHoy?.length, "para hoy", "para hoy"),
+     count(f.sinFecha, "sin fecha", "sin fecha"),
+   ].filter(Boolean).join(" · ");
++  // What's due today or late and still open: one button passes it all to tomorrow.
++  const arrastrar = [...(f.atrasadas ?? []), ...(f.paraHoy ?? [])].filter((t) => t.id);
+   const pendBox = box(
+     "Pendiente",
+     f.pendientes ? `${f.pendientes.length} por decidir` : null,
+     h("div", { class: "lz-sub lz-strong", text: pendLine || "No pude leer los pendientes." }),
+     pendTipos.size ? h("div", { class: "lz-sub", text: [...pendTipos].map(([t, n]) => `${t.replace(/_/g, " ")}: ${n}`).join(" · ") }) : null,
++    arrastrar.length
++      ? moverGrupo(c, arrastrar, arrastrar.length === 1 ? "Pasarla a mañana" : `Pasar las ${palabra(arrastrar.length, true)} a mañana`)
++      : null,
+   );
+ 
+   let manana: string | null = null;
+@@ -309,7 +625,6 @@ async function cierre(c: Card) {
+   c.set(
+     habBox,
+     pendBox,
+-    note("Marcar hábitos y mover tareas desde la isla llega en la próxima entrega."),
+     acts(
+       btn("Planificar mañana", "prim", () => c.host.open("manana"), { enter: true }),
+       appButton(c, f),
+@@ -369,7 +684,11 @@ async function manana(c: Card) {
+   c.set(
+     dayBox(c, fechaLarga(tomorrow), cal, tomorrow, null, "manana", extra),
+     list,
+-    planned.length ? note("Agendarlas en el calendario desde la isla llega en la próxima entrega.") : null,
++    // Give them tomorrow's date (those that don't have it yet). The calendar isn't touched.
++    sugg.some((t) => t.id && t.vence !== tomorrow)
++      ? moverGrupo(c, sugg.filter((t) => t.id && t.vence !== tomorrow), sugg.length === 1 ? "Ponerla para mañana" : "Ponerlas para mañana", { confirm: false })
++      : null,
++    planned.length ? note("Les pongo fecha; en el calendario no las agendo.") : null,
+     acts(
+       btn("Ver huecos", "prim", () => c.host.open("huecos"), { enter: true }),
+       btn("Lo que vence", "sec", () => c.host.open("vence")),
+@@ -399,15 +718,19 @@ async function vence(c: Card) {
+         : `En los próximos 10 días vencen **${palabra(n, true)} cosas**; la primera, **${prox[0].titulo}**${prox[0].vence ? `, el **${fechaCorta(prox[0].vence)}**` : ""}.`;
+   if (atr.length) line += ` Y arrastrás **${palabra(atr.length, true)} ${plural(atr.length, "atrasada", "atrasadas")}**.`;
+   c.says(line);
+-  const rows = prox.slice(0, 8).map((t) =>
+-    li(t.color ?? CDC, t.titulo, pill(`${t.vence ? `${fechaCorta(t.vence)} · ` : ""}${enDias(t.en_dias)}`, t.en_dias <= 3 ? "soon" : "")),
+-  );
+-  if (atr.length) {
+-    rows.push(li(atr[0].color ?? CDC, atr.length > 1 ? `${atr[0].titulo} (y ${atr.length - 1} ${plural(atr.length - 1, "atrasada", "atrasadas")} más)` : atr[0].titulo, pill(`${atr[0].dias_atraso} d tarde`, "late")));
+-  }
++  // Each row can be ticked (✓) or passed to tomorrow (→) right here.
++  const st = statusEl();
++  const rows = [
++    ...atr.slice(0, 3).map((t) => taskRow(c, st, t, pill(`${t.dias_atraso} d tarde`, "late"))),
++    ...prox.slice(0, 7).map((t) => taskRow(c, st, t, pill(`${t.vence ? `${fechaCorta(t.vence)} · ` : ""}${enDias(t.en_dias)}`, t.en_dias <= 3 ? "soon" : ""))),
++  ];
++  const resto = [
++    atr.length > 3 ? `${atr.length - 3} ${plural(atr.length - 3, "atrasada", "atrasadas")}` : null,
++    prox.length > 7 ? `${prox.length - 7} ${plural(prox.length - 7, "próxima", "próximas")}` : null,
++  ].filter(Boolean);
+   c.set(
+     rows.length ? box(null, null, ...rows) : null,
+-    prox.length > 8 ? note(`y ${prox.length - 8} más`) : null,
++    h("div", { class: "lz-acts" }, resto.length ? note(`y ${resto.join(" y ")} más`) : null, st),
+     acts(
+       btn("Planificar mañana", "prim", () => c.host.open("manana"), { enter: true }),
+       btn("Ver huecos", "sec", () => c.host.open("huecos")),
+@@ -476,35 +799,83 @@ async function huecos(c: Card) {
+   c.set(grid, cal.failed ? note(`${cal.failed} ${plural(cal.failed, "calendario no se pudo", "calendarios no se pudieron")} leer.`) : null, acts(btn("Planificar mañana", "sec", () => c.host.open("manana"))));
+ }
+ 
+-// ── Tarea rápida (entrega 2) ────────────────────────────────────────────────
++// ── Tarea rápida ────────────────────────────────────────────────────────────
++
++/** "para hoy", "para mañana (jue 8)", "para el vie 9", "sin fecha" */
++function cuandoTexto(vence: string | null): string {
++  if (!vence) return "sin fecha";
++  const hoy = arClock().date;
++  if (vence === hoy) return "para hoy";
++  if (vence === addDays(hoy, 1)) return `para mañana (${fechaCorta(vence)})`;
++  return `para el ${fechaCorta(vence)}`;
++}
+ 
+ function tarea(c: Card, pre: string | null) {
+-  c.says("Escribila como te sale. Yo le pongo día, área y hora.");
++  c.says("Escribila como te sale. Yo le pongo el día.");
+   const input = h("input", { type: "text", placeholder: "Ej: mañana a la noche llamar al contador", "aria-label": "Tarea nueva", autocomplete: "off", spellcheck: "false" }) as HTMLInputElement;
+   input.value = pre ?? "";
+-  const soon = h(
+-    "div",
+-    { class: "lz-soon" },
+-    h("span", { class: "lz-soon-ic", html: ICON.plus }),
+-    h("div", {}, h("b", { text: "Llega en la próxima entrega." }), h("span", { text: " Guardar tareas en el Centro de Control desde la isla todavía no está. Por ahora, anotala en la app." })),
+-  );
+-  const save = btn("Guardar", "prim", () => flash(), { enter: true, title: "Llega en la próxima entrega" });
+-  save.disabled = true;
+-  const flash = () => {
+-    soon.classList.remove("flash");
+-    void soon.offsetWidth;
+-    soon.classList.add("flash");
++  // What it understood, live: the title and the day.
++  const hint = h("div", { class: "lz-sub lz-hint" });
++  const st = statusEl();
++  const parse = () => parseTareaRapida(input.value, arClock().date);
++  const paintHint = () => {
++    const p = parse();
++    hint.replaceChildren();
++    if (!input.value.trim()) {
++      hint.textContent = "Entiendo hoy, mañana, el viernes, el 15, 15/10, en 3 días…";
++      return;
++    }
++    if (!p.titulo) {
++      hint.textContent = `${capital(cuandoTexto(p.vence))}: falta qué hay que hacer.`;
++      return;
++    }
++    hint.append(h("b", { text: p.titulo }), ` · ${cuandoTexto(p.vence)}`);
+   };
++  let busy = false;
++  const guardar = async () => {
++    if (busy) return;
++    const p = parse();
++    if (!p.titulo) {
++      tell(st, "Escribí qué hay que hacer.", "bad");
++      input.focus();
++      return;
++    }
++    busy = true;
++    input.disabled = true;
++    const r = await hacer(c, st, [save], "nueva", { titulo: p.titulo, vence: p.vence }, "Guardando…");
++    busy = false;
++    input.disabled = false;
++    if (!r || !c.alive()) return;
++    c.happy();
++    const id = String(r.id ?? "");
++    c.says(`Anotada: **${p.titulo}**, ${cuandoTexto(p.vence)}.`);
++    const st2 = statusEl();
++    const otra = btn("Otra tarea", "prim", () => c.host.open("tarea", null, { send: false }), { enter: true });
++    const undo: HTMLButtonElement | null = id
++      ? btn("Deshacer", "sec", async () => {
++          if (!(await hacer(c, st2, [otra, undo], "borrar_nueva", { id }, "Borrando…")) || !c.alive()) return;
++          c.says("Listo, **no la anoté**.");
++          undo?.remove();
++        })
++      : null;
++    c.set(acts(otra, undo, st2));
++  };
++  const save = btn("Guardar", "prim", () => void guardar(), { enter: true });
++  input.addEventListener("input", () => {
++    paintHint();
++    if (st.classList.contains("bad")) tell(st, "");
++  });
+   input.addEventListener("keydown", (e) => {
+     if (e.key === "Enter" && !e.isComposing) {
+       e.preventDefault();
+-      flash();
++      void guardar();
+     }
+   });
++  paintHint();
+   c.set(
+     h("label", { class: "lz-qin" }, input, h("span", { class: "lz-mic" }, h("kbd", { text: "Win" }), " ", h("kbd", { text: "H" }), " dictar")),
+-    soon,
+-    acts(save),
++    hint,
++    acts(save, st),
+   );
+   window.setTimeout(() => {
+     if (!c.alive()) return;
+diff --git a/windows/tests/atajos.test.ts b/windows/tests/atajos.test.ts
+index 54d04b3..4bee875 100644
+--- a/windows/tests/atajos.test.ts
++++ b/windows/tests/atajos.test.ts
+@@ -7,7 +7,7 @@ import assert from "node:assert/strict";
+ 
+ import { alternatives, decide, filterSkills, norm, routeByRules, SKILLS } from "../src/views/atajos/router.ts";
+ import { addDays, arClock, arMs, ars, classifyError, dec, enDias, fechaCorta, hm, mesAnterior, mesNombre, money, num, rich, usd } from "../src/views/atajos/format.ts";
+-import { dayBusy, freeSlots, groupAvisos, horaDe, longest, parseFoco, pickTasks, suggestTomorrow, total } from "../src/views/atajos/plan.ts";
++import { dayBusy, freeSlots, groupAvisos, horaDe, longest, parseFoco, parseTareaRapida, pickTasks, suggestTomorrow, total } from "../src/views/atajos/plan.ts";
+ import { occurrences, parseCalendars } from "../src/views/atajos/calendar.ts";
+ 
+ // ── Router ─────────────────────────────────────────────────────────────────
+@@ -304,3 +304,39 @@ test("calendar: recurrences, exceptions, UTC and all-day, in Buenos Aires time",
+   const day = arMs("2026-10-07");
+   assert.deepEqual(freeSlots(dayBusy(evs, day)), [{ s: 17 * 60, e: 21 * 60 + 30 }, { s: 22 * 60, e: 23 * 60 }]);
+ });
++
++// ── Tarea rápida ───────────────────────────────────────────────────────────
++
++test("tarea rápida: the day comes out of the text, the rest is the title", () => {
++  const hoy = "2026-10-07"; // miércoles
++  const cases: Array<[string, string, string | null]> = [
++    ["mañana a la noche llamar al contador", "Llamar al contador a la noche", "2026-10-08"],
++    ["recordame el jueves llamar al contador", "Llamar al contador", "2026-10-08"],
++    ["Recordame que el viernes, pagar la luz", "Pagar la luz", "2026-10-09"],
++    ["pasado mañana gimnasio", "Gimnasio", "2026-10-09"],
++    ["hoy a las 18 hs reunión", "Reunión a las 18 hs", "2026-10-07"],
++    ["pagar expensas el 10", "Pagar expensas", "2026-10-10"],
++    ["pagar expensas el 5", "Pagar expensas", "2026-11-05"],
++    ["turno médico 15/10", "Turno médico", "2026-10-15"],
++    ["turno 3/1", "Turno", "2027-01-03"],
++    ["reunión el 10 de noviembre", "Reunión", "2026-11-10"],
++    ["en 3 días mandar mail", "Mandar mail", "2026-10-10"],
++    ["semana que viene ver depto", "Ver depto", "2026-10-14"],
++    // Said on a Wednesday, "el miércoles" is next week's.
++    ["el miércoles revisar", "Revisar", "2026-10-14"],
++    // A time of day isn't a day.
++    ["llamar a mamá esta mañana", "Llamar a mamá esta mañana", null],
++    ["comprar pan", "Comprar pan", null],
++    ["llamar el 12 a las 15", "Llamar a las 15", "2026-10-12"],
++    ["mañana", "", "2026-10-08"],
++  ];
++  for (const [text, titulo, vence] of cases) {
++    assert.deepEqual(parseTareaRapida(text, hoy), { titulo, vence }, text);
++  }
++});
++
++test("tarea rápida: impossible dates don't become a day", () => {
++  assert.equal(parseTareaRapida("algo 31/2", "2026-10-07").vence, null);
++  assert.equal(parseTareaRapida("algo el 31", "2026-11-05").vence, "2026-12-31");
++  assert.equal(parseTareaRapida("cierre el 31", "2026-12-31").vence, "2026-12-31");
 +});
 -- 
 2.55.0.windows.5

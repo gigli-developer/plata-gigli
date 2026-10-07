@@ -130,12 +130,13 @@ La pestaña de la moneda abre un chat con el agente de Plata del repo `agentes`:
 
 Una tecla (**F8** por defecto; se cambia en Ajustes → **Atajos**) abre la isla en un lanzador **ya escuchando**: el dictado de Windows escribe lo que decís y, a un segundo de silencio, un portero elige la skill y abre su tarjeta. También se escribe y Enter. No hay chat: cada skill contesta con una tarjeta que Mochi presenta, con sus botones (Enter = el principal, Esc = volver).
 
-| Centro de Control (celeste, solo lectura por ahora) | Plata (naranja) |
+| Centro de Control (celeste) | Plata (naranja) |
 |---|---|
-| Mi día · ¿Qué hago ahora? · Avisos de Mochi · Cerrar el día · Planificar mañana · Lo que vence · Huecos de la semana · Tarea rápida (guardar llega en la próxima entrega) | Registrar gasto · Contar una situación · ¿Cuánto tengo? · ¿Cómo voy este mes? · Resúmenes de tarjeta · Me pagaron / pagué · Dólar hoy · Conciliar un resumen |
+| Mi día · ¿Qué hago ahora? · Avisos de Mochi · Cerrar el día · Planificar mañana · Lo que vence · Huecos de la semana · Tarea rápida | Registrar gasto · Contar una situación · ¿Cuánto tengo? · ¿Cómo voy este mes? · Resúmenes de tarjeta · Me pagaron / pagué · Dólar hoy · Conciliar un resumen |
 
 - **El portero:** primero reglas fijas ("gasté…" → Registrar gasto, "¿qué tengo mañana?" → Planificar mañana, "recordame…" → Tarea rápida). Si ninguna aplica, decide Haiku (necesita la API key de Anthropic en Ajustes → Claude). Si duda, ofrece tres opciones.
 - **Sin modelo, salvo donde hace falta:** las skills de Plata leen rutas directas del agente (`/agentes/plata/rapido/*`, repo `agentes`, CONTRATOS §9), y Registrar gasto arma la propuesta con un parser fijo. Aprobar o rechazar va directo, sin turno de IA. Solo "Contar una situación" pasa por el agente con IA.
+- **Desde las tarjetas del Centro se actúa** (entrega 2, 2026-10-07): tildar, empezar / pausar el cronómetro, pasar a mañana, soltar una quieta, marcar hábitos, "Hoy no trabajo" y guardar la tarea rápida (entiende hoy, mañana, el viernes, el 15, 15/10, en 3 días). Cada acción ofrece **Deshacer** cuando se puede. Escriben lo mismo que la app, vía `coucou_accion.sql`.
 - **El Centro de Control** se lee de la función `coucou-foco` del proyecto `cqnlceqghqqrlacbjhzj` (ver [`centro-de-control/`](centro-de-control/README.md)), y el calendario de las direcciones **iCal secretas** de Google Calendar (Configuración → tu calendario → "Dirección secreta en formato iCal").
 
 **Para que ande, una vez, en Ajustes:**
@@ -162,7 +163,7 @@ poll_railway ── cada 30 s ────────────────�
 - Fuentes versionadas en este repo:
   - `supabase/functions/coucou-health/index.ts`: se deploya con el MCP de Supabase, `verify_jwt=false`.
   - `supabase/sql/coucou_health.sql`: se aplica con `execute_sql`.
-- Del lado de Coucou, todo lo propio está en `plata.patch` (veintisiete commits):
+- Del lado de Coucou, todo lo propio está en `plata.patch` (veintiocho commits):
   - `windows/src-tauri/src/integrations.rs`: `poll_plata` y `poll_railway`.
   - `windows/src/views/integrations.ts`: las tarjetas.
   - `state.ts`, `settings/main.ts`, `secrets.rs`, `settings.rs`, `island.ts`: el registro de las dos pills.

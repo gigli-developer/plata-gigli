@@ -122,6 +122,7 @@ finanzas-app/
    - **Railway**: consulta directo la GraphQL de Railway desde la PC del usuario. No pasa por Supabase.
    - Si cambiás `coucou_health()`, `email_process_logs` o los nombres de los cron jobs (`email-poller*`, `fx-sync*`), revisá la función: busca los jobs por prefijo.
    - **Atajos de la isla** (2026-10-07): una tecla (F8, configurable) abre un lanzador con 16 skills de Plata y del Centro de Control que contestan con tarjetas, sin chat, por voz o escribiendo. Plata se lee de rutas directas del agente (`agentes`, `/agentes/plata/rapido/*`, sin modelo); el Centro de Control, de la Edge Function `coucou-foco` del proyecto `cqnlceqghqqrlacbjhzj` (fuente en `integraciones/coucou/centro-de-control/`). Ver el README de Coucou, sección Atajos.
+   - **Entrega 2** (2026-10-07): las tarjetas del Centro **escriben** (tildar, cronómetro, mover de día, hábitos, "hoy no trabajo", tarea rápida), por la misma `coucou-foco` con `{accion, args}` → `cdc.coucou_accion` (`coucou_accion.sql`). Copia la semántica de la app del Centro; si la app cambia cómo escribe una tarea, revisá esa función.
    - **Se actualiza sola** (2026-10-04): la isla lanza `integraciones/coucou/actualizar.ps1` cada 3 h. Si `plata.patch` cambió en **`main`**, cada PC recompila e instala en silencio, y baja también el repo `agentes`. **Publicar una versión = que el parche llegue a `main`.** No usa el Programador de tareas: en esta PC deja las tareas del usuario en cola para siempre.
 
 ---

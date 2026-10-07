@@ -6,9 +6,15 @@
 // para versionar el código; si la editás, redeployala.
 //
 // Auth: secreto compartido. Exige el header `x-coucou-secret` igual al secreto de
-// Vault `cdc_coucou_secret`. La comparación la hace la base (public.coucou_foco):
-// el secreto nunca sale de Vault. Sin header o con uno distinto → 401.
-// Es SOLO LECTURA: todo lo arma cdc.coucou_foco() (coucou_foco.sql).
+// Vault `cdc_coucou_secret`. La comparación la hace la base (public.coucou_foco /
+// public.coucou_accion): el secreto nunca sale de Vault. Sin header o con uno
+// distinto → 401.
+//
+// Dos usos, mismo endpoint:
+// - Body vacío (o sin `accion`) → el día, SOLO LECTURA: cdc.coucou_foco() (coucou_foco.sql).
+// - {"accion": "...", "args": {...}} → una acción de la isla (tildar, empezar, pausar,
+//   mover, nueva, hábito, no trabajo…): cdc.coucou_accion() (coucou_accion.sql).
+//   Devuelve {ok, ...} o {ok:false, error} con un texto para mostrar tal cual.
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 // giglilangonelucas@gmail.com: la isla es de Lucas y de nadie más.
@@ -26,10 +32,22 @@ Deno.serve(async (req) => {
   const secreto = req.headers.get("x-coucou-secret") ?? "";
   if (!secreto) return json({ error: "unauthorized" }, 401);
 
+  let body: { accion?: unknown; args?: unknown } = {};
+  try {
+    const raw = await req.text();
+    if (raw.trim()) body = JSON.parse(raw);
+  } catch {
+    return json({ error: "bad_json" }, 400);
+  }
+
   const sb = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!, {
     auth: { persistSession: false, autoRefreshToken: false },
   });
-  const { data, error } = await sb.rpc("coucou_foco", { p_secreto: secreto, p_usuario: USUARIO });
+  const accion = typeof body.accion === "string" ? body.accion : "";
+  const args = body.args && typeof body.args === "object" && !Array.isArray(body.args) ? body.args : {};
+  const { data, error } = accion
+    ? await sb.rpc("coucou_accion", { p_secreto: secreto, p_usuario: USUARIO, p_accion: accion, p_args: args })
+    : await sb.rpc("coucou_foco", { p_secreto: secreto, p_usuario: USUARIO });
   if (error) return json({ error: error.message }, 500);
   // null = el secreto no coincide (o no existe en Vault).
   if (data == null) return json({ error: "unauthorized" }, 401);
