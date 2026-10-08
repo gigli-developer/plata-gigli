@@ -136,6 +136,7 @@ Una tecla (**F8** por defecto; se cambia en Ajustes → **Atajos**) abre la isla
 
 - **El portero:** primero reglas fijas ("gasté…" → Registrar gasto, "¿qué tengo mañana?" → Planificar mañana, "recordame…" → Tarea rápida). Si ninguna aplica, decide Haiku (necesita la API key de Anthropic en Ajustes → Claude). Si duda, ofrece tres opciones.
 - **Sin modelo, salvo donde hace falta:** las skills de Plata leen rutas directas del agente (`/agentes/plata/rapido/*`, repo `agentes`, CONTRATOS §9), y Registrar gasto arma la propuesta con un parser fijo. Aprobar o rechazar va directo, sin turno de IA. Solo "Contar una situación" pasa por el agente con IA.
+- **El Centro de Control también es un agente visible** (2026-10-08): tiene su **pestaña** en la isla (ícono de checklist, con punto rojo si hay atrasadas): la franja del día con el anillo de hechas y la agenda, el checklist Hoy · En curso · Semana (✓, ▶ Empezar, ↷ Otro día, con Deshacer), los hábitos y un campo para preguntarle. También tiene su **pill** "Centro" en el Overview. La **pestaña de Plata** trae botones de atajo (¿Cuánto tengo?, Este mes, Resúmenes, Deudas, Dólar, + Gasto) y el **⚡** de la cabecera abre el lanzador sin F8.
 - **Desde las tarjetas del Centro se actúa** (entrega 2, 2026-10-07): tildar, empezar / pausar el cronómetro, pasar a mañana, soltar una quieta, marcar hábitos, "Hoy no trabajo" y guardar la tarea rápida (entiende hoy, mañana, el viernes, el 15, 15/10, en 3 días). Cada acción ofrece **Deshacer** cuando se puede. Escriben lo mismo que la app, vía `coucou_accion.sql`.
 - **El Centro de Control** se lee de la función `coucou-foco` del proyecto `cqnlceqghqqrlacbjhzj` (ver [`centro-de-control/`](centro-de-control/README.md)), y el calendario de las direcciones **iCal secretas** de Google Calendar (Configuración → tu calendario → "Dirección secreta en formato iCal").
 
@@ -163,7 +164,7 @@ poll_railway ── cada 30 s ────────────────�
 - Fuentes versionadas en este repo:
   - `supabase/functions/coucou-health/index.ts`: se deploya con el MCP de Supabase, `verify_jwt=false`.
   - `supabase/sql/coucou_health.sql`: se aplica con `execute_sql`.
-- Del lado de Coucou, todo lo propio está en `plata.patch` (veintiocho commits):
+- Del lado de Coucou, todo lo propio está en `plata.patch` (veintinueve commits):
   - `windows/src-tauri/src/integrations.rs`: `poll_plata` y `poll_railway`.
   - `windows/src/views/integrations.ts`: las tarjetas.
   - `state.ts`, `settings/main.ts`, `secrets.rs`, `settings.rs`, `island.ts`: el registro de las dos pills.

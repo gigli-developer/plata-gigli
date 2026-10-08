@@ -1,7 +1,7 @@
-From 59fd434c147189f2771f83496f86e8f2b54faee7 Mon Sep 17 00:00:00 2001
+From f35c5329e7e12675c05b8be050dba605d278a68c Mon Sep 17 00:00:00 2001
 From: Lucas Gigli <giglilangonelucas@gmail.com>
 Date: Wed, 30 Sep 2026 20:56:49 +0000
-Subject: [PATCH 01/28] Pills de Plata y Railway
+Subject: [PATCH 01/29] Pills de Plata y Railway
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -685,10 +685,10 @@ index b8ad73c..1e394d3 100644
 2.55.0.windows.5
 
 
-From cd2b94c9651b19f8e0ad37e506896d3022e25a15 Mon Sep 17 00:00:00 2001
+From 10065eb1ad36850638b1bc4b946f0d106ed1a39e Mon Sep 17 00:00:00 2001
 From: Lucas <lucasgigli3@gmail.com>
 Date: Wed, 30 Sep 2026 19:26:42 -0300
-Subject: [PATCH 02/28] Isla movible y chat con el agente de Plata
+Subject: [PATCH 02/29] Isla movible y chat con el agente de Plata
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -2047,10 +2047,10 @@ index ac0ac7b..b0aea0d 100644
 2.55.0.windows.5
 
 
-From 482fecbe3cad8c417ab6c4cd64a510b4708fe6c0 Mon Sep 17 00:00:00 2001
+From de92114787e9f3864e344ff924eaf55c341355ff Mon Sep 17 00:00:00 2001
 From: Lucas <lucasgigli3@gmail.com>
 Date: Wed, 30 Sep 2026 19:41:15 -0300
-Subject: [PATCH 03/28] Plata en la isla: tarjetas, pedidos a Claude Code y voz
+Subject: [PATCH 03/29] Plata en la isla: tarjetas, pedidos a Claude Code y voz
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -2645,10 +2645,10 @@ index 6c6bb30..668ec54 100644
 2.55.0.windows.5
 
 
-From 76d63a9584e1111ee715e200f51c1463a512d8f6 Mon Sep 17 00:00:00 2001
+From 480174a4bfa9a520bf74ad6c6580b42e161e1814 Mon Sep 17 00:00:00 2001
 From: Lucas <lucasgigli3@gmail.com>
 Date: Wed, 30 Sep 2026 20:58:44 -0300
-Subject: [PATCH 04/28] El agente de Plata se prende solo
+Subject: [PATCH 04/29] El agente de Plata se prende solo
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -2834,10 +2834,10 @@ index 668ec54..6de96d2 100644
 2.55.0.windows.5
 
 
-From d1dd31b49d6cfecd820bdb0b3805f63e7a4f11e9 Mon Sep 17 00:00:00 2001
+From 715741977e57d2b653c1cd9705998af3c242f9d8 Mon Sep 17 00:00:00 2001
 From: Lucas <lucasgigli3@gmail.com>
 Date: Wed, 30 Sep 2026 21:19:44 -0300
-Subject: [PATCH 05/28] La isla se ancla en cualquier monitor
+Subject: [PATCH 05/29] La isla se ancla en cualquier monitor
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -2992,10 +2992,10 @@ index 96367bd..4a31905 100644
 2.55.0.windows.5
 
 
-From e525400e302d202ae4e7ab5f5409241dedf39f3e Mon Sep 17 00:00:00 2001
+From 49ea1e71c8244a28b32c301a406de1a66205692b Mon Sep 17 00:00:00 2001
 From: Lucas <lucasgigli3@gmail.com>
 Date: Wed, 30 Sep 2026 22:32:46 -0300
-Subject: [PATCH 06/28] Plata tab: attach a card statement (drop a
+Subject: [PATCH 06/29] Plata tab: attach a card statement (drop a
  PDF/screenshot or paste it) to reconcile
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -3680,10 +3680,10 @@ index b0aea0d..791ea8a 100644
 2.55.0.windows.5
 
 
-From 34e9a6003ea00fce4e537565bac27db7e0f1299d Mon Sep 17 00:00:00 2001
+From 75305476d74263f1bd579bbf84ea0a5e738cfa2e Mon Sep 17 00:00:00 2001
 From: Lucas <lucasgigli3@gmail.com>
 Date: Wed, 30 Sep 2026 22:56:17 -0300
-Subject: [PATCH 07/28] =?UTF-8?q?Pesta=C3=B1a=20Plata:=20agrandar=20el=20c?=
+Subject: [PATCH 07/29] =?UTF-8?q?Pesta=C3=B1a=20Plata:=20agrandar=20el=20c?=
  =?UTF-8?q?hat=20e=20historial=20local=20de=20la=20conversaci=C3=B3n?=
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -4096,10 +4096,10 @@ index 791ea8a..2cee61f 100644
 2.55.0.windows.5
 
 
-From 5e20e76919ec6b3950bf834ffb0eba63e8f3d73a Mon Sep 17 00:00:00 2001
+From f02148ed3b5d7c0cc55eef36c5aa9c6a44b2223c Mon Sep 17 00:00:00 2001
 From: Lucas <lucasgigli3@gmail.com>
 Date: Wed, 30 Sep 2026 23:13:01 -0300
-Subject: [PATCH 08/28] =?UTF-8?q?Pesta=C3=B1a=20Plata:=20el=20bot=C3=B3n?=
+Subject: [PATCH 08/29] =?UTF-8?q?Pesta=C3=B1a=20Plata:=20el=20bot=C3=B3n?=
  =?UTF-8?q?=20de=20agrandar=20con=20texto=20y=20en=20naranja?=
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -4174,10 +4174,10 @@ index b487a5e..e983567 100644
 2.55.0.windows.5
 
 
-From c333618cffb6f69d444a2e0fe1ee25b21ec4fcb7 Mon Sep 17 00:00:00 2001
+From 1127ed7dab4b5fa5412b6229dcd70f8141ab5b84 Mon Sep 17 00:00:00 2001
 From: Lucas <lucasgigli3@gmail.com>
 Date: Wed, 30 Sep 2026 23:17:23 -0300
-Subject: [PATCH 09/28] =?UTF-8?q?Bot=C3=B3n=20en=20el=20encabezado=20de=20?=
+Subject: [PATCH 09/29] =?UTF-8?q?Bot=C3=B3n=20en=20el=20encabezado=20de=20?=
  =?UTF-8?q?la=20isla:=20abre=20el=20chat=20de=20Plata=20en=20grande?=
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -4276,10 +4276,10 @@ index 2cee61f..416788e 100644
 2.55.0.windows.5
 
 
-From f3f5507c627f778199460d925e8663bb4e720dbe Mon Sep 17 00:00:00 2001
+From d18cdb0b385a77294c4951c1e493f59843cc19f7 Mon Sep 17 00:00:00 2001
 From: Lucas <lucasgigli3@gmail.com>
 Date: Thu, 1 Oct 2026 21:31:50 -0300
-Subject: [PATCH 10/28] =?UTF-8?q?Isla=20m=C3=A1s=20fluida:=20ventana=20de?=
+Subject: [PATCH 10/29] =?UTF-8?q?Isla=20m=C3=A1s=20fluida:=20ventana=20de?=
  =?UTF-8?q?=20tama=C3=B1o=20fijo,=20anclaje=20y=20deslizamiento=20al=20sol?=
  =?UTF-8?q?tar?=
 MIME-Version: 1.0
@@ -5583,10 +5583,10 @@ index 416788e..debb686 100644
 2.55.0.windows.5
 
 
-From 42c0f6eae9472c3c78c64106e7fd7b84c9e02556 Mon Sep 17 00:00:00 2001
+From 115bf4f93f3865fbfb6ea3faa17ad43bc3f70bd5 Mon Sep 17 00:00:00 2001
 From: Lucas <lucasgigli3@gmail.com>
 Date: Thu, 1 Oct 2026 21:32:36 -0300
-Subject: [PATCH 11/28] =?UTF-8?q?Pesta=C3=B1a=20Plata:=20conciliar=20un=20?=
+Subject: [PATCH 11/29] =?UTF-8?q?Pesta=C3=B1a=20Plata:=20conciliar=20un=20?=
  =?UTF-8?q?resumen=20con=20Claude=20Code,=20con=20el=20plan=20y=20no=20la?=
  =?UTF-8?q?=20API?=
 MIME-Version: 1.0
@@ -7225,10 +7225,10 @@ index 851e6da..53b99a0 100644
 2.55.0.windows.5
 
 
-From 05545361cc829ee3755f8140a4813d93fa3c8828 Mon Sep 17 00:00:00 2001
+From 709d60d313bc0f2b15685edf88010ca20df7ba6b Mon Sep 17 00:00:00 2001
 From: Lucas <lucasgigli3@gmail.com>
 Date: Thu, 1 Oct 2026 22:01:26 -0300
-Subject: [PATCH 12/28] =?UTF-8?q?Pesta=C3=B1a=20Plata:=20sin=20sesi=C3=B3n?=
+Subject: [PATCH 12/29] =?UTF-8?q?Pesta=C3=B1a=20Plata:=20sin=20sesi=C3=B3n?=
  =?UTF-8?q?=20de=20Claude=20Code,=20Reintentar=20en=20vez=20de=20mand?=
  =?UTF-8?q?=C3=A1rselo=20al=20agente?=
 MIME-Version: 1.0
@@ -7322,10 +7322,10 @@ index 53b99a0..fde7b29 100644
 2.55.0.windows.5
 
 
-From 1e78f3e1cd27021224d454c03c7ad4b8e46f74ad Mon Sep 17 00:00:00 2001
+From 5d14399c1c7ba47d02e33478a599601b35def317 Mon Sep 17 00:00:00 2001
 From: Lucas <lucasgigli3@gmail.com>
 Date: Thu, 1 Oct 2026 22:07:16 -0300
-Subject: [PATCH 13/28] =?UTF-8?q?Pesta=C3=B1a=20Plata:=20las=20respuestas?=
+Subject: [PATCH 13/29] =?UTF-8?q?Pesta=C3=B1a=20Plata:=20las=20respuestas?=
  =?UTF-8?q?=20del=20agente=20con=20formato=20(tablas,=20negritas,=20listas?=
  =?UTF-8?q?)?=
 MIME-Version: 1.0
@@ -7691,10 +7691,10 @@ index fde7b29..09465b3 100644
 2.55.0.windows.5
 
 
-From 87b93f0111206d56f0d05180459f9828a0f72222 Mon Sep 17 00:00:00 2001
+From 2965324bdef57b7bd67bc59e7ba82556de4238d0 Mon Sep 17 00:00:00 2001
 From: Lucas <lucasgigli3@gmail.com>
 Date: Thu, 1 Oct 2026 22:26:24 -0300
-Subject: [PATCH 14/28] =?UTF-8?q?Buscar=20claude.exe=20tambi=C3=A9n=20en?=
+Subject: [PATCH 14/29] =?UTF-8?q?Buscar=20claude.exe=20tambi=C3=A9n=20en?=
  =?UTF-8?q?=20la=20carpeta=20del=20paquete=20de=20la=20app=20(MSIX)?=
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -7754,10 +7754,10 @@ index 3b73768..83bbfae 100644
 2.55.0.windows.5
 
 
-From 11786d1411608285963dcc190488499084740479 Mon Sep 17 00:00:00 2001
+From 24a81aca37977dad478de6f3c34ca9aa50225675 Mon Sep 17 00:00:00 2001
 From: Lucas <lucasgigli3@gmail.com>
 Date: Thu, 1 Oct 2026 22:44:34 -0300
-Subject: [PATCH 15/28] Conciliar: de 8 minutos a 50 segundos, y el resultado
+Subject: [PATCH 15/29] Conciliar: de 8 minutos a 50 segundos, y el resultado
  le llega al agente
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -7935,10 +7935,10 @@ index 09465b3..acf043e 100644
 2.55.0.windows.5
 
 
-From 74e64e4d4ff7ba25409360e38f75279fc8c547d1 Mon Sep 17 00:00:00 2001
+From 545213dc3d01d0dd54cc6ddabbb23f478f037dbc Mon Sep 17 00:00:00 2001
 From: Lucas <lucasgigli3@gmail.com>
 Date: Thu, 1 Oct 2026 23:00:01 -0300
-Subject: [PATCH 16/28] =?UTF-8?q?Pesta=C3=B1a=20Plata:=20bot=C3=B3n=20Modi?=
+Subject: [PATCH 16/29] =?UTF-8?q?Pesta=C3=B1a=20Plata:=20bot=C3=B3n=20Modi?=
  =?UTF-8?q?ficar=20en=20las=20propuestas?=
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -7974,10 +7974,10 @@ index acf043e..16d0deb 100644
 2.55.0.windows.5
 
 
-From 23110cb041050e4dc20c827dafb3a690fa82c573 Mon Sep 17 00:00:00 2001
+From 265cc00fce98dc1ef2a16b3daa98142ad3a2dffc Mon Sep 17 00:00:00 2001
 From: Lucas <lucasgigli3@gmail.com>
 Date: Thu, 1 Oct 2026 23:23:35 -0300
-Subject: [PATCH 17/28] =?UTF-8?q?Encontrar=20claude.exe=20con=20la=20estru?=
+Subject: [PATCH 17/29] =?UTF-8?q?Encontrar=20claude.exe=20con=20la=20estru?=
  =?UTF-8?q?ctura=20nueva=20de=20la=20app=20(<versi=C3=B3n>\<hash>\)?=
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -8031,10 +8031,10 @@ index 83bbfae..9858961 100644
 2.55.0.windows.5
 
 
-From 4f3c40d9f5aa18d8e95679a17e1ebe80ff8488ac Mon Sep 17 00:00:00 2001
+From 716bf7f50407cab46a01fa45c283a77f2354a444 Mon Sep 17 00:00:00 2001
 From: Lucas <lucasgigli3@gmail.com>
 Date: Sat, 3 Oct 2026 14:14:49 -0300
-Subject: [PATCH 18/28] Plata lista sola: chequeo de piezas y "Conectar Claude
+Subject: [PATCH 18/29] Plata lista sola: chequeo de piezas y "Conectar Claude
  Code" sin terminal
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -9443,10 +9443,10 @@ index 16d0deb..4c6b4d0 100644
 2.55.0.windows.5
 
 
-From a271a0cdf5022aa48dc855344df8d2f857e8f9a0 Mon Sep 17 00:00:00 2001
+From 8a66ac14207a99f81868eef1d6651315cb4385b3 Mon Sep 17 00:00:00 2001
 From: Lucas <lucasgigli3@gmail.com>
 Date: Sat, 3 Oct 2026 14:59:45 -0300
-Subject: [PATCH 19/28] =?UTF-8?q?Plata:=20conciliar=20tambi=C3=A9n=20el=20?=
+Subject: [PATCH 19/29] =?UTF-8?q?Plata:=20conciliar=20tambi=C3=A9n=20el=20?=
  =?UTF-8?q?extracto=20de=20la=20cuenta=20con=20Claude=20Code?=
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -9871,10 +9871,10 @@ index 4c6b4d0..245e97c 100644
 2.55.0.windows.5
 
 
-From 903d2ed8a3b717e44265076c84579edc44a30dbe Mon Sep 17 00:00:00 2001
+From 1361439e48e38cb145a46b5ccdea1b0c7190b1ab Mon Sep 17 00:00:00 2001
 From: Lucas <lucasgigli3@gmail.com>
 Date: Sat, 3 Oct 2026 18:51:21 -0300
-Subject: [PATCH 20/28] Listo: el extracto de la cuenta como pieza opcional del
+Subject: [PATCH 20/29] Listo: el extracto de la cuenta como pieza opcional del
  chequeo
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -10030,10 +10030,10 @@ index 245e97c..dee20eb 100644
 2.55.0.windows.5
 
 
-From 48d76bf27063c1c3e9af48aa6ff2883b673cb706 Mon Sep 17 00:00:00 2001
+From 09e3dc453c52927be2f5c81fa441fe21369aa2ae Mon Sep 17 00:00:00 2001
 From: Lucas <lucasgigli3@gmail.com>
 Date: Sat, 3 Oct 2026 22:02:25 -0300
-Subject: [PATCH 21/28] =?UTF-8?q?Pesta=C3=B1a=20Plata:=20varias=20l=C3=ADn?=
+Subject: [PATCH 21/29] =?UTF-8?q?Pesta=C3=B1a=20Plata:=20varias=20l=C3=ADn?=
  =?UTF-8?q?eas=20con=20Shift+Enter,=20y=20el=20micr=C3=B3fono=20dice=20por?=
  =?UTF-8?q?=20qu=C3=A9=20no=20dicta?=
 MIME-Version: 1.0
@@ -10279,10 +10279,10 @@ index dee20eb..cc37dad 100644
 2.55.0.windows.5
 
 
-From ac9b0f33d0a6d5cac21f366fa0fa00210f370f06 Mon Sep 17 00:00:00 2001
+From c808c768320b708c67a91ab88c8febc87d390784 Mon Sep 17 00:00:00 2001
 From: Lucas <lucasgigli3@gmail.com>
 Date: Sat, 3 Oct 2026 23:37:25 -0300
-Subject: [PATCH 22/28] Panel grande para los chats: lista a la izquierda, chat
+Subject: [PATCH 22/29] Panel grande para los chats: lista a la izquierda, chat
  a la derecha
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -11887,10 +11887,10 @@ index debb686..791ea8a 100644
 2.55.0.windows.5
 
 
-From d01991f93f6112268f07d05ed0896363c9e6d1c9 Mon Sep 17 00:00:00 2001
+From 4f3def0d8c45a7f68146e436a29c8bd42c02faab Mon Sep 17 00:00:00 2001
 From: Lucas <lucasgigli3@gmail.com>
 Date: Sun, 4 Oct 2026 18:21:47 -0300
-Subject: [PATCH 23/28] =?UTF-8?q?Archivos=20a=20Plata:=20"Mandar=20a=20Pla?=
+Subject: [PATCH 23/29] =?UTF-8?q?Archivos=20a=20Plata:=20"Mandar=20a=20Pla?=
  =?UTF-8?q?ta"=20despu=C3=A9s=20de=20soltar,=20y=20el=20clip?=
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -12329,10 +12329,10 @@ index 791ea8a..6f662fe 100644
 2.55.0.windows.5
 
 
-From a94d16ee932818c1a9b8c0ed75152333dbfa57ae Mon Sep 17 00:00:00 2001
+From af0daa88d32d868b7b7c5715c4880b16699163a7 Mon Sep 17 00:00:00 2001
 From: Lucas <lucasgigli3@gmail.com>
 Date: Sun, 4 Oct 2026 18:21:48 -0300
-Subject: [PATCH 24/28] Chats: las caritas se mueven
+Subject: [PATCH 24/29] Chats: las caritas se mueven
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -12554,10 +12554,10 @@ index 7e58f71..8abc0b9 100644
 2.55.0.windows.5
 
 
-From bbee462af3492f8f97497a070ecd43923f6b0302 Mon Sep 17 00:00:00 2001
+From 21040ab9a082054e0d8b56203e6bdf149e2bdb21 Mon Sep 17 00:00:00 2001
 From: Lucas <lucasgigli3@gmail.com>
 Date: Sun, 4 Oct 2026 18:55:14 -0300
-Subject: [PATCH 25/28] La isla se actualiza sola
+Subject: [PATCH 25/29] La isla se actualiza sola
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -12693,10 +12693,10 @@ index 5aedbd3..f905946 100644
 2.55.0.windows.5
 
 
-From a613661ccd2482b69c786e8941e1cd75ca9b0ea2 Mon Sep 17 00:00:00 2001
+From b015e1682067be9b66f0f32a201a7c62fb153089 Mon Sep 17 00:00:00 2001
 From: Lucas <lucasgigli3@gmail.com>
 Date: Wed, 7 Oct 2026 18:51:50 -0300
-Subject: [PATCH 26/28] Atajos: tecla global, comandos y Ajustes
+Subject: [PATCH 26/29] Atajos: tecla global, comandos y Ajustes
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -14625,10 +14625,10 @@ index 605b820..1f22b80 100644
 2.55.0.windows.5
 
 
-From c4c158f24a0229016e76f3d2229f4c9fe12801ab Mon Sep 17 00:00:00 2001
+From ea35b3ef0125ca34e5265c2a4c24025b00bf466a Mon Sep 17 00:00:00 2001
 From: Lucas <lucasgigli3@gmail.com>
 Date: Wed, 7 Oct 2026 18:51:50 -0300
-Subject: [PATCH 27/28] Atajos: el lanzador de la isla y las 16 skills
+Subject: [PATCH 27/29] Atajos: el lanzador de la isla y las 16 skills
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -19207,10 +19207,10 @@ index 0000000..54d04b3
 2.55.0.windows.5
 
 
-From 5d208fab625d45755a988ceb6b5a2cf61de85a93 Mon Sep 17 00:00:00 2001
+From 6c170e8628cbe0735a1b4d9e8c7d69d3877b35b8 Mon Sep 17 00:00:00 2001
 From: Lucas <lucasgigli3@gmail.com>
 Date: Wed, 7 Oct 2026 19:16:53 -0300
-Subject: [PATCH 28/28] Atajos de la isla, entrega 2: acciones del Centro de
+Subject: [PATCH 28/29] Atajos de la isla, entrega 2: acciones del Centro de
  Control
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -20275,6 +20275,1685 @@ index 54d04b3..4bee875 100644
 +  assert.equal(parseTareaRapida("algo el 31", "2026-11-05").vence, "2026-12-31");
 +  assert.equal(parseTareaRapida("cierre el 31", "2026-12-31").vence, "2026-12-31");
 +});
+-- 
+2.55.0.windows.5
+
+
+From c69855ee4f85aa4c0681eb1d6b86855d9f203e7d Mon Sep 17 00:00:00 2001
+From: Lucas <lucasgigli3@gmail.com>
+Date: Thu, 8 Oct 2026 00:32:29 -0300
+Subject: [PATCH 29/29] Centro de Control como agente visible en la isla
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Hasta ahora el Centro y los atajos de Plata solo existían detrás de F8.
+
+- Pestaña propia del Centro (views/centro.ts), el diseño del artifact: la
+  franja del día (anillo de hechas, resumen, agenda de hoy), el checklist
+  Hoy · En curso · Semana con ✓ / ▶ Empezar / ↷ Otro día y Deshacer, los
+  hábitos y un campo para preguntarle (va al lanzador). Punto rojo en la
+  pestaña si hay atrasadas.
+- Pill "Centro" en el Overview con sus tres líneas; se prende sola una vez
+  (ocupa el lugar de GitHub si ya había tres) y se actualiza cada 3 min.
+- Botón ⚡ en la cabecera: abre los Atajos sin acordarse de F8.
+- Pestaña de Plata: botones de atajo (¿Cuánto tengo?, Este mes, Resúmenes,
+  Deudas, Dólar, + Gasto).
+- Arreglo: enfocar un campo mientras la isla crece desplazaba el recorte y
+  la cabecera quedaba afuera (pasaba también en Plata).
+
+Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+---
+ windows/src-tauri/src/settings.rs    |   2 +-
+ windows/src/core/layout.ts           |   8 +-
+ windows/src/core/state.ts            |   6 +-
+ windows/src/island/integrations.ts   |   1 +
+ windows/src/island/island.ts         |  25 +-
+ windows/src/main.ts                  |  21 +
+ windows/src/settings/main.ts         |   2 +
+ windows/src/style.css                | 640 +++++++++++++++++++++++++++
+ windows/src/views/atajos/launcher.ts |  20 +
+ windows/src/views/centro.ts          | 518 ++++++++++++++++++++++
+ windows/src/views/icons.ts           |   4 +
+ windows/src/views/integrations.ts    |  45 ++
+ windows/src/views/plata.ts           |  24 +-
+ windows/src/views/views.ts           |  25 +-
+ 14 files changed, 1328 insertions(+), 13 deletions(-)
+ create mode 100644 windows/src/views/centro.ts
+
+diff --git a/windows/src-tauri/src/settings.rs b/windows/src-tauri/src/settings.rs
+index cf68e57..6246fa5 100644
+--- a/windows/src-tauri/src/settings.rs
++++ b/windows/src-tauri/src/settings.rs
+@@ -64,7 +64,7 @@ impl Default for Settings {
+             active_integrations: vec![
+                 "integration_plata".into(),
+                 "integration_railway".into(),
+-                "integration_github".into(),
++                "integration_centro".into(),
+             ],
+             screen: "primary".into(),
+             autostart: false,
+diff --git a/windows/src/core/layout.ts b/windows/src/core/layout.ts
+index 0a6dffc..941d4ef 100644
+--- a/windows/src/core/layout.ts
++++ b/windows/src/core/layout.ts
+@@ -24,7 +24,9 @@ export type IslandViewName =
+   | "settings"
+   | "greeting"
+   /** Atajos de la isla: the skills launcher and its cards (views/atajos). */
+-  | "launcher";
++  | "launcher"
++  /** The Centro de Control agent's tab: the day and its checklist (views/centro.ts). */
++  | "centro";
+ 
+ export type BotStateName =
+   | "idle"
+@@ -191,6 +193,8 @@ export const VIEW_LAYOUTS: Record<IslandViewName, ViewLayout> = {
+   // The launcher draws its own Mochis (one per agent); its height follows its
+   // content (setLauncherHeight). This is only the first guess.
+   launcher: { height: 360, botX: 40, botY: 20, botDiameter: 20, agentMode: "none" },
++  // The Centro's tab brings its own Mochi (in the ring), like the launcher.
++  centro: { height: 420, botX: 40, botY: 20, botDiameter: 20, agentMode: "none" },
+ };
+ 
+ /**
+@@ -262,7 +266,7 @@ export function botPosition(
+     case "expanded": {
+       const layout = VIEW_LAYOUTS[view];
+       // The launcher's cards bring their own Mochi: the island's stays out of sight.
+-      if (view === "launcher") {
++      if (view === "launcher" || view === "centro") {
+         return { cx: layout.botX, cy: layout.botY ?? 20, diameter: layout.botDiameter, opacity: 0 };
+       }
+       // Large panel: Mochi sits in the foot of the chat list, next to the
+diff --git a/windows/src/core/state.ts b/windows/src/core/state.ts
+index ef96bb1..4b85787 100644
+--- a/windows/src/core/state.ts
++++ b/windows/src/core/state.ts
+@@ -64,6 +64,8 @@ export const INTEGRATION_AGENTS: AgentTask[] = [
+   // Windows-only: the Plata finance app and its Railway host.
+   task("integration_plata", "Plata", "#FF9E1B", "n8n"),
+   task("integration_railway", "Railway", "#B57BFF", "n8n"),
++  // The Centro de Control agent (views/centro.ts): its pill opens its tab.
++  task("integration_centro", "Centro", "#7CC4FF", "n8n"),
+   task("integration_resend", "Resend", "#22C55E", "n8n"),
+   task("integration_n8n", "n8n", "#F29B38", "n8n"),
+   task("integration_vercel", "Vercel", "#7C5CFF", "n8n"),
+@@ -74,7 +76,7 @@ export const INTEGRATION_AGENTS: AgentTask[] = [
+ ];
+ 
+ export const TOGGLEABLE_INTEGRATION_IDS = [
+-  "integration_plata", "integration_railway", "integration_resend", "integration_n8n", "integration_vercel", "integration_github",
++  "integration_plata", "integration_railway", "integration_centro", "integration_resend", "integration_n8n", "integration_vercel", "integration_github",
+   "integration_notion", "integration_calcom", "integration_stripe",
+ ];
+ 
+@@ -113,7 +115,7 @@ export const DEFAULT_SETTINGS: Settings = {
+   soundVolume: 0.12,
+   autoCloseInterval: 15,
+   absenceInterval: 180,
+-  activeIntegrations: ["integration_plata", "integration_railway", "integration_github"],
++  activeIntegrations: ["integration_plata", "integration_railway", "integration_centro"],
+   screen: "primary",
+   autostart: false,
+   hooksInstalled: false,
+diff --git a/windows/src/island/integrations.ts b/windows/src/island/integrations.ts
+index 4fd89c8..4b38368 100644
+--- a/windows/src/island/integrations.ts
++++ b/windows/src/island/integrations.ts
+@@ -18,6 +18,7 @@ const KEY_FOR: Record<string, string> = {
+   integration_calcom: "calcom-api-key",
+   integration_plata: "plata-secret",
+   integration_railway: "railway-token",
++  integration_centro: "cdc-secret",
+ };
+ 
+ const clearTimers = new Map<string, number>();
+diff --git a/windows/src/island/island.ts b/windows/src/island/island.ts
+index e39aa7b..048a7ec 100644
+--- a/windows/src/island/island.ts
++++ b/windows/src/island/island.ts
+@@ -158,7 +158,8 @@ export class Island {
+           integration_plata: "https://plata-production.up.railway.app",
+           integration_railway: "https://railway.com/dashboard",
+         };
+-        if (task.id === "integration_claude") void Bridge.openInVSCode(task.sessionCwd ?? null);
++        if (task.id === "integration_centro") this.setView("centro");
++        else if (task.id === "integration_claude") void Bridge.openInVSCode(task.sessionCwd ?? null);
+         else if (task.id === "integration_n8n") void Bridge.openN8n();
+         else if (urls[task.id]) void Bridge.openUrl(urls[task.id]);
+       },
+@@ -199,6 +200,19 @@ export class Island {
+       openSettingsWindow: () => void Bridge.openSettingsWindow(),
+       blip: () => Sound.play("blip"),
+       fileToPlata: () => this.fileToPlata(),
++      openLauncher: () => this.openLauncher(false),
++      openSkill: (id, pre) => {
++        const l = this.launcher();
++        if (!l) return;
++        l.openSkill(id, pre ?? null);
++        this.alert("launcher");
++      },
++      askLauncher: (text) => {
++        const l = this.launcher();
++        if (!l) return;
++        l.ask(text);
++        this.alert("launcher");
++      },
+     };
+ 
+     this.wakeStrip = h("div", { id: "wake-strip" });
+@@ -242,6 +256,12 @@ export class Island {
+       this.uploadCanvas.el,
+       this.contentEl,
+     );
++    // The clip only crops: it must never scroll. Focusing a field at the
++    // bottom of a view while the island is still growing (Plata, Centro)
++    // made the browser scroll it, and the header ended up off the top.
++    this.clipEl.addEventListener("scroll", () => {
++      if (this.clipEl.scrollTop || this.clipEl.scrollLeft) this.clipEl.scrollTo(0, 0);
++    });
+     this.islandEl = h(
+       "div",
+       { id: "island" },
+@@ -853,6 +873,7 @@ export class Island {
+   private frame = (nowMs: number) => {
+     const dt = Math.min(0.05, (nowMs - this.lastFrame) / 1000);
+     this.lastFrame = nowMs;
++    if (this.clipEl.scrollTop || this.clipEl.scrollLeft) this.clipEl.scrollTo(0, 0);
+ 
+     this.width.step(dt, nowMs);
+     this.height.step(dt, nowMs);
+@@ -1038,7 +1059,7 @@ export class Island {
+     // The two chats (Claude and Plata) and the launcher are the only views with
+     // a text field, so they are the only time the island may take keyboard focus.
+     if (this.lastSyncedView !== State.view) {
+-      const typed = (v: string | null) => v === "prompt" || v === "plata" || v === "launcher";
++      const typed = (v: string | null) => v === "prompt" || v === "plata" || v === "launcher" || v === "centro";
+       const wasChat = typed(this.lastSyncedView);
+       if (this.lastSyncedView === "launcher") this.launcher()?.leave();
+ 
+diff --git a/windows/src/main.ts b/windows/src/main.ts
+index 81a07f2..abf7dc3 100644
+--- a/windows/src/main.ts
++++ b/windows/src/main.ts
+@@ -7,6 +7,7 @@ import { State, type Settings } from "./core/state";
+ import { Island } from "./island/island";
+ import { registerHookHandlers } from "./island/hooks";
+ import { registerIntegrationHandlers, refreshConfigured } from "./island/integrations";
++import { startCentroPoll } from "./views/centro";
+ 
+ async function main() {
+   const root = document.getElementById("root");
+@@ -21,6 +22,25 @@ async function main() {
+     State.settings = { ...State.settings, ...boot.settings };
+   }
+   island.applySettings();
++  // The Centro de Control agent's pill arrived after people had saved their
++  // pills: switch it on once. The overview shows four pills and VS Code is
++  // always one, so with three on it takes GitHub's place (the artifact's
++  // VS Code · Plata · Railway · Centro); GitHub can come back from Ajustes.
++  try {
++    if (!localStorage.getItem("centro-pill")) {
++      localStorage.setItem("centro-pill", "1");
++      const active = State.settings.activeIntegrations;
++      if (!active.includes("integration_centro")) {
++        const room = active.length < 3 ? active : active.includes("integration_github") ? active.filter((x) => x !== "integration_github") : null;
++        if (room) {
++          State.settings.activeIntegrations = [...room, "integration_centro"];
++          void Bridge.saveSettings(State.settings);
++        }
++      }
++    }
++  } catch {
++    // No storage (a private preview): the pill stays as the settings say.
++  }
+   State.loadIntegrationTasks();
+ 
+   await onEvent<{ x: number; y: number }>("cursor", ({ x, y }) => island.onCursor(x, y));
+@@ -62,6 +82,7 @@ async function main() {
+ 
+   registerHookHandlers(island);
+   registerIntegrationHandlers(island);
++  startCentroPoll();
+ 
+   island.launch();
+ 
+diff --git a/windows/src/settings/main.ts b/windows/src/settings/main.ts
+index 056a06c..17a3096 100644
+--- a/windows/src/settings/main.ts
++++ b/windows/src/settings/main.ts
+@@ -279,6 +279,8 @@ const INTEGRATIONS: IntegrationDef[] = [
+       { key: "railway-token", label: "Account token", placeholder: "railway.com/account/tokens", secret: true },
+       { key: "railway-project-id", label: "Project ID", placeholder: "optional: defaults to \"plata\"", secret: false },
+     ] },
++  // Its secret and calendars live in the "Centro de Control" section below.
++  { id: "integration_centro", name: "Centro de Control", color: "#7CC4FF", fields: [] },
+   { id: "integration_stripe", name: "Stripe", color: "#0570DE",
+     fields: [{ key: "stripe-api-key", label: "Secret key", placeholder: "sk_live_…", secret: true }] },
+   { id: "integration_github", name: "GitHub", color: "#F4505E",
+diff --git a/windows/src/style.css b/windows/src/style.css
+index 7030ff4..92a557c 100644
+--- a/windows/src/style.css
++++ b/windows/src/style.css
+@@ -3767,3 +3767,643 @@ button.lz-habit:disabled {
+     transition-duration: 0.001ms !important;
+   }
+ }
++
++/* ── Centro de Control: the agent's tab (views/centro.ts) ───────────────── */
++
++.tab-cdc {
++  position: relative;
++}
++
++.tab-cdc.on {
++  color: #7cc4ff;
++}
++
++.tab-dot {
++  position: absolute;
++  top: 3px;
++  right: 6px;
++  width: 6px;
++  height: 6px;
++  border-radius: 50%;
++  background: var(--red);
++  box-shadow: 0 0 0 2px #000;
++}
++
++.tab-dot[hidden] {
++  display: none;
++}
++
++.header-actions .bolt-btn:hover,
++.header-actions .bolt-btn.on {
++  color: #ffd45c;
++}
++
++.cz {
++  --rgb: 124, 196, 255;
++  --cdc: #7cc4ff;
++}
++
++.cz-card {
++  display: flex;
++  flex-direction: column;
++}
++
++.cz-body {
++  position: relative;
++  z-index: 1;
++  flex: 1;
++  min-height: 0;
++  display: flex;
++  flex-direction: column;
++  gap: 8px;
++  padding: 10px;
++}
++
++.cz-body[hidden],
++.cz-fail[hidden] {
++  display: none;
++}
++
++.cz-strip {
++  position: relative;
++  display: grid;
++  grid-template-columns: auto 1fr;
++  gap: 6px 12px;
++  align-items: center;
++  padding: 10px 12px 8px 10px;
++  border-radius: 16px;
++  background: rgba(255, 255, 255, 0.025);
++  border: 1px solid rgba(255, 255, 255, 0.05);
++  overflow: hidden;
++  flex: none;
++}
++
++.cz-strip::after {
++  content: "";
++  position: absolute;
++  inset: 0;
++  background: radial-gradient(240px 160px at 0% 0%, rgba(124, 196, 255, 0.12), transparent 70%);
++  pointer-events: none;
++}
++
++.cz-ring {
++  position: relative;
++  width: 52px;
++  height: 52px;
++}
++
++.cz-ring svg {
++  width: 52px;
++  height: 52px;
++  transform: rotate(-90deg);
++}
++
++.cz-ring .track {
++  stroke: rgba(255, 255, 255, 0.08);
++}
++
++.cz-ring .fill {
++  stroke: var(--cdc);
++  stroke-linecap: round;
++  transition: stroke-dashoffset 0.7s var(--ease-out);
++}
++
++.cz-ring .lz-mochi {
++  position: absolute;
++  left: 50%;
++  top: 50%;
++  translate: -50% -50%;
++}
++
++.cz-sum {
++  position: relative;
++  z-index: 1;
++  min-width: 0;
++  display: grid;
++  gap: 3px;
++}
++
++.cz-sum-row {
++  display: flex;
++  align-items: center;
++  gap: 8px;
++  min-width: 0;
++}
++
++.cz-sum-text {
++  margin: 0;
++  flex: 1;
++  min-width: 0;
++  font-size: 12.5px;
++  line-height: 1.4;
++  color: var(--ink-2);
++  white-space: nowrap;
++  overflow: hidden;
++  text-overflow: ellipsis;
++}
++
++.cz-sum-text b {
++  color: #fff;
++  font-weight: 600;
++}
++
++.cz-count {
++  font: 600 11px var(--mono);
++  color: var(--dim-2);
++  flex: none;
++}
++
++.cz-icon {
++  flex: none;
++  width: 22px;
++  height: 22px;
++  display: grid;
++  place-items: center;
++  border: 0;
++  border-radius: 7px;
++  background: transparent;
++  color: var(--dim-2);
++}
++
++.cz-icon:hover {
++  background: rgba(255, 255, 255, 0.07);
++  color: var(--ink);
++}
++
++.cz-icon.spin svg {
++  animation: cz-spin 0.9s linear infinite;
++}
++
++@keyframes cz-spin {
++  to { transform: rotate(360deg); }
++}
++
++.cz-links {
++  display: flex;
++  gap: 2px 12px;
++  flex-wrap: wrap;
++}
++
++.cz-link {
++  border: 0;
++  background: transparent;
++  padding: 0;
++  font: 500 11px var(--font);
++  color: var(--dim-2);
++}
++
++.cz-link:hover {
++  color: var(--cdc);
++}
++
++.cz-tl {
++  position: relative;
++  z-index: 1;
++  grid-column: 1 / -1;
++  min-width: 0;
++}
++
++.cz-note {
++  margin: 0;
++  font-size: 11.5px;
++  color: var(--dim-3);
++}
++
++.cz-check {
++  flex: 1;
++  min-height: 0;
++  display: flex;
++  flex-direction: column;
++  border-radius: 16px;
++  background: rgba(255, 255, 255, 0.025);
++  border: 1px solid rgba(255, 255, 255, 0.05);
++  overflow: hidden;
++}
++
++.cz-seg {
++  display: flex;
++  gap: 3px;
++  padding: 6px 6px 4px;
++  align-items: center;
++  flex: none;
++}
++
++.cz-seg button {
++  border: 0;
++  background: transparent;
++  color: var(--dim-2);
++  font: 500 11.5px var(--font);
++  padding: 4px 10px;
++  border-radius: 999px;
++  display: inline-flex;
++  gap: 6px;
++  align-items: center;
++  transition: background 0.15s, color 0.15s;
++}
++
++.cz-seg button:hover {
++  color: var(--ink);
++  background: rgba(255, 255, 255, 0.05);
++}
++
++.cz-seg button[aria-selected="true"] {
++  background: rgba(255, 255, 255, 0.08);
++  color: var(--ink);
++}
++
++.cz-seg .n {
++  font: 600 10px var(--mono);
++  color: var(--dim-3);
++}
++
++.cz-seg .n.late {
++  color: var(--red-text);
++}
++
++.cz-spacer {
++  flex: 1;
++}
++
++.cz-seg .cz-add:hover {
++  color: var(--cdc);
++  background: rgba(124, 196, 255, 0.08);
++}
++
++.cz-list {
++  flex: 1;
++  min-height: 0;
++  overflow-y: auto;
++  padding: 0 6px 4px;
++  display: flex;
++  flex-direction: column;
++}
++
++.cz-empty {
++  padding: 14px 10px;
++  font-size: 12px;
++  color: var(--dim-3);
++}
++
++.cz-row {
++  position: relative;
++  display: grid;
++  grid-template-columns: auto 1fr auto auto;
++  gap: 8px;
++  align-items: center;
++  min-height: 30px;
++  flex: none;
++  padding: 2px 6px;
++  border-radius: 9px;
++  transition: background 0.15s, opacity 0.3s, transform 0.35s var(--ease-out);
++  animation: cz-rise 0.28s var(--ease-out) both;
++}
++
++@keyframes cz-rise {
++  from { opacity: 0; transform: translateY(4px); }
++}
++
++.cz-row:hover,
++.cz-row.menu-open {
++  background: rgba(255, 255, 255, 0.035);
++}
++
++.cz-row.done {
++  opacity: 0.45;
++  transform: translateX(10px);
++}
++
++.cz-box {
++  width: 16px;
++  height: 16px;
++  padding: 0;
++  border-radius: 5px;
++  border: 1.6px solid var(--c, var(--dim-4));
++  background: transparent;
++  color: #0b0c0e;
++  display: grid;
++  place-items: center;
++  transition: border-color 0.15s, background 0.2s, transform 0.2s var(--ease-spring);
++}
++
++.cz-box svg {
++  opacity: 0;
++  transform: scale(0.4);
++  transition: opacity 0.2s, transform 0.3s var(--ease-spring);
++}
++
++.cz-box:hover {
++  border-color: var(--cdc);
++}
++
++.cz-box:active {
++  transform: scale(0.85);
++}
++
++.cz-row.done .cz-box {
++  background: var(--green);
++  border-color: var(--green);
++}
++
++.cz-row.done .cz-box svg {
++  opacity: 1;
++  transform: none;
++}
++
++.cz-t {
++  min-width: 0;
++  display: flex;
++  align-items: baseline;
++  gap: 8px;
++  white-space: nowrap;
++  overflow: hidden;
++}
++
++.cz-t b {
++  font: 500 12.5px var(--font);
++  color: var(--ink);
++  overflow: hidden;
++  text-overflow: ellipsis;
++}
++
++.cz-t small {
++  font-size: 11px;
++  color: var(--dim-3);
++  overflow: hidden;
++  text-overflow: ellipsis;
++}
++
++.cz-row.done .cz-t b {
++  text-decoration: line-through;
++  color: var(--dim-3);
++}
++
++.cz-acts {
++  display: none;
++  gap: 3px;
++}
++
++.cz-row:hover .cz-acts,
++.cz-row:focus-within .cz-acts,
++.cz-row.menu-open .cz-acts {
++  display: flex;
++}
++
++.cz-row:hover > .lz-pill,
++.cz-row:focus-within > .lz-pill,
++.cz-row.menu-open > .lz-pill {
++  display: none;
++}
++
++.cz-act {
++  height: 22px;
++  padding: 0 8px;
++  border: 0;
++  border-radius: 7px;
++  background: rgba(255, 255, 255, 0.06);
++  color: var(--ink-2);
++  font: 500 11px var(--font);
++  display: inline-flex;
++  align-items: center;
++  gap: 3px;
++  white-space: nowrap;
++}
++
++.cz-act:hover:not(:disabled) {
++  background: rgba(124, 196, 255, 0.18);
++  color: var(--cdc);
++}
++
++.cz-act:disabled,
++.cz-box:disabled {
++  opacity: 0.5;
++}
++
++.cz-menu {
++  position: absolute;
++  right: 4px;
++  top: 28px;
++  z-index: 5;
++  display: grid;
++  min-width: 170px;
++  padding: 4px;
++  border-radius: 12px;
++  background: #1a1c21;
++  border: 1px solid rgba(255, 255, 255, 0.08);
++  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.5);
++  transform-origin: top right;
++  animation: cz-pop 0.22s var(--ease-spring);
++}
++
++@keyframes cz-pop {
++  from { opacity: 0; transform: scale(0.9); }
++}
++
++.cz-menu button {
++  text-align: left;
++  font: 500 12px var(--font);
++  color: var(--ink-2);
++  background: transparent;
++  border: 0;
++  border-radius: 8px;
++  padding: 6px 9px;
++}
++
++.cz-menu button:hover {
++  background: rgba(255, 255, 255, 0.07);
++}
++
++.cz-done {
++  flex: none;
++  padding: 6px 12px;
++  border-top: 1px solid rgba(255, 255, 255, 0.05);
++  font: 500 11px var(--font);
++  color: #6ee7a8;
++}
++
++.cz-done[hidden] {
++  display: none;
++}
++
++.cz-foot {
++  flex: none;
++  display: flex;
++  align-items: center;
++  gap: 8px;
++}
++
++.cz-habits {
++  display: flex;
++  gap: 4px;
++  align-items: center;
++  flex-wrap: wrap;
++  max-width: 55%;
++}
++
++.cz-habit {
++  display: inline-flex;
++  gap: 5px;
++  align-items: center;
++  border: 1px solid rgba(255, 255, 255, 0.06);
++  background: rgba(255, 255, 255, 0.04);
++  color: var(--ink-2);
++  font: 500 11px var(--font);
++  padding: 3px 8px 3px 5px;
++  border-radius: 999px;
++  white-space: nowrap;
++  transition: background 0.15s, transform 0.2s var(--ease-spring);
++}
++
++.cz-habit i {
++  width: 12px;
++  height: 12px;
++  border-radius: 50%;
++  border: 1.5px solid var(--hc);
++  transition: background 0.2s;
++}
++
++.cz-habit[aria-pressed="true"] i {
++  background: var(--hc);
++}
++
++.cz-habit:hover:not(:disabled) {
++  background: rgba(255, 255, 255, 0.08);
++}
++
++.cz-habit:active:not(:disabled) {
++  transform: scale(0.95);
++}
++
++.cz-ask {
++  flex: 1;
++  min-width: 0;
++  display: flex;
++  align-items: center;
++  gap: 6px;
++  padding: 3px 3px 3px 12px;
++  border-radius: 999px;
++  background: rgba(255, 255, 255, 0.04);
++  border: 1px solid rgba(255, 255, 255, 0.08);
++  cursor: text;
++}
++
++.cz-ask-in {
++  flex: 1;
++  min-width: 0;
++  background: transparent;
++  border: 0;
++  outline: none;
++  color: var(--ink);
++  font: 400 12px var(--font);
++  user-select: text;
++}
++
++.cz-ask-in::placeholder {
++  color: var(--dim-3);
++}
++
++.cz-send {
++  flex: none;
++  width: 24px;
++  height: 24px;
++  border-radius: 50%;
++  border: 0;
++  background: var(--cdc);
++  color: #071422;
++  display: grid;
++  place-items: center;
++}
++
++.cz-toast {
++  position: absolute;
++  left: 50%;
++  bottom: 54px;
++  z-index: 9;
++  transform: translate(-50%, 16px);
++  opacity: 0;
++  pointer-events: none;
++  display: flex;
++  gap: 10px;
++  align-items: center;
++  padding: 5px 5px 5px 14px;
++  border-radius: 999px;
++  background: #1b1e24;
++  border: 1px solid rgba(255, 255, 255, 0.1);
++  font-size: 12px;
++  color: var(--ink-2);
++  white-space: nowrap;
++  max-width: 92%;
++  transition: opacity 0.2s, transform 0.3s var(--ease-spring);
++}
++
++.cz-toast > span {
++  overflow: hidden;
++  text-overflow: ellipsis;
++}
++
++.cz-toast.on {
++  opacity: 1;
++  transform: translate(-50%, 0);
++  pointer-events: auto;
++}
++
++.cz-toast.bad {
++  color: var(--red-text);
++}
++
++.cz-undo {
++  border: 0;
++  border-radius: 999px;
++  padding: 4px 10px;
++  background: rgba(124, 196, 255, 0.16);
++  color: var(--cdc);
++  font: 600 11px var(--font);
++}
++
++.cz-undo[hidden] {
++  display: none;
++}
++
++.cz-fail {
++  position: relative;
++  z-index: 1;
++  padding: 18px;
++  display: grid;
++  gap: 10px;
++  align-content: start;
++}
++
++.cz-fail-t {
++  margin: 0;
++  font-size: 13px;
++  color: var(--ink);
++}
++
++/* Plata's quick answers, under the readiness line */
++.plata-quick {
++  display: flex;
++  gap: 5px;
++  flex-wrap: wrap;
++  flex: none;
++}
++
++.plata-quick:empty {
++  display: none;
++}
++
++.plata-quick-btn {
++  border: 1px solid rgba(255, 158, 27, 0.22);
++  background: rgba(255, 158, 27, 0.07);
++  color: #ffc27a;
++  font: 500 11px var(--font);
++  padding: 3px 10px;
++  border-radius: 999px;
++  transition: background 0.15s, transform 0.08s;
++}
++
++.plata-quick-btn:hover {
++  background: rgba(255, 158, 27, 0.16);
++}
++
++.plata-quick-btn:active {
++  transform: scale(0.95);
++}
+diff --git a/windows/src/views/atajos/launcher.ts b/windows/src/views/atajos/launcher.ts
+index 50a6acb..9b7e415 100644
+--- a/windows/src/views/atajos/launcher.ts
++++ b/windows/src/views/atajos/launcher.ts
+@@ -41,6 +41,10 @@ export interface LauncherHost extends ViewHost {
+   open(listen: boolean): void;
+   /** Leaving the launcher: stop timers, let the island lose focus. */
+   leave(): void;
++  /** Straight to one skill's card (the Plata and Centro tabs' buttons). */
++  openSkill(id: SkillId, pre?: string | null): void;
++  /** As if `text` had been typed in the launcher and Enter pressed. */
++  ask(text: string): void;
+ }
+ 
+ export function buildLauncher(actions: ViewActions): LauncherHost {
+@@ -357,5 +361,21 @@ export function buildLauncher(actions: ViewActions): LauncherHost {
+       State.isPinned = false;
+       gen++;
+     },
++    openSkill(id: SkillId, pre: string | null = null) {
++      listening = false;
++      typed = true;
++      State.isPinned = true;
++      refreshHotkey();
++      openSkill(id, pre, { send: true });
++    },
++    ask(text: string) {
++      listening = false;
++      typed = true;
++      State.isPinned = true;
++      refreshHotkey();
++      showList(false);
++      input.value = text;
++      void route(text);
++    },
+   };
+ }
+diff --git a/windows/src/views/centro.ts b/windows/src/views/centro.ts
+new file mode 100644
+index 0000000..a13ad9c
+--- /dev/null
++++ b/windows/src/views/centro.ts
+@@ -0,0 +1,518 @@
++// The Centro de Control agent's tab (the design in the "Centro de Control en
++// Coucou" artifact): on top, the day in one strip — a ring with what's done,
++// one line of summary and today's agenda; below, the checklist with Hoy ·
++// En curso · Semana, one tap per task (✓ tildar, ▶ empezar, ↷ otro día), each
++// with Deshacer; at the foot, today's habits and a field that asks the
++// launcher. Reads coucou-foco through atajos/data (the same cache the
++// launcher's cards use) and writes through data.accion (coucou_accion.sql).
++
++import { h, clear } from "./dom";
++import { State } from "../core/state";
++import { Bridge } from "../core/bridge";
++import { Sound } from "../core/sound";
++import type { ViewActions, ViewHost } from "./views";
++import * as data from "./atajos/data";
++import { errorBlock } from "./atajos/card";
++import { DIAS, addDays, arClock, arMs, classifyError, fechaCorta, hhmm, palabra, plural, rich } from "./atajos/format";
++import type { CalEvent, Foco } from "./atajos/plan";
++import { DEFAULT_EVENT_COLOR, mochi, pill, timeline, type TlEvent } from "./atajos/ui";
++
++const CDC = "#7CC4FF";
++const RING = 138.2; // 2π · 22
++const DAY_MS = 86_400_000;
++
++type Seg = "hoy" | "curso" | "semana";
++
++interface Row {
++  id: string;
++  titulo: string;
++  color: string | null;
++  meta: string;
++  tag: string;
++  tone: "" | "late" | "soon" | "ok";
++  running: boolean;
++}
++
++/** The pill and the header's dot read this (island/integrations: integration_centro). */
++export function publishCentro(f: Foco) {
++  const prev = State.integrations.integration_centro;
++  State.integrations.integration_centro = {
++    data: {
++      atrasadas: f.atrasadas?.length ?? 0,
++      paraHoy: f.paraHoy?.length ?? 0,
++      enCurso: f.enCurso?.length ?? 0,
++      foco: f,
++    },
++    error: null,
++    loaded: true,
++    configured: prev?.configured ?? true,
++  };
++  State.notify();
++}
++
++/** Every 3 minutes, while the pill is on and the secret is saved. */
++export function startCentroPoll() {
++  const tick = async () => {
++    if (State.paused || !State.settings.activeIntegrations.includes("integration_centro")) return;
++    if (!(await Bridge.secretPresent("cdc-secret").catch(() => false))) return;
++    try {
++      publishCentro(await data.foco(true));
++    } catch (e) {
++      const prev = State.integrations.integration_centro;
++      State.integrations.integration_centro = {
++        data: prev?.data ?? {},
++        error: String((e as { message?: unknown })?.message ?? e),
++        loaded: prev?.loaded ?? false,
++        configured: prev?.configured ?? true,
++      };
++      State.notify();
++    }
++  };
++  window.setTimeout(() => void tick(), 6_000);
++  window.setInterval(() => void tick(), 180_000);
++}
++
++const CHECK_SVG = '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg>';
++const PLAY_SVG = '<svg width="9" height="9" viewBox="0 0 24 24"><path fill="currentColor" d="M7 4.5v15l12-7.5z"/></svg>';
++const PAUSE_SVG = '<svg width="9" height="9" viewBox="0 0 24 24"><path fill="currentColor" d="M6.5 4.5h4v15h-4zM13.5 4.5h4v15h-4z"/></svg>';
++const LATER_SVG = '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 17a8 8 0 0 1 14.5-6.5M19 4v6.5h-6.5"/></svg>';
++const REFRESH_SVG = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M20 11a8 8 0 1 0-2.3 5.7M20 4v7h-7"/></svg>';
++const SEND_SVG = '<svg width="11" height="11" viewBox="0 0 24 24"><path fill="currentColor" d="M12 4.5 5.5 11l1.5 1.5 4-4V19.5h2V8.5l4 4L18.5 11 12 4.5z"/></svg>';
++
++export function buildCentro(actions: ViewActions): ViewHost {
++  // ── Day strip ───────────────────────────────────────────────────────────
++  const bot = mochi(CDC, 30);
++  const ring = h("div", { class: "cz-ring", title: "Hechas hoy" });
++  ring.innerHTML = `<svg viewBox="0 0 52 52"><circle class="track" cx="26" cy="26" r="22" fill="none" stroke-width="4"/><circle class="fill" cx="26" cy="26" r="22" fill="none" stroke-width="4" stroke-dasharray="${RING}" stroke-dashoffset="${RING}"/></svg>`;
++  ring.append(bot.el);
++  const ringFill = ring.querySelector<SVGCircleElement>("circle.fill")!;
++  const sumText = h("p", { class: "cz-sum-text" });
++  const count = h("span", { class: "cz-count" });
++  const refresh = h("button", { type: "button", class: "cz-icon", title: "Volver a leer", "aria-label": "Volver a leer", html: REFRESH_SVG });
++  refresh.addEventListener("click", () => void load(true));
++  const links = h("div", { class: "cz-links" });
++  for (const [id, label] of [["ahora", "¿Qué hago ahora?"], ["cierre", "Cerrar el día"], ["manana", "Planificar mañana"], ["huecos", "Huecos"], ["avisos", "Avisos"]] as const) {
++    const b = h("button", { type: "button", class: "cz-link", text: label });
++    b.addEventListener("click", () => actions.openSkill(id));
++    links.append(b);
++  }
++  const tlSlot = h("div", { class: "cz-tl" });
++  const strip = h(
++    "div",
++    { class: "cz-strip" },
++    ring,
++    h("div", { class: "cz-sum" }, h("div", { class: "cz-sum-row" }, sumText, count, refresh), links),
++    tlSlot,
++  );
++
++  // ── Checklist ───────────────────────────────────────────────────────────
++  let seg: Seg = "hoy";
++  const segBtns = new Map<Seg, { b: HTMLButtonElement; n: HTMLElement }>();
++  const segRow = h("div", { class: "cz-seg", role: "tablist" });
++  for (const [id, label] of [["hoy", "Hoy"], ["curso", "En curso"], ["semana", "Semana"]] as const) {
++    const n = h("span", { class: "n" });
++    const b = h("button", { type: "button", role: "tab", "aria-selected": String(id === seg) }, label, n) as HTMLButtonElement;
++    b.addEventListener("click", () => {
++      seg = id;
++      renderList();
++    });
++    segBtns.set(id, { b, n });
++    segRow.append(b);
++  }
++  const addBtn = h("button", { type: "button", class: "cz-add", text: "+ Tarea", title: "Tarea rápida: escribila o dictala" });
++  addBtn.addEventListener("click", () => actions.openSkill("tarea"));
++  segRow.append(h("span", { class: "cz-spacer" }), addBtn);
++  const list = h("div", { class: "cz-list", role: "list" });
++  const doneLine = h("div", { class: "cz-done" });
++
++  // ── Foot: habits + ask ──────────────────────────────────────────────────
++  const habits = h("div", { class: "cz-habits", "aria-label": "Hábitos de hoy" });
++  const ask = h("input", { type: "text", class: "cz-ask-in", placeholder: "Preguntale al Centro… (¿qué vence esta semana?)", autocomplete: "off", spellcheck: "false", "aria-label": "Preguntale al Centro de Control" }) as HTMLInputElement;
++  const send = h("button", { type: "button", class: "cz-send", "aria-label": "Preguntar", html: SEND_SVG });
++  const go = () => {
++    const t = ask.value.trim();
++    if (!t) return;
++    ask.value = "";
++    actions.askLauncher(t);
++  };
++  send.addEventListener("click", go);
++  ask.addEventListener("keydown", (e) => {
++    if (e.key === "Enter" && !e.isComposing) {
++      e.preventDefault();
++      go();
++    }
++  });
++  const foot = h("div", { class: "cz-foot" }, habits, h("label", { class: "cz-ask" }, ask, send));
++
++  // ── Toast with Deshacer ─────────────────────────────────────────────────
++  const toastText = h("span");
++  const toastUndo = h("button", { type: "button", class: "cz-undo", text: "Deshacer" }) as HTMLButtonElement;
++  const toast = h("div", { class: "cz-toast", role: "status" }, toastText, toastUndo);
++  let toastTimer = 0;
++  let undoFn: (() => Promise<void>) | null = null;
++  toastUndo.addEventListener("click", async () => {
++    const fn = undoFn;
++    if (!fn) return;
++    undoFn = null;
++    toastUndo.disabled = true;
++    toastText.textContent = "Deshaciendo…";
++    try {
++      await fn();
++      showToast("Listo, como estaba.", null);
++    } catch (e) {
++      showToast(classifyError(e, "el Centro de Control").text, null, true);
++    } finally {
++      toastUndo.disabled = false;
++      void load(true);
++    }
++  });
++  function showToast(text: string, undo: (() => Promise<void>) | null, bad = false) {
++    toastText.textContent = text;
++    undoFn = undo;
++    toastUndo.hidden = !undo;
++    toast.classList.toggle("bad", bad);
++    toast.classList.add("on");
++    window.clearTimeout(toastTimer);
++    toastTimer = window.setTimeout(() => toast.classList.remove("on"), undo ? 7000 : 4000);
++  }
++
++  const body = h("div", { class: "cz-body" }, strip, h("div", { class: "cz-check" }, segRow, list, doneLine), foot);
++  const fail = h("div", { class: "cz-fail" });
++  fail.hidden = true;
++  const el = h(
++    "div",
++    { class: "view cz" },
++    h("div", { class: "card wash cz-card" }, body, fail, toast),
++  );
++  (el.querySelector(".card") as HTMLElement).style.setProperty("--wash", "rgba(124,196,255,0.22)");
++
++  // ── State ───────────────────────────────────────────────────────────────
++  let foco: Foco | null = null;
++  let events: CalEvent[] | null = null;
++  let calProblem: unknown = null;
++  let loadedAt = 0;
++  let loading = false;
++  /** Tasks closed or moved here, hidden until the next read confirms it. */
++  const gone = new Set<string>();
++  let doneHere = 0;
++  let menuClose: (() => void) | null = null;
++
++  async function load(fresh: boolean) {
++    if (loading) return;
++    loading = true;
++    refresh.classList.add("spin");
++    if (!foco) {
++      sumText.textContent = "Leyendo el Centro de Control…";
++      bot.engine.setState("thinking");
++    }
++    const [fr, cr] = await Promise.allSettled([data.foco(fresh), data.calendar(fresh)]);
++    loading = false;
++    refresh.classList.remove("spin");
++    bot.engine.setState("idle");
++    loadedAt = Date.now();
++    if (fr.status === "rejected") {
++      foco = null;
++      body.hidden = true;
++      fail.hidden = false;
++      clear(fail);
++      const e = classifyError(fr.reason, "el Centro de Control");
++      fail.append(
++        h("p", { class: "cz-fail-t" }, h("b", { text: "Centro de Control" })),
++        errorBlock(e, actions, () => void load(true)),
++      );
++      if (e.kind === "config") {
++        fail.append(h("p", { class: "cz-note", text: "En Ajustes → Centro de Control: el secreto (sale del SQL editor del Centro) y, si querés la agenda, las direcciones iCal." }));
++      }
++      return;
++    }
++    body.hidden = false;
++    fail.hidden = true;
++    foco = fr.value;
++    publishCentro(foco);
++    gone.clear();
++    doneHere = 0;
++    if (cr.status === "fulfilled") {
++      const start = arMs(arClock().date);
++      events = cr.value.between(start, start + DAY_MS);
++      calProblem = null;
++    } else {
++      events = null;
++      calProblem = cr.reason;
++    }
++    render();
++  }
++
++  function rowsFor(s: Seg): Row[] {
++    const f = foco;
++    if (!f) return [];
++    const running = f.enCurso?.find((t) => t.cronometro_desde)?.id ?? null;
++    const meta = (area: string | null, proyecto?: string | null) => [area, proyecto].filter(Boolean).join(" · ");
++    let rows: Row[] = [];
++    if (s === "hoy") {
++      rows = [
++        ...[...(f.atrasadas ?? [])].sort((a, b) => b.dias_atraso - a.dias_atraso).map<Row>((t) => ({
++          id: t.id, titulo: t.titulo, color: t.color, meta: meta(t.area, t.proyecto), tag: `${t.dias_atraso} d tarde`, tone: "late", running: t.id === running,
++        })),
++        ...(f.paraHoy ?? []).map<Row>((t) => ({
++          id: t.id, titulo: t.titulo, color: t.color, meta: meta(t.area, t.proyecto), tag: "hoy", tone: "soon", running: t.id === running,
++        })),
++      ];
++    } else if (s === "curso") {
++      rows = (f.enCurso ?? []).map<Row>((t) => ({
++        id: t.id, titulo: t.titulo, color: t.color, meta: meta(t.area, t.proyecto),
++        tag: t.cronometro_desde ? "corriendo" : t.quieta_dias > 0 ? `quieta ${t.quieta_dias} d` : "en curso",
++        tone: t.cronometro_desde ? "ok" : t.quieta_dias > 0 ? "soon" : "",
++        running: !!t.cronometro_desde,
++      }));
++    } else {
++      rows = [...(f.proximas ?? [])].filter((t) => t.en_dias <= 7).sort((a, b) => a.en_dias - b.en_dias).map<Row>((t) => ({
++        id: t.id, titulo: t.titulo, color: t.color, meta: meta(t.area),
++        tag: t.en_dias === 1 ? "mañana" : t.vence ? fechaCorta(t.vence) : `en ${t.en_dias} d`, tone: t.en_dias <= 2 ? "soon" : "", running: t.id === running,
++      }));
++    }
++    return rows.filter((r) => !gone.has(r.id));
++  }
++
++  function render() {
++    renderStrip();
++    renderList();
++    renderHabits();
++  }
++
++  function renderStrip() {
++    const f = foco;
++    if (!f) return;
++    const now = arClock();
++    const late = (f.atrasadas ?? []).filter((t) => !gone.has(t.id)).length;
++    const hoy = (f.paraHoy ?? []).filter((t) => !gone.has(t.id)).length;
++    const done = (f.hechasHoy ?? 0) + doneHere;
++    const total = done + late + hoy;
++    ringFill.style.strokeDashoffset = String(RING * (1 - (total ? done / total : 0)));
++    count.textContent = `${done}/${total}`;
++
++    const parts = [`**${DIAS[now.weekday].charAt(0).toUpperCase()}${DIAS[now.weekday].slice(1)}.**`];
++    if (f.noTrabaja) parts.push("Hoy no trabajás.");
++    if (late || hoy) {
++      const bits = [late ? `**${palabra(late, true)} ${plural(late, "atrasada", "atrasadas")}**` : null, hoy ? `${palabra(hoy, true)} para hoy` : null].filter(Boolean);
++      parts.push(`Tenés ${bits.join(" y ")}.`);
++    } else parts.push("Nada atrasado ni para hoy.");
++    const running = f.enCurso?.find((t) => t.cronometro_desde && !gone.has(t.id));
++    if (running) parts.push(`Corre **${running.titulo}**.`);
++    else if (events) {
++      const nowMs = Date.now();
++      const timed = events.filter((e) => !e.allDay);
++      const cur = timed.find((e) => e.start <= nowMs && e.end > nowMs);
++      const next = timed.find((e) => e.start > nowMs);
++      const base = arMs(now.date);
++      if (cur) parts.push(`Ahora: ${cur.title}.`);
++      else if (next) parts.push(`Después: ${next.title} a las ${hhmm((next.start - base) / 60_000)}.`);
++    }
++    sumText.innerHTML = rich(parts.join(" "));
++
++    clear(tlSlot);
++    if (events) {
++      const base = arMs(now.date);
++      const tl: TlEvent[] = events.filter((e) => !e.allDay).map((e) => ({ s: (e.start - base) / 60_000, e: (e.end - base) / 60_000, label: e.title, color: e.color ?? DEFAULT_EVENT_COLOR }));
++      const from = Math.min(8, ...tl.map((e) => Math.max(0, Math.floor(e.s / 60))));
++      tlSlot.append(timeline(tl, now.min, from, 24));
++    } else {
++      const fix = h("button", { type: "button", class: "cz-link", text: "Configurar" });
++      fix.addEventListener("click", () => actions.openSettingsWindow());
++      const why = calProblem instanceof data.NoCalendarError ? "Sin calendario: falta la dirección iCal." : "No pude leer el calendario.";
++      tlSlot.append(h("div", { class: "cz-note" }, why, " ", fix));
++    }
++  }
++
++  function renderList() {
++    menuClose?.();
++    for (const [id, { b, n }] of segBtns) {
++      b.setAttribute("aria-selected", String(id === seg));
++      const k = rowsFor(id).length;
++      n.textContent = k ? String(k) : "";
++      n.className = id === "hoy" && (foco?.atrasadas ?? []).some((t) => !gone.has(t.id)) ? "n late" : "n";
++    }
++    clear(list);
++    const rows = rowsFor(seg);
++    if (!rows.length) {
++      list.append(h("div", { class: "cz-empty", text: seg === "hoy" ? "Nada para hoy. 🎉" : seg === "curso" ? "No hay nada empezado." : "Nada vence en los próximos 7 días." }));
++    }
++    for (const r of rows) list.append(rowEl(r));
++    const done = (foco?.hechasHoy ?? 0) + doneHere;
++    doneLine.hidden = done === 0;
++    doneLine.textContent = `✓ ${done} ${plural(done, "hecha", "hechas")} hoy`;
++  }
++
++  function rowEl(r: Row): HTMLElement {
++    const box = h("button", { type: "button", class: "cz-box", title: "Tildarla", "aria-label": `Tildar ${r.titulo}`, html: CHECK_SVG }) as HTMLButtonElement;
++    const start = h("button", { type: "button", class: "cz-act", title: r.running ? "Pausar el cronómetro" : "Empezar (cronómetro)", html: r.running ? PAUSE_SVG : PLAY_SVG }) as HTMLButtonElement;
++    start.append(r.running ? " Pausar" : " Empezar");
++    const later = h("button", { type: "button", class: "cz-act", title: "Pasarla a otro día", html: LATER_SVG }) as HTMLButtonElement;
++    later.append(" Otro día");
++    const el = h(
++      "div",
++      { class: `cz-row${r.running ? " running" : ""}`, role: "listitem" },
++      box,
++      h("span", { class: "cz-t" }, h("b", { text: r.titulo }), r.meta ? h("small", { text: r.meta }) : null),
++      pill(r.tag, r.tone),
++      h("span", { class: "cz-acts" }, start, later),
++    );
++    el.style.setProperty("--c", r.color || CDC);
++    const lock = (on: boolean) => [box, start, later].forEach((b) => (b.disabled = on));
++
++    box.addEventListener("click", async () => {
++      lock(true);
++      el.classList.add("done");
++      Sound.play("approve");
++      bot.engine.triggerEmote("happy");
++      try {
++        const res = await data.accion("hecha", { id: r.id });
++        gone.add(r.id);
++        doneHere++;
++        window.setTimeout(() => {
++          renderList();
++          renderStrip();
++        }, 320);
++        const antes = res.antes === "in_progress" ? "in_progress" : "not_started";
++        showToast(`Hecha: ${r.titulo}`, async () => {
++          await data.accion("reabrir", { id: r.id, estado: antes });
++        });
++      } catch (e) {
++        el.classList.remove("done");
++        lock(false);
++        Sound.play("error");
++        showToast(classifyError(e, "el Centro de Control").text, null, true);
++      }
++    });
++
++    start.addEventListener("click", async () => {
++      lock(true);
++      try {
++        if (r.running) {
++          await data.accion("pausar", {});
++          showToast(`Pausé ${r.titulo}.`, async () => {
++            await data.accion("empezar", { id: r.id });
++          });
++        } else {
++          await data.accion("empezar", { id: r.id });
++          bot.engine.triggerEmote("happy");
++          Sound.play("approve");
++          showToast(`Corre el cronómetro de ${r.titulo}.`, async () => {
++            await data.accion("pausar", {});
++          });
++        }
++        void load(true);
++      } catch (e) {
++        lock(false);
++        Sound.play("error");
++        showToast(classifyError(e, "el Centro de Control").text, null, true);
++      }
++    });
++
++    later.addEventListener("click", (ev) => {
++      ev.stopPropagation();
++      const was = el.querySelector(".cz-menu");
++      menuClose?.();
++      if (was) return;
++      const hoy = arClock().date;
++      const nextMonday = (() => {
++        const wd = arClock().weekday;
++        return addDays(hoy, ((8 - wd) % 7) || 7);
++      })();
++      const opts: Array<[string, string | null]> = [
++        ["Mañana", addDays(hoy, 1)],
++        ["Pasado mañana", addDays(hoy, 2)],
++        [`El lunes (${fechaCorta(nextMonday)})`, nextMonday],
++        ["Sin fecha", null],
++      ];
++      const menu = h("div", { class: "cz-menu", role: "menu" });
++      for (const [label, vence] of opts) {
++        const b = h("button", { type: "button", role: "menuitem", text: label });
++        b.addEventListener("click", async (e) => {
++          e.stopPropagation();
++          menuClose?.();
++          lock(true);
++          try {
++            const res = await data.accion("mover", { id: r.id, vence });
++            gone.add(r.id);
++            renderList();
++            renderStrip();
++            const antes = (res.antes as string | null | undefined) ?? null;
++            showToast(`${r.titulo}: ${vence ? `para el ${fechaCorta(vence)}` : "sin fecha"}.`, async () => {
++              await data.accion("mover", { id: r.id, vence: antes });
++            });
++          } catch (err) {
++            lock(false);
++            Sound.play("error");
++            showToast(classifyError(err, "el Centro de Control").text, null, true);
++          }
++        });
++        menu.append(b);
++      }
++      el.append(menu);
++      el.classList.add("menu-open");
++      const outside = (e: MouseEvent) => {
++        if (!menu.contains(e.target as Node)) menuClose?.();
++      };
++      const esc = (e: KeyboardEvent) => {
++        if (e.key === "Escape") {
++          e.stopPropagation();
++          menuClose?.();
++        }
++      };
++      window.setTimeout(() => document.addEventListener("mousedown", outside), 0);
++      document.addEventListener("keydown", esc, true);
++      menuClose = () => {
++        menu.remove();
++        el.classList.remove("menu-open");
++        document.removeEventListener("mousedown", outside);
++        document.removeEventListener("keydown", esc, true);
++        menuClose = null;
++      };
++    });
++    return el;
++  }
++
++  function renderHabits() {
++    clear(habits);
++    const hs = foco?.habitos ?? [];
++    for (const x of hs) {
++      const b = h("button", { type: "button", class: "cz-habit", "aria-pressed": String(x.hecho_hoy), title: x.hecho_hoy ? `${x.nombre}: hecho` : `${x.nombre}: tocá para marcarlo` }, h("i"), x.nombre) as HTMLButtonElement;
++      b.style.setProperty("--hc", x.color ?? CDC);
++      b.addEventListener("click", async () => {
++        if (b.disabled || !x.id) return;
++        const want = !x.hecho_hoy;
++        b.disabled = true;
++        b.setAttribute("aria-pressed", String(want));
++        try {
++          await data.accion("habito", { id: x.id, hecho: want });
++          x.hecho_hoy = want;
++          b.title = want ? `${x.nombre}: hecho` : `${x.nombre}: tocá para marcarlo`;
++          if (want) {
++            bot.engine.triggerEmote("happy");
++            Sound.play("approve");
++          }
++        } catch (e) {
++          b.setAttribute("aria-pressed", String(x.hecho_hoy));
++          Sound.play("error");
++          showToast(classifyError(e, "el Centro de Control").text, null, true);
++        } finally {
++          b.disabled = false;
++        }
++      });
++      habits.append(b);
++    }
++  }
++
++  return {
++    el,
++    sync() {
++      // Called on every state change while the tab is open: read only when stale.
++      if (!loading && Date.now() - loadedAt > 60_000) void load(false);
++    },
++    focus() {
++      // preventScroll: the island is still growing, and a plain focus() scrolls
++      // the clipped island so the field shows — the header ends up off the top.
++      ask.focus({ preventScroll: true });
++    },
++  };
++}
+diff --git a/windows/src/views/icons.ts b/windows/src/views/icons.ts
+index 99d04f3..c879c15 100644
+--- a/windows/src/views/icons.ts
++++ b/windows/src/views/icons.ts
+@@ -2,6 +2,10 @@
+ // Drawn on a 24×24 grid so they read at the same optical size.
+ 
+ export const ICONS = {
++  // checklist (the Centro de Control agent's tab), stroke
++  checklist: "M10 7h10M10 12h10M10 17h10M3.8 6.8l1.4 1.4 2.4-2.6M3.8 11.8l1.4 1.4 2.4-2.6M4 16h3.2v3.2H4z",
++  // lightning (the Atajos launcher, F8), stroke
++  bolt: "M13 3 5 13.5h6L10 21l8-10.5h-6L13 3z",
+   // enlarge / shrink a chat (the large panel), stroke
+   expand: "M14 4h6v6M10 20H4v-6M20 4l-7 7M4 20l7-7",
+   collapse: "M20 4l-6 6M14 4v6h6M4 20l6-6M10 20v-6H4",
+diff --git a/windows/src/views/integrations.ts b/windows/src/views/integrations.ts
+index 1e394d3..2f347c1 100644
+--- a/windows/src/views/integrations.ts
++++ b/windows/src/views/integrations.ts
+@@ -537,6 +537,48 @@ export interface IntegrationCardHooks {
+   openSettings(): void;
+ }
+ 
++// ── Centro de Control ─────────────────────────────────────────────────────────
++
++const CENTRO = "#7CC4FF";
++const DIAS_AR = ["domingo", "lunes", "martes", "miércoles", "jueves", "viernes", "sábado"];
++
++/** The Centro's three lines: what's late, what's for today, what's running or next. */
++function centroCard(): HTMLElement {
++  type T = { titulo?: string; dias_atraso?: number; en_dias?: number; cronometro_desde?: string | null; quieta_dias?: number };
++  const f = (get("integration_centro").foco ?? {}) as Record<string, unknown>;
++  const list = (k: string) => (Array.isArray(f[k]) ? (f[k] as T[]) : []);
++  const atr = list("atrasadas");
++  const hoy = list("paraHoy");
++  const curso = list("enCurso");
++  const prox = list("proximas");
++  const rows = h("div", { class: "int-rows" });
++  if (atr.length) {
++    const oldest = Math.max(...atr.map((t) => Number(t.dias_atraso ?? 0)));
++    rows.append(listRow("#F4505E", true,
++      h("span", { class: "int-name", text: `${atr.length} atrasada${atr.length === 1 ? "" : "s"}` }),
++      h("span", { class: "int-ago", text: `hasta ${oldest} d` })));
++  } else {
++    rows.append(listRow("#22C55E", true, h("span", { class: "int-name", text: "Nada atrasado" })));
++  }
++  if (hoy.length) {
++    rows.append(listRow("#F5A524", false,
++      h("span", { class: "int-name", text: hoy.length === 1 ? String(hoy[0].titulo ?? "") : `${hoy.length} para hoy · ${hoy[0].titulo ?? ""}` }),
++      h("span", { class: "int-ago", text: "hoy" })));
++  }
++  const running = curso.find((t) => t.cronometro_desde);
++  const next = [...prox].sort((a, b) => Number(a.en_dias ?? 0) - Number(b.en_dias ?? 0))[0];
++  if (running) {
++    rows.append(listRow(CENTRO, false, h("span", { class: "int-name", text: `Corre: ${running.titulo ?? ""}` })));
++  } else if (next) {
++    const n = Number(next.en_dias ?? 0);
++    rows.append(listRow("#6B7079", false,
++      h("span", { class: "int-name", text: String(next.titulo ?? "") }),
++      h("span", { class: "int-ago", text: n === 1 ? "mañana" : `en ${n} d` })));
++  }
++  const wd = new Date(Date.now() - 3 * 3_600_000).getUTCDay();
++  return h("div", { class: "int-card" }, header(CENTRO, "Centro", `Hoy, ${DIAS_AR[wd]}`), rows);
++}
++
+ /** True when this integration has data worth showing instead of the idle card. */
+ export function hasIntegrationData(id: string): boolean {
+   const info = State.integrations[id];
+@@ -558,6 +600,8 @@ export function hasIntegrationData(id: string): boolean {
+       return info.loaded;
+     case "integration_railway":
+       return arr(id, "deployments").length > 0;
++    case "integration_centro":
++      return info.loaded;
+     default:
+       return false;
+   }
+@@ -576,6 +620,7 @@ export function renderIntegrationCard(task: AgentTask, hooks: IntegrationCardHoo
+   if (task.id === "integration_plata" && hasIntegrationData(task.id)) {
+     return hooks.detailOpen ? plataDetail(hooks.closeDetail) : plataCard(hooks.openDetail);
+   }
++  if (task.id === "integration_centro" && hasIntegrationData(task.id)) return centroCard();
+   if (task.id === "integration_railway" && hasIntegrationData(task.id)) {
+     return hooks.detailOpen ? railwayDetail(hooks.closeDetail) : railwayCard(hooks.openDetail);
+   }
+diff --git a/windows/src/views/plata.ts b/windows/src/views/plata.ts
+index 453423a..8db18b2 100644
+--- a/windows/src/views/plata.ts
++++ b/windows/src/views/plata.ts
+@@ -29,7 +29,7 @@ import { Bridge, onEvent, type PlataAgentStatus, type PlataLoginEvent, type Plat
+ import { Sound } from "../core/sound";
+ import { State } from "../core/state";
+ import { renderMarkdown, splitAcciones, type Accion } from "./markdown";
+-import type { ViewHost } from "./views";
++import type { ViewActions, ViewHost } from "./views";
+ import { chatHead, onBigChange, registerReset, reportChat, reportMessage } from "./chats";
+ 
+ type Propuesta = {
+@@ -457,7 +457,7 @@ function hhmm(iso: string | null): string {
+ /** Prefix for a request Claude Code could not do: the agent does it itself. */
+ const NO_DELEGAR = "Hacelo vos, sin delegar a Claude Code (no pudo).";
+ 
+-export function buildPlata(): ViewHost {
++export function buildPlata(actions?: ViewActions): ViewHost {
+   let sesionId = newSession();
+   let sending = false;
+   /** The last Claude Code run failed for lack of a login. */
+@@ -509,6 +509,24 @@ export function buildPlata(): ViewHost {
+   fixLine.hidden = true;
+   const ready = h("div", { class: "plata-ready" }, readyLine, fixLine);
+ 
++  // The quick answers (Atajos de la isla): a card each, no chat and no model.
++  const quick = h("div", { class: "plata-quick", role: "group", "aria-label": "Atajos de Plata" });
++  if (actions) {
++    const QUICK = [
++      ["saldo", "¿Cuánto tengo?"],
++      ["mes", "Este mes"],
++      ["resumenes", "Resúmenes"],
++      ["deuda", "Deudas"],
++      ["dolar", "Dólar"],
++      ["gasto", "+ Gasto"],
++    ] as const;
++    for (const [id, label] of QUICK) {
++      const b = h("button", { type: "button", class: "plata-quick-btn", text: label, title: "Atajo: respuesta al toque, sin chat" });
++      b.addEventListener("click", () => actions.openSkill(id));
++      quick.append(b);
++    }
++  }
++
+   // Enlarged or back (chats.ts setBig): the island resizes, the log stays at its end.
+   onBigChange(() => scroll());
+ 
+@@ -559,7 +577,7 @@ export function buildPlata(): ViewHost {
+   const el = h(
+     "div",
+     { class: "view" },
+-    h("div", { class: "card wash chat-card plata-card" }, h("div", { class: "chat-body plata-body" }, head.el, ready, log, attRow, bar)),
++    h("div", { class: "card wash chat-card plata-card" }, h("div", { class: "chat-body plata-body" }, head.el, ready, quick, log, attRow, bar)),
+   );
+   const card = el.querySelector(".card") as HTMLElement;
+   card.style.setProperty("--wash", "rgba(255,158,27,0.30)");
+diff --git a/windows/src/views/views.ts b/windows/src/views/views.ts
+index 97693f8..231da9d 100644
+--- a/windows/src/views/views.ts
++++ b/windows/src/views/views.ts
+@@ -11,6 +11,8 @@ import { createMiniBot, pruneMiniBots } from "../mochi/minibots";
+ import { buildPrompt } from "./chat";
+ import { buildPlata } from "./plata";
+ import { buildLauncher } from "./atajos/launcher";
++import type { SkillId } from "./atajos/router";
++import { buildCentro } from "./centro";
+ import { buildChoose, buildUpload, buildUploading } from "./upload";
+ import { renderIntegrationCard, type IntegrationCardHooks } from "./integrations";
+ 
+@@ -30,6 +32,12 @@ export interface ViewActions {
+   blip(): void;
+   /** The file Mochi just ate goes to the Plata chat as an attachment. */
+   fileToPlata(): void;
++  /** Atajos: the launcher's list (the ⚡ button). */
++  openLauncher(): void;
++  /** Atajos: straight to one skill's card (the Plata and Centro tabs' buttons). */
++  openSkill(id: SkillId, pre?: string | null): void;
++  /** Atajos: as if `text` had been typed in the launcher. */
++  askLauncher(text: string): void;
+ }
+ 
+ export interface ViewHost {
+@@ -92,6 +100,10 @@ export function buildHeader(actions: ViewActions): ViewHost {
+   const tabChat = h("button", { class: "tab", title: "Ask", onclick: () => go("prompt") }, svg(ICONS.bubble, 13));
+   const tabDrop = h("button", { class: "tab", title: "Drop", onclick: () => go("upload") }, svg(ICONS.plus, 13));
+   const tabPlata = h("button", { class: "tab tab-plata", title: "Plata", onclick: () => go("plata") }, svg(ICONS.coin, 14, { stroke: 1.7 }));
++  // The Centro de Control agent: a red dot when something is overdue.
++  const centroDot = h("span", { class: "tab-dot" });
++  const tabCentro = h("button", { class: "tab tab-cdc", title: "Centro de Control", onclick: () => go("centro") }, svg(ICONS.checklist, 14, { stroke: 1.8 }), centroDot);
++  const boltBtn = h("button", { title: `Atajos (${State.settings.launcherHotkey || "F8"})`, class: "bolt-btn", onclick: () => { actions.blip(); actions.openLauncher(); } }, svg(ICONS.bolt, 14, { stroke: 1.8 }));
+ 
+   const gearBtn = h("button", { title: "Settings", onclick: () => go("settings") }, svg(ICONS.gear, 14));
+   const soundBtn = h("button", { title: "Mute", onclick: () => actions.toggleSound() }, svg(ICONS.speakerOn, 14));
+@@ -104,8 +116,8 @@ export function buildHeader(actions: ViewActions): ViewHost {
+   const el = h(
+     "div",
+     { id: "header" },
+-    h("div", { class: "tabs" }, tabHome, tabChat, tabPlata, tabDrop),
+-    h("div", { class: "header-actions" }, gearBtn, soundBtn),
++    h("div", { class: "tabs" }, tabHome, tabChat, tabPlata, tabCentro, tabDrop),
++    h("div", { class: "header-actions" }, boltBtn, gearBtn, soundBtn),
+   );
+ 
+   return {
+@@ -116,6 +128,12 @@ export function buildHeader(actions: ViewActions): ViewHost {
+       tabChat.classList.toggle("on", v === "prompt");
+       tabDrop.classList.toggle("on", v === "upload");
+       tabPlata.classList.toggle("on", v === "plata");
++      tabCentro.classList.toggle("on", v === "centro");
++      const late = Number(State.integrations.integration_centro?.data?.atrasadas ?? 0);
++      centroDot.hidden = !(late > 0);
++      tabCentro.title = late > 0 ? `Centro de Control · ${late} atrasada${late === 1 ? "" : "s"}` : "Centro de Control";
++      boltBtn.classList.toggle("on", v === "launcher");
++      boltBtn.title = `Atajos (${State.settings.launcherHotkey || "F8"})`;
+       gearBtn.classList.toggle("on", v === "settings");
+       clear(gearBtn);
+       gearBtn.append(svg(v === "settings" ? ICONS.gearFill : ICONS.gear, 14));
+@@ -510,7 +528,8 @@ export function buildViews(
+   map.set("note", buildNote());
+   map.set("settings", buildSettings(actions));
+   map.set("prompt", buildPrompt(onChatHeightChange));
+-  map.set("plata", buildPlata());
++  map.set("plata", buildPlata(actions));
++  map.set("centro", buildCentro(actions));
+   map.set("launcher", buildLauncher(actions));
+   map.set("upload", buildUpload());
+   map.set("uploading", buildUploading());
 -- 
 2.55.0.windows.5
 
