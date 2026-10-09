@@ -7,7 +7,17 @@
 | **Plata** (naranja) | Estado del importador de Gmail, último consumo importado, dólar blue y cripto del día | 🔴 Cuando algo se rompe: token de Gmail vencido, el cron no corre, cotizaciones viejas, errores del importador. 🟢 Cuando entra un consumo nuevo de la tarjeta, y cuando se arregla un problema |
 | **Railway** (violeta) | Los últimos deploys del proyecto `plata` | 🟢/🔴 Cuando termina un deploy o se cae el servicio. Mientras deploya, Mochi trabaja |
 
-La pill de **Claude Code** viene de fábrica. La de **GitHub** también, pero solo muestra la cantidad de repos y estrellas.
+Las de **Claude Code** y **GitHub** vienen de fábrica. Desde la 0.3.0, la de GitHub muestra tus PRs, el estado del CI y la actividad (token con scope `repo`).
+
+El parche está hecho sobre **Coucou para Windows 0.3.0** (`fb9674d`, 9/10/2026). Además de lo de Plata, la 0.3.0 trae:
+- abrir la isla al pasar el mouse;
+- sonidos propios;
+- atajos de teclado globales para las acciones de la isla;
+- el resumen semanal;
+- el ropero de Mochi (clic derecho sobre él). Por defecto Mochi se viste según la temporada: en octubre, con gorro de bruja. Para sacárselo, elegí **"Ninguno"** en el ropero;
+- la interfaz en español.
+
+La 0.3.0 también trae **Mochi en el escritorio** (arrastrarlo fuera de la isla), pero en esta versión está **apagado** (`DESKTOP_MOCHI` en `src/island/desktop.ts`). La isla ya se mueve entera, y arrastrar a Mochi chocaba con eso.
 
 Además, el parche suma dos cosas a la isla:
 
@@ -70,7 +80,7 @@ Para publicar una versión, alcanza con que el parche nuevo llegue a `main`. Cad
 
 **Una sola vez por PC**, para que tome el mecanismo, la isla tiene que tener la versión que lo incluye: `git pull` en el repo de Plata y `instalar.ps1`. De ahí en más se actualiza sola.
 
-> ¿Por qué compilarlo? El instalador oficial está bajado porque Defender lo marcaba como troyano. El autor dice que es un falso positivo, pero hasta que lo firme, compilarlo vos es lo más seguro: el código se puede leer entero.
+> ¿Por qué compilarlo si ya hay instalador oficial? Microsoft revisó el falso positivo de Defender y el instalador oficial volvió, pero **no trae nada de Plata**. Las dos versiones comparten identificador, así que la compilada reemplaza a la oficial y conserva configuración y claves. No instales el oficial encima: perderías todo lo de Plata hasta la próxima pasada de `actualizar.ps1` con `-Forzar`.
 
 ## Configurar
 
@@ -138,10 +148,11 @@ Una tecla (**F8** por defecto; se cambia en Ajustes → **Atajos**) abre la isla
 - **Sin modelo, salvo donde hace falta:** las skills de Plata leen rutas directas del agente (`/agentes/plata/rapido/*`, repo `agentes`, CONTRATOS §9), y Registrar gasto arma la propuesta con un parser fijo. Aprobar o rechazar va directo, sin turno de IA. Solo "Contar una situación" pasa por el agente con IA.
 - **El Centro de Control también es un agente visible** (2026-10-08): tiene su **pestaña** en la isla (ícono de checklist, con punto rojo si hay atrasadas): la franja del día con el anillo de hechas y la agenda, el checklist Hoy · En curso · Semana (✓, ▶ Empezar, ↷ Otro día, con Deshacer), los hábitos y un campo para preguntarle. También tiene su **pill** "Centro" en el Overview. La **pestaña de Plata** trae botones de atajo (¿Cuánto tengo?, Este mes, Resúmenes, Deudas, Dólar, + Gasto) y el **⚡** de la cabecera abre el lanzador sin F8.
 - **Desde las tarjetas del Centro se actúa** (entrega 2, 2026-10-07): tildar, empezar / pausar el cronómetro, pasar a mañana, soltar una quieta, marcar hábitos, "Hoy no trabajo" y guardar la tarea rápida (entiende hoy, mañana, el viernes, el 15, 15/10, en 3 días). Cada acción ofrece **Deshacer** cuando se puede. Escriben lo mismo que la app, vía `coucou_accion.sql`.
+- **Atajos con número:** cada skill puede tener un número del 1 al 9 (**Ajustes → Atajos → Números**; trae valores por defecto). Con el lanzador abierto y el campo vacío, apretás el número y se abre su skill. Si seguís escribiendo en medio segundo ("12500 super"), es un monto, como siempre.
 - **El Centro de Control** se lee de la función `coucou-foco` del proyecto `cqnlceqghqqrlacbjhzj` (ver [`centro-de-control/`](centro-de-control/README.md)), y el calendario de las direcciones **iCal secretas** de Google Calendar (Configuración → tu calendario → "Dirección secreta en formato iCal").
 
-**Para que ande, una vez, en Ajustes:**
-1. **Centro de Control → Secret:** el valor de `select decrypted_secret from vault.decrypted_secrets where name='cdc_coucou_secret';` en el editor SQL del proyecto del Centro de Control.
+**Para que ande, una vez, en Ajustes** (el botón "Configurar" del Centro, en la isla, abre directo esa sección):
+1. **Centro de Control → Secreto:** el valor de `select decrypted_secret from vault.decrypted_secrets where name='cdc_coucou_secret';` en el editor SQL del proyecto del Centro de Control.
 2. **Centro de Control → Calendarios:** las direcciones iCal secretas, una por línea.
 3. **El agente de Plata con sesión** (`npm run login` en `agentes`, una vez por PC).
 
@@ -164,7 +175,7 @@ poll_railway ── cada 30 s ────────────────�
 - Fuentes versionadas en este repo:
   - `supabase/functions/coucou-health/index.ts`: se deploya con el MCP de Supabase, `verify_jwt=false`.
   - `supabase/sql/coucou_health.sql`: se aplica con `execute_sql`.
-- Del lado de Coucou, todo lo propio está en `plata.patch` (veintinueve commits):
+- Del lado de Coucou, todo lo propio está en `plata.patch`: un solo commit sobre la 0.3.0. Reúne los 29 que había sobre la versión anterior; su mensaje los lista.
   - `windows/src-tauri/src/integrations.rs`: `poll_plata` y `poll_railway`.
   - `windows/src/views/integrations.ts`: las tarjetas.
   - `state.ts`, `settings/main.ts`, `secrets.rs`, `settings.rs`, `island.ts`: el registro de las dos pills.
@@ -175,23 +186,36 @@ poll_railway ── cada 30 s ────────────────�
 
 ## Actualizar Coucou
 
+Pasar el parche a una versión nueva de Coucou es trabajo de Claude Code, local o en la nube, porque casi seguro choca:
+
 ```powershell
 cd $env:USERPROFILE\coucou
 git fetch origin
-git rebase origin/main        # re-aplica el commit de Plata sobre lo nuevo
-cd windows; npm install; npm run pack
-```
-
-Si el rebase choca, es el momento de abrir Claude Code **local** en esa carpeta y pedirle que resuelva el conflicto. Después regenerá el parche para este repo:
-
-```powershell
+git checkout -b port origin/main
+git merge plata               # resolver los conflictos
+cd windows; npm install; npm test; cargo check
 git format-patch origin/main --stdout > <repo-plata>\integraciones\coucou\plata.patch
+git rev-parse origin/main     # → $Commit en instalar.ps1
 ```
 
-Y actualizá `$Commit` en `instalar.ps1` con el resultado de `git rev-parse origin/main`. Con eso en `main`, cada PC recompila sobre la base nueva en su próxima pasada.
+Si es un solo commit, el merge se resuelve una vez. Con un `rebase` de muchos commits hay que resolver los mismos bloques en cada uno.
+
+Cuando el parche nuevo y el `$Commit` llegan a `main`, cada PC recompila sobre la base nueva en su próxima pasada.
+
+### Lo que hay que respetar al portar (aprendido al pasar a la 0.3.0)
+
+- **Pills propias al final de `PILL_CATALOG`** (`core/pills.ts`). El resto tiene que quedar idéntico al de Mac; `tests/pills.test.mjs` lo verifica.
+- **Texto visible con `t()`** si ya existe en el catálogo de traducciones (`src/i18n/strings.json`). Lo que es propio de Plata ("Mandar a Plata") va en español fijo. `tests/i18n.test.mjs` lo verifica, y su lista `NOT_TEXT` es para lo que no es texto de pantalla (nombres de teclas).
+- **Un solo `tauri-plugin-global-shortcut`.** Lo registra `shortcuts::plugin()` de Coucou. Su `shortcuts::apply()` hace `unregister_all()`, así que después de cada `apply` hay que volver a registrar la tecla del lanzador (`atajos::apply_hotkey`). `lib.rs` ya lo hace en `save_settings`, `shortcuts_suspend` y al arrancar.
+- **Dos Markdown distintos:**
+  - `views/markdown.ts` es el del chat, de Coucou.
+  - `views/plata-markdown.ts` es el del agente de Plata, con tablas y acciones sugeridas.
+- **La isla que se mueve es solo de Windows** (`#[cfg(windows)]` en `island.rs`). En Linux queda la colocación de Coucou. Las funciones de Win32 que comparte Coucou viven en `platform/windows.rs`.
+- **Mochi en el escritorio** vuelve a la isla según dónde está dibujada (`gate.rect`), no al centro de la ventana. La ventana es más grande que la isla y, anclada a un costado o flotando, no está centrada en ella (`desktop.rs: island_anchor`).
 
 ## Problemas
 
+- **"Espacio en disco insuficiente" al compilar**: la compilación ocupa varios GB en `%USERPROFILE%\coucou\windows\target` (y algo en `node_modules`). Mandá **esas dos carpetas** a otro disco con un junction (`New-Item -ItemType Junction -Path ...\windows\target -Target F:\coucou-build\target`). **No muevas el clon entero**: con todo `%USERPROFILE%\coucou` como junction, Vite falla ("fileName … must be strings that are neither absolute nor relative paths").
 - **Una PC no se actualiza**: mirá `%LOCALAPPDATA%\Coucou\actualizar.log`. La línea dice por qué: sin red, trabajo local en el clon, el parche no aplica o falló la compilación. Mientras tanto queda instalada la versión anterior.
 - **Log de Coucou**: `%LOCALAPPDATA%\Coucou\coucou.log`. Ahí aparecen las líneas `plata HTTP …`, `plata problems: …` y `railway <servicio> <estado>`.
 - **La pill de Plata dice "Wrong secret (401)"**: el secreto no coincide con `app_secrets.COUCOU_SECRET`.

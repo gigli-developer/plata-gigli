@@ -26,7 +26,7 @@ param(
 
 $ErrorActionPreference = "Stop"
 # Commit de Louis-CFM/coucou sobre el que está hecho plata.patch.
-$Commit = "5ae7bd946ab51493b5ddaebdc5f449f269ebb421"
+$Commit = "fb9674d8c41858a349373fbfac5ae09ac7cedb0f"   # Windows 0.3.0
 $Parche = Join-Path $PSScriptRoot "plata.patch"
 
 function Paso($texto) { Write-Host "`n==> $texto" -ForegroundColor Cyan }
