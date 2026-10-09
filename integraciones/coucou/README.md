@@ -7,7 +7,15 @@
 | **Plata** (naranja) | Estado del importador de Gmail, último consumo importado, dólar blue y cripto del día | 🔴 Cuando algo se rompe: token de Gmail vencido, el cron no corre, cotizaciones viejas, errores del importador. 🟢 Cuando entra un consumo nuevo de la tarjeta, y cuando se arregla un problema |
 | **Railway** (violeta) | Los últimos deploys del proyecto `plata` | 🟢/🔴 Cuando termina un deploy o se cae el servicio. Mientras deploya, Mochi trabaja |
 
-La pill de **Claude Code** viene de fábrica. La de **GitHub** también, pero solo muestra la cantidad de repos y estrellas.
+Las de **Claude Code** y **GitHub** vienen de fábrica. Desde la 0.3.0, la de GitHub muestra tus PRs, el estado del CI y la actividad (token con scope `repo`).
+
+El parche está hecho sobre **Coucou para Windows 0.3.0** (`fb9674d`, 9/10/2026). Además de lo de Plata, la 0.3.0 trae:
+- abrir la isla al pasar el mouse;
+- sonidos propios;
+- atajos de teclado globales para las acciones de la isla;
+- Mochi en el escritorio (arrastralo fuera de la isla);
+- el resumen semanal y el ropero de Mochi (clic derecho sobre él);
+- la interfaz en español.
 
 Además, el parche suma dos cosas a la isla:
 
@@ -70,7 +78,7 @@ Para publicar una versión, alcanza con que el parche nuevo llegue a `main`. Cad
 
 **Una sola vez por PC**, para que tome el mecanismo, la isla tiene que tener la versión que lo incluye: `git pull` en el repo de Plata y `instalar.ps1`. De ahí en más se actualiza sola.
 
-> ¿Por qué compilarlo? El instalador oficial está bajado porque Defender lo marcaba como troyano. El autor dice que es un falso positivo, pero hasta que lo firme, compilarlo vos es lo más seguro: el código se puede leer entero.
+> ¿Por qué compilarlo si ya hay instalador oficial? Microsoft revisó el falso positivo de Defender y el instalador oficial volvió, pero **no trae nada de Plata**. Las dos versiones comparten identificador, así que la compilada reemplaza a la oficial y conserva configuración y claves. No instales el oficial encima: perderías todo lo de Plata hasta la próxima pasada de `actualizar.ps1` con `-Forzar`.
 
 ## Configurar
 
@@ -164,7 +172,7 @@ poll_railway ── cada 30 s ────────────────�
 - Fuentes versionadas en este repo:
   - `supabase/functions/coucou-health/index.ts`: se deploya con el MCP de Supabase, `verify_jwt=false`.
   - `supabase/sql/coucou_health.sql`: se aplica con `execute_sql`.
-- Del lado de Coucou, todo lo propio está en `plata.patch` (veintinueve commits):
+- Del lado de Coucou, todo lo propio está en `plata.patch`: un solo commit sobre la 0.3.0. Reúne los 29 que había sobre la versión anterior; su mensaje los lista.
   - `windows/src-tauri/src/integrations.rs`: `poll_plata` y `poll_railway`.
   - `windows/src/views/integrations.ts`: las tarjetas.
   - `state.ts`, `settings/main.ts`, `secrets.rs`, `settings.rs`, `island.ts`: el registro de las dos pills.
@@ -175,20 +183,32 @@ poll_railway ── cada 30 s ────────────────�
 
 ## Actualizar Coucou
 
+Pasar el parche a una versión nueva de Coucou es trabajo de Claude Code, local o en la nube, porque casi seguro choca:
+
 ```powershell
 cd $env:USERPROFILE\coucou
 git fetch origin
-git rebase origin/main        # re-aplica el commit de Plata sobre lo nuevo
-cd windows; npm install; npm run pack
-```
-
-Si el rebase choca, es el momento de abrir Claude Code **local** en esa carpeta y pedirle que resuelva el conflicto. Después regenerá el parche para este repo:
-
-```powershell
+git checkout -b port origin/main
+git merge plata               # resolver los conflictos
+cd windows; npm install; npm test; cargo check
 git format-patch origin/main --stdout > <repo-plata>\integraciones\coucou\plata.patch
+git rev-parse origin/main     # → $Commit en instalar.ps1
 ```
 
-Y actualizá `$Commit` en `instalar.ps1` con el resultado de `git rev-parse origin/main`. Con eso en `main`, cada PC recompila sobre la base nueva en su próxima pasada.
+Si es un solo commit, el merge se resuelve una vez. Con un `rebase` de muchos commits hay que resolver los mismos bloques en cada uno.
+
+Cuando el parche nuevo y el `$Commit` llegan a `main`, cada PC recompila sobre la base nueva en su próxima pasada.
+
+### Lo que hay que respetar al portar (aprendido al pasar a la 0.3.0)
+
+- **Pills propias al final de `PILL_CATALOG`** (`core/pills.ts`). El resto tiene que quedar idéntico al de Mac; `tests/pills.test.mjs` lo verifica.
+- **Texto visible con `t()`** si ya existe en el catálogo de traducciones (`src/i18n/strings.json`). Lo que es propio de Plata ("Mandar a Plata") va en español fijo. `tests/i18n.test.mjs` lo verifica, y su lista `NOT_TEXT` es para lo que no es texto de pantalla (nombres de teclas).
+- **Un solo `tauri-plugin-global-shortcut`.** Lo registra `shortcuts::plugin()` de Coucou. Su `shortcuts::apply()` hace `unregister_all()`, así que después de cada `apply` hay que volver a registrar la tecla del lanzador (`atajos::apply_hotkey`). `lib.rs` ya lo hace en `save_settings`, `shortcuts_suspend` y al arrancar.
+- **Dos Markdown distintos:**
+  - `views/markdown.ts` es el del chat, de Coucou.
+  - `views/plata-markdown.ts` es el del agente de Plata, con tablas y acciones sugeridas.
+- **La isla que se mueve es solo de Windows** (`#[cfg(windows)]` en `island.rs`). En Linux queda la colocación de Coucou. Las funciones de Win32 que comparte Coucou viven en `platform/windows.rs`.
+- **Mochi en el escritorio** vuelve a la isla según dónde está dibujada (`gate.rect`), no al centro de la ventana. La ventana es más grande que la isla y, anclada a un costado o flotando, no está centrada en ella (`desktop.rs: island_anchor`).
 
 ## Problemas
 
