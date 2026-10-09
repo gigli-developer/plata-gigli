@@ -1,7 +1,7 @@
 From 009f03b96d51e06b771de4030bf20dfe60a48e29 Mon Sep 17 00:00:00 2001
 From: Lucas Gigli <giglilangonelucas@gmail.com>
 Date: Fri, 9 Oct 2026 00:25:56 +0000
-Subject: [PATCH] Plata sobre Coucou para Windows 0.3.0
+Subject: [PATCH 1/2] Plata sobre Coucou para Windows 0.3.0
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -16885,6 +16885,908 @@ index 3186d80..b29471e 100644
    assert.deepEqual(PILL_CATEGORIES.map((c) => c.title), [
      "Where you code", "Agents", "AI for the chat", "Services",
    ]);
+-- 
+2.43.0
+
+
+From 426591151aa7b5ae2e9485735ac0726643e87f05 Mon Sep 17 00:00:00 2001
+From: Lucas Gigli <giglilangonelucas@gmail.com>
+Date: Fri, 9 Oct 2026 01:17:16 +0000
+Subject: [PATCH 2/2] =?UTF-8?q?Centro=20que=20se=20conecta,=20atajos=20con?=
+ =?UTF-8?q?=20n=C3=BAmero=20y=20Mochi=20en=20la=20isla?=
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Lo que salió de probar la 0.3.0 en la PC:
+
+- Centro de Control: "Configurar" (pestaña, tarjetas, pill) abre Ajustes
+  directo en la sección del Centro y la resalta; antes abría arriba de
+  todo y lo primero era un interruptor que no conecta nada. La fila del
+  Centro en Integraciones dice si falta el secreto y baja a su sección.
+  Guardar o borrar una clave avisa a la isla (secret-changed): la pill se
+  actualiza y el servicio se lee en el momento, no a los 3 minutos.
+- Atajos con número: cada skill puede tener un número del 1 al 9
+  (Ajustes → Atajos → Números; settings.launcherNumbers, con valores por
+  defecto). Con el campo del lanzador vacío, el número abre su skill si no
+  sigue otra tecla en 450 ms: "12500 super" sigue siendo un monto.
+- Mochi no sale al escritorio (DESKTOP_MOCHI = false): la isla ya se mueve
+  entera, y arrastrar a Mochi chocaba con eso y volvía a donde la isla
+  estaba antes. Si quedó afuera, vuelve. Apretar sobre Mochi mueve la isla.
+
+Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+Claude-Session: https://claude.ai/code/session_01HnkfGVMfD265YXRg3NJPRy
+---
+ windows/src-tauri/src/lib.rs         | 11 ++++-
+ windows/src-tauri/src/settings.rs    | 28 ++++++++++-
+ windows/src/core/bridge.ts           |  3 +-
+ windows/src/core/state.ts            |  4 ++
+ windows/src/island/desktop.ts        | 14 ++++++
+ windows/src/island/island.ts         |  7 +--
+ windows/src/main.ts                  | 10 +++-
+ windows/src/settings/atajos.ts       | 50 ++++++++++++++++++-
+ windows/src/settings/main.ts         | 32 +++++++++++-
+ windows/src/settings/settings.css    | 50 +++++++++++++++++++
+ windows/src/style.css                | 17 ++++++-
+ windows/src/views/atajos/card.ts     |  2 +-
+ windows/src/views/atajos/launcher.ts | 64 +++++++++++++++++++++++-
+ windows/src/views/atajos/numbers.ts  | 74 ++++++++++++++++++++++++++++
+ windows/src/views/centro.ts          | 44 ++++++++++-------
+ windows/src/views/views.ts           |  9 +++-
+ windows/tests/atajos.test.ts         | 33 +++++++++++++
+ 17 files changed, 419 insertions(+), 33 deletions(-)
+ create mode 100644 windows/src/views/atajos/numbers.ts
+
+diff --git a/windows/src-tauri/src/lib.rs b/windows/src-tauri/src/lib.rs
+index f9c8636..0c2cbca 100644
+--- a/windows/src-tauri/src/lib.rs
++++ b/windows/src-tauri/src/lib.rs
+@@ -678,6 +678,9 @@ fn secret_set(app: AppHandle, key: String, value: String) -> Result<(), String>
+             integrations::github_token_changed(&app);
+         }
+     }
++    // The island reads the pill's status and polls the service right away,
++    // instead of at its next tick (up to 3 minutes later).
++    let _ = app.emit_to(island::WINDOW_LABEL, "secret-changed", key);
+     Ok(())
+ }
+ 
+@@ -688,6 +691,7 @@ fn secret_clear(app: AppHandle, key: String) -> Result<(), String> {
+     if had {
+         integrations::github_token_changed(&app);
+     }
++    let _ = app.emit_to(island::WINDOW_LABEL, "secret-changed", key);
+     Ok(())
+ }
+ 
+@@ -860,9 +864,14 @@ pub fn show_settings_window(app: &AppHandle) {
+     let _ = win.set_focus();
+ }
+ 
++/// `section` scrolls the settings window to one of its sections ("centro",
++/// "integrations"), so "Configurar" lands where the thing is set.
+ #[tauri::command]
+-fn open_settings_window(app: AppHandle) {
++fn open_settings_window(app: AppHandle, section: Option<String>) {
+     show_settings_window(&app);
++    if let Some(section) = section {
++        let _ = app.emit_to("settings", "settings-focus", section);
++    }
+ }
+ 
+ pub fn run() {
+diff --git a/windows/src-tauri/src/settings.rs b/windows/src-tauri/src/settings.rs
+index 53d0f4b..069afe8 100644
+--- a/windows/src-tauri/src/settings.rs
++++ b/windows/src-tauri/src/settings.rs
+@@ -89,6 +89,11 @@ pub struct Settings {
+     /// writes it ("F8", "Ctrl+Alt+Space"). Defaulted so older files still load.
+     #[serde(default = "default_launcher_hotkey")]
+     pub launcher_hotkey: String,
++    /// Atajos: digit ("1"–"9") → skill id. With the launcher's field empty, the
++    /// digit opens that skill (views/atajos/numbers.ts, which also checks it).
++    /// Defaulted so older files load with the same numbers as a new install.
++    #[serde(default = "default_launcher_numbers")]
++    pub launcher_numbers: BTreeMap<String, String>,
+ }
+ 
+ #[derive(Debug, Clone, Default, PartialEq, Serialize, Deserialize)]
+@@ -109,6 +114,24 @@ pub struct DesktopSpot {
+ }
+ 
+ 
++/// Same as DEFAULT_NUMBERS in views/atajos/numbers.ts.
++fn default_launcher_numbers() -> BTreeMap<String, String> {
++    [
++        ("1", "dia"),
++        ("2", "ahora"),
++        ("3", "tarea"),
++        ("4", "gasto"),
++        ("5", "saldo"),
++        ("6", "mes"),
++        ("7", "resumenes"),
++        ("8", "dolar"),
++        ("9", "deuda"),
++    ]
++    .into_iter()
++    .map(|(d, id)| (d.to_string(), id.to_string()))
++    .collect()
++}
++
+ fn default_launcher_hotkey() -> String {
+     crate::atajos::DEFAULT_HOTKEY.into()
+ }
+@@ -157,6 +180,7 @@ impl Default for Settings {
+             dock_y: 0.0,
+             dock_monitor: None,
+             launcher_hotkey: default_launcher_hotkey(),
++            launcher_numbers: default_launcher_numbers(),
+         }
+     }
+ }
+@@ -438,7 +462,8 @@ mod tests {
+   "dockX": 120.5,
+   "dockY": 300.0,
+   "dockMonitor": "at:1920,0|DELL U2720Q|2560x1440",
+-  "launcherHotkey": "Ctrl+Alt+Space"
++  "launcherHotkey": "Ctrl+Alt+Space",
++  "launcherNumbers": { "1": "saldo", "2": "dia" }
+ }"##;
+ 
+     fn custom() -> Value {
+@@ -847,6 +872,7 @@ mod tests {
+                 "dockY",
+                 "dockMonitor",
+                 "launcherHotkey",
++                "launcherNumbers",
+             ]
+         );
+         let _ = std::fs::remove_dir_all(&dir);
+diff --git a/windows/src/core/bridge.ts b/windows/src/core/bridge.ts
+index 7cbd05d..2a1aad1 100644
+--- a/windows/src/core/bridge.ts
++++ b/windows/src/core/bridge.ts
+@@ -175,7 +175,8 @@ export const Bridge = {
+ 
+   quit: () => call<void>("quit_app"),
+ 
+-  openSettingsWindow: () => call<void>("open_settings_window"),
++  /** `section`: scroll the settings window to it ("centro", "integrations"). */
++  openSettingsWindow: (section?: string) => call<void>("open_settings_window", { section: section ?? null }),
+ 
+   /** Writes to %LOCALAPPDATA%\Coucou\coucou.log, next to the Rust lines. */
+   log: (message: string) => call<void>("log_line", { message }),
+diff --git a/windows/src/core/state.ts b/windows/src/core/state.ts
+index bffd22e..e0fcf66 100644
+--- a/windows/src/core/state.ts
++++ b/windows/src/core/state.ts
+@@ -13,6 +13,7 @@ import type { Bindings } from "./shortcuts";
+ import { DEFAULT_OUTFIT, type Outfit } from "../mochi/wardrobe";
+ import { pillColor } from "./pill-colors";
+ import { Spotify, musicPlaying } from "./spotify";
++import { DEFAULT_NUMBERS } from "../views/atajos/numbers";
+ 
+ export type AgentSource = "claudeCode" | "n8n" | "agent";
+ export type PillBadge = "approval" | "finished" | "error";
+@@ -162,6 +163,8 @@ export interface Settings {
+   dockMonitor: string | null;
+   /** The global key that opens the launcher (Atajos de la isla), e.g. "F8", "Ctrl+Alt+Space". */
+   launcherHotkey: string;
++  /** Atajos: digit "1"–"9" → skill id; read it through views/atajos/numbers.ts (cleanNumbers). */
++  launcherNumbers: Record<string, string>;
+ }
+ 
+ export const DEFAULT_SETTINGS: Settings = {
+@@ -195,6 +198,7 @@ export const DEFAULT_SETTINGS: Settings = {
+   dockY: 0,
+   dockMonitor: null,
+   launcherHotkey: "F8",
++  launcherNumbers: { ...DEFAULT_NUMBERS },
+ };
+ 
+ type Listener = () => void;
+diff --git a/windows/src/island/desktop.ts b/windows/src/island/desktop.ts
+index 50d11b6..e36957c 100644
+--- a/windows/src/island/desktop.ts
++++ b/windows/src/island/desktop.ts
+@@ -16,6 +16,15 @@ import { SeasonCache, parseOutfit } from "../mochi/wardrobe";
+ /** Label of the desktop Mochi's window (desktop.rs LABEL). */
+ const WINDOW = "mochi";
+ 
++/**
++ * Plata's build: Mochi stays in the island. The island itself moves and docks
++ * anywhere (island.rs drag_loop), so a second thing to drag around the screen
++ * only got in the way — a press on Mochi either moved the island or pulled him
++ * out — and he flew back to where the island used to be. False keeps the code
++ * as Coucou ships it, switched off.
++ */
++const DESKTOP_MOCHI = false;
++
+ /** What the life cycle needs from the island. */
+ export interface DesktopHost {
+   /** Shows the island (compact) if it is hidden. */
+@@ -67,6 +76,11 @@ export class DesktopLink {
+   async init() {
+     const info = await Bridge.desktopInfo();
+     if (!info || info.mode === "off") return;
++    if (!DESKTOP_MOCHI) {
++      // Left out there by an earlier build: home, and forgotten for good.
++      if (info.onDesktop) void Bridge.desktopFlyHome(true);
++      return;
++    }
+     this.mode = info.mode;
+     this.controller.enabled = info.onDesktop;
+ 
+diff --git a/windows/src/island/island.ts b/windows/src/island/island.ts
+index c87a357..5a05688 100644
+--- a/windows/src/island/island.ts
++++ b/windows/src/island/island.ts
+@@ -269,7 +269,7 @@ export class Island {
+         void Bridge.saveSettings(State.settings);
+         State.notify();
+       },
+-      openSettingsWindow: () => void Bridge.openSettingsWindow(),
++      openSettingsWindow: (section) => void Bridge.openSettingsWindow(section),
+       blip: () => Sound.play("blip"),
+       chooseOutfit: (selection) => {
+         if (parseOutfit(State.settings.mochiOutfit) === selection) return;
+@@ -923,8 +923,9 @@ export class Island {
+         return;
+       }
+       // Anywhere else that is not a control, the press may move the island.
+-      // Mochi's own press is the desktop drag above, never both.
+-      const grabbable = e.button === 0 && !onBot && !isInteractive(e.target);
++      // Where Mochi can go out to the desktop, his own press is that drag
++      // (above), never both; where he can't (Plata's build), he moves it too.
++      const grabbable = e.button === 0 && !(onBot && this.desktop.supported) && !isInteractive(e.target);
+       if (State.mode !== "expanded") {
+         // The press may be the start of a drag: open on release instead.
+         if (grabbable) this.drag = { x: e.clientX, y: e.clientY, started: false, click: true };
+diff --git a/windows/src/main.ts b/windows/src/main.ts
+index df5829f..ec096de 100644
+--- a/windows/src/main.ts
++++ b/windows/src/main.ts
+@@ -17,7 +17,7 @@ import { onLanguageChange, resolveLanguage, setLanguage, systemLanguages } from
+ function applyLanguage() {
+   setLanguage(resolveLanguage(State.settings.language, systemLanguages()));
+ }
+-import { startCentroPoll } from "./views/centro";
++import { pollCentroNow, startCentroPoll } from "./views/centro";
+ 
+ async function main() {
+   const root = document.getElementById("root");
+@@ -132,6 +132,14 @@ async function main() {
+   island.onWake = checkRecap;
+   await onEvent<null>("recap-check", checkRecap);
+   startCentroPoll();
++  // A key saved or removed in Settings: the pills say so at once, and the
++  // service behind it is read now rather than at its next tick.
++  await onEvent<string>("secret-changed", (key) => {
++    void refreshConfigured();
++    if (key === "cdc-secret" || key === "cdc-ical-urls") pollCentroNow();
++    else if (key.startsWith("plata-")) void Bridge.refreshIntegration("integration_plata");
++    else if (key.startsWith("railway-")) void Bridge.refreshIntegration("integration_railway");
++  });
+ 
+   island.launch();
+ 
+diff --git a/windows/src/settings/atajos.ts b/windows/src/settings/atajos.ts
+index c101101..901c4ad 100644
+--- a/windows/src/settings/atajos.ts
++++ b/windows/src/settings/atajos.ts
+@@ -9,6 +9,8 @@
+ 
+ import { Bridge, onEvent, type LauncherHotkeyStatus } from "../core/bridge";
+ import { h, clear } from "../views/dom";
++import { AGENTS, SKILLS, type SkillId } from "../views/atajos/router";
++import { DIGITS, assignNumber, cleanNumbers, numberOf } from "../views/atajos/numbers";
+ 
+ export const DEFAULT_HOTKEY = "F8";
+ 
+@@ -105,6 +107,48 @@ export interface AtajosHooks {
+   current: () => string;
+   /** Store a new hotkey through the normal settings save. */
+   save: (hotkey: string) => Promise<void>;
++  /** The skills' numbers as stored right now (settings.launcherNumbers). */
++  numbers: () => unknown;
++  /** Store the numbers through the normal settings save. */
++  saveNumbers: (numbers: Record<string, SkillId>) => Promise<void>;
++}
++
++/**
++ * One row per skill with a 1–9 picker. Picking a number another skill had
++ * moves it here; "—" takes it away. Returns the block and its repaint.
++ */
++function numbersBlock(hooks: AtajosHooks): { el: HTMLElement; paint: () => void } {
++  const pickers = new Map<SkillId, HTMLSelectElement>();
++  const grid = h("div", { class: "num-grid" });
++  for (const s of SKILLS) {
++    const pick = h("select", { "aria-label": `Número de ${s.name}` }) as HTMLSelectElement;
++    pick.append(h("option", { value: "", text: "—" }));
++    for (const d of DIGITS) pick.append(h("option", { value: d, text: d }));
++    pick.addEventListener("change", () => {
++      const next = assignNumber(cleanNumbers(hooks.numbers()), s.id, pick.value || null);
++      void hooks.saveNumbers(next).then(paint);
++    });
++    pickers.set(s.id, pick);
++    grid.append(
++      h("div", { class: "num-row" },
++        h("i", { class: "dot", style: `background:${AGENTS[s.agent].color}` }),
++        h("span", { class: "num-name", text: s.name }),
++        pick,
++      ),
++    );
++  }
++  function paint() {
++    const map = cleanNumbers(hooks.numbers());
++    for (const [id, pick] of pickers) pick.value = numberOf(map, id) ?? "";
++  }
++  paint();
++  const el = h("div", { class: "num-block" },
++    h("div", { class: "row" }, h("label", { text: "Números" }),
++      h("span", { class: "hint", text: "Con el lanzador abierto y el campo vacío, el número abre su skill. Si seguís escribiendo («12500 super»), es un monto." }),
++    ),
++    grid,
++  );
++  return { el, paint };
+ }
+ 
+ /** The section, plus `refresh` for when settings change in another window. */
+@@ -129,7 +173,10 @@ export function atajosSection(hooks: AtajosHooks): { el: HTMLElement; refresh: (
+     if (st.error) feedback.append(h("div", { class: "notice err", text: st.error }));
+   };
+ 
++  const numbers = numbersBlock(hooks);
++
+   const refresh = () => {
++    numbers.paint();
+     if (listening) return;
+     showKey();
+     void Bridge.launcherHotkeyStatus().then(showStatus);
+@@ -210,6 +257,7 @@ export function atajosSection(hooks: AtajosHooks): { el: HTMLElement; refresh: (
+     }),
+     h("div", { class: "row" }, h("label", { text: "Abrir el lanzador" }), field, reset),
+     feedback,
++    numbers.el,
+   );
+   return { el, refresh };
+ }
+@@ -340,7 +388,7 @@ export function centroSection(present: Record<string, boolean>): HTMLElement {
+ 
+   return h(
+     "section",
+-    {},
++    { "data-section": "centro" },
+     h("h2", {}, h("i", { class: "dot", style: "background:#7cc4ff" }), h("span", { text: "Centro de Control" })),
+     h("div", {
+       class: "hint",
+diff --git a/windows/src/settings/main.ts b/windows/src/settings/main.ts
+index a36be0a..a9b89cd 100644
+--- a/windows/src/settings/main.ts
++++ b/windows/src/settings/main.ts
+@@ -861,6 +861,19 @@ function integrationsSection(present: Record<string, boolean>): HTMLElement {
+     }
+ 
+     if (def.hint) rows.append(h("div", { class: "hint", text: t(def.hint) }));
++    // The Centro connects with a secret and calendars, in its own section
++    // below: the switch alone only shows the pill.
++    if (def.id === "integration_centro") {
++      rows.append(
++        h("div", { class: "row" },
++          h("button", {
++            class: "link",
++            text: present["cdc-secret"] ? "Secreto y calendarios ↓" : "Conectar: falta el secreto ↓",
++            onclick: () => focusSection("centro"),
++          }),
++        ),
++      );
++    }
+     if (def.id === "integration_spotify") {
+       // As on the Mac's row: said only when there is no Spotify to launch.
+       const hint = h("div", { class: "hint", style: "padding-top:5px" });
+@@ -883,7 +896,7 @@ function integrationsSection(present: Record<string, boolean>): HTMLElement {
+   }
+ 
+   updateNote();
+-  return h("section", {}, h("h2", {}, h("span", { text: t("Integrations") })), note, list);
++  return h("section", { "data-section": "integrations" }, h("h2", {}, h("span", { text: t("Integrations") })), note, list);
+ }
+ 
+ // ── General section ───────────────────────────────────────────────────────────
+@@ -1304,6 +1317,16 @@ async function rerender() {
+ 
+ // ── Boot ──────────────────────────────────────────────────────────────────────
+ 
++/** Scrolls to a section and makes it blink once, so it is found at a glance. */
++function focusSection(id: string) {
++  const el = root.querySelector<HTMLElement>(`[data-section="${CSS.escape(id)}"]`);
++  if (!el) return;
++  el.scrollIntoView({ behavior: "smooth", block: "start" });
++  el.classList.remove("flash");
++  void el.offsetWidth; // restart the animation
++  el.classList.add("flash");
++}
++
+ async function main() {
+   const boot = await Bridge.boot();
+   if (boot) {
+@@ -1380,6 +1403,11 @@ async function render() {
+       settings.launcherHotkey = hotkey;
+       await save();
+     },
++    numbers: () => settings.launcherNumbers,
++    saveNumbers: async (numbers) => {
++      settings.launcherNumbers = numbers;
++      await save();
++    },
+   });
+ 
+   clear(root);
+@@ -1404,6 +1432,8 @@ async function render() {
+   );
+ 
+   void onEvent<SettingsX>("settings-changed", () => atajos.refresh());
++  // "Configurar" in the island: straight to the section that connects it.
++  void onEvent<string>("settings-focus", (id) => focusSection(id));
+ }
+ 
+ void main();
+diff --git a/windows/src/settings/settings.css b/windows/src/settings/settings.css
+index fb3c7f1..82485d7 100644
+--- a/windows/src/settings/settings.css
++++ b/windows/src/settings/settings.css
+@@ -499,3 +499,53 @@ textarea:focus {
+   outline: none;
+   border-color: rgba(255, 255, 255, 0.28);
+ }
++
++/* "Configurar" from the island lands on a section: it blinks once. */
++section.flash {
++  animation: section-flash 1.6s ease-out;
++}
++
++@keyframes section-flash {
++  0%, 30% {
++    box-shadow: 0 0 0 2px rgba(124, 196, 255, 0.55);
++  }
++  100% {
++    box-shadow: 0 0 0 2px rgba(124, 196, 255, 0);
++  }
++}
++
++/* Atajos → Números: one row per skill, two columns. */
++.num-block {
++  display: flex;
++  flex-direction: column;
++  gap: 8px;
++  padding-top: 10px;
++  border-top: 1px solid var(--hairline);
++}
++
++.num-grid {
++  display: grid;
++  grid-template-columns: repeat(2, minmax(0, 1fr));
++  gap: 6px 18px;
++}
++
++.num-row {
++  display: flex;
++  align-items: center;
++  gap: 8px;
++  min-width: 0;
++}
++
++.num-name {
++  flex: 1 1 auto;
++  min-width: 0;
++  font-size: 12.5px;
++  white-space: nowrap;
++  overflow: hidden;
++  text-overflow: ellipsis;
++}
++
++.num-row select {
++  flex: none;
++  width: 56px;
++}
+diff --git a/windows/src/style.css b/windows/src/style.css
+index 359c40b..b8c5535 100644
+--- a/windows/src/style.css
++++ b/windows/src/style.css
+@@ -4121,7 +4121,7 @@ html[data-dir="rtl"] #views :is(.bubble, .reply .md-p, .reply .md-h, .reply .md-
+ 
+ .lz-sk {
+   display: grid;
+-  grid-template-columns: 22px 1fr;
++  grid-template-columns: 22px 1fr auto;
+   gap: 8px;
+   align-items: center;
+   padding: 5px 7px;
+@@ -4138,6 +4138,21 @@ html[data-dir="rtl"] #views :is(.bubble, .reply .md-p, .reply .md-h, .reply .md-
+   display: none;
+ }
+ 
++/* The skill's number (Ajustes → Atajos): 1–9 opens it from the empty field. */
++.lz-view .lz-num {
++  min-width: 17px;
++  text-align: center;
++  opacity: 0.7;
++}
++
++.lz-view .lz-num[hidden] {
++  display: none;
++}
++
++.lz-sk.sel .lz-num {
++  opacity: 1;
++}
++
+ .lz-sk:hover,
+ .lz-sk.sel {
+   background: rgba(var(--rgb), 0.12);
+diff --git a/windows/src/views/atajos/card.ts b/windows/src/views/atajos/card.ts
+index a386578..2399ea4 100644
+--- a/windows/src/views/atajos/card.ts
++++ b/windows/src/views/atajos/card.ts
+@@ -152,7 +152,7 @@ function failLine(e: CardError, what: string): string {
+ export function errorBlock(e: CardError, actions: ViewActions, retry: () => void): HTMLElement {
+   const fix =
+     e.kind === "config"
+-      ? btn("Configurar", "prim", () => actions.openSettingsWindow(), { enter: true })
++      ? btn("Configurar", "prim", () => actions.openSettingsWindow(/centro|calendario|ical/i.test(e.text) ? "centro" : undefined), { enter: true })
+       : e.kind === "apagado"
+         ? btn("Encender el agente", "prim", () => {
+             void Bridge.plataStart().then(
+diff --git a/windows/src/views/atajos/launcher.ts b/windows/src/views/atajos/launcher.ts
+index 9b7e415..e58cf1b 100644
+--- a/windows/src/views/atajos/launcher.ts
++++ b/windows/src/views/atajos/launcher.ts
+@@ -20,6 +20,7 @@ import { CENTRO_RUN } from "./skills-centro";
+ import { PLATA_RUN, type Runner } from "./skills-plata";
+ import { SEARCH_SVG, icon, kbd, mochi } from "./ui";
+ import { knownPersonas } from "./data";
++import { NUMBER_WAIT_MS, cleanNumbers, numberOf, skillForKey } from "./numbers";
+ 
+ const RUN: Record<SkillId, Runner> = { ...CENTRO_RUN, ...PLATA_RUN };
+ 
+@@ -65,6 +66,8 @@ export function buildLauncher(actions: ViewActions): LauncherHost {
+   voice.hidden = true;
+ 
+   const rows = new Map<SkillId, HTMLButtonElement>();
++  /** Each skill's number badge (Ajustes → Atajos), empty when it has none. */
++  const badges = new Map<SkillId, HTMLElement>();
+   const groups = h("div", { class: "lz-groups" });
+   for (const agent of ["cdc", "plata"] as AgentId[]) {
+     const a = AGENTS[agent];
+@@ -72,7 +75,9 @@ export function buildLauncher(actions: ViewActions): LauncherHost {
+     g.style.setProperty("--rgb", a.rgb);
+     g.append(h("h4", {}, mochi(a.color, 16).el, h("span", { text: a.name })));
+     for (const s of SKILLS.filter((x) => x.agent === agent)) {
+-      const b = h("button", { type: "button", class: "lz-sk", "data-id": s.id }, icon(s.icon), h("span", { class: "lz-sk-t" }, h("b", { text: s.name }), h("small", { text: s.desc }))) as HTMLButtonElement;
++      const num = h("kbd", { class: "lz-num" });
++      badges.set(s.id, num);
++      const b = h("button", { type: "button", class: "lz-sk", "data-id": s.id }, icon(s.icon), h("span", { class: "lz-sk-t" }, h("b", { text: s.name }), h("small", { text: s.desc })), num) as HTMLButtonElement;
+       b.addEventListener("click", () => openSkill(s.id, preFor(s.id), { send: true }));
+       rows.set(s.id, b);
+       g.append(b);
+@@ -85,6 +90,7 @@ export function buildLauncher(actions: ViewActions): LauncherHost {
+     { class: "lz-lfoot" },
+     h("span", {}, kbd("↑", "↓"), " moverse"),
+     h("span", {}, kbd("Enter"), " abrir"),
++    h("span", {}, kbd("1–9"), " atajo"),
+     h("span", {}, "Un monto (\"12500 super\") va directo a Registrar gasto"),
+     hotkeyHint,
+   );
+@@ -104,6 +110,41 @@ export function buildLauncher(actions: ViewActions): LauncherHost {
+   let typed = false;
+   let settleTimer: number | null = null;
+   let understoodTimer: number | null = null;
++  /** A digit typed into the empty field, waiting to see if an amount follows. */
++  let pendingNumber: { digit: string; id: SkillId; timer: number } | null = null;
++
++  const numbers = () => cleanNumbers(State.settings.launcherNumbers);
++
++  /** The badges, from the numbers as they are now (Settings may have changed them). */
++  function paintNumbers() {
++    const map = numbers();
++    for (const [id, badge] of badges) {
++      const d = numberOf(map, id);
++      badge.textContent = d ?? "";
++      badge.hidden = !d;
++    }
++  }
++
++  function cancelNumber() {
++    if (pendingNumber) window.clearTimeout(pendingNumber.timer);
++    pendingNumber = null;
++  }
++
++  /** Opens the digit's skill unless more keys came: then it was an amount. */
++  function armNumber(digit: string, id: SkillId) {
++    cancelNumber();
++    const timer = window.setTimeout(() => fireNumber(), NUMBER_WAIT_MS);
++    pendingNumber = { digit, id, timer };
++  }
++
++  function fireNumber() {
++    const p = pendingNumber;
++    cancelNumber();
++    if (!p || mode !== "list" || input.value.trim() !== p.digit) return;
++    input.value = "";
++    Sound.play("blip");
++    openSkill(p.id, null, { send: true });
++  }
+ 
+   const host: CardHost = {
+     actions,
+@@ -114,6 +155,7 @@ export function buildLauncher(actions: ViewActions): LauncherHost {
+   };
+ 
+   function clearTimers() {
++    cancelNumber();
+     if (settleTimer !== null) window.clearTimeout(settleTimer);
+     if (understoodTimer !== null) window.clearTimeout(understoodTimer);
+     settleTimer = understoodTimer = null;
+@@ -158,6 +200,7 @@ export function buildLauncher(actions: ViewActions): LauncherHost {
+     groups.classList.remove("dim");
+     input.value = "";
+     filter("");
++    paintNumbers();
+     voice.hidden = !listening;
+     if (listening) voiceIdle();
+     fit();
+@@ -266,6 +309,15 @@ export function buildLauncher(actions: ViewActions): LauncherHost {
+   input.addEventListener("keydown", (e) => {
+     const k = e as KeyboardEvent;
+     if (k.key.length === 1 && !k.ctrlKey && !k.altKey && !k.metaKey) typed = true;
++    // A number into the empty field: its skill, unless an amount follows.
++    if (mode === "list" && !input.value && !k.ctrlKey && !k.altKey && !k.metaKey) {
++      const id = skillForKey(numbers(), k.key);
++      if (id) armNumber(k.key, id);
++    }
++    if (k.key === "Enter" && pendingNumber && input.value.trim() === pendingNumber.digit) {
++      k.preventDefault();
++      return fireNumber();
++    }
+     const v = visible();
+     if (k.key === "ArrowDown") {
+       k.preventDefault();
+@@ -286,6 +338,16 @@ export function buildLauncher(actions: ViewActions): LauncherHost {
+   });
+   input.addEventListener("input", () => {
+     const q = input.value;
++    if (pendingNumber) {
++      if (q.trim() === pendingNumber.digit) {
++        // Show which skill the digit is about to open, instead of filtering.
++        const v = visible();
++        sel = Math.max(0, v.findIndex((b) => b.dataset.id === pendingNumber!.id));
++        mark();
++        return;
++      }
++      cancelNumber();
++    }
+     if (listening && !typed) {
+       // Voice typing: show it's listening and route when it settles.
+       voice.hidden = false;
+diff --git a/windows/src/views/atajos/numbers.ts b/windows/src/views/atajos/numbers.ts
+new file mode 100644
+index 0000000..c9aa811
+--- /dev/null
++++ b/windows/src/views/atajos/numbers.ts
+@@ -0,0 +1,74 @@
++// Atajos de la isla — a number for each skill. With the launcher open and its
++// field empty, pressing 1–9 opens the skill with that number. The numbers are
++// Lucas's to pick (Settings → Atajos); settings.json keeps them as
++// `launcherNumbers`, digit → skill id. Pure: no DOM, no Tauri.
++
++import { SKILLS, type SkillId } from "./router";
++
++export const DIGITS = ["1", "2", "3", "4", "5", "6", "7", "8", "9"] as const;
++
++/** Until Lucas picks his own: the day first, then the everyday Plata ones. */
++export const DEFAULT_NUMBERS: Readonly<Record<string, SkillId>> = {
++  "1": "dia",
++  "2": "ahora",
++  "3": "tarea",
++  "4": "gasto",
++  "5": "saldo",
++  "6": "mes",
++  "7": "resumenes",
++  "8": "dolar",
++  "9": "deuda",
++};
++
++/**
++ * A digit typed into the empty field waits this long: another key and it was
++ * the start of an amount ("12500 super" still goes to Registrar gasto).
++ */
++export const NUMBER_WAIT_MS = 450;
++
++const KNOWN = new Set<string>(SKILLS.map((s) => s.id));
++
++/**
++ * The stored map as it may be used: digits 1–9 to skills that exist, each skill
++ * at most once (the lowest digit wins). Not an object (a file from before the
++ * numbers) means the defaults; an empty object means Lucas cleared them all.
++ */
++export function cleanNumbers(raw: unknown): Record<string, SkillId> {
++  if (!raw || typeof raw !== "object" || Array.isArray(raw)) return { ...DEFAULT_NUMBERS };
++  const out: Record<string, SkillId> = {};
++  const taken = new Set<string>();
++  for (const d of DIGITS) {
++    const id = (raw as Record<string, unknown>)[d];
++    if (typeof id !== "string" || !KNOWN.has(id) || taken.has(id)) continue;
++    out[d] = id as SkillId;
++    taken.add(id);
++  }
++  return out;
++}
++
++/** The skill's digit, or null. */
++export function numberOf(map: Record<string, SkillId>, id: SkillId): string | null {
++  return DIGITS.find((d) => map[d] === id) ?? null;
++}
++
++/**
++ * Gives `id` the digit `digit` (null takes its number away). The skill's old
++ * digit is freed, and a skill that had `digit` loses it: one number, one skill.
++ */
++export function assignNumber(
++  map: Record<string, SkillId>,
++  id: SkillId,
++  digit: string | null,
++): Record<string, SkillId> {
++  const out: Record<string, SkillId> = {};
++  for (const d of DIGITS) {
++    if (map[d] && map[d] !== id && d !== digit) out[d] = map[d];
++  }
++  if (digit && (DIGITS as readonly string[]).includes(digit)) out[digit] = id;
++  return out;
++}
++
++/** The skill a key opens: "1"–"9", from the top row or the numeric keypad. */
++export function skillForKey(map: Record<string, SkillId>, key: string): SkillId | null {
++  return (DIGITS as readonly string[]).includes(key) ? (map[key] ?? null) : null;
++}
+diff --git a/windows/src/views/centro.ts b/windows/src/views/centro.ts
+index a13ad9c..ee86eab 100644
+--- a/windows/src/views/centro.ts
++++ b/windows/src/views/centro.ts
+@@ -50,26 +50,32 @@ export function publishCentro(f: Foco) {
+   State.notify();
+ }
+ 
++/** Reads the Centro now (the secret was just saved), as the 3-minute tick would. */
++export function pollCentroNow() {
++  void centroTick();
++}
++
+ /** Every 3 minutes, while the pill is on and the secret is saved. */
+ export function startCentroPoll() {
+-  const tick = async () => {
+-    if (State.paused || !State.settings.activeIntegrations.includes("integration_centro")) return;
+-    if (!(await Bridge.secretPresent("cdc-secret").catch(() => false))) return;
+-    try {
+-      publishCentro(await data.foco(true));
+-    } catch (e) {
+-      const prev = State.integrations.integration_centro;
+-      State.integrations.integration_centro = {
+-        data: prev?.data ?? {},
+-        error: String((e as { message?: unknown })?.message ?? e),
+-        loaded: prev?.loaded ?? false,
+-        configured: prev?.configured ?? true,
+-      };
+-      State.notify();
+-    }
+-  };
+-  window.setTimeout(() => void tick(), 6_000);
+-  window.setInterval(() => void tick(), 180_000);
++  window.setTimeout(() => void centroTick(), 6_000);
++  window.setInterval(() => void centroTick(), 180_000);
++}
++
++async function centroTick() {
++  if (State.paused || !State.settings.activeIntegrations.includes("integration_centro")) return;
++  if (!(await Bridge.secretPresent("cdc-secret").catch(() => false))) return;
++  try {
++    publishCentro(await data.foco(true));
++  } catch (e) {
++    const prev = State.integrations.integration_centro;
++    State.integrations.integration_centro = {
++      data: prev?.data ?? {},
++      error: String((e as { message?: unknown })?.message ?? e),
++      loaded: prev?.loaded ?? false,
++      configured: prev?.configured ?? true,
++    };
++    State.notify();
++  }
+ }
+ 
+ const CHECK_SVG = '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg>';
+@@ -317,7 +323,7 @@ export function buildCentro(actions: ViewActions): ViewHost {
+       tlSlot.append(timeline(tl, now.min, from, 24));
+     } else {
+       const fix = h("button", { type: "button", class: "cz-link", text: "Configurar" });
+-      fix.addEventListener("click", () => actions.openSettingsWindow());
++      fix.addEventListener("click", () => actions.openSettingsWindow("centro"));
+       const why = calProblem instanceof data.NoCalendarError ? "Sin calendario: falta la dirección iCal." : "No pude leer el calendario.";
+       tlSlot.append(h("div", { class: "cz-note" }, why, " ", fix));
+     }
+diff --git a/windows/src/views/views.ts b/windows/src/views/views.ts
+index 699451d..174fa4e 100644
+--- a/windows/src/views/views.ts
++++ b/windows/src/views/views.ts
+@@ -51,7 +51,8 @@ export interface ViewActions {
+   toggleSound(): void;
+   setVolume(v: number): void;
+   setAutoClose(seconds: number): void;
+-  openSettingsWindow(): void;
++  /** `section` opens the settings window on it ("centro", "integrations"). */
++  openSettingsWindow(section?: string): void;
+   blip(): void;
+   /** Wardrobe click: keeps the outfit ("auto" and "none" included). */
+   chooseOutfit(selection: OutfitSelection): void;
+@@ -274,7 +275,11 @@ function buildOverview(actions: ViewActions): ViewHost {
+       cardKey = "";
+       State.notify();
+     },
+-    openSettings: () => actions.openSettingsWindow(),
++    // Straight to where the focused pill is connected, not the top of the page.
++    openSettings: () => {
++      const id = State.focusTask?.id ?? "";
++      actions.openSettingsWindow(id === "integration_centro" ? "centro" : id.startsWith("integration_") ? "integrations" : undefined);
++    },
+   };
+ 
+   /** The countdowns move every 30 s while a card is open, and only then. */
+diff --git a/windows/tests/atajos.test.ts b/windows/tests/atajos.test.ts
+index 4bee875..1aeb916 100644
+--- a/windows/tests/atajos.test.ts
++++ b/windows/tests/atajos.test.ts
+@@ -9,6 +9,7 @@ import { alternatives, decide, filterSkills, norm, routeByRules, SKILLS } from "
+ import { addDays, arClock, arMs, ars, classifyError, dec, enDias, fechaCorta, hm, mesAnterior, mesNombre, money, num, rich, usd } from "../src/views/atajos/format.ts";
+ import { dayBusy, freeSlots, groupAvisos, horaDe, longest, parseFoco, parseTareaRapida, pickTasks, suggestTomorrow, total } from "../src/views/atajos/plan.ts";
+ import { occurrences, parseCalendars } from "../src/views/atajos/calendar.ts";
++import { DEFAULT_NUMBERS, assignNumber, cleanNumbers, numberOf, skillForKey } from "../src/views/atajos/numbers.ts";
+ 
+ // ── Router ─────────────────────────────────────────────────────────────────
+ 
+@@ -340,3 +341,35 @@ test("tarea rápida: impossible dates don't become a day", () => {
+   assert.equal(parseTareaRapida("algo el 31", "2026-11-05").vence, "2026-12-31");
+   assert.equal(parseTareaRapida("cierre el 31", "2026-12-31").vence, "2026-12-31");
+ });
++
++test("numbers: a file from before them gets the defaults, a cleared map stays empty", () => {
++  assert.deepEqual(cleanNumbers(undefined), DEFAULT_NUMBERS);
++  assert.deepEqual(cleanNumbers(null), DEFAULT_NUMBERS);
++  assert.deepEqual(cleanNumbers("1=dia"), DEFAULT_NUMBERS);
++  assert.deepEqual(cleanNumbers({}), {});
++});
++
++test("numbers: unknown skills, bad digits and a skill twice are dropped", () => {
++  const got = cleanNumbers({ "0": "dia", "1": "saldo", "2": "nope", "3": "saldo", "10": "mes", "9": 4, "4": "gasto" });
++  assert.deepEqual(got, { "1": "saldo", "4": "gasto" });
++});
++
++test("numbers: one number, one skill", () => {
++  let map = cleanNumbers({ "1": "dia", "2": "saldo" });
++  map = assignNumber(map, "saldo", "1"); // 1 moves to saldo, dia loses it, 2 is freed
++  assert.deepEqual(map, { "1": "saldo" });
++  map = assignNumber(map, "gasto", "5");
++  assert.equal(numberOf(map, "gasto"), "5");
++  map = assignNumber(map, "gasto", null);
++  assert.equal(numberOf(map, "gasto"), null);
++  assert.deepEqual(map, { "1": "saldo" });
++});
++
++test("numbers: only 1–9 open a skill", () => {
++  const map = cleanNumbers(undefined);
++  assert.equal(skillForKey(map, "1"), "dia");
++  assert.equal(skillForKey(map, "9"), "deuda");
++  assert.equal(skillForKey(map, "0"), null);
++  assert.equal(skillForKey(map, "a"), null);
++  assert.equal(skillForKey({}, "1"), null);
++});
 -- 
 2.43.0
 

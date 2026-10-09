@@ -13,9 +13,11 @@ El parche está hecho sobre **Coucou para Windows 0.3.0** (`fb9674d`, 9/10/2026)
 - abrir la isla al pasar el mouse;
 - sonidos propios;
 - atajos de teclado globales para las acciones de la isla;
-- Mochi en el escritorio (arrastralo fuera de la isla);
-- el resumen semanal y el ropero de Mochi (clic derecho sobre él);
+- el resumen semanal;
+- el ropero de Mochi (clic derecho sobre él). Por defecto Mochi se viste según la temporada: en octubre, con gorro de bruja. Para sacárselo, elegí **"Ninguno"** en el ropero;
 - la interfaz en español.
+
+La 0.3.0 también trae **Mochi en el escritorio** (arrastrarlo fuera de la isla), pero en esta versión está **apagado** (`DESKTOP_MOCHI` en `src/island/desktop.ts`). La isla ya se mueve entera, y arrastrar a Mochi chocaba con eso.
 
 Además, el parche suma dos cosas a la isla:
 
@@ -146,10 +148,11 @@ Una tecla (**F8** por defecto; se cambia en Ajustes → **Atajos**) abre la isla
 - **Sin modelo, salvo donde hace falta:** las skills de Plata leen rutas directas del agente (`/agentes/plata/rapido/*`, repo `agentes`, CONTRATOS §9), y Registrar gasto arma la propuesta con un parser fijo. Aprobar o rechazar va directo, sin turno de IA. Solo "Contar una situación" pasa por el agente con IA.
 - **El Centro de Control también es un agente visible** (2026-10-08): tiene su **pestaña** en la isla (ícono de checklist, con punto rojo si hay atrasadas): la franja del día con el anillo de hechas y la agenda, el checklist Hoy · En curso · Semana (✓, ▶ Empezar, ↷ Otro día, con Deshacer), los hábitos y un campo para preguntarle. También tiene su **pill** "Centro" en el Overview. La **pestaña de Plata** trae botones de atajo (¿Cuánto tengo?, Este mes, Resúmenes, Deudas, Dólar, + Gasto) y el **⚡** de la cabecera abre el lanzador sin F8.
 - **Desde las tarjetas del Centro se actúa** (entrega 2, 2026-10-07): tildar, empezar / pausar el cronómetro, pasar a mañana, soltar una quieta, marcar hábitos, "Hoy no trabajo" y guardar la tarea rápida (entiende hoy, mañana, el viernes, el 15, 15/10, en 3 días). Cada acción ofrece **Deshacer** cuando se puede. Escriben lo mismo que la app, vía `coucou_accion.sql`.
+- **Atajos con número:** cada skill puede tener un número del 1 al 9 (**Ajustes → Atajos → Números**; trae valores por defecto). Con el lanzador abierto y el campo vacío, apretás el número y se abre su skill. Si seguís escribiendo en medio segundo ("12500 super"), es un monto, como siempre.
 - **El Centro de Control** se lee de la función `coucou-foco` del proyecto `cqnlceqghqqrlacbjhzj` (ver [`centro-de-control/`](centro-de-control/README.md)), y el calendario de las direcciones **iCal secretas** de Google Calendar (Configuración → tu calendario → "Dirección secreta en formato iCal").
 
-**Para que ande, una vez, en Ajustes:**
-1. **Centro de Control → Secret:** el valor de `select decrypted_secret from vault.decrypted_secrets where name='cdc_coucou_secret';` en el editor SQL del proyecto del Centro de Control.
+**Para que ande, una vez, en Ajustes** (el botón "Configurar" del Centro, en la isla, abre directo esa sección):
+1. **Centro de Control → Secreto:** el valor de `select decrypted_secret from vault.decrypted_secrets where name='cdc_coucou_secret';` en el editor SQL del proyecto del Centro de Control.
 2. **Centro de Control → Calendarios:** las direcciones iCal secretas, una por línea.
 3. **El agente de Plata con sesión** (`npm run login` en `agentes`, una vez por PC).
 
