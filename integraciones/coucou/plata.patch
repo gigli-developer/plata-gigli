@@ -1,4 +1,4 @@
-From a333eb9dbcfb3cbe69aea76ed6759ff4f7aa2467 Mon Sep 17 00:00:00 2001
+From 009f03b96d51e06b771de4030bf20dfe60a48e29 Mon Sep 17 00:00:00 2001
 From: Lucas Gigli <giglilangonelucas@gmail.com>
 Date: Fri, 9 Oct 2026 00:25:56 +0000
 Subject: [PATCH] Plata sobre Coucou para Windows 0.3.0
@@ -95,8 +95,8 @@ Claude-Session: https://claude.ai/code/session_01HnkfGVMfD265YXRg3NJPRy
  windows/src/mochi/minibots.ts             |   55 +-
  windows/src/settings/atajos.ts            |  362 +++
  windows/src/settings/main.ts              |   32 +-
- windows/src/settings/settings.css         |   70 +
- windows/src/style.css                     | 3063 ++++++++++++++++++++-
+ windows/src/settings/settings.css         |   72 +
+ windows/src/style.css                     | 3065 ++++++++++++++++++++-
  windows/src/upload/canvas.ts              |   24 +-
  windows/src/views/atajos/calendar.ts      |  146 +
  windows/src/views/atajos/card.ts          |  249 ++
@@ -120,7 +120,7 @@ Claude-Session: https://claude.ai/code/session_01HnkfGVMfD265YXRg3NJPRy
  windows/tests/atajos.test.ts              |  342 +++
  windows/tests/i18n.test.mjs               |    1 +
  windows/tests/pills.test.mjs              |    7 +-
- 53 files changed, 15214 insertions(+), 125 deletions(-)
+ 53 files changed, 15218 insertions(+), 125 deletions(-)
  create mode 100644 windows/src-tauri/src/actualizar.rs
  create mode 100644 windows/src-tauri/src/atajos.rs
  create mode 100644 windows/src-tauri/src/claude_code.rs
@@ -6580,13 +6580,14 @@ index c7ff660..a36be0a 100644
  
  void main();
 diff --git a/windows/src/settings/settings.css b/windows/src/settings/settings.css
-index da46bfa..f498bbe 100644
+index da46bfa..fb3c7f1 100644
 --- a/windows/src/settings/settings.css
 +++ b/windows/src/settings/settings.css
-@@ -426,4 +426,74 @@ select option {
-    diffs, paths, keys and addresses stay left to right. */
+@@ -427,3 +427,75 @@ select option {
  html[dir="rtl"] :is(.diff, .path, .keycap, input[type="password"], input[type="text"]) {
    direction: ltr;
+ }
++
 +/* ── Atajos: the key capture field ─────────────────────────────────────────── */
 +
 +.keycap-field {
@@ -6657,9 +6658,9 @@ index da46bfa..f498bbe 100644
 +textarea:focus {
 +  outline: none;
 +  border-color: rgba(255, 255, 255, 0.28);
- }
++}
 diff --git a/windows/src/style.css b/windows/src/style.css
-index 8c34559..25db88f 100644
+index 8c34559..359c40b 100644
 --- a/windows/src/style.css
 +++ b/windows/src/style.css
 @@ -31,6 +31,16 @@
@@ -6760,10 +6761,11 @@ index 8c34559..25db88f 100644
  }
  
  /* A view that is not on is only transparent, not gone: an infinite animation
-@@ -2627,4 +2657,3021 @@ html[data-dir="rtl"] #views :is(.np-title, .np-sub) {
- html[data-dir="rtl"] #views :is(.bubble, .reply .md-p, .reply .md-h, .reply .md-item, .reply .md-quote, .chat-input) {
+@@ -2628,3 +2658,3022 @@ html[data-dir="rtl"] #views :is(.bubble, .reply .md-p, .reply .md-h, .reply .md-
    unicode-bidi: plaintext;
    text-align: start;
+ }
++
 +/* ── Plata (chat with Plata's agent) ────────────────────────────────────── */
 +
 +.tab-plata.on {
@@ -9781,7 +9783,7 @@ index 8c34559..25db88f 100644
 +
 +.plata-quick-btn:active {
 +  transform: scale(0.95);
- }
++}
 diff --git a/windows/src/upload/canvas.ts b/windows/src/upload/canvas.ts
 index 4144b4a..b0fa89b 100644
 --- a/windows/src/upload/canvas.ts

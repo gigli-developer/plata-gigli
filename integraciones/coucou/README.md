@@ -212,6 +212,7 @@ Cuando el parche nuevo y el `$Commit` llegan a `main`, cada PC recompila sobre l
 
 ## Problemas
 
+- **"Espacio en disco insuficiente" al compilar**: la compilación ocupa varios GB en `%USERPROFILE%\coucou\windows\target` (y algo en `node_modules`). Mandá **esas dos carpetas** a otro disco con un junction (`New-Item -ItemType Junction -Path ...\windows\target -Target F:\coucou-build\target`). **No muevas el clon entero**: con todo `%USERPROFILE%\coucou` como junction, Vite falla ("fileName … must be strings that are neither absolute nor relative paths").
 - **Una PC no se actualiza**: mirá `%LOCALAPPDATA%\Coucou\actualizar.log`. La línea dice por qué: sin red, trabajo local en el clon, el parche no aplica o falló la compilación. Mientras tanto queda instalada la versión anterior.
 - **Log de Coucou**: `%LOCALAPPDATA%\Coucou\coucou.log`. Ahí aparecen las líneas `plata HTTP …`, `plata problems: …` y `railway <servicio> <estado>`.
 - **La pill de Plata dice "Wrong secret (401)"**: el secreto no coincide con `app_secrets.COUCOU_SECRET`.
