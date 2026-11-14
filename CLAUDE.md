@@ -66,6 +66,7 @@ finanzas-app/
 `transactions`, `categories`, `payment_methods`, `cards`, `card_statements`, `installment_plans`,
 `debts`, `debt_payments`, `persons`, `currency_exchanges`, `recurring_templates`,
 `cashflow_budgets`, `cashflow_config`, `app_secrets`, `profiles`, `chat_messages`, `email_process_logs`.
+- **Origen de cada movimiento** (`transactions.source`, enum `tx_source`): `email` (importador), `manual` (app), `chat` (asistente de la app / agente de la isla), `ocr`, y **`cowork`** (migración 037, 2026-11-14, `supabase/sql/origen_cowork.sql`). No hace falta pasarlo: `registrar_movimiento`, `registrar_ajuste`, `pagar_deuda`, `dividir_gasto_v2` y `register_exchange` llaman a `origen_actual(defecto)`, que devuelve `cowork` cuando no hay `request.jwt.claims` (SQL directo por el conector de Supabase: Cowork o Claude Code) y el defecto cuando la llamada viene por PostgREST (app, agentes). Se ve como etiqueta "Cowork" (celeste) en Resumen y Transacciones; en el celular la etiqueta muestra solo el ícono. Rollback en `rollback_funciones` (migracion = '037'). `persons` tiene índice único `(user_id, lower(btrim(name)))` desde el mismo día (había dos "Juli JP").
 - **`legacy`** schema = backup de la app vieja (NO expuesto por la API; resuelve los warnings de RLS).
 - **RPC `get_metrics()`** = calcula saldos líquidos, patrimonio, te_deben/debes, gastos/ingresos del mes.
 - **Secrets** (Gmail token, ANTHROPIC_API_KEY, etc.) viven en la tabla `app_secrets`, leídos solo por las Edge Functions. Nunca en el browser.
@@ -126,6 +127,8 @@ finanzas-app/
    - **El Centro como agente visible** (2026-10-08): pestaña propia en la isla (`views/centro.ts`), pill "Centro" en el Overview, botones de atajo en la pestaña de Plata y ⚡ en la cabecera. Antes todo vivía solo detrás de F8 y el usuario no lo encontraba.
    - ⚠️ **Instalar Coucou desde Claude Desktop:** Claude corre como paquete MSIX y todo lo que lanza escribe `AppData` en su carpeta virtual (`AppData\Local\Packages\Claude_*\LocalCache`), no en la real. `actualizar.ps1` hay que lanzarlo por WMI (`Invoke-CimMethod Win32_Process Create`); si no, la isla queda instalada adentro de Claude.
    - **Se actualiza sola** (2026-10-04): la isla lanza `integraciones/coucou/actualizar.ps1` cada 3 h. Si `plata.patch` cambió en **`main`**, cada PC recompila e instala en silencio, y baja también el repo `agentes`. **Publicar una versión = que el parche llegue a `main`.** No usa el Programador de tareas: en esta PC deja las tareas del usuario en cola para siempre.
+
+12. **Centro de Control como fuente de "vida" para Cowork (2026-11-14).** El diario y journal, las comidas y macros, los hábitos, los Rocks, las reuniones y las mediciones de la nutricionista que Lucas le cuenta a Claude Cowork viven en el **Centro** (Supabase `cqnlceqghqqrlacbjhzj`), no en Plata ni en el artifact "Sistema Lucas v1" (que ya no guarda datos). Se carga por funciones `cdc.*` (`cdc.vida_catalogo()`). Esquema y reglas en `integraciones/centro-de-control/` (`sistema_vida.sql`, `README.md`, `manual-cowork.md`). Para analizar se cruza con Plata por fecha en hora de Argentina.
 
 ---
 
