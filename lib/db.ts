@@ -22,7 +22,7 @@ export type TxView = {
   date: string; // "día · hora"
   occurredAt: string;
   card?: string;
-  source: "manual" | "ocr" | "email" | "chat";
+  source: "manual" | "ocr" | "email" | "chat" | "cowork";
 };
 
 const MESES = ["ene", "feb", "mar", "abr", "may", "jun", "jul", "ago", "sep", "oct", "nov", "dic"];

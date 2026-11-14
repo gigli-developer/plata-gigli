@@ -66,6 +66,7 @@ finanzas-app/
 `transactions`, `categories`, `payment_methods`, `cards`, `card_statements`, `installment_plans`,
 `debts`, `debt_payments`, `persons`, `currency_exchanges`, `recurring_templates`,
 `cashflow_budgets`, `cashflow_config`, `app_secrets`, `profiles`, `chat_messages`, `email_process_logs`.
+- **Origen de cada movimiento** (`transactions.source`, enum `tx_source`): `email` (importador), `manual` (app), `chat` (asistente de la app / agente de la isla), `ocr`, y **`cowork`** (migración 037, 2026-11-14, `supabase/sql/origen_cowork.sql`). No hace falta pasarlo: `registrar_movimiento`, `registrar_ajuste`, `pagar_deuda`, `dividir_gasto_v2` y `register_exchange` llaman a `origen_actual(defecto)`, que devuelve `cowork` cuando no hay `request.jwt.claims` (SQL directo por el conector de Supabase: Cowork o Claude Code) y el defecto cuando la llamada viene por PostgREST (app, agentes). Se ve como etiqueta "Cowork" (celeste) en Resumen y Transacciones; en el celular la etiqueta muestra solo el ícono. Rollback en `rollback_funciones` (migracion = '037'). `persons` tiene índice único `(user_id, lower(btrim(name)))` desde el mismo día (había dos "Juli JP").
 - **`legacy`** schema = backup de la app vieja (NO expuesto por la API; resuelve los warnings de RLS).
 - **RPC `get_metrics()`** = calcula saldos líquidos, patrimonio, te_deben/debes, gastos/ingresos del mes.
 - **Secrets** (Gmail token, ANTHROPIC_API_KEY, etc.) viven en la tabla `app_secrets`, leídos solo por las Edge Functions. Nunca en el browser.
