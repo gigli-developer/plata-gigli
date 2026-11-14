@@ -128,6 +128,8 @@ finanzas-app/
    - ⚠️ **Instalar Coucou desde Claude Desktop:** Claude corre como paquete MSIX y todo lo que lanza escribe `AppData` en su carpeta virtual (`AppData\Local\Packages\Claude_*\LocalCache`), no en la real. `actualizar.ps1` hay que lanzarlo por WMI (`Invoke-CimMethod Win32_Process Create`); si no, la isla queda instalada adentro de Claude.
    - **Se actualiza sola** (2026-10-04): la isla lanza `integraciones/coucou/actualizar.ps1` cada 3 h. Si `plata.patch` cambió en **`main`**, cada PC recompila e instala en silencio, y baja también el repo `agentes`. **Publicar una versión = que el parche llegue a `main`.** No usa el Programador de tareas: en esta PC deja las tareas del usuario en cola para siempre.
 
+12. **Centro de Control como fuente de "vida" para Cowork (2026-11-14).** El diario y journal, las comidas y macros, los hábitos, los Rocks, las reuniones y las mediciones de la nutricionista que Lucas le cuenta a Claude Cowork viven en el **Centro** (Supabase `cqnlceqghqqrlacbjhzj`), no en Plata ni en el artifact "Sistema Lucas v1" (que ya no guarda datos). Se carga por funciones `cdc.*` (`cdc.vida_catalogo()`). Esquema y reglas en `integraciones/centro-de-control/` (`sistema_vida.sql`, `README.md`, `manual-cowork.md`). Para analizar se cruza con Plata por fecha en hora de Argentina.
+
 ---
 
 ## Estado actual
