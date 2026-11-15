@@ -1,5 +1,10 @@
 -- 036 · Escritura segura: registrar_movimiento, registrar_ajuste y deshacer_operacion.
 --
+-- En la base se aplicó en 5 partes (036a_categoria_ajuste, 036b_registrar_movimiento,
+-- 036c_registrar_ajuste, 036d_deshacer_operacion, 036e_permisos_escritura) porque el
+-- conector de Supabase pedía una confirmación que vencía con el archivo entero.
+-- Después vienen 20261112_fix_registrar_movimiento_y_pagar_deuda y 037.
+--
 -- Claude escribe SOLO por acá (nunca INSERT directo). Las tres funciones son de
 -- dos pasos: sin p_confirmar devuelven la fila que VAN a escribir (para mostrarla y
 -- pedir confirmación); con p_confirmar => true escriben. Todo lo que escriben deja
@@ -158,11 +163,11 @@ begin
      where not ca.is_archived and public.q__es_credito(ca.network, ca.name) = v_es_credito
        and (ca.last4 = btrim(p_tarjeta) or lower(ca.name) = lower(btrim(p_tarjeta)) or lower(ca.name) like '%' || lower(btrim(p_tarjeta)) || '%')
      order by (ca.last4 = btrim(p_tarjeta)) desc, length(ca.name) limit 1;
-    if found then v_card_id := v_card.id; v_card_label := v_card.name || ' ' || coalesce(v_card.last4, ''); end if;
     if not found then
       raise exception 'No encontré la tarjeta "%" de % . Tarjetas: %', p_tarjeta, v_pm.name,
         (select string_agg(name || ' ' || coalesce(last4, ''), ', ' order by id) from public.cards where not is_archived
           and public.q__es_credito(network, name) = v_es_credito); end if;
+    v_card_id := v_card.id; v_card_label := v_card.name || ' ' || coalesce(v_card.last4, '');
   elsif p_tarjeta is not null then
     raise exception 'p_tarjeta solo va con Tarjeta de Crédito o de Débito (el medio es %)', v_pm.name;
   end if;
@@ -222,7 +227,7 @@ begin
 
   -- Resumen de tarjeta de crédito: el primero que cierra en o después de la fecha.
   if v_es_credito then
-    select * into v_st from public.card_statements cs where cs.card_id = v_card.id and cs.closing_date >= v_dia order by cs.closing_date limit 1;
+    select * into v_st from public.card_statements cs where cs.card_id = v_card_id and cs.closing_date >= v_dia order by cs.closing_date limit 1;
     if found then
       if v_st.is_paid then
         raise exception 'El resumen % de % ya está pagado (total congelado). Un consumo de esa fecha no cambiaría nada: revisá la fecha.', v_st.period_label, v_card.name; end if;
@@ -267,9 +272,9 @@ begin
 
   if v_es_credito and v_st_id is null then
     insert into public.card_statements (user_id, card_id, period_label, closing_date, due_date)
-    values (v_uid, v_card.id, to_char(v_close, 'YYYY-MM'), v_close, v_due)
+    values (v_uid, v_card_id, to_char(v_close, 'YYYY-MM'), v_close, v_due)
     on conflict (card_id, period_label) do nothing;
-    select id into v_st_id from public.card_statements where card_id = v_card.id and period_label = to_char(v_close, 'YYYY-MM');
+    select id into v_st_id from public.card_statements where card_id = v_card_id and period_label = to_char(v_close, 'YYYY-MM');
   end if;
 
   insert into public.transactions (user_id, type, nature, category_id, payment_method_id, amount, currency, description,
@@ -325,7 +330,7 @@ comment on function public.registrar_ajuste(text, numeric, text, boolean) is
 create or replace function public.deshacer_operacion(p_id bigint default null, p_confirmar boolean default false) returns jsonb
 language plpgsql volatile set search_path = public as $$
 declare
-  op record; d jsonb; v_pagado numeric; v_monto numeric;
+  op record; d jsonb;
 begin
   select * into op from public.activity_log a
    where a.undone_at is null and (p_id is null or a.id = p_id)
@@ -352,7 +357,7 @@ begin
     delete from public.transactions where exchange_id = (d->>'exchangeId')::bigint;
     delete from public.currency_exchanges where id = (d->>'exchangeId')::bigint;
   elsif op.kind = 'debt_payment' then
-    if d ? 'txId' and d->>'txId' is not null then delete from public.transactions where id = (d->>'txId')::bigint; end if;
+    if d->>'txId' is not null then delete from public.transactions where id = (d->>'txId')::bigint; end if;
     delete from public.debt_payments where id = (d->>'paymentId')::bigint;
     if coalesce((d->>'saldoLaDeuda')::boolean, false) then
       update public.debts set status = 'pending', settled_at = null where id = (d->>'debtId')::bigint;
